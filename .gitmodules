@@ -1,0 +1,8 @@
+
+[submodule "deps/glew/glew"]
+	path = deps/glew/glew
+	url = https://github.com/nigels-com/glew.git
+
+[submodule "deps/glfw/glfw"]
+	path = deps/glfw/glfw
+	url = https://github.com/glfw/glfw.git

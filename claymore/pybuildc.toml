@@ -1,0 +1,14 @@
+[project]
+name="claymore"
+version="0.1.0"
+cc="gcc"
+bin="static"
+
+cflags=["-D_CM_DEBUG"]
+
+[dependencies]
+gl   = { lib="-lGL" }
+glew = { lib="-lGLEW", dir="-L../deps/glew/glew-2.2.0/lib/", include=["-I../deps/glew/glew-2.2.0/include/"] }
+glfw = { lib="-lglfw3", dir="-L../deps/glfw/glfw/build/src/", include=["-I../deps/glfw/glfw/include/"] }
+math = { lib="-lm" }
+cglm = { lib="-lcglm", dir="-L../deps/cglm/cglm/build/", include=["-I../deps/cglm/cglm/include/"]}
