@@ -69,3 +69,23 @@ void cm_renderer_init_quad(Renderer2D *renderer, size_t size, int32_t x,
   renderer->buffer.vertecies_count += CM_RENDERER2D_VERTECIES_PER_QUAD;
   renderer->buffer.indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
 }
+
+void cm_renderer_init_quad_color(Renderer2D *renderer, size_t size, int32_t x,
+                                 int32_t y, int32_t z, float r, float g,
+                                 float b, float a) {
+  assert(renderer->buffer.vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
+  assert(renderer->buffer.indecies_count < CM_RENDERER2D_MAX_INDECIES);
+
+  Vertex2D vertecies[] = {
+      {{x, y, z}, {r, g, b, a}},               // a
+      {{x + size, y, z}, {r, g, b, a}},        // b
+      {{x + size, y + size, z}, {r, g, b, a}}, // c
+      {{x, y + size, z}, {r, g, b, a}},        // d
+  };
+
+  memcpy(&renderer->buffer.data[renderer->buffer.vertecies_count], vertecies,
+         sizeof(vertecies));
+
+  renderer->buffer.vertecies_count += CM_RENDERER2D_VERTECIES_PER_QUAD;
+  renderer->buffer.indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
+}

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "cglm/cglm.h"
+#include "claymore/core/window.h"
 #include "claymore/renderer/renderer2D.h"
 
 const int WINDOW_WIDTH = 620;
@@ -53,7 +54,7 @@ typedef struct {
   vec4 color;
 } Quad2D;
 
-#define MAX_QUADS 10
+#define MAX_QUADS 1000
 static Quad2D quads[MAX_QUADS];
 static size_t quads_count = 0;
 
@@ -86,23 +87,27 @@ void cm_app_init(ClaymoreApp *app) {
 
 void cm_app_update(ClaymoreApp *app) {
   (void)app;
-  float time = cm_window_time() + 1;
 
-  printf("%f %d\n", roundf(time), (int)roundf(time) % 3 == 0);
-  if ((int)roundf(time) % 3 == 0 && quads_count < MAX_QUADS) {
-    printf("WAHt\n");
+  static float last_time = 0;
 
-    quads[quads_count].pos[0] = rand() % WINDOW_WIDTH;
-    quads[quads_count].pos[1] = rand() % WINDOW_HEIGHT;
+  float time = cm_window_time();
+  if (time > last_time + 1.F && quads_count < MAX_QUADS) {
+    last_time = time;
+
+    quads[quads_count].pos[0] = rand() % (WINDOW_WIDTH - 100);
+    quads[quads_count].pos[1] = rand() % (WINDOW_HEIGHT - 100);
     quads[quads_count].z = 0.F;
 
-    quads[quads_count].color[0] = 0.61F;
-    quads[quads_count].color[1] = 0.61F;
-    quads[quads_count].color[2] = 0.61F;
+    quads[quads_count].color[0] = (float)rand() / RAND_MAX;
+    quads[quads_count].color[1] = (float)rand() / RAND_MAX;
+    quads[quads_count].color[2] = (float)rand() / RAND_MAX;
     quads[quads_count].color[3] = 1.F;
 
-    cm_renderer_init_quad(&app->renderer, 100.F, quads[quads_count].pos[0],
-                          quads[quads_count].pos[0], quads[quads_count].z);
+    cm_renderer_init_quad_color(
+        &app->renderer, 100.F, quads[quads_count].pos[0],
+        quads[quads_count].pos[1], quads[quads_count].z,
+        quads[quads_count].color[0], quads[quads_count].color[1],
+        quads[quads_count].color[2], quads[quads_count].color[3]);
 
     quads_count += 1;
   }

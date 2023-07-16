@@ -3,7 +3,7 @@
 
 #include "cm.h"
 
-#define CM_RENDERER2D_MAX_QUADS 12
+#define CM_RENDERER2D_MAX_QUADS 1000
 #define CM_RENDERER2D_VERTECIES_PER_QUAD 4
 #define CM_RENDERER2D_MAX_VERTECIES                                            \
   (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTECIES_PER_QUAD)
@@ -42,6 +42,9 @@ typedef struct {
 
 void cm_renderer_init_quad(Renderer2D *renderer, size_t size, int32_t x,
                            int32_t y, int32_t z);
+void cm_renderer_init_quad_color(Renderer2D *renderer, size_t size, int32_t x,
+                                 int32_t y, int32_t z, float r, float g,
+                                 float b, float a);
 
 #ifdef _CM_RENDERER_INTERNAL
 void cm_renderer_init(Renderer2D *renderer);
