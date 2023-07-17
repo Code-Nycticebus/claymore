@@ -5,10 +5,5 @@ cc="gcc"
 bin="exe"
 
 [dependencies]
-claymore = { lib="claymore", dir="../claymore/.build/debug/bin/", include=["../claymore/src/"] }
+claymore = { dir="../claymore/", dep_type="pybuildc" }
 
-gl   = { lib="GL" }
-glew = { lib="GLEW", dir="../deps/glew/glew/lib/", include=["../deps/glew/glew/include/"] }
-glfw = { lib="glfw3", dir="../deps/glfw/glfw/build/src/", include=["../deps/glfw/glfw/include/"] }
-math = { lib="m" }
-cglm = { lib="cglm", dir="../deps/cglm/cglm/build/", include=["../deps/cglm/cglm/include/"]}
