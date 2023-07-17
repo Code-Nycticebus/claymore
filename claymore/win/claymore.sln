@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "claymore", "claymore.vcxproj", "{A4281AEE-5EB4-4893-8FD4-5BE659B40382}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Debug|x64.ActiveCfg = Debug|x64
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Debug|x64.Build.0 = Debug|x64
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Debug|x86.ActiveCfg = Debug|Win32
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Debug|x86.Build.0 = Debug|Win32
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Release|x64.ActiveCfg = Release|x64
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Release|x64.Build.0 = Release|x64
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Release|x86.ActiveCfg = Release|Win32
+		{A4281AEE-5EB4-4893-8FD4-5BE659B40382}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {535C1A83-C9D2-4564-935E-52DD84293A4C}
+	EndGlobalSection
+EndGlobal
