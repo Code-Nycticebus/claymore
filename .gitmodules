@@ -6,3 +6,7 @@
 [submodule "deps/glfw/glfw"]
 	path = deps/glfw/glfw
 	url = https://github.com/glfw/glfw.git
+
+[submodule "deps/cglm/cglm"]
+	path = deps/cglm/cglm
+	url = https://github.com/recp/cglm.git
