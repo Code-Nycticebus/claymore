@@ -12,9 +12,7 @@
 
 const int WINDOW_WIDTH = 620;
 const int WINDOW_HEIGHT = 420;
-const float fov = 45.0F;
-const float aspect = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
-const float near = 0.1F;
+const float near = -0.1F;
 
 static struct ShaderData {
   uint32_t id;
@@ -78,7 +76,7 @@ void cm_app_init(ClaymoreApp *app) {
 
   glm_mat4_identity(mvp.model);
 
-  glm_ortho(0.0F, WINDOW_WIDTH, 0.0F, WINDOW_HEIGHT, -0.1F, 100.0F,
+  glm_ortho(0.0F, WINDOW_WIDTH, 0.0F, WINDOW_HEIGHT, near, 100.0F,
             mvp.projection);
 
   vec3 up = {0, 1, 0};
@@ -88,23 +86,20 @@ void cm_app_init(ClaymoreApp *app) {
 void cm_app_update(ClaymoreApp *app) {
   (void)app;
 
-  static float last_time = 0;
+  if (quads_count < MAX_QUADS) {
 
-  float time = cm_window_time();
-  if (time > last_time + 1.F && quads_count < MAX_QUADS) {
-    last_time = time;
-
-    quads[quads_count].pos[0] = rand() % (WINDOW_WIDTH - 100);
-    quads[quads_count].pos[1] = rand() % (WINDOW_HEIGHT - 100);
+    const int quad_size = 100;
+    quads[quads_count].pos[0] = rand() % (WINDOW_WIDTH - quad_size);
+    quads[quads_count].pos[1] = rand() % (WINDOW_HEIGHT - quad_size);
     quads[quads_count].z = 0.F;
 
-    quads[quads_count].color[0] = (float)rand() / RAND_MAX;
-    quads[quads_count].color[1] = (float)rand() / RAND_MAX;
-    quads[quads_count].color[2] = (float)rand() / RAND_MAX;
+    quads[quads_count].color[0] = (double)rand() / (double)RAND_MAX;
+    quads[quads_count].color[1] = (double)rand() / (double)RAND_MAX;
+    quads[quads_count].color[2] = (double)rand() / (double)RAND_MAX;
     quads[quads_count].color[3] = 1.F;
 
     cm_renderer_init_quad_color(
-        &app->renderer, 100.F, quads[quads_count].pos[0],
+        &app->renderer, quad_size, quads[quads_count].pos[0],
         quads[quads_count].pos[1], quads[quads_count].z,
         quads[quads_count].color[0], quads[quads_count].color[1],
         quads[quads_count].color[2], quads[quads_count].color[3]);
