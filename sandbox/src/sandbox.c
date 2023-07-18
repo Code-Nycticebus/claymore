@@ -1,14 +1,11 @@
 #include "sandbox.h"
-#include "cglm/cam.h"
-#include "claymore.h"
-#include "claymore/core/shader.h"
-#include <GL/gl.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <GL/gl.h>
 #include "cglm/cglm.h"
-#include "claymore/core/window.h"
-#include "claymore/renderer/renderer2D.h"
+
 
 const int WINDOW_WIDTH = 620;
 const int WINDOW_HEIGHT = 420;
@@ -87,8 +84,10 @@ void cm_app_init(ClaymoreApp *app) {
 void cm_app_update(ClaymoreApp *app) {
   (void)app;
 
-  if (quads_count < MAX_QUADS) {
 
+
+  if (quads_count < MAX_QUADS) {
+     
     quad.size = 100.F;
     quad.pos[0] = rand() % (int)(WINDOW_WIDTH - quad.size);
     quad.pos[1] = rand() % (int)(WINDOW_HEIGHT - quad.size);
@@ -97,7 +96,7 @@ void cm_app_update(ClaymoreApp *app) {
     quad.color[0] = (double)rand() / (double)RAND_MAX;
     quad.color[1] = (double)rand() / (double)RAND_MAX;
     quad.color[2] = (double)rand() / (double)RAND_MAX;
-    quad.color[3] = 1.F;
+    quad.color[3] = (double)rand() / (double)RAND_MAX;
 
     cm_renderer_init_quad_color(&app->renderer, quad.pos, quad.z,
                                 (vec2){quad.size, quad.size}, quad.color);

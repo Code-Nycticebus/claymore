@@ -46,6 +46,10 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
     fprintf(stderr, "GLEW initialization failed: %s\n", glewGetString(err));
   }
 
+  // Transparency
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
   glViewport(0, 0, width, height);
   glfwSetFramebufferSizeCallback(window, _cm_window_resize_callback);
 
@@ -58,7 +62,7 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
 
 #ifdef _CM_DEBUG
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(cm_debug_message_callback, 0);
+  glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, 0);
 #endif
 
   return window;
