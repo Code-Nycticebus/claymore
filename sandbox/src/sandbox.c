@@ -47,14 +47,15 @@ const char *fragment_shader_src = // what
     "}\n";
 
 typedef struct {
+  float size;
   vec2 pos;
   float z;
   vec4 color;
 } Quad2D;
 
 #define MAX_QUADS 1000
-static Quad2D quads[MAX_QUADS];
 static size_t quads_count = 0;
+static Quad2D quad;
 
 ClaymoreConfig cm_app_config(void) {
 
@@ -88,21 +89,18 @@ void cm_app_update(ClaymoreApp *app) {
 
   if (quads_count < MAX_QUADS) {
 
-    const int quad_size = 100;
-    quads[quads_count].pos[0] = rand() % (WINDOW_WIDTH - quad_size);
-    quads[quads_count].pos[1] = rand() % (WINDOW_HEIGHT - quad_size);
-    quads[quads_count].z = 0.F;
+    quad.size = 100.F;
+    quad.pos[0] = rand() % (int)(WINDOW_WIDTH - quad.size);
+    quad.pos[1] = rand() % (int)(WINDOW_HEIGHT - quad.size);
+    quad.z = 0.F;
 
-    quads[quads_count].color[0] = (double)rand() / (double)RAND_MAX;
-    quads[quads_count].color[1] = (double)rand() / (double)RAND_MAX;
-    quads[quads_count].color[2] = (double)rand() / (double)RAND_MAX;
-    quads[quads_count].color[3] = 1.F;
+    quad.color[0] = (double)rand() / (double)RAND_MAX;
+    quad.color[1] = (double)rand() / (double)RAND_MAX;
+    quad.color[2] = (double)rand() / (double)RAND_MAX;
+    quad.color[3] = 1.F;
 
-    cm_renderer_init_quad_color(
-        &app->renderer, quad_size, quads[quads_count].pos[0],
-        quads[quads_count].pos[1], quads[quads_count].z,
-        quads[quads_count].color[0], quads[quads_count].color[1],
-        quads[quads_count].color[2], quads[quads_count].color[3]);
+    cm_renderer_init_quad_color(&app->renderer, quad.pos, quad.z,
+                                (vec2){quad.size, quad.size}, quad.color);
 
     quads_count += 1;
   }

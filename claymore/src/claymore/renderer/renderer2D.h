@@ -40,11 +40,10 @@ typedef struct {
   } mvp;
 } Renderer2D;
 
-void cm_renderer_init_quad(Renderer2D *renderer, size_t size, int32_t x,
-                           int32_t y, int32_t z);
-void cm_renderer_init_quad_color(Renderer2D *renderer, size_t size, int32_t x,
-                                 int32_t y, int32_t z, float r, float g,
-                                 float b, float a);
+void cm_renderer_init_quad(Renderer2D *renderer, const vec2 position, float z,
+                           const vec2 size);
+void cm_renderer_init_quad_color(Renderer2D *renderer, const vec2 position,
+                                 float z, const vec2 size, vec4 color);
 
 #ifdef _CM_RENDERER_INTERNAL
 void cm_renderer_init(Renderer2D *renderer);

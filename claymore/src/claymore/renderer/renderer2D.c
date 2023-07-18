@@ -51,16 +51,21 @@ void cm_renderer_draw(Renderer2D *renderer) {
                  0);
 }
 
-void cm_renderer_init_quad(Renderer2D *renderer, size_t size, int32_t x,
-                           int32_t y, int32_t z) {
+void cm_renderer_init_quad(Renderer2D *renderer, const vec2 position, float z,
+                           const vec2 size) {
   assert(renderer->buffer.vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
   assert(renderer->buffer.indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
+  const float x = position[0];
+  const float x_size = size[0];
+  const float y = position[1];
+  const float y_size = size[1];
+
   Vertex2D vertecies[] = {
-      {{x, y, z}, {0.F, 0.6F, 0.6F, 1.F}},               // a
-      {{x + size, y, z}, {0.F, 0.6F, 0.6F, 1.F}},        // b
-      {{x + size, y + size, z}, {0.F, 0.6F, 0.6F, 1.F}}, // c
-      {{x, y + size, z}, {0.F, 0.6F, 0.6F, 1.F}},        // d
+      {{x, y, z}, {0}},                   // a
+      {{x + x_size, y, z}, {0}},          // b
+      {{x + x_size, y + y_size, z}, {0}}, // c
+      {{x, y + y_size, z}, {0}},          // d
   };
 
   memcpy(&renderer->buffer.data[renderer->buffer.vertecies_count], vertecies,
@@ -70,17 +75,22 @@ void cm_renderer_init_quad(Renderer2D *renderer, size_t size, int32_t x,
   renderer->buffer.indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
 }
 
-void cm_renderer_init_quad_color(Renderer2D *renderer, size_t size, int32_t x,
-                                 int32_t y, int32_t z, float r, float g,
-                                 float b, float a) {
+void cm_renderer_init_quad_color(Renderer2D *renderer, const vec2 position,
+                                 float z, const vec2 size, vec4 color) {
   assert(renderer->buffer.vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
   assert(renderer->buffer.indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
+  const float x = position[0];
+  const float x_size = size[0];
+  const float y = position[1];
+  const float y_size = size[1];
+
   Vertex2D vertecies[] = {
-      {{x, y, z}, {r, g, b, a}},               // a
-      {{x + size, y, z}, {r, g, b, a}},        // b
-      {{x + size, y + size, z}, {r, g, b, a}}, // c
-      {{x, y + size, z}, {r, g, b, a}},        // d
+      {{x, y, z}, {color[0], color[1], color[2], color[3]}},          // a
+      {{x + x_size, y, z}, {color[0], color[1], color[2], color[3]}}, // b
+      {{x + x_size, y + y_size, z},
+       {color[0], color[1], color[2], color[3]}},                     // c
+      {{x, y + y_size, z}, {color[0], color[1], color[2], color[3]}}, // d
   };
 
   memcpy(&renderer->buffer.data[renderer->buffer.vertecies_count], vertecies,
