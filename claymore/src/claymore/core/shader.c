@@ -106,8 +106,9 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   if (lenght > 0) {
     char *err_msg = calloc(sizeof(char), lenght);
     glGetShaderInfoLog(program, lenght, NULL, err_msg);
-    cm_log_err("[CLAYMORE][SHADER][LINK] %s\n", err_msg);
     free(err_msg);
+
+    cm_log_err("[CLAYMORE][SHADER][LINK] %s\n", err_msg);
     return 0;
   }
 
