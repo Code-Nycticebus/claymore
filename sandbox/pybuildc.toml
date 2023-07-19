@@ -4,6 +4,8 @@ version="0.1.0"
 cc="gcc"
 bin="exe"
 
-[dependencies]
-claymore = { dir="../claymore/", dep_type="pybuildc" }
+[dependencies.claymore]
+dir="../claymore/" 
+dep_type="pybuildc"
+target="debug"
 
