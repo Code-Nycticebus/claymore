@@ -1,4 +1,7 @@
 #include "sandbox.h"
+#include "claymore/core/app.h"
+#include "claymore/events/event.h"
+#include "claymore/events/mouse.h"
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -19,6 +22,8 @@ struct ShaderData {
     GLint time;
     GLint mvp;
     GLint color;
+    GLint mouse_pos;
+    GLint distance;
   } u_loc;
 };
 
@@ -37,6 +42,9 @@ typedef struct {
 } Quad2D;
 
 static Quad2D quad;
+static float distance;
+
+static void _sandbox_controll(CmKeyEvent *event) { (void)event; }
 
 ClaymoreConfig cm_app_config(void) {
   return (ClaymoreConfig){
@@ -45,6 +53,8 @@ ClaymoreConfig cm_app_config(void) {
 }
 
 void cm_app_init(ClaymoreApp *app) {
+  cm_event_set_callback(CM_EVENT_KEYBOARD,
+                        (cm_event_callback)_sandbox_controll);
 
   quads_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                              "res/shader/basic.fs.glsl");
@@ -54,7 +64,18 @@ void cm_app_init(ClaymoreApp *app) {
     cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mvp",
                quads_shader.id);
   }
-
+  quads_shader.u_loc.mouse_pos =
+      glGetUniformLocation(quads_shader.id, "u_mouse_pos");
+  if (quads_shader.u_loc.mouse_pos == -1) {
+    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mouse_pos",
+               quads_shader.id);
+  }
+  quads_shader.u_loc.distance =
+      glGetUniformLocation(quads_shader.id, "u_distance");
+  if (quads_shader.u_loc.distance == -1) {
+    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_distance",
+               quads_shader.id);
+  }
   overlay_shader.id = cm_load_shader_from_file(
       "res/shader/basic.vs.glsl", "res/shader/basic_uniform.fs.glsl");
   overlay_shader.u_loc.mvp = glGetUniformLocation(overlay_shader.id, "u_mvp");
@@ -85,13 +106,26 @@ void cm_app_update(ClaymoreApp *app) {
   // Calculates camera perspective
   glm_mat4_mul(app->camera.projection, app->camera.view, vp);
 
+  if (cm_key(CM_KEY_W) == CM_KEY_PRESS || cm_key(CM_KEY_W) == CM_KEY_REPEAT) {
+    distance += 1.F;
+  }
+  if (cm_key(CM_KEY_S) == CM_KEY_PRESS || cm_key(CM_KEY_S) == CM_KEY_REPEAT) {
+    distance -= 1.F;
+  }
+
   cm_renderer_begin();
   {
     glm_mat4_mul(vp, quads_model, mvp);
     glUseProgram(quads_shader.id);
+
+    vec2 mouse_pos;
+    cm_mouseinfo_pos(mouse_pos);
+    glUniform2fv(quads_shader.u_loc.mouse_pos, 1, mouse_pos);
+    glUniform1f(quads_shader.u_loc.distance, distance);
+
     glUniformMatrix4fv(quads_shader.u_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
-    const size_t grid_size = 30;
+    const size_t grid_size = 4;
     const float xs = (WINDOW_WIDTH / (float)grid_size);
     const float ys = (WINDOW_HEIGHT / (float)grid_size);
     for (size_t i = 0; i < grid_size; ++i) {

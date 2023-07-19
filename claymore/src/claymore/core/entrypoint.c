@@ -17,8 +17,6 @@ int main(void) {
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(app.window.ctx)) {
-    cm_window_input_handler(app.window.ctx);
-
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

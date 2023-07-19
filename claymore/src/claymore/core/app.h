@@ -1,6 +1,7 @@
 #ifndef __CM_APP_H__
 #define __CM_APP_H__
 
+#include "claymore/events/event.h"
 #define _CM_LOGGER_INTERNAL
 #include "claymore/logger/logger.h"
 #include "cm.h"
