@@ -22,7 +22,10 @@ typedef struct {
     WindowContext *ctx;
   } window;
 
-  Renderer2D renderer;
+  struct {
+    mat4 projection;
+    mat4 view;
+  } camera;
 
 } ClaymoreApp;
 

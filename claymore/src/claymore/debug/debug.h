@@ -1,10 +1,15 @@
 #ifndef __CM_DEBUG_H__
 #define __CM_DEBUG_H__
 
+#include <assert.h>
 #include <stdbool.h>
 
 // For runtime checks
 extern const bool cm_debug_enabled;
+
+#ifndef NDEBUG
+#define _CM_DEBUG
+#endif
 
 #ifdef _CM_DEBUG
 

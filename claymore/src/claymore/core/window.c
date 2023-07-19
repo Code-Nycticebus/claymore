@@ -4,8 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-#include "claymore/debug/debug.h"
-
 float cm_window_time(void) { return glfwGetTime(); }
 
 void cm_window_input_handler(CMwindow *window) {
@@ -41,29 +39,8 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
 
-  GLenum err = glewInit();
-  if (err != GLEW_OK) {
-    fprintf(stderr, "GLEW initialization failed: %s\n", glewGetString(err));
-  }
-
-  // Transparency
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   glViewport(0, 0, width, height);
   glfwSetFramebufferSizeCallback(window, _cm_window_resize_callback);
-
-  const struct color {
-    float red;
-    float green;
-    float blue;
-  } c = {0.2F, 0.2F, 0.3F};
-  glClearColor(c.red, c.green, c.blue, 1.0F);
-
-#ifdef _CM_DEBUG
-  glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, 0);
-#endif
 
   return window;
 }

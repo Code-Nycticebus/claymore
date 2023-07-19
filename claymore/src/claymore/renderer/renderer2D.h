@@ -3,7 +3,7 @@
 
 #include "cm.h"
 
-#define CM_RENDERER2D_MAX_QUADS 1000
+#define CM_RENDERER2D_MAX_QUADS 2000
 #define CM_RENDERER2D_VERTECIES_PER_QUAD 4
 #define CM_RENDERER2D_MAX_VERTECIES                                            \
   (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTECIES_PER_QUAD)
@@ -13,24 +13,14 @@
 
 typedef struct {
   vec3 pos;
+} VertexUniform2D;
+
+typedef struct {
+  vec3 pos;
   vec4 color;
-} Vertex2D;
+} VertexColor2D;
 
 typedef struct {
-  GLuint vbo; // Vertex Buffer holds the data
-  GLuint vao; // Vertex Array is there to be there???
-  GLuint ibo; // Holds indecies to reduce repetition
-  GLuint i_count;
-
-  size_t vertecies_count;
-  Vertex2D data[CM_RENDERER2D_MAX_VERTECIES];
-
-  size_t indecies_count;
-  uint32_t indecies[CM_RENDERER2D_MAX_INDECIES];
-} RenderBufferData;
-
-typedef struct {
-  RenderBufferData buffer;
 
   struct {
     mat4 model;
@@ -40,14 +30,17 @@ typedef struct {
   } mvp;
 } Renderer2D;
 
-void cm_renderer_init_quad(Renderer2D *renderer, const vec2 position, float z,
-                           const vec2 size);
-void cm_renderer_init_quad_color(Renderer2D *renderer, const vec2 position,
-                                 float z, const vec2 size, vec4 color);
+void cm_renderer_begin(void);
+void cm_renderer_end(void);
+
+void cm_renderer_push_quad(const vec2 position, float z, const vec2 size);
+void cm_renderer_push_quad_color(const vec2 position, float z, const vec2 size,
+                                 const vec4 color);
 
 #ifdef _CM_RENDERER_INTERNAL
-void cm_renderer_init(Renderer2D *renderer);
-void cm_renderer_draw(Renderer2D *renderer);
+void cm_renderer_init(void);
+void cm_renderer_shutdown(void);
+void cm_renderer_draw(void);
 #endif // !_CM_RENDERER_INTERNAL
 
 #endif // !__CM_RENDERER2D_H__

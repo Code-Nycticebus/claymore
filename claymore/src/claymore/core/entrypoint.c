@@ -11,7 +11,7 @@
 int main(void) {
   ClaymoreConfig config = cm_app_config();
   ClaymoreApp app = claymore_app_init(&config);
-  cm_renderer_init(&app.renderer);
+  cm_renderer_init();
 
   cm_app_init(&app);
 
@@ -23,7 +23,6 @@ int main(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     cm_app_update(&app);
-    cm_renderer_draw(&app.renderer);
 
     /* Swap front and back buffers */
     glfwSwapBuffers(app.window.ctx);
@@ -33,6 +32,7 @@ int main(void) {
   }
 
   cm_app_free();
+  cm_renderer_shutdown();
 
   glfwTerminate();
   return 0;
