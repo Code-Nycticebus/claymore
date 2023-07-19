@@ -3,14 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "cglm/affine-pre.h"
 #include "cglm/cglm.h"
-#include "cglm/mat4.h"
 #include <GL/gl.h>
 #include <time.h>
 
-const int WINDOW_WIDTH = 620 * 2;
-const int WINDOW_HEIGHT = 420 * 2;
+const int WINDOW_WIDTH = 620;
+const int WINDOW_HEIGHT = 420;
 const float near = -0.1F;
 
 struct ShaderData {
@@ -72,7 +70,7 @@ void cm_app_init(ClaymoreApp *app) {
   glm_mat4_identity(overlay_model);
   glm_mat4_identity(quads_model);
 
-  glm_ortho(0.0F, WINDOW_WIDTH, 0.0F, WINDOW_HEIGHT, near, 100.0F,
+  glm_ortho(0.0F, (float)WINDOW_WIDTH, 0.0F, (float)WINDOW_HEIGHT, near, 100.0F,
             app->camera.projection);
 
   vec3 up = {0, 1, 0};
@@ -121,7 +119,7 @@ void cm_app_update(ClaymoreApp *app) {
     glUniform4f(overlay_shader.u_loc.color, puregym_colors[0],
                 puregym_colors[1], puregym_colors[2], puregym_colors[3]);
     cm_renderer_push_quad((vec2){0.F, 0.F}, -1.F,
-                          (vec2){WINDOW_WIDTH, WINDOW_HEIGHT});
+                          (vec2){(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT});
   }
   cm_renderer_end();
 }
