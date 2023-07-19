@@ -1,4 +1,5 @@
 #include "debug.h"
+#include "claymore/logger/logger.h"
 
 #ifdef _CM_DEBUG
 
@@ -13,10 +14,9 @@ void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
   (void)id;
   (void)length;
   (void)userParam;
-  fprintf(stderr,
-          "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity,
-          message);
+  cm_log_err("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+             (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
+             severity, message);
 }
 #else
 

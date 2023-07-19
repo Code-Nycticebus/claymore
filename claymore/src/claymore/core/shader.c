@@ -1,4 +1,5 @@
 #include "shader.h"
+#include "claymore/logger/logger.h"
 
 #include <assert.h>
 #include <errno.h>
@@ -9,7 +10,7 @@
 static char *_cm_shader_slurp_file(const char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    fprintf(stderr, "[CLAYMORE][SHADER][FILE] %s\n", strerror(errno));
+    cm_log_err("[CLAYMORE][SHADER][FILE] %s\n", strerror(errno));
     return NULL;
   }
 
@@ -35,7 +36,7 @@ bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
   if (lenght > 0) {
     char *err_msg = calloc(sizeof(char), lenght);
     glGetShaderInfoLog(shader_id, lenght, NULL, err_msg);
-    fprintf(stderr, "[CLAYMORE][SHADER][COMPILE] %s\n", err_msg);
+    cm_log_err("%s\n%s\n", "[CLAYMORE][SHADER][COMPILE] %s\n", err_msg);
     free(err_msg);
     return false;
   }
@@ -69,7 +70,7 @@ GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
   free(vs_src);
   free(fs_src);
   if (program == 0) {
-    fprintf(stderr, "%s\n%s\n", vs_file, fs_file);
+    cm_log_err("%s\n%s\n", vs_file, fs_file);
     return 0;
   }
 
@@ -80,13 +81,13 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
 
   GLuint vs_id = _cm_compile_shader(vs_src, GL_VERTEX_SHADER);
   if (!_cm_shader_check_error(vs_id, GL_COMPILE_STATUS)) {
-    fprintf(stderr, "%s\n", vs_src);
+    cm_log_err("%s\n", vs_src);
     return 0;
   }
 
   GLuint fs_id = _cm_compile_shader(fs_src, GL_FRAGMENT_SHADER);
   if (!_cm_shader_check_error(fs_id, GL_COMPILE_STATUS)) {
-    fprintf(stderr, "%s\n", fs_src);
+    cm_log_err("%s\n", fs_src);
   }
 
   GLuint program = glCreateProgram();
@@ -105,7 +106,7 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   if (lenght > 0) {
     char *err_msg = calloc(sizeof(char), lenght);
     glGetShaderInfoLog(program, lenght, NULL, err_msg);
-    fprintf(stderr, "[CLAYMORE][SHADER][LINK] %s\n", err_msg);
+    cm_log_err("[CLAYMORE][SHADER][LINK] %s\n", err_msg);
     free(err_msg);
     return 0;
   }

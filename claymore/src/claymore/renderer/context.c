@@ -1,6 +1,7 @@
 #include "context.h"
 
 #include "claymore/debug/debug.h"
+#include "claymore/logger/logger.h"
 #include <GL/gl.h>
 
 bool cm_context_init(WindowHandle *window_handle) {
@@ -8,7 +9,7 @@ bool cm_context_init(WindowHandle *window_handle) {
 
   GLenum err = glewInit();
   if (err != GLEW_OK) {
-    fprintf(stderr, "GLEW initialization failed: %s\n", glewGetString(err));
+    cm_log_err("GLEW initialization failed: %s\n", glewGetString(err));
     return false;
   }
 

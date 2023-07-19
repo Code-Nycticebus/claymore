@@ -1,5 +1,6 @@
 #include "sandbox.h"
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -39,7 +40,8 @@ static Quad2D quad;
 
 ClaymoreConfig cm_app_config(void) {
   return (ClaymoreConfig){
-      .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox"}};
+      .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox"},
+      .log = {.out = stdout, .err = stderr}};
 }
 
 void cm_app_init(ClaymoreApp *app) {
@@ -49,22 +51,22 @@ void cm_app_init(ClaymoreApp *app) {
 
   quads_shader.u_loc.mvp = glGetUniformLocation(quads_shader.id, "u_mvp");
   if (quads_shader.u_loc.mvp == -1) {
-    fprintf(stderr, "Uniform location '%s' not found in shader %u\n", "u_mvp",
-            quads_shader.id);
+    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mvp",
+               quads_shader.id);
   }
 
   overlay_shader.id = cm_load_shader_from_file(
       "res/shader/basic.vs.glsl", "res/shader/basic_uniform.fs.glsl");
   overlay_shader.u_loc.mvp = glGetUniformLocation(overlay_shader.id, "u_mvp");
   if (overlay_shader.u_loc.mvp == -1) {
-    fprintf(stderr, "Uniform location '%s' not found in shader %u\n", "u_mvp",
-            overlay_shader.id);
+    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mvp",
+               overlay_shader.id);
   }
   overlay_shader.u_loc.color =
       glGetUniformLocation(overlay_shader.id, "u_color");
   if (overlay_shader.u_loc.color == -1) {
-    fprintf(stderr, "Uniform location '%s' not found in shader %u\n", "u_color",
-            overlay_shader.id);
+    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_color",
+               overlay_shader.id);
   }
 
   glm_mat4_identity(overlay_model);

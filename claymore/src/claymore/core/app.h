@@ -1,7 +1,8 @@
 #ifndef __CM_APP_H__
 #define __CM_APP_H__
 
-#include "claymore/renderer/renderer2D.h"
+#define _CM_LOGGER_INTERNAL
+#include "claymore/logger/logger.h"
 #include "cm.h"
 
 typedef struct ClaymoreConfig {
@@ -10,6 +11,11 @@ typedef struct ClaymoreConfig {
     uint32_t height;
     const char *title;
   } window;
+
+  struct {
+    cm_log_file *out;
+    cm_log_file *err;
+  } log;
 
 } ClaymoreConfig;
 
