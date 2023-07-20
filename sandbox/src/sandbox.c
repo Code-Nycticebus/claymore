@@ -42,7 +42,7 @@ typedef struct {
 } Quad2D;
 
 static Quad2D quad;
-static float distance;
+static float distance = 50.0F;
 
 static void _sandbox_controll(CmKeyEvent *event) { (void)event; }
 
@@ -125,7 +125,7 @@ void cm_app_update(ClaymoreApp *app) {
 
     glUniformMatrix4fv(quads_shader.u_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
-    const size_t grid_size = 4;
+    const size_t grid_size = 15;
     const float xs = (WINDOW_WIDTH / (float)grid_size);
     const float ys = (WINDOW_HEIGHT / (float)grid_size);
     for (size_t i = 0; i < grid_size; ++i) {
