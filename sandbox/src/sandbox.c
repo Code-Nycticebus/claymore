@@ -49,11 +49,11 @@ const float initial_distance = 100.F;
 static float distance = initial_distance;
 
 static void _sandbox_controll(CmKeyEvent *event) {
-
-  if (event->action == CM_KEY_PRESS && event->code == CM_KEY_W) {
-    cm_log_dbg("did press w!\n");
+  if (event->action == CM_KEY_PRESS && event->code == CM_KEY_F5) {
+    cm_log_dbg("Press <F5>\n");
     event->base.handled = true;
   }
+}
 
   if (event->action == CM_KEY_PRESS && event->code == CM_KEY_F5) {
     cm_log_dbg("RESET\n");

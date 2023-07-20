@@ -3,7 +3,6 @@
 #include "GL/glew.h"
 #include "cglm/vec2.h"
 #include "claymore/events/event.h"
-#include "claymore/events/keymap.h"
 #include "claymore/events/mouse.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
@@ -43,7 +42,7 @@ static void _cm_window_key_callback(GLFWwindow *window, int key, int scancode,
           (action == GLFW_PRESS)
               ? CM_KEY_PRESS
               : (action == GLFW_REPEAT ? CM_KEY_REPEAT : CM_KEY_RELEASE),
-      .event.key.code = cm_keymap_translate(key),
+      .event.key.code = key,
   });
 }
 static void _cm_window_resize_callback(GLFWwindow *window, int32_t width,

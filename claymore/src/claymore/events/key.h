@@ -1,8 +1,6 @@
 #ifndef __CM_KEY_H__
 #define __CM_KEY_H__
 
-#include "claymore/events/keycodes.h"
-
 #include "event_types.h"
 
 CmKeyAction cm_key(CmKeyCodes key);
