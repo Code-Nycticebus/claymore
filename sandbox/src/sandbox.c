@@ -89,7 +89,7 @@ void cm_app_init(ClaymoreApp *app) {
   cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)_sandbox_mouse);
 
   quads_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                             "res/shader/basic.fs.glsl");
+                                             "res/shader/mouse.fs.glsl");
 
   quads_shader.u_loc.mvp =
       cm_shader_get_uniform_location(quads_shader.id, "u_mvp");
@@ -98,8 +98,8 @@ void cm_app_init(ClaymoreApp *app) {
   quads_shader.u_loc.distance =
       cm_shader_get_uniform_location(quads_shader.id, "u_distance");
 
-  overlay_shader.id = cm_load_shader_from_file(
-      "res/shader/basic.vs.glsl", "res/shader/basic_uniform.fs.glsl");
+  overlay_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+                                               "res/shader/uniform.fs.glsl");
 
   overlay_shader.u_loc.mvp =
       cm_shader_get_uniform_location(overlay_shader.id, "u_mvp");
@@ -131,6 +131,20 @@ void cm_app_update(ClaymoreApp *app) {
 
   cm_renderer_begin();
   {
+    glm_mat4_mul(vp, overlay_model, mvp);
+
+    glUseProgram(overlay_shader.id);
+    glUniformMatrix4fv(overlay_shader.u_loc.mvp, 1, GL_FALSE, (float *)mvp);
+    glUniform4f(overlay_shader.u_loc.color, puregym_colors[0],
+                puregym_colors[1], puregym_colors[2], puregym_colors[3]);
+    cm_renderer_push_quad((vec2){0.F, 0.F}, -1.F,
+                          (vec2){(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT});
+  }
+  cm_renderer_end();
+
+  (void)quad;
+  cm_renderer_begin();
+  {
     glm_mat4_mul(vp, quads_model, mvp);
     glUseProgram(quads_shader.id);
 
@@ -159,19 +173,6 @@ void cm_app_update(ClaymoreApp *app) {
                                     quad.color);
       }
     }
-  }
-  cm_renderer_end();
-
-  cm_renderer_begin();
-  {
-    glm_mat4_mul(vp, overlay_model, mvp);
-
-    glUseProgram(overlay_shader.id);
-    glUniformMatrix4fv(overlay_shader.u_loc.mvp, 1, GL_FALSE, (float *)mvp);
-    glUniform4f(overlay_shader.u_loc.color, puregym_colors[0],
-                puregym_colors[1], puregym_colors[2], puregym_colors[3]);
-    cm_renderer_push_quad((vec2){0.F, 0.F}, -1.F,
-                          (vec2){(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT});
   }
   cm_renderer_end();
 }
