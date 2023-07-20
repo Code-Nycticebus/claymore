@@ -23,8 +23,8 @@ bool cm_context_init(WindowHandle *window_handle) {
     float red;
     float green;
     float blue;
-  } c = {0.1F, 0.1F, 0.1F};
-  glClearColor(c.red, c.green, c.blue, 1.0F);
+  } bg = {0.1F, 0.1F, 0.1F};
+  glClearColor(bg.red, bg.green, bg.blue, 1.0F);
 
 #ifdef _CM_DEBUG
   glEnable(GL_DEBUG_OUTPUT);

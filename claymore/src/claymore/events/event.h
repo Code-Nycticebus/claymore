@@ -1,27 +1,11 @@
 #ifndef __CM_EVENTS_H__
 #define __CM_EVENTS_H__
 
-#include <stdbool.h>
-
+#include "event_types.h"
 #include "key.h"
 #include "keycodes.h"
 #include "mouse.h"
-
-typedef enum {
-  CM_EVENT_MOUSE = 0,
-  CM_EVENT_KEYBOARD,
-  CM_EVENT_WINDOW_RESIZE,
-} CmEventType;
-
-typedef union CmEventUnion {
-  CmKeyEvent key;
-  CmMouseEvent mouse;
-} CmEventUnion;
-
-typedef struct {
-  CmEventType type;
-  CmEventUnion event;
-} CmEvent;
+#include <stdbool.h>
 
 typedef void (*cm_event_callback)(const CmEventUnion *e);
 

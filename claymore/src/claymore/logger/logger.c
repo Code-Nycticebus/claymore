@@ -26,8 +26,8 @@ void cm_log_err(const char *fmt, ...) {
 
 void cm_logger_init(CmLoggerFn out, CmLoggerFn err) {
   logger.out =
-      out.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fputs, stdout} : out;
+      out.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fprintf, stdout} : out;
   logger.err =
-      err.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fputs, stderr} : err;
+      err.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fprintf, stderr} : err;
 }
 void cm_logger_destroy(void) {}

@@ -1,7 +1,9 @@
 #include "sandbox.h"
 #include "claymore/core/app.h"
 #include "claymore/events/event.h"
+#include "claymore/events/key.h"
 #include "claymore/events/mouse.h"
+#include "claymore/logger/logger.h"
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -47,26 +49,32 @@ const float initial_distance = 100.F;
 static float distance = initial_distance;
 
 static void _sandbox_controll(CmKeyEvent *event) {
+
+  if (event->action == CM_KEY_PRESS && event->code == CM_KEY_W) {
+    cm_log_dbg("did press w!\n");
+    event->base.handled = true;
+  }
+
   if (event->action == CM_KEY_PRESS && event->code == CM_KEY_F5) {
+    cm_log_dbg("RESET\n");
+
+    cm_mouseinfo_set_pos(100.F, 100.F);
     cm_event_dispatch((CmEvent){
         .type = CM_EVENT_MOUSE,
-        .event.mouse.action = CM_MOUSE_CLICK,
-        .event.mouse.info = {0, .button = CM_MOUSE_BUTTON_LEFT},
+        .event.mouse.action = CM_MOUSE_MOVE,
+        .event.mouse.info = cm_mouseinfo(),
     });
+    distance = initial_distance;
   }
-}
-
-int my_out(void *_, const char *msg) {
-  (void)_;
-  printf("SANDBOX DEBUG: %s", msg);
-  return 0;
 }
 
 ClaymoreConfig cm_app_config(void) {
   return (const ClaymoreConfig){
       .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox"},
-      .log = {.out = {(cm_log_fn)my_out, stdout},
-              .err = {(cm_log_fn)fprintf, stderr}}};
+      .log = {
+          {(cm_log_fn)fprintf, stdout},
+          {(cm_log_fn)fprintf, stderr},
+      }};
 }
 
 void cm_app_init(ClaymoreApp *app) {
