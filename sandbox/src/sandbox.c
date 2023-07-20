@@ -58,7 +58,7 @@ static void _sandbox_controll(CmKeyEvent *event) {
   if (event->action == CM_KEY_PRESS && event->code == CM_KEY_F5) {
     cm_log_dbg("RESET\n");
 
-    cm_mouseinfo_set_pos(100.F, 100.F);
+    cm_mouseinfo_set_pos((vec2){100.F, 100.F});
     cm_event_dispatch((CmEvent){
         .type = CM_EVENT_MOUSE,
         .event.mouse.action = CM_MOUSE_MOVE,
@@ -66,6 +66,12 @@ static void _sandbox_controll(CmKeyEvent *event) {
     });
     distance = initial_distance;
   }
+}
+
+void _sandbox_mouse(CmMouseEvent *event) {
+  (void)event;
+  cm_log_dbg("left: %d\n", cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT));
+  cm_log_dbg("right: %d\n", cm_mouseinfo_button(CM_MOUSE_BUTTON_RIGHT));
 }
 
 ClaymoreConfig cm_app_config(void) {
@@ -80,6 +86,7 @@ ClaymoreConfig cm_app_config(void) {
 void cm_app_init(ClaymoreApp *app) {
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)_sandbox_controll);
+  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)_sandbox_mouse);
 
   quads_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                              "res/shader/basic.fs.glsl");

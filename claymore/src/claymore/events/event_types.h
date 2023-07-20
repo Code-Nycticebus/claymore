@@ -38,13 +38,12 @@ typedef enum {
 } CmMouseKeycode;
 
 typedef struct {
-  float x;
-  float y;
-  CmKeyAction action;
+  vec2 pos;
   CmMouseKeycode button;
 } CmMouseInfo;
 
 typedef enum {
+  CM_MOUSE_RELEASE,
   CM_MOUSE_CLICK,
   CM_MOUSE_MOVE,
   CM_MOUSE_SCROLL,

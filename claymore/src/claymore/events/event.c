@@ -1,6 +1,7 @@
 #include "event.h"
 #include "claymore/core/app.h"
 #include "claymore/core/window.h"
+#include "claymore/events/mouse.h"
 #include "claymore/logger/logger.h"
 
 #include <assert.h>
@@ -28,7 +29,16 @@ void cm_event_set_callback(CmEventType type, cm_event_callback callback) {
 }
 
 void cm_event_dispatch(CmEvent event) {
-  if (event.type == CM_EVENT_KEYBOARD) {
+  if (event.type == CM_EVENT_MOUSE) {
+    if (event.event.mouse.action == CM_MOUSE_MOVE) {
+      cm_mouseinfo_set_pos(event.event.mouse.info.pos);
+    } else if (event.event.mouse.action == CM_MOUSE_CLICK ||
+               event.event.mouse.action == CM_MOUSE_RELEASE) {
+      cm_mouseinfo_set_button(event.event.mouse.action,
+                              event.event.mouse.info.button);
+    }
+    event.event.mouse.info = cm_mouseinfo();
+  } else if (event.type == CM_EVENT_KEYBOARD) {
     cm_key_set(event.event.key.code, event.event.key.action);
   }
   assert(cbs[event.type].callback);

@@ -9,4 +9,6 @@
 
 #include "cglm/cglm.h"
 
+#include "claymore/debug/debug.h"
+
 #endif /* !__CM_DEFINE_H__ */

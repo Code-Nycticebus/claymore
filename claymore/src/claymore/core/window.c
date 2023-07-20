@@ -1,8 +1,10 @@
 #include "window.h"
 
 #include "GL/glew.h"
+#include "cglm/vec2.h"
 #include "claymore/events/event.h"
 #include "claymore/events/keymap.h"
+#include "claymore/events/mouse.h"
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
@@ -10,16 +12,13 @@ float cm_window_time(void) { return glfwGetTime(); }
 
 void _cm_window_mouse_button_callback(GLFWwindow *window, int button,
                                       int action, int mods) {
-  (void)window, (void)mods;
-  cm_mouseinfo_set_button(
-      (action == GLFW_PRESS)
-          ? CM_KEY_PRESS
-          : (action == GLFW_REPEAT ? CM_KEY_REPEAT : CM_KEY_RELEASE),
-      button);
+  (void)window, (void)mods, (void)action;
+
   cm_event_dispatch((CmEvent){
       .type = CM_EVENT_MOUSE,
-      .event.mouse.action = CM_MOUSE_CLICK,
-      .event.mouse.info = cm_mouseinfo(),
+      .event.mouse.action =
+          action == GLFW_PRESS ? CM_MOUSE_CLICK : CM_MOUSE_RELEASE,
+      .event.mouse.info.button = button,
   });
 }
 
@@ -27,11 +26,10 @@ static size_t window_heigth = 0;
 static void _cm_window_mouse_pos_callback(GLFWwindow *window, double xpos,
                                           double ypos) {
   (void)window;
-  cm_mouseinfo_set_pos(xpos, window_heigth - ypos);
   cm_event_dispatch((CmEvent){
       .type = CM_EVENT_MOUSE,
       .event.mouse.action = CM_MOUSE_MOVE,
-      .event.mouse.info = cm_mouseinfo(),
+      .event.mouse.info.pos = {xpos, window_heigth - ypos},
   });
 }
 
