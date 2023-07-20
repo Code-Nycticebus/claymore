@@ -8,15 +8,14 @@
 #include "mouse.h"
 
 typedef enum {
-  CM_EVENT_MOUSE_CLICK = 0,
-  CM_EVENT_MOUSE_MOVE,
+  CM_EVENT_MOUSE = 0,
   CM_EVENT_KEYBOARD,
   CM_EVENT_WINDOW_RESIZE,
 } CmEventType;
 
 typedef union CmEventUnion {
   CmKeyEvent key;
-  CmMouseInfo mouse;
+  CmMouseEvent mouse;
 } CmEventUnion;
 
 typedef struct {

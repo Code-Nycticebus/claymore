@@ -42,12 +42,20 @@ typedef struct {
 } Quad2D;
 
 static Quad2D quad;
-static float distance = 50.0F;
+static float distance;
 
-static void _sandbox_controll(CmKeyEvent *event) { (void)event; }
+static void _sandbox_controll(CmKeyEvent *event) {
+  if (event->action == CM_KEY_PRESS && event->code == CM_KEY_F5) {
+    cm_event_dispatch((CmEvent){
+        .type = CM_EVENT_MOUSE,
+        .event.mouse.action = CM_MOUSE_CLICK,
+        .event.mouse.info = {0, .button = CM_MOUSE_BUTTON_LEFT},
+    });
+  }
+}
 
 ClaymoreConfig cm_app_config(void) {
-  return (ClaymoreConfig){
+  return (const ClaymoreConfig){
       .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox"},
       .log = {.out = stdout, .err = stderr}};
 }

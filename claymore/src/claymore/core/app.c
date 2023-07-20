@@ -12,13 +12,13 @@ static void _cm_app_key_event(const CmKeyEvent *key) {
     printf("Pressed %d\n", key->code);
   }
 }
-static void _cm_app_mouse_click_event(const CmMouseInfo *mouse) {
-  printf("mouse clicked on: (%f, %f)\n", mouse->x, mouse->y);
+static void _cm_app_mouse_event(const CmMouseEvent *mouse) {
+  printf("mouse: (%f.0, %f.0)\n", mouse->info.x, mouse->info.y);
+  if (mouse->action == CM_MOUSE_CLICK) {
+    printf("CLICKED\n");
+  }
 }
 
-static void _cm_app_mouse_move_event(const CmMouseInfo *mouse) {
-  printf("mouse x: %f y: %f\n", mouse->x, mouse->y);
-}
 ClaymoreApp claymore_app_init(const ClaymoreConfig *config) {
   ClaymoreApp app;
 
@@ -43,9 +43,7 @@ ClaymoreApp claymore_app_init(const ClaymoreConfig *config) {
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)_cm_app_key_event);
 
-  cm_event_set_callback(CM_EVENT_MOUSE_CLICK,
-                        (cm_event_callback)_cm_app_mouse_click_event);
-  cm_event_set_callback(CM_EVENT_MOUSE_MOVE,
-                        (cm_event_callback)_cm_app_mouse_move_event);
+  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)_cm_app_mouse_event);
+
   return app;
 }

@@ -17,8 +17,9 @@ void _cm_window_mouse_button_callback(GLFWwindow *window, int button,
           : (action == GLFW_REPEAT ? CM_KEY_REPEAT : CM_KEY_RELEASE),
       button);
   cm_event_dispatch((CmEvent){
-      .type = CM_EVENT_MOUSE_CLICK,
-      .event.mouse = cm_mouseinfo(),
+      .type = CM_EVENT_MOUSE,
+      .event.mouse.action = CM_MOUSE_CLICK,
+      .event.mouse.info = cm_mouseinfo(),
   });
 }
 
@@ -28,8 +29,9 @@ static void _cm_window_mouse_pos_callback(GLFWwindow *window, double xpos,
   (void)window;
   cm_mouseinfo_set_pos(xpos, window_heigth - ypos);
   cm_event_dispatch((CmEvent){
-      .type = CM_EVENT_MOUSE_MOVE,
-      .event.mouse = cm_mouseinfo(),
+      .type = CM_EVENT_MOUSE,
+      .event.mouse.action = CM_MOUSE_MOVE,
+      .event.mouse.info = cm_mouseinfo(),
   });
 }
 

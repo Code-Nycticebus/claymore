@@ -28,6 +28,17 @@ typedef struct {
   CmMouseKeycode button;
 } CmMouseInfo;
 
+typedef enum {
+  CM_MOUSE_CLICK,
+  CM_MOUSE_MOVE,
+  CM_MOUSE_SCROLL,
+} CmMouseAction;
+
+typedef struct {
+  CmMouseAction action;
+  CmMouseInfo info;
+} CmMouseEvent;
+
 CmMouseInfo cm_mouseinfo(void);
 void cm_mouseinfo_pos(vec2 pos);
 void cm_mouseinfo_set_pos(float x, float y);
