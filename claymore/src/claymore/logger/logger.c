@@ -5,22 +5,29 @@
 #include <stdio.h>
 
 static struct {
-  cm_log_file *out;
-  cm_log_file *err;
+  CmLoggerFn out;
+  CmLoggerFn err;
 } logger;
 
-#define CM_LOGGER_VFPRINTF(__out_file__)                                       \
-  va_list args;                                                                \
-  va_start(args, fmt);                                                         \
-  vfprintf(__out_file__, fmt, args);                                           \
-  va_end(args)
+#define CM_LOGGER_CHAR_BUFFER_SIZE 1000
 
-void cm_log_dbg(const char *fmt, ...) { CM_LOGGER_VFPRINTF(logger.out); }
+void cm_log_dbg(const char *fmt, ...) {
+  char fmt_buffer[CM_LOGGER_CHAR_BUFFER_SIZE] = {0};
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(fmt_buffer, CM_LOGGER_CHAR_BUFFER_SIZE, fmt, args);
+  va_end(args);
+  logger.out.log_function(logger.out.log_file, fmt_buffer);
+}
 
-void cm_log_err(const char *fmt, ...) { CM_LOGGER_VFPRINTF(logger.err); }
+void cm_log_err(const char *fmt, ...) {
+  logger.err.log_function(logger.err.log_file, fmt);
+}
 
-void cm_logger_init(cm_log_file *out, cm_log_file *err) {
-  logger.out = out == NULL ? stdout : out;
-  logger.err = err == NULL ? stderr : err;
+void cm_logger_init(CmLoggerFn out, CmLoggerFn err) {
+  logger.out =
+      out.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fputs, stdout} : out;
+  logger.err =
+      err.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fputs, stderr} : err;
 }
 void cm_logger_destroy(void) {}

@@ -14,8 +14,8 @@ typedef struct ClaymoreConfig {
   } window;
 
   struct {
-    cm_log_file *out;
-    cm_log_file *err;
+    CmLoggerFn out;
+    CmLoggerFn err;
   } log;
 
 } ClaymoreConfig;

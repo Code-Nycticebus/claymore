@@ -42,7 +42,9 @@ typedef struct {
 } Quad2D;
 
 static Quad2D quad;
-static float distance;
+
+const float initial_distance = 100.F;
+static float distance = initial_distance;
 
 static void _sandbox_controll(CmKeyEvent *event) {
   if (event->action == CM_KEY_PRESS && event->code == CM_KEY_F5) {
@@ -54,10 +56,17 @@ static void _sandbox_controll(CmKeyEvent *event) {
   }
 }
 
+int my_out(void *_, const char *msg) {
+  (void)_;
+  printf("SANDBOX DEBUG: %s", msg);
+  return 0;
+}
+
 ClaymoreConfig cm_app_config(void) {
   return (const ClaymoreConfig){
       .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox"},
-      .log = {.out = stdout, .err = stderr}};
+      .log = {.out = {(cm_log_fn)my_out, stdout},
+              .err = {(cm_log_fn)fprintf, stderr}}};
 }
 
 void cm_app_init(ClaymoreApp *app) {

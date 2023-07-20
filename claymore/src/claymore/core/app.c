@@ -9,15 +9,10 @@
 
 static void _cm_app_key_event(const CmKeyEvent *key) {
   if (key->action == CM_KEY_PRESS || key->action == CM_KEY_REPEAT) {
-    printf("Pressed %d\n", key->code);
+    cm_log_dbg("Pressed %d\n", key->code);
   }
 }
-static void _cm_app_mouse_event(const CmMouseEvent *mouse) {
-  printf("mouse: (%f.0, %f.0)\n", mouse->info.x, mouse->info.y);
-  if (mouse->action == CM_MOUSE_CLICK) {
-    printf("CLICKED\n");
-  }
-}
+static void _cm_app_mouse_event(const CmMouseEvent *mouse) { (void)mouse; }
 
 ClaymoreApp claymore_app_init(const ClaymoreConfig *config) {
   ClaymoreApp app;
