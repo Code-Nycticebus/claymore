@@ -59,36 +59,20 @@ void cm_app_init(ClaymoreApp *app) {
   quads_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                              "res/shader/basic.fs.glsl");
 
-  quads_shader.u_loc.mvp = glGetUniformLocation(quads_shader.id, "u_mvp");
-  if (quads_shader.u_loc.mvp == -1) {
-    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mvp",
-               quads_shader.id);
-  }
+  quads_shader.u_loc.mvp =
+      cm_shader_get_uniform_location(quads_shader.id, "u_mvp");
   quads_shader.u_loc.mouse_pos =
-      glGetUniformLocation(quads_shader.id, "u_mouse_pos");
-  if (quads_shader.u_loc.mouse_pos == -1) {
-    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mouse_pos",
-               quads_shader.id);
-  }
+      cm_shader_get_uniform_location(quads_shader.id, "u_mouse_pos");
   quads_shader.u_loc.distance =
-      glGetUniformLocation(quads_shader.id, "u_distance");
-  if (quads_shader.u_loc.distance == -1) {
-    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_distance",
-               quads_shader.id);
-  }
+      cm_shader_get_uniform_location(quads_shader.id, "u_distance");
+
   overlay_shader.id = cm_load_shader_from_file(
       "res/shader/basic.vs.glsl", "res/shader/basic_uniform.fs.glsl");
-  overlay_shader.u_loc.mvp = glGetUniformLocation(overlay_shader.id, "u_mvp");
-  if (overlay_shader.u_loc.mvp == -1) {
-    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_mvp",
-               overlay_shader.id);
-  }
+
+  overlay_shader.u_loc.mvp =
+      cm_shader_get_uniform_location(overlay_shader.id, "u_mvp");
   overlay_shader.u_loc.color =
-      glGetUniformLocation(overlay_shader.id, "u_color");
-  if (overlay_shader.u_loc.color == -1) {
-    cm_log_err("Uniform location '%s' not found in shader %u\n", "u_color",
-               overlay_shader.id);
-  }
+      cm_shader_get_uniform_location(overlay_shader.id, "u_color");
 
   glm_mat4_identity(overlay_model);
   glm_mat4_identity(quads_model);

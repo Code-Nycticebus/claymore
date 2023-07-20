@@ -114,3 +114,12 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
 
   return program;
 }
+
+GLint cm_shader_get_uniform_location(GLuint shader, const char *uniform_name) {
+  GLint location = glGetUniformLocation(shader, uniform_name);
+  if (location == -1) {
+    cm_log_err("Uniform location '%s' not found in shader %u\n", uniform_name,
+               shader);
+  }
+  return location;
+}
