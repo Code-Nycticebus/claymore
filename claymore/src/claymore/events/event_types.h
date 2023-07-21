@@ -1,6 +1,7 @@
 #ifndef __CM_EVENT_TYPE_H__
 #define __CM_EVENT_TYPE_H__
 
+#include "claymore/core/window.h"
 #include "cm.h"
 #include "keycodes.h"
 
@@ -55,16 +56,28 @@ typedef struct {
   CmMouseInfo info;
 } CmMouseEvent;
 
+typedef enum {
+  CM_WINDOW_CLOSE,
+  CM_WINDOW_RESIZE,
+} CmWindowAction;
+
+typedef struct {
+  struct CmEventBase base;
+  CMwindow *window;
+} CmWindowEvent;
+
 typedef union CmEventUnion {
   struct CmEventBase base;
   CmKeyEvent key;
   CmMouseEvent mouse;
+  CmWindowEvent window;
 } CmEventUnion;
 
 typedef enum {
-  CM_EVENT_MOUSE = 0,
+  CM_EVENT_MOUSE,
   CM_EVENT_KEYBOARD,
   CM_EVENT_WINDOW_RESIZE,
+  CM_EVENT_WINDOW_CLOSE,
 } CmEventType;
 
 typedef struct {

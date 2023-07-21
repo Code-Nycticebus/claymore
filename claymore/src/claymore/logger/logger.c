@@ -21,7 +21,12 @@ void cm_log_dbg(const char *fmt, ...) {
 }
 
 void cm_log_err(const char *fmt, ...) {
-  logger.err.log_function(logger.err.log_file, fmt);
+  char fmt_buffer[CM_LOGGER_CHAR_BUFFER_SIZE] = {0};
+  va_list args;
+  va_start(args, fmt);
+  vsnprintf(fmt_buffer, CM_LOGGER_CHAR_BUFFER_SIZE, fmt, args);
+  va_end(args);
+  logger.out.log_function(logger.out.log_file, fmt_buffer);
 }
 
 void cm_logger_init(CmLoggerFn out, CmLoggerFn err) {

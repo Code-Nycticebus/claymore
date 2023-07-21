@@ -4,8 +4,6 @@ out vec4 f_color;
 
 in vec4 v_color;
 
-uniform vec2 u_mouse_pos;
-uniform float u_distance;
 
 void main() {
   f_color = v_color;

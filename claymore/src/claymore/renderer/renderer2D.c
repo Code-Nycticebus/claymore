@@ -36,7 +36,14 @@ void cm_renderer_init(void) {
 
   glGenVertexArrays(1, &render_data->vao);
   glBindVertexArray(render_data->vao);
-
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor2D),
+                        (const void *)offsetof(VertexColor2D, pos));
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor2D),
+                        // It talks about, that turning a number
+                        // into a pointer, removes optimization opportunities
+                        (void *)offsetof(VertexColor2D, color)); // NOLINT
   // Generates indices in advance
   uint32_t base_indices[CM_RENDERER_INDICES_PER_SQUAD] = {
       0, 1, 3, 1, 2, 3,
@@ -56,16 +63,7 @@ void cm_renderer_init(void) {
 
 void cm_renderer_shutdown(void) { free(render_data); }
 
-void cm_renderer_begin(void) {
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor2D),
-                        (const void *)offsetof(VertexColor2D, pos));
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor2D),
-                        // It talks about, that turning a number
-                        // into a pointer, removes optimization opportunities
-                        (void *)offsetof(VertexColor2D, color)); // NOLINT
-}
+void cm_renderer_begin(void) {}
 
 void cm_renderer_end(void) {
   glBindBuffer(GL_ARRAY_BUFFER, render_data->vbo);

@@ -1,37 +1,38 @@
+#include "claymore/logger/logger.h"
 #include "cm.h"
-#include <stdio.h>
 
 #include "GLFW/glfw3.h"
 #define _CM_RENDERER_INTERNAL
 #include "claymore/renderer/renderer2D.h"
 #define _CM_APP_INTERNAL
 #include "claymore/core/app.h"
-#include "window.h"
 
 int main(void) {
-  ClaymoreConfig config = cm_app_config();
-  ClaymoreApp app = claymore_app_init(&config);
+  ClaymoreConfig config = claymore_config();
+
+  CmApp app = {0};
+  if (!cm_app_init(&app, &config)) {
+    return -1;
+  }
   cm_renderer_init();
 
-  cm_app_init(&app);
+  claymore_init(&app);
 
   /* Loop until the user closes the window */
-  while (!glfwWindowShouldClose(app.window.ctx)) {
+  while (app.window->open) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    cm_app_update(&app);
+    claymore_update(&app);
 
-    /* Swap front and back buffers */
-    glfwSwapBuffers(app.window.ctx);
-
-    /* Poll for and process events */
-    glfwPollEvents();
+    cm_window_update(app.window);
   }
 
-  cm_app_free();
+  claymore_free(&app);
   cm_renderer_shutdown();
 
-  glfwTerminate();
+  cm_app_shutdown(&app);
+
+  cm_window_shutdown();
   return 0;
 }

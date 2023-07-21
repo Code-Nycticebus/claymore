@@ -1,9 +1,11 @@
 #ifndef __CM_APP_H__
 #define __CM_APP_H__
 
+#include "claymore/core/window.h"
 #include "claymore/events/event.h"
 #define _CM_LOGGER_INTERNAL
 #include "claymore/logger/logger.h"
+
 #include "cm.h"
 
 typedef struct ClaymoreConfig {
@@ -20,29 +22,26 @@ typedef struct ClaymoreConfig {
 
 } ClaymoreConfig;
 
-typedef void WindowContext;
-
 typedef struct {
-  struct {
-    uint32_t widht;
-    uint32_t height;
-    WindowContext *ctx;
-  } window;
+  CMwindow *window;
 
   struct {
     mat4 projection;
     mat4 view;
   } camera;
 
-} ClaymoreApp;
+  bool run;
+} CmApp;
 
 #ifdef _CM_APP_INTERNAL
-ClaymoreApp claymore_app_init(const ClaymoreConfig *config);
+bool cm_app_init(CmApp *app, const ClaymoreConfig *config);
+void cm_app_shutdown(CmApp *app);
 #endif /* !_CM_APP_INTERNAL */
 
-extern ClaymoreConfig cm_app_config(void);
-extern void cm_app_init(ClaymoreApp *app);
-extern void cm_app_update(ClaymoreApp *app);
-extern void cm_app_free(void);
+/* User functions! */
+extern ClaymoreConfig claymore_config(void);
+extern void claymore_init(CmApp *app);
+extern void claymore_update(CmApp *app);
+extern void claymore_free(CmApp *app);
 
 #endif /* !__CM_APP_H__ */

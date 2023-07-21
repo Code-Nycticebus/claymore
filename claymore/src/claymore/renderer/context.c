@@ -1,11 +1,15 @@
 #include "context.h"
 
+#include "GL/gl.h"
+#include "GLFW/glfw3.h"
+
 #include "claymore/debug/debug.h"
 #include "claymore/logger/logger.h"
-#include <GL/gl.h>
 
 bool cm_context_init(WindowHandle *window_handle) {
-  (void)window_handle;
+
+  /* Make the window's context current */
+  glfwMakeContextCurrent(window_handle);
 
   GLenum err = glewInit();
   if (err != GLEW_OK) {
