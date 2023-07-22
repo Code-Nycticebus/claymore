@@ -134,6 +134,14 @@
     <ClInclude Include="..\src\claymore\core\shader.h" />
     <ClInclude Include="..\src\claymore\core\window.h" />
     <ClInclude Include="..\src\claymore\debug\debug.h" />
+    <ClInclude Include="..\src\claymore\events\event.h" />
+    <ClInclude Include="..\src\claymore\events\event_types.h" />
+    <ClInclude Include="..\src\claymore\events\glfw_keymap.h" />
+    <ClInclude Include="..\src\claymore\events\key.h" />
+    <ClInclude Include="..\src\claymore\events\keycodes.h" />
+    <ClInclude Include="..\src\claymore\events\mouse.h" />
+    <ClInclude Include="..\src\claymore\logger\logger.h" />
+    <ClInclude Include="..\src\claymore\renderer\context.h" />
     <ClInclude Include="..\src\claymore\renderer\renderer2D.h" />
     <ClInclude Include="..\src\cm.h" />
   </ItemGroup>
@@ -143,6 +151,11 @@
     <ClCompile Include="..\src\claymore\core\shader.c" />
     <ClCompile Include="..\src\claymore\core\window.c" />
     <ClCompile Include="..\src\claymore\debug\debug.c" />
+    <ClCompile Include="..\src\claymore\events\event.c" />
+    <ClCompile Include="..\src\claymore\events\key.c" />
+    <ClCompile Include="..\src\claymore\events\mouse.c" />
+    <ClCompile Include="..\src\claymore\logger\logger.c" />
+    <ClCompile Include="..\src\claymore\renderer\context.c" />
     <ClCompile Include="..\src\claymore\renderer\renderer2D.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

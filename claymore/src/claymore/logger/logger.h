@@ -3,13 +3,7 @@
 
 #include <stddef.h>
 
-typedef void cm_log_file;
-typedef int (*cm_log_fn)(cm_log_file *file, const char *text);
 
-typedef struct {
-  cm_log_fn log_function;
-  cm_log_file *log_file;
-} CmLoggerFn;
 
 #ifdef __GNUC__
 #define CM_LOGGER_FORMAT(__fmt_arg, __var_args)                                \
@@ -18,11 +12,30 @@ typedef struct {
 #define CM_LOGGER_FORMAT(...)
 #endif
 
-void cm_log_dbg(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
-void cm_log_err(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
+
+typedef enum {
+	CM_LOG_FATAL = 0,
+	CM_LOG_ERROR,
+	CM_LOG_WARN,
+	CM_LOG_INFO,
+	CM_LOG_DEBUG,
+	CM_LOG_TRACE,
+} CmLogLevel;
+
+
+#define CM_FATAL(msg, ...) cm_log(CM_LOG_FATAL, msg, __VA_ARGS__)
+#define CM_ERROR(msg, ...) cm_log(CM_LOG_ERROR, msg, __VA_ARGS__)
+#define CM_WARN(msg, ...) cm_log(CM_LOG_WARN, msg, __VA_ARGS__)
+#define CM_INFO(msg, ...) cm_log(CM_LOG_INFO, msg, __VA_ARGS__)
+#define CM_DEBUG(msg, ...) cm_log(CM_LOG_DEBUG, msg, __VA_ARGS__)
+#define CM_TRACE(msg, ...) cm_log(CM_LOG_TRACE, msg, __VA_ARGS__)
+
+
+void cm_log(CmLogLevel log_level, const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
+
 
 #ifdef _CM_LOGGER_INTERNAL
-void cm_logger_init(CmLoggerFn out, CmLoggerFn err);
+void cm_logger_init(void);
 void cm_logger_destroy(void);
 #endif // !_CM_LOGGER_INTERNAL
 

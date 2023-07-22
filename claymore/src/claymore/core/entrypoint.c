@@ -14,6 +14,10 @@ int main(void) {
   if (!cm_app_init(&app, &config)) {
     return -1;
   }
+  if (app.window == NULL) {
+      return -1;
+  }
+
   cm_renderer_init();
 
   claymore_init(&app);

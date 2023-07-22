@@ -14,7 +14,7 @@ void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
   (void)id;
   (void)length;
   (void)userParam;
-  cm_log_err("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+  CM_ERROR("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
              (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
              severity, message);
 }

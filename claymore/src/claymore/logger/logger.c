@@ -3,36 +3,39 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-
-static struct {
-  CmLoggerFn out;
-  CmLoggerFn err;
-} logger;
+#include <assert.h>
 
 #define CM_LOGGER_CHAR_BUFFER_SIZE 1000
 
-void cm_log_dbg(const char *fmt, ...) {
-  char fmt_buffer[CM_LOGGER_CHAR_BUFFER_SIZE] = {0};
-  va_list args;
-  va_start(args, fmt);
-  vsnprintf(fmt_buffer, CM_LOGGER_CHAR_BUFFER_SIZE, fmt, args);
-  va_end(args);
-  logger.out.log_function(logger.out.log_file, fmt_buffer);
+
+struct CmLogLevelPrefix  {
+	const char* prefix;
+	const char* color;
+};
+
+#define FMT_RESET "\033[0m"
+
+void cm_log(CmLogLevel log_level, const char* fmt, ...) {
+	static const struct CmLogLevelPrefix log_level_str[] = {
+	  [CM_LOG_FATAL] = {"FATAL", "\033[31m"},
+	  [CM_LOG_ERROR] = {"ERROR", "\033[31m"},
+	  [CM_LOG_WARN] = {"WARN", "\033[33m"},
+	  [CM_LOG_INFO] = {"INFO", "\033[32m"},
+	  [CM_LOG_DEBUG] = {"DEBUG", "\033[37m"},
+	  [CM_LOG_TRACE] = {"TRACE", "\033[37m"},
+	};
+
+
+	char fmt_buffer[CM_LOGGER_CHAR_BUFFER_SIZE] = { 0 };
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(fmt_buffer, CM_LOGGER_CHAR_BUFFER_SIZE, fmt, args);
+	va_end(args);
+
+	fprintf(stdout, "%s[CLAYMORE][%s]: %s"FMT_RESET"\n", log_level_str[log_level].color, log_level_str[log_level].prefix, fmt_buffer);
 }
 
-void cm_log_err(const char *fmt, ...) {
-  char fmt_buffer[CM_LOGGER_CHAR_BUFFER_SIZE] = {0};
-  va_list args;
-  va_start(args, fmt);
-  vsnprintf(fmt_buffer, CM_LOGGER_CHAR_BUFFER_SIZE, fmt, args);
-  va_end(args);
-  logger.out.log_function(logger.out.log_file, fmt_buffer);
-}
 
-void cm_logger_init(CmLoggerFn out, CmLoggerFn err) {
-  logger.out =
-      out.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fprintf, stdout} : out;
-  logger.err =
-      err.log_file == NULL ? (CmLoggerFn){(cm_log_fn)fprintf, stderr} : err;
-}
+
+void cm_logger_init(void) {}
 void cm_logger_destroy(void) {}

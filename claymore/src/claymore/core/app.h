@@ -15,11 +15,6 @@ typedef struct ClaymoreConfig {
     const char *title;
   } window;
 
-  struct {
-    CmLoggerFn out;
-    CmLoggerFn err;
-  } log;
-
 } ClaymoreConfig;
 
 typedef struct {

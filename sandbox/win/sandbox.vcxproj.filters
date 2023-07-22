@@ -19,9 +19,4 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\sandbox.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

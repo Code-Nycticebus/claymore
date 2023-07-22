@@ -12,7 +12,7 @@
 static void _cm_app_key_event(CmApp *app, const CmKeyEvent *key) {
   (void)app;
   if (key->action == CM_KEY_PRESS || key->action == CM_KEY_REPEAT) {
-    cm_log_dbg("Pressed %d\n", key->code);
+    CM_TRACE("Pressed %d\n", key->code);
   }
 }
 static void _cm_app_mouse_event(CmApp *app, const CmMouseEvent *mouse) {
@@ -25,9 +25,10 @@ static void _cm_app_window_close(CmApp *app, const CmWindowEvent *window) {
 }
 
 bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
-  cm_logger_init(config->log.out, config->log.err);
+  cm_logger_init();
 
-  cm_log_dbg("%s\n", cm_debug_enabled ? "Debug" : "Release");
+  CM_FATAL("%s", "FUCK");
+  CM_INFO("%s\n", cm_debug_enabled ? "Debug" : "Release");
 
   cm_event_init(app);
   cm_event_set_callback(CM_EVENT_KEYBOARD,
@@ -40,8 +41,7 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
 
   app->window = cm_window_init(config->window.width, config->window.height,
                                config->window.title);
-
-  if (app->window->ctx == NULL) {
+  if (app->window == NULL) {
     return false;
   }
   return true;

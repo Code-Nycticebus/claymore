@@ -13,7 +13,7 @@ bool cm_context_init(WindowHandle *window_handle) {
 
   GLenum err = glewInit();
   if (err != GLEW_OK) {
-    cm_log_err("GLEW initialization failed: %s\n", glewGetString(err));
+    CM_ERROR("GLEW initialization failed: %s\n", glewGetString(err));
     return false;
   }
 

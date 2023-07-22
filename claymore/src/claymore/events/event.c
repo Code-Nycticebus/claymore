@@ -5,7 +5,6 @@
 #include "claymore/logger/logger.h"
 
 #include <assert.h>
-#include <bits/stdint-uintn.h>
 
 #define CM_EVENT_MAX_CALLBACKS 16
 

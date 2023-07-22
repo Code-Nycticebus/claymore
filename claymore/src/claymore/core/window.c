@@ -117,6 +117,5 @@ void cm_window_update(const CMwindow *window) {
 void cm_window_shutdown(void) { glfwTerminate(); }
 
 void cm_window_close(CMwindow *window) {
-  glfwDestroyWindow(window->ctx);
   window->open = false;
 }

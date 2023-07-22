@@ -10,8 +10,8 @@
 #include "claymore/events/mouse.h"
 #include <time.h>
 
-const int WINDOW_WIDTH = 620;
-const int WINDOW_HEIGHT = 420;
+#define WINDOW_WIDTH 620
+#define WINDOW_HEIGHT 420
 const float near = -0.1F;
 
 struct ShaderData {
@@ -98,10 +98,7 @@ static void _sandbox_mouse(CmApp *app, CmMouseEvent *event) {
 ClaymoreConfig claymore_config(void) {
   return (const ClaymoreConfig){
       .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox Draw"},
-      .log = {
-          {(cm_log_fn)fprintf, stdout},
-          {(cm_log_fn)fprintf, stderr},
-      }};
+  };
 }
 
 void claymore_init(CmApp *app) {
@@ -123,6 +120,8 @@ void claymore_init(CmApp *app) {
   glm_lookat((vec3){0, 0, 3}, (vec3){0, 0, 0}, (float *)up, app->camera.view);
 
   glClearColor(1.F, 1.F, 1.F, 1.F);
+
+
 
   top_bar_colors[0].size[0] = top_bar_color_quad_width;
   top_bar_colors[0].size[1] = top_bar_height;
@@ -175,8 +174,8 @@ void claymore_update(CmApp *app) {
     Quad2D quad;
     vec2 mouse_pos;
     cm_mouseinfo_pos(mouse_pos);
-    quad.pos[0] = mouse_pos[0] - quad_size / 2;
-    quad.pos[1] = mouse_pos[1] - quad_size / 2;
+    quad.pos[0] = mouse_pos[0] - (float)quad_size / 2.F;
+    quad.pos[1] = mouse_pos[1] - (float)quad_size / 2.F;
     quad.z = layer + layer_inc;
     quad.size[0] = (float)quad_size;
     quad.size[1] = (float)quad_size;

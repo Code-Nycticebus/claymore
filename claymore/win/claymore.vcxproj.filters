@@ -36,6 +36,30 @@
     <ClInclude Include="..\src\claymore\renderer\renderer2D.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\claymore\renderer\context.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\logger\logger.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\events\event.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\events\key.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\events\keycodes.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\events\mouse.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\events\event_types.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\events\glfw_keymap.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\claymore\core\app.c">
@@ -54,6 +78,21 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\src\claymore\renderer\renderer2D.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\renderer\context.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\logger\logger.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\events\event.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\events\key.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\events\mouse.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
