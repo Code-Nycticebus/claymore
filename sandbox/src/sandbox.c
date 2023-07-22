@@ -127,15 +127,26 @@ void claymore_init(CmApp *app) {
   top_bar_colors[0].size[0] = top_bar_color_quad_width;
   top_bar_colors[0].size[1] = top_bar_height;
 
-  top_bar_colors[0].pos[0] = 0.F;
+  top_bar_colors[0].pos[0] = top_bar_color_quad_width * 0.F;
   top_bar_colors[0].pos[1] = WINDOW_HEIGHT - top_bar_height;
 
-  top_bar_colors[0].color[0] = 0.F;
-  top_bar_colors[0].color[1] = 0.F;
-  top_bar_colors[0].color[2] = 0.F;
+  top_bar_colors[0].color[0] = 1.F;
+  top_bar_colors[0].color[1] = 1.F;
+  top_bar_colors[0].color[2] = 1.F;
   top_bar_colors[0].color[3] = 1.F;
 
-  for (size_t i = 1; i < TOP_BAR_COLOR_COUNT; ++i) {
+  top_bar_colors[1].size[0] = top_bar_color_quad_width;
+  top_bar_colors[1].size[1] = top_bar_height;
+
+  top_bar_colors[1].pos[0] = top_bar_color_quad_width * 1.F;
+  top_bar_colors[1].pos[1] = WINDOW_HEIGHT - top_bar_height;
+
+  top_bar_colors[1].color[0] = 0.F;
+  top_bar_colors[1].color[1] = 0.F;
+  top_bar_colors[1].color[2] = 0.F;
+  top_bar_colors[1].color[3] = 1.F;
+
+  for (size_t i = 2; i < TOP_BAR_COLOR_COUNT; ++i) {
     top_bar_colors[i].size[0] = top_bar_color_quad_width;
     top_bar_colors[i].size[1] = top_bar_height;
 
