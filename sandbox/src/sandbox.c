@@ -121,8 +121,6 @@ void claymore_init(CmApp *app) {
 
   glClearColor(1.F, 1.F, 1.F, 1.F);
 
-
-
   top_bar_colors[0].size[0] = top_bar_color_quad_width;
   top_bar_colors[0].size[1] = top_bar_height;
 
@@ -174,8 +172,8 @@ void claymore_update(CmApp *app) {
     Quad2D quad;
     vec2 mouse_pos;
     cm_mouseinfo_pos(mouse_pos);
-    quad.pos[0] = mouse_pos[0] - (float)quad_size / 2.F;
-    quad.pos[1] = mouse_pos[1] - (float)quad_size / 2.F;
+    quad.pos[0] = mouse_pos[0] - (float)quad_size / (float)2;
+    quad.pos[1] = mouse_pos[1] - (float)quad_size / (float)2;
     quad.z = layer + layer_inc;
     quad.size[0] = (float)quad_size;
     quad.size[1] = (float)quad_size;
