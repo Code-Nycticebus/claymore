@@ -1,6 +1,5 @@
-sudo apt-get install build-essential libxmu-dev libxi-dev libgl-dev
-
+sudo apt-get install build-essential libxmu-dev libxi-dev libgl-dev freeglut3-dev
 make -C ./glew/auto/
-make -C ./glew/
+make -C ./glew/ glew.lib.static
 
 
