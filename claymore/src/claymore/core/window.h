@@ -5,7 +5,6 @@
 
 typedef struct {
   void *ctx;
-  bool open;
   uint32_t height, width;
   const char *title;
 } CMwindow;

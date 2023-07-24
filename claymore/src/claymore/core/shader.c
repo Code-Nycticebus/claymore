@@ -36,7 +36,7 @@ bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
   if (lenght > 0) {
     char *err_msg = calloc(sizeof(char), lenght);
     glGetShaderInfoLog(shader_id, lenght, NULL, err_msg);
-    CM_ERROR("%s\n%s\n", "[CLAYMORE][SHADER][COMPILE] %s\n", err_msg);
+    CM_ERROR("%s\n", err_msg);
     free(err_msg);
     return false;
   }
@@ -88,6 +88,7 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   GLuint fs_id = _cm_compile_shader(fs_src, GL_FRAGMENT_SHADER);
   if (!_cm_shader_check_error(fs_id, GL_COMPILE_STATUS)) {
     CM_ERROR("%s\n", fs_src);
+    return 0;
   }
 
   GLuint program = glCreateProgram();
@@ -107,8 +108,7 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
     char *err_msg = calloc(sizeof(char), lenght);
     glGetShaderInfoLog(program, lenght, NULL, err_msg);
     free(err_msg);
-
-    CM_ERROR("[CLAYMORE][SHADER][LINK] %s\n", err_msg);
+    CM_ERROR("%s\n", err_msg);
     return 0;
   }
 
@@ -119,7 +119,7 @@ GLint cm_shader_get_uniform_location(GLuint shader, const char *uniform_name) {
   GLint location = glGetUniformLocation(shader, uniform_name);
   if (location == -1) {
     CM_ERROR("Uniform location '%s' not found in shader %u\n", uniform_name,
-               shader);
+             shader);
   }
   return location;
 }

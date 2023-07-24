@@ -66,7 +66,7 @@ typedef struct {
   CMwindow *window;
 } CmWindowEvent;
 
-typedef union CmEventUnion {
+typedef union {
   struct CmEventBase base;
   CmKeyEvent key;
   CmMouseEvent mouse;

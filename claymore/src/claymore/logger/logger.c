@@ -16,11 +16,11 @@ struct CmLogLevelPrefix {
 
 void cm_log(CmLogLevel log_level, const char *fmt, ...) {
   static const struct CmLogLevelPrefix log_level_str[] = {
-      [CM_LOG_FATAL] = {"FATAL", "\033[31m"},
-      [CM_LOG_ERROR] = {"ERROR", "\033[31m"},
+      [CM_LOG_FATAL] = {"FATAL", "\033[1m\033[91m"},
+      [CM_LOG_ERROR] = {"ERROR", "\033[91m"},
       [CM_LOG_WARN] = {"WARN", "\033[33m"},
       [CM_LOG_INFO] = {"INFO", "\033[32m"},
-      [CM_LOG_DEBUG] = {"DEBUG", "\033[37m"},
+      [CM_LOG_DEBUG] = {"DEBUG", "\033[1m\033[95m"},
       [CM_LOG_TRACE] = {"TRACE", "\033[37m"},
   };
 
@@ -30,7 +30,7 @@ void cm_log(CmLogLevel log_level, const char *fmt, ...) {
   vsnprintf(fmt_buffer, CM_LOGGER_CHAR_BUFFER_SIZE, fmt, args);
   va_end(args);
 
-  fprintf(stdout, "%s[CLAYMORE][%s]: %s" FMT_RESET "\n",
+  fprintf(stdout, "%s[CLAYMORE][%s]: %s" FMT_RESET,
           log_level_str[log_level].color, log_level_str[log_level].prefix,
           fmt_buffer);
 }

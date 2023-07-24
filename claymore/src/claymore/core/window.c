@@ -100,7 +100,6 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
   glfwSetFramebufferSizeCallback(window, _cm_window_resize_callback);
   glfwSetWindowCloseCallback(window, _cm_window_close_callback);
 
-  window_manager.window.open = true;
   window_manager.window.height = height;
   window_manager.window.width = width;
   window_manager.window.ctx = window;
@@ -116,6 +115,4 @@ void cm_window_update(const CMwindow *window) {
 
 void cm_window_shutdown(void) { glfwTerminate(); }
 
-void cm_window_close(CMwindow *window) {
-  window->open = false;
-}
+void cm_window_close(CMwindow *window) { glfwDestroyWindow(window->ctx); }
