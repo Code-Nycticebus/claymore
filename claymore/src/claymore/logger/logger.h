@@ -34,9 +34,7 @@ typedef enum {
 
 void cm_log(CmLogLevel log_level, const char *fmt, ...) CM_LOGGER_FORMAT(2, 3);
 
-#ifdef _CM_LOGGER_INTERNAL
 void cm_logger_init(void);
 void cm_logger_destroy(void);
-#endif // !_CM_LOGGER_INTERNAL
 
 #endif /* !__CM_LOGGER_H__ */

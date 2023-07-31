@@ -1,11 +1,10 @@
 #include "app.h"
 
-#include "claymore/debug/debug.h"
+#include "cm.h"
 
 #include "claymore/core/window.h"
 #include "claymore/events/event.h"
 #include "claymore/events/event_types.h"
-#include "claymore/logger/logger.h"
 #include "claymore/renderer/context.h"
 
 #include <stdio.h>

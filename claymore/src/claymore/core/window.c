@@ -5,6 +5,8 @@
 #include "cglm/vec2.h"
 #include <stdio.h>
 
+#include "cm.h"
+
 #include "claymore/events/event.h"
 #include "claymore/events/event_types.h"
 #include "claymore/events/mouse.h"
@@ -19,23 +21,27 @@ float cm_window_time(void) { return glfwGetTime(); }
 
 void _cm_window_mouse_button_callback(GLFWwindow *window, int button,
                                       int action, int mods) {
-  (void)window, (void)mods, (void)action;
+  (void)window, (void)mods;
   cm_event_dispatch((CmEvent){
       .type = CM_EVENT_MOUSE,
-      .event.mouse.action =
-          action == GLFW_PRESS ? CM_MOUSE_CLICK : CM_MOUSE_RELEASE,
-      .event.mouse.info.button = button,
+      .event.mouse =
+          {
+              .action =
+                  action == GLFW_PRESS ? CM_MOUSE_CLICK : CM_MOUSE_RELEASE,
+              .info.button = button,
+          },
   });
 }
 
 static void _cm_window_mouse_pos_callback(GLFWwindow *glfw_window, double xpos,
                                           double ypos) {
   CMwindow *window = glfwGetWindowUserPointer(glfw_window);
-  cm_event_dispatch((CmEvent){
-      .type = CM_EVENT_MOUSE,
-      .event.mouse.action = CM_MOUSE_MOVE,
-      .event.mouse.info.pos = {xpos, window->height - ypos},
-  });
+  cm_event_dispatch(
+      (CmEvent){.type = CM_EVENT_MOUSE,
+                .event.mouse = {
+                    .action = CM_MOUSE_MOVE,
+                    .info = {.pos = {xpos, window->height - ypos}},
+                }});
 }
 
 static void _cm_window_key_callback(GLFWwindow *window, int key, int scancode,
@@ -43,11 +49,15 @@ static void _cm_window_key_callback(GLFWwindow *window, int key, int scancode,
   (void)window, (void)scancode, (void)mods;
   cm_event_dispatch((CmEvent){
       .type = CM_EVENT_KEYBOARD,
-      .event.key.action =
-          (action == GLFW_PRESS)
-              ? CM_KEY_PRESS
-              : (action == GLFW_REPEAT ? CM_KEY_REPEAT : CM_KEY_RELEASE),
-      .event.key.code = key,
+      .event.key =
+          {
+              .action = (action == GLFW_PRESS)
+                            ? CM_KEY_PRESS
+                            : (action == GLFW_REPEAT ? CM_KEY_REPEAT
+                                                     : CM_KEY_RELEASE),
+              .code = key,
+          },
+
   });
 }
 
@@ -57,13 +67,32 @@ static void _cm_window_resize_callback(GLFWwindow *glfw_window, int32_t width,
   window->height = height;
   window->width = width;
   glViewport(0, 0, width, height);
-  cm_event_dispatch((CmEvent){.type = CM_EVENT_WINDOW_RESIZE, {.base = {0}}});
+  cm_event_dispatch((CmEvent){
+      .type = CM_EVENT_WINDOW_RESIZE,
+      .event.window = {.window = window},
+  });
 }
 
 void _cm_window_close_callback(GLFWwindow *glfw_window) {
   CMwindow *window = glfwGetWindowUserPointer(glfw_window);
-  cm_event_dispatch(
-      (CmEvent){.type = CM_EVENT_WINDOW_CLOSE, {.window.window = window}});
+  cm_event_dispatch((CmEvent){
+      .type = CM_EVENT_WINDOW_CLOSE,
+      .event.window = {.window = window},
+  });
+}
+
+void _cm_window_scroll_callback(GLFWwindow *glfw_window, double xoffset,
+                                double yoffset) {
+  CMwindow *window = glfwGetWindowUserPointer(glfw_window);
+  cm_event_dispatch((CmEvent){
+      .type = CM_EVENT_SCROLL,
+      .event.scroll =
+          {
+              .window = window,
+              .xoffset = xoffset,
+              .yoffset = yoffset,
+          },
+  });
 }
 
 CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
@@ -99,6 +128,7 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
   glfwSetMouseButtonCallback(window, _cm_window_mouse_button_callback);
   glfwSetFramebufferSizeCallback(window, _cm_window_resize_callback);
   glfwSetWindowCloseCallback(window, _cm_window_close_callback);
+  glfwSetScrollCallback(window, _cm_window_scroll_callback);
 
   window_manager.window.height = height;
   window_manager.window.width = width;

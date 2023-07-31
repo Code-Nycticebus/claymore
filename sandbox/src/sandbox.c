@@ -34,7 +34,8 @@ typedef struct {
 } Quad2D;
 
 #define MAX_QUADS 2000
-static const uint32_t quad_size = 15;
+#define QUAD_MIN_SIZE 15
+static uint32_t quad_size = QUAD_MIN_SIZE;
 static uint32_t quad_count;
 Quad2D quads[MAX_QUADS];
 
@@ -95,6 +96,11 @@ static void _sandbox_mouse(CmApp *app, CmMouseEvent *event) {
   }
 }
 
+void _sandbox_scroll(CmApp *app, CmScrollEvent *event) {
+  (void)app;
+  quad_size += (quad_size >= QUAD_MIN_SIZE) ? event->yoffset : 1;
+}
+
 ClaymoreConfig claymore_config(void) {
   return (const ClaymoreConfig){
       .window = {WINDOW_WIDTH, WINDOW_HEIGHT, .title = "Sandbox Draw"},
@@ -105,6 +111,7 @@ void claymore_init(CmApp *app) {
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)_sandbox_controll);
   cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)_sandbox_mouse);
+  cm_event_set_callback(CM_EVENT_SCROLL, (cm_event_callback)_sandbox_scroll);
 
   quad_shaders.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                              "res/shader/basic.fs.glsl");

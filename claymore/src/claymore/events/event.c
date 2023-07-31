@@ -15,10 +15,9 @@ typedef struct {
 } CmEventPool;
 
 static CmEventPool cbs[] = {
-    [CM_EVENT_MOUSE] = {0},
-    [CM_EVENT_KEYBOARD] = {0},
-    [CM_EVENT_WINDOW_RESIZE] = {0},
-    [CM_EVENT_WINDOW_CLOSE] = {0},
+    [CM_EVENT_MOUSE] = {0},         [CM_EVENT_KEYBOARD] = {0},
+    [CM_EVENT_WINDOW_RESIZE] = {0}, [CM_EVENT_WINDOW_CLOSE] = {0},
+    [CM_EVENT_SCROLL] = {0},
 };
 
 static struct {

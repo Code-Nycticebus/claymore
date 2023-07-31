@@ -3,10 +3,6 @@
 
 #include "claymore/core/window.h"
 #include "claymore/events/event.h"
-#define _CM_LOGGER_INTERNAL
-#include "claymore/logger/logger.h"
-
-#include "cm.h"
 
 typedef struct ClaymoreConfig {
   struct {

@@ -66,19 +66,28 @@ typedef struct {
   CMwindow *window;
 } CmWindowEvent;
 
-typedef union {
+typedef struct {
   struct CmEventBase base;
-  CmKeyEvent key;
-  CmMouseEvent mouse;
-  CmWindowEvent window;
-} CmEventUnion;
+  CMwindow *window;
+  double yoffset;
+  double xoffset;
+} CmScrollEvent;
 
 typedef enum {
   CM_EVENT_MOUSE,
   CM_EVENT_KEYBOARD,
   CM_EVENT_WINDOW_RESIZE,
   CM_EVENT_WINDOW_CLOSE,
+  CM_EVENT_SCROLL,
 } CmEventType;
+
+typedef union {
+  struct CmEventBase base;
+  CmKeyEvent key;
+  CmMouseEvent mouse;
+  CmWindowEvent window;
+  CmScrollEvent scroll;
+} CmEventUnion;
 
 typedef struct {
   CmEventType type;
