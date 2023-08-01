@@ -9,14 +9,14 @@
 
 #include <stdio.h>
 
-static void _cm_app_key_event(CmApp *app, const CmKeyEvent *key) {
+static void _cm_app_key_event(CmApp *app, CmKeyEvent *key) {
   (void)app;
   if (key->action == CM_KEY_PRESS || key->action == CM_KEY_REPEAT) {
     CM_TRACE("Pressed %d\n", key->code);
   }
 }
 
-static void _cm_app_window_close(CmApp *app, const CmWindowEvent *window) {
+static void _cm_app_window_close(CmApp *app, CmWindowEvent *window) {
   (void)window;
   app->run = false;
 }
