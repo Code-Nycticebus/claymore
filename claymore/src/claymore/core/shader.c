@@ -10,7 +10,7 @@
 static char *_cm_shader_slurp_file(const char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    CM_ERROR("%s\n", strerror(errno));
+    CM_ERROR("Could not open shader: %s\n", strerror(errno));
     return NULL;
   }
 
