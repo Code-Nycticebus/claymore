@@ -106,7 +106,7 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   glGetProgramiv(program, GL_INFO_LOG_LENGTH, &lenght);
   if (lenght > 0) {
     char *err_msg = calloc(sizeof(char), lenght);
-    glGetShaderInfoLog(program, lenght, NULL, err_msg);
+    glGetProgramInfoLog(program, lenght, NULL, err_msg);
     CM_ERROR("%s\n", err_msg);
     free(err_msg);
     return 0;
