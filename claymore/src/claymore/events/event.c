@@ -33,29 +33,10 @@ void cm_event_set_callback(CmEventType type, cm_event_callback callback) {
 }
 
 void cm_event_dispatch(CmEvent event) {
-  switch (event.type) {
-  case CM_EVENT_MOUSE: {
-    if (event.event.mouse.action == CM_MOUSE_MOVE) {
-      cm_mouseinfo_set_pos(event.event.mouse.info.pos);
-    } else if (event.event.mouse.action == CM_MOUSE_CLICK ||
-               event.event.mouse.action == CM_MOUSE_RELEASE) {
-      cm_mouseinfo_set_button(event.event.mouse.action,
-                              event.event.mouse.info.button);
-    }
-    event.event.mouse.info = cm_mouseinfo();
-    break;
-  }
-  case CM_EVENT_KEYBOARD: {
-    cm_key_set(event.event.key.code, event.event.key.action);
-    break;
-  }
-  default:
-    break;
-  }
-
   for (int32_t i = cbs[event.type].count - 1; 0 <= i; --i) {
-    if (!event.event.base.handled) {
-      cbs[event.type].callback[i](event_handler.app, &event.event);
+    cbs[event.type].callback[i](event_handler.app, &event.event);
+    if (event.event.base.handled) {
+      break;
     }
   }
 }

@@ -22,43 +22,40 @@ float cm_window_time(void) { return glfwGetTime(); }
 void _cm_window_mouse_button_callback(GLFWwindow *window, int button,
                                       int action, int mods) {
   (void)window, (void)mods;
-  cm_event_dispatch((CmEvent){
-      .type = CM_EVENT_MOUSE,
-      .event.mouse =
-          {
-              .action =
-                  action == GLFW_PRESS ? CM_MOUSE_CLICK : CM_MOUSE_RELEASE,
-              .info.button = button,
-          },
-  });
+  const int cm_action =
+      action == GLFW_PRESS ? CM_MOUSE_CLICK : CM_MOUSE_RELEASE;
+  cm_mouseinfo_set_button(cm_action, button);
+  cm_event_dispatch((CmEvent){.type = CM_EVENT_MOUSE,
+                              .event.mouse = {
+                                  .action = cm_action,
+                                  .info = cm_mouseinfo(),
+                              }});
 }
 
 static void _cm_window_mouse_pos_callback(GLFWwindow *glfw_window, double xpos,
                                           double ypos) {
   CMwindow *window = glfwGetWindowUserPointer(glfw_window);
-  cm_event_dispatch(
-      (CmEvent){.type = CM_EVENT_MOUSE,
-                .event.mouse = {
-                    .action = CM_MOUSE_MOVE,
-                    .info = {.pos = {xpos, window->height - ypos}},
-                }});
+  cm_mouseinfo_set_pos((vec2){xpos, window->height - ypos});
+  cm_event_dispatch((CmEvent){.type = CM_EVENT_MOUSE,
+                              .event.mouse = {
+                                  .action = CM_MOUSE_MOVE,
+                                  .info = cm_mouseinfo(),
+                              }});
 }
 
 static void _cm_window_key_callback(GLFWwindow *window, int key, int scancode,
                                     int action, int mods) {
   (void)window, (void)scancode, (void)mods;
-  cm_event_dispatch((CmEvent){
-      .type = CM_EVENT_KEYBOARD,
-      .event.key =
-          {
-              .action = (action == GLFW_PRESS)
-                            ? CM_KEY_PRESS
-                            : (action == GLFW_REPEAT ? CM_KEY_REPEAT
-                                                     : CM_KEY_RELEASE),
-              .code = key,
-          },
-
-  });
+  const int cm_action =
+      (action == GLFW_PRESS)
+          ? CM_KEY_PRESS
+          : (action == GLFW_REPEAT ? CM_KEY_REPEAT : CM_KEY_RELEASE);
+  cm_key_set(key, cm_action);
+  cm_event_dispatch((CmEvent){.type = CM_EVENT_KEYBOARD,
+                              .event.key = {
+                                  .action = cm_action,
+                                  .code = key,
+                              }});
 }
 
 static void _cm_window_resize_callback(GLFWwindow *glfw_window, int32_t width,

@@ -19,7 +19,7 @@ struct ShaderData {
 
   struct {
     GLint mvp;
-  } u_loc;
+  } uniform_loc;
 };
 
 static struct ShaderData quad_shaders;
@@ -42,6 +42,7 @@ Quad2D quads[MAX_QUADS];
 #define TOP_BAR_COLOR_COUNT 10
 const float top_bar_height = 50.F;
 const float top_bar_color_quad_width = WINDOW_WIDTH / TOP_BAR_COLOR_COUNT;
+const float top_bar_y_pos = WINDOW_HEIGHT - top_bar_height;
 Quad2D top_bar_colors[TOP_BAR_COLOR_COUNT];
 
 static vec4 quad_color;
@@ -78,7 +79,6 @@ static void _sandbox_mouse(CmApp *app, CmMouseEvent *event) {
       }
     }
   } else if (event->action == CM_MOUSE_MOVE) {
-
     if (event->info.pos[1] < WINDOW_HEIGHT - top_bar_height - (quad_size / 2) &&
         cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       if (quad_count < MAX_QUADS) {
@@ -96,9 +96,20 @@ static void _sandbox_mouse(CmApp *app, CmMouseEvent *event) {
   }
 }
 
-void _sandbox_scroll(CmApp *app, CmScrollEvent *event) {
+static void _sandbox_scroll(CmApp *app, CmScrollEvent *event) {
   (void)app;
   quad_size += (quad_size >= QUAD_MIN_SIZE) ? event->yoffset : 1;
+}
+
+static void _sandbox_load_into_quad_array(uint32_t index, float x, float y,
+                                          float xs, float ys, vec4 color) {
+  top_bar_colors[index].size[0] = xs;
+  top_bar_colors[index].size[1] = ys;
+
+  top_bar_colors[index].pos[0] = x;
+  top_bar_colors[index].pos[1] = y;
+
+  glm_vec4_copy(color, top_bar_colors[index].color);
 }
 
 ClaymoreConfig claymore_config(void) {
@@ -115,7 +126,7 @@ void claymore_init(CmApp *app) {
 
   quad_shaders.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                              "res/shader/basic.fs.glsl");
-  quad_shaders.u_loc.mvp =
+  quad_shaders.uniform_loc.mvp =
       cm_shader_get_uniform_location(quad_shaders.id, "u_mvp");
 
   glm_mat4_identity(quad_model);
@@ -128,39 +139,23 @@ void claymore_init(CmApp *app) {
 
   glClearColor(1.F, 1.F, 1.F, 1.F);
 
-  top_bar_colors[0].size[0] = top_bar_color_quad_width;
-  top_bar_colors[0].size[1] = top_bar_height;
-
-  top_bar_colors[0].pos[0] = top_bar_color_quad_width * 0.F;
-  top_bar_colors[0].pos[1] = WINDOW_HEIGHT - top_bar_height;
-
-  top_bar_colors[0].color[0] = 1.F;
-  top_bar_colors[0].color[1] = 1.F;
-  top_bar_colors[0].color[2] = 1.F;
-  top_bar_colors[0].color[3] = 1.F;
-
-  top_bar_colors[1].size[0] = top_bar_color_quad_width;
-  top_bar_colors[1].size[1] = top_bar_height;
-
-  top_bar_colors[1].pos[0] = top_bar_color_quad_width * 1.F;
-  top_bar_colors[1].pos[1] = WINDOW_HEIGHT - top_bar_height;
-
-  top_bar_colors[1].color[0] = 0.F;
-  top_bar_colors[1].color[1] = 0.F;
-  top_bar_colors[1].color[2] = 0.F;
-  top_bar_colors[1].color[3] = 1.F;
+  _sandbox_load_into_quad_array(0, top_bar_color_quad_width * 0, top_bar_y_pos,
+                                top_bar_color_quad_width, top_bar_height,
+                                (vec4){0.F, 0.F, 0.F, 1.F});
+  _sandbox_load_into_quad_array(1, top_bar_color_quad_width * 1, top_bar_y_pos,
+                                top_bar_color_quad_width, top_bar_height,
+                                (vec4){0.F, 0.F, 0.F, 1.F});
 
   for (size_t i = 2; i < TOP_BAR_COLOR_COUNT; ++i) {
-    top_bar_colors[i].size[0] = top_bar_color_quad_width;
-    top_bar_colors[i].size[1] = top_bar_height;
-
-    top_bar_colors[i].pos[0] = top_bar_color_quad_width * i;
-    top_bar_colors[i].pos[1] = WINDOW_HEIGHT - top_bar_height;
-
-    top_bar_colors[i].color[0] = (double)rand() / (double)RAND_MAX;
-    top_bar_colors[i].color[1] = (double)rand() / (double)RAND_MAX;
-    top_bar_colors[i].color[2] = (double)rand() / (double)RAND_MAX;
-    top_bar_colors[i].color[3] = 1.F;
+    _sandbox_load_into_quad_array(i, top_bar_color_quad_width * i,
+                                  top_bar_y_pos, top_bar_color_quad_width,
+                                  top_bar_height,
+                                  (vec4){
+                                      (double)rand() / (double)RAND_MAX,
+                                      (double)rand() / (double)RAND_MAX,
+                                      (double)rand() / (double)RAND_MAX,
+                                      1.F,
+                                  });
   }
 }
 
@@ -172,7 +167,7 @@ void claymore_update(CmApp *app) {
 
   glm_mat4_mul(vp, quad_model, mvp);
   glUseProgram(quad_shaders.id);
-  glUniformMatrix4fv(quad_shaders.u_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  glUniformMatrix4fv(quad_shaders.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer_begin();
   {
