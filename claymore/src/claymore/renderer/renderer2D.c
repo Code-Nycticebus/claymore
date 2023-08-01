@@ -61,7 +61,12 @@ void cm_renderer_init(void) {
                render_data->indecies, GL_STATIC_DRAW);
 }
 
-void cm_renderer_shutdown(void) { free(render_data); }
+void cm_renderer_shutdown(void) {
+  glDeleteBuffers(1, &render_data->vbo);
+  glDeleteVertexArrays(1, &render_data->vao);
+  glDeleteBuffers(1, &render_data->ibo);
+  free(render_data);
+}
 
 void cm_renderer_begin(void) {}
 
@@ -70,6 +75,8 @@ void cm_renderer_end(void) {
   glBufferSubData(GL_ARRAY_BUFFER, 0,
                   sizeof(VertexColor2D) * render_data->vertecies_count,
                   render_data->data);
+  glBindVertexArray(render_data->vao);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data->ibo);
   cm_renderer_draw();
   render_data->vertecies_count = 0;
   render_data->indecies_count = 0;
