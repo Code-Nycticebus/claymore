@@ -1,10 +1,9 @@
 
 #include "claymore.h"
+#include <stdio.h>
 
 static const float near = 0.1F;
 static vec3 up = {0, 1, 0};
-
-static vec3 pos = {0, 0, 3};
 
 struct ShaderData {
   uint32_t id;
@@ -21,6 +20,9 @@ static struct {
 } RenderData;
 static struct ShaderData shader;
 
+float rotation = 1.F;
+mat4 model;
+
 static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
   (void)app;
   if (event->action == CM_MOUSE_CLICK) {
@@ -32,14 +34,8 @@ static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
 static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
   (void)app;
   if (event->action == CM_KEY_PRESS) {
-    if (event->code == CM_KEY_UP) {
-      pos[1] += 1;
-    } else if (event->code == CM_KEY_DOWN) {
-      pos[1] -= 1;
-    } else if (event->code == CM_KEY_LEFT) {
-      pos[0] -= 1;
-    } else if (event->code == CM_KEY_RIGHT) {
-      pos[0] += 1;
+    if (event->code == CM_KEY_F5) {
+      glm_mat4_identity(model);
     }
   }
 }
@@ -59,9 +55,9 @@ static bool sandbox_init(CmLayerData *layer) {
                       (float)layer->app->window->height,
                   near, 100.F, layer->camera.projection);
 
-  glm_lookat((vec3){2, 0, 3}, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
+  glm_lookat((vec3){0, 0, 3}, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
 
-  struct Vertex {
+  const struct Vertex {
     vec3 pos;
     vec4 color;
   } vertecies[] = {
@@ -82,7 +78,7 @@ static bool sandbox_init(CmLayerData *layer) {
                         (void *)offsetof(struct Vertex, pos));
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
-                        (void *)offsetof(struct Vertex, color));
+                        (void *)offsetof(struct Vertex, color)); // NOLINT
 
   uint32_t indices[3] = {0, 2, 1};
   glGenBuffers(1, &RenderData.ibo);
@@ -91,15 +87,25 @@ static bool sandbox_init(CmLayerData *layer) {
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
+  glm_mat4_identity(model);
   return true;
 }
 static bool sandbox_update(CmLayerData *layer) {
   mat4 vp;
   mat4 mvp;
-  mat4 model;
-  glm_mat4_identity(model);
 
-  glm_lookat(pos, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
+  if (cm_key(CM_KEY_LEFT)) {
+    glm_rotate(model, glm_rad(rotation), (vec3){0.F, 1.F, 0.F});
+  }
+  if (cm_key(CM_KEY_RIGHT)) {
+    glm_rotate(model, glm_rad(rotation), (vec3){0.F, -1.F, 0.F});
+  }
+  if (cm_key(CM_KEY_UP)) {
+    glm_rotate(model, glm_rad(rotation), (vec3){1.F, 0.F, 0.F});
+  }
+  if (cm_key(CM_KEY_DOWN)) {
+    glm_rotate(model, glm_rad(rotation), (vec3){-1.F, 0.F, 0.F});
+  }
 
   // Calculates camera perspective
   glm_mat4_mul(layer->camera.projection, layer->camera.view, vp);

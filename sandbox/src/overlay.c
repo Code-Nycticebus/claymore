@@ -18,7 +18,7 @@ static struct ShaderData shader;
 static void overlay_mouse_callback(CmApp *app, CmMouseEvent *event) {
   (void)app;
   if (event->action == CM_MOUSE_CLICK) {
-    if (event->info.pos[0] < app->window->width / 2 &&
+    if (event->info.pos[0] < app->window->width / 4 &&
         event->info.pos[1] < app->window->height / 2) {
       printf("OVERLAY CLICK!\n");
       event->base.handled = true;
@@ -61,6 +61,7 @@ static bool overlay_update(CmLayerData *layer) {
   glm_mat4_mul(layer->camera.projection, layer->camera.view, vp);
 
   glm_mat4_mul(vp, model, mvp);
+
   glUseProgram(shader.id);
   glUniformMatrix4fv(shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
@@ -68,7 +69,7 @@ static bool overlay_update(CmLayerData *layer) {
 
   cm_renderer_push_quad_color(
       (vec2){0, 0}, 0,
-      (vec2){layer->app->window->width / 2, layer->app->window->height / 2},
+      (vec2){layer->app->window->width / 4, layer->app->window->height / 2},
       (vec4){1.F, 1.F, 1.F, 1.F});
 
   cm_renderer_end();
