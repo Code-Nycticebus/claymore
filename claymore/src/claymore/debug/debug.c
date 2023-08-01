@@ -80,12 +80,12 @@ void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
   }
 
   if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
-    CM_INFO("%s(%d) %s: %s\n", _type, id, _source, message);
+    CM_INFO("CALLBACK: %s(%d) %s: %s\n", _type, id, _source, message);
   } else if (severity == GL_DEBUG_SEVERITY_LOW) {
-    CM_WARN("%s(%d) %s: %s\n", _type, id, _source, message);
+    CM_WARN("CALLBACK: %s(%d) %s: %s\n", _type, id, _source, message);
   } else if (severity == GL_DEBUG_SEVERITY_MEDIUM ||
              severity == GL_DEBUG_SEVERITY_HIGH) {
-    CM_ERROR("%s(%d) %s: %s\n", _type, id, _source, message);
+    CM_ERROR("CALLBACK: %s(%d) %s: %s\n", _type, id, _source, message);
   }
 }
 #else

@@ -1,11 +1,6 @@
 #include "app.h"
 
-#include "claymore/events/mouse.h"
 #include "cm.h"
-
-#include "claymore/core/window.h"
-#include "claymore/events/event.h"
-#include "claymore/renderer/context.h"
 
 #include <stdio.h>
 

@@ -1,18 +1,21 @@
 #include "cm.h"
 
 #include "GLFW/glfw3.h"
+#include "claymore/core/app.h"
+#include "claymore/logger/logger.h"
+
 #define _CM_RENDERER_INTERNAL
 #include "claymore/renderer/renderer2D.h"
-#define _CM_APP_INTERNAL
-#include "claymore/core/app.h"
-
-#include "claymore/logger/logger.h"
 
 int main(void) {
 
   ClaymoreConfig config = claymore_config();
 
   CmApp app = {0};
+
+  CmLayer layers[CM_LAYER_MAX];
+  uint32_t layer_count = 0;
+
   if (!cm_app_init(&app, &config)) {
     return -1;
   }
@@ -22,19 +25,33 @@ int main(void) {
 
   cm_renderer_init();
 
-  claymore_init(&app);
+  for (size_t i = 0; i < CM_LAYER_MAX; ++i) {
+    if (config.layers[i] == NULL) {
+      break;
+    }
+    layers[i] = config.layers[i]();
+    layers[i].data.app = &app;
+    layer_count++;
+  }
 
-  /* Loop until the user closes the window */
+  for (size_t i = 0; i < layer_count; ++i) {
+    layers[i].init(&layers[i].data);
+  }
+
   while (app.run) {
-    /* Render here */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    claymore_update(&app);
+    for (size_t i = 0; i < layer_count; ++i) {
+      layers[i].update(&layers[i].data);
+    }
 
     cm_window_update(app.window);
   }
 
-  claymore_free(&app);
+  for (size_t i = 0; i < layer_count; ++i) {
+    layers[i].free(&layers[i].data);
+  }
+
   cm_renderer_shutdown();
 
   cm_app_shutdown(&app);
