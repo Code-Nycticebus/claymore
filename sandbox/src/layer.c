@@ -23,6 +23,34 @@ static struct ShaderData shader;
 float rotation = 1.F;
 mat4 model;
 
+const struct Vertex {
+  vec3 pos;
+  vec4 color;
+} vertecies[] = {
+    // 1
+    {{-1.F, -1.F, 1.F}, {1.F, 1.F, 0.F, 1.F}},
+    {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
+    {{1.F, 1.F, 1.F}, {0.F, 1.F, 1.F, 1.F}},
+    {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
+
+    // 2
+    {{-1.F, -1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}},
+    {{1.F, -1.F, -1.F}, {0.F, 1.F, 1.F, 1.F}},
+    {{1.F, 1.F, -1.F}, {1.F, 0.F, 1.F, 1.F}},
+    {{-1.F, 1.F, -1.F}, {1.F, 1.F, 0.F, 1.F}},
+};
+
+const uint32_t indices[] = {
+    0, 1, 2, 0, 2, 3, // 1
+    4, 5, 6, 4, 6, 7, // 2
+    0, 4, 5, 0, 5, 1, // 3
+    0, 4, 7, 0, 3, 7, // 4
+    1, 2, 5, 5, 6, 2, // 5
+    2, 3, 6, 3, 6, 7, // 6
+};
+
+uint32_t indices_count = sizeof(indices) / sizeof(indices[0]);
+
 static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
   (void)app;
   if (event->action == CM_MOUSE_CLICK) {
@@ -55,16 +83,8 @@ static bool sandbox_init(CmLayerData *layer) {
                       (float)layer->app->window->height,
                   near, 100.F, layer->camera.projection);
 
-  glm_lookat((vec3){0, 0, 3}, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
-
-  const struct Vertex {
-    vec3 pos;
-    vec4 color;
-  } vertecies[] = {
-      {{-0.5F, -0.5F, 0.F}, {1.F, 0.F, 0.F, 1.F}},
-      {{0.5F, -0.5F, 0.F}, {0.F, 1.F, 0.F, 1.F}},
-      {{0.0F, 0.5F, 0.F}, {0.F, 0.F, 1.F, 1.F}},
-  };
+  vec3 camera_pos = {0, 0, 4 + 1};
+  glm_lookat(camera_pos, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
 
   glGenBuffers(1, &RenderData.vbo);
   glBindBuffer(GL_ARRAY_BUFFER, RenderData.vbo);
@@ -80,7 +100,6 @@ static bool sandbox_init(CmLayerData *layer) {
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
                         (void *)offsetof(struct Vertex, color)); // NOLINT
 
-  uint32_t indices[3] = {0, 2, 1};
   glGenBuffers(1, &RenderData.ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
 
@@ -117,7 +136,7 @@ static bool sandbox_update(CmLayerData *layer) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
   glBindVertexArray(RenderData.vba);
 
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, NULL);
+  glDrawElements(GL_TRIANGLES, indices_count, GL_UNSIGNED_INT, NULL);
 
   return true;
 }
