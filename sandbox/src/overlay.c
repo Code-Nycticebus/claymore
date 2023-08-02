@@ -45,8 +45,10 @@ static bool overlay_init(CmLayerData *layer) {
   return true;
 }
 
-static bool overlay_update(CmLayerData *layer) {
+static bool overlay_update(CmLayerData *layer, float dt) {
   glDisable(GL_DEPTH_TEST);
+
+  CM_TRACE("FPS: %f\n", 1 / dt);
 
   mat4 vp;
   mat4 mvp;

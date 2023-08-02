@@ -24,7 +24,7 @@ typedef struct {
 
 typedef struct {
   bool (*init)(CmLayerData *layer);
-  bool (*update)(CmLayerData *layer);
+  bool (*update)(CmLayerData *layer, float dt);
   bool (*free)(CmLayerData *layer);
 
   CmLayerData data;

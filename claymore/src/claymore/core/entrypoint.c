@@ -38,11 +38,18 @@ int main(void) {
     layers[i].init(&layers[i].data);
   }
 
+  float time = 0.F;
+  float time_last_frame = 0.F;
+  float deltatime = 0.F;
   while (app.run) {
+    time = cm_window_time();
+    deltatime = time - time_last_frame;
+    time_last_frame = cm_window_time();
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (size_t i = 0; i < layer_count; ++i) {
-      layers[i].update(&layers[i].data);
+      layers[i].update(&layers[i].data, deltatime);
     }
 
     cm_window_update(app.window);

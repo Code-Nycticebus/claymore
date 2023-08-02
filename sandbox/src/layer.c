@@ -20,7 +20,7 @@ static struct {
 } RenderData;
 static struct ShaderData shader;
 
-float rotation = 1.F;
+const float rotation = 360.F;
 mat4 model;
 
 const struct Vertex {
@@ -69,6 +69,7 @@ static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
 }
 
 static bool sandbox_init(CmLayerData *layer) {
+  glfwSwapInterval(0); // Set vsync
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)sandbox_key_callback);
   cm_event_set_callback(CM_EVENT_MOUSE,
@@ -109,21 +110,22 @@ static bool sandbox_init(CmLayerData *layer) {
   glm_mat4_identity(model);
   return true;
 }
-static bool sandbox_update(CmLayerData *layer) {
+
+static bool sandbox_update(CmLayerData *layer, float dt) {
   mat4 vp;
   mat4 mvp;
 
   if (cm_key(CM_KEY_LEFT)) {
-    glm_rotate(model, glm_rad(rotation), (vec3){0.F, 1.F, 0.F});
+    glm_rotate(model, glm_rad(rotation * dt), (vec3){0.F, 1.F, 0.F});
   }
   if (cm_key(CM_KEY_RIGHT)) {
-    glm_rotate(model, glm_rad(rotation), (vec3){0.F, -1.F, 0.F});
+    glm_rotate(model, glm_rad(rotation * dt), (vec3){0.F, -1.F, 0.F});
   }
   if (cm_key(CM_KEY_UP)) {
-    glm_rotate(model, glm_rad(rotation), (vec3){1.F, 0.F, 0.F});
+    glm_rotate(model, glm_rad(rotation * dt), (vec3){1.F, 0.F, 0.F});
   }
   if (cm_key(CM_KEY_DOWN)) {
-    glm_rotate(model, glm_rad(rotation), (vec3){-1.F, 0.F, 0.F});
+    glm_rotate(model, glm_rad(rotation * dt), (vec3){-1.F, 0.F, 0.F});
   }
 
   // Calculates camera perspective
