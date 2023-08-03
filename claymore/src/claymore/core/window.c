@@ -92,7 +92,7 @@ void _cm_window_scroll_callback(GLFWwindow *glfw_window, double xoffset,
   });
 }
 
-CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
+CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *title) {
   GLFWwindow *window;
 
   static bool glfw_initialized = false;
@@ -110,7 +110,7 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   /* Create a windowed mode window and its OpenGL context */
-  window = glfwCreateWindow(width, height, name, NULL, NULL);
+  window = glfwCreateWindow(width, height, title, NULL, NULL);
   if (!window) {
     glfwTerminate();
     return NULL;
@@ -129,6 +129,7 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *name) {
 
   window_manager.window.height = height;
   window_manager.window.width = width;
+  window_manager.window.title = title;
   window_manager.window.ctx = window;
 
   glfwSetWindowUserPointer(window, &window_manager.window);
