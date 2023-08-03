@@ -9,7 +9,7 @@
 
 int main(void) {
 
-  ClaymoreConfig config = claymore_config();
+  const ClaymoreConfig config = claymore_config();
 
   CmApp app = {0};
 
