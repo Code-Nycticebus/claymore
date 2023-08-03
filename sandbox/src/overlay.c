@@ -48,7 +48,10 @@ static bool overlay_init(CmLayerData *layer) {
 static bool overlay_update(CmLayerData *layer, float dt) {
   glDisable(GL_DEPTH_TEST);
 
-  CM_TRACE("FPS: %f\n", 1 / dt);
+#define TITLE_MAX 128
+  char title[TITLE_MAX];
+  snprintf(title, TITLE_MAX, "%s FPS: %0.f", layer->app->window->title, 1 / dt);
+  glfwSetWindowTitle(layer->app->window->ctx, title);
 
   mat4 vp;
   mat4 mvp;
