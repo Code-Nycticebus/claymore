@@ -26,7 +26,7 @@ static void overlay_mouse_callback(CmApp *app, CmMouseEvent *event) {
   }
 }
 
-static bool overlay_init(CmLayerData *layer) {
+static bool overlay_init(CmLayer *layer) {
 
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
@@ -45,7 +45,7 @@ static bool overlay_init(CmLayerData *layer) {
   return true;
 }
 
-static bool overlay_update(CmLayerData *layer, float dt) {
+static bool overlay_update(CmLayer *layer, float dt) {
   glDisable(GL_DEPTH_TEST);
 
 #define TITLE_MAX 128
@@ -82,12 +82,12 @@ static bool overlay_update(CmLayerData *layer, float dt) {
   return true;
 }
 
-static bool overlay_free(CmLayerData *layer) {
+static bool overlay_free(CmLayer *layer) {
   (void)layer;
   return true;
 }
 
-CmLayer sandbox_overlay(void) {
-  return (CmLayer){
+CmLayerInterface sandbox_overlay(void) {
+  return (CmLayerInterface){
       .init = overlay_init, .free = overlay_free, .update = overlay_update};
 }

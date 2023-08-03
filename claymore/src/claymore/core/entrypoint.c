@@ -14,7 +14,10 @@ int main(void) {
   CmApp app = {0};
 
   // Layer stack
-  CmLayer layer_stack[CM_LAYER_COUNT];
+  struct {
+    CmLayerInterface interface;
+    CmLayer layer;
+  } layer_stack[CM_LAYER_COUNT];
   uint32_t layer_count = 0;
 
   if (!cm_app_init(&app, &config)) {
@@ -30,13 +33,13 @@ int main(void) {
     if (config.layers[i] == NULL) {
       break;
     }
-    layer_stack[i] = config.layers[i]();
-    layer_stack[i].data.app = &app;
+    layer_stack[i].interface = config.layers[i]();
+    layer_stack[i].layer.app = &app;
     layer_count++;
   }
 
   for (size_t i = 0; i < layer_count; ++i) {
-    layer_stack[i].init(&layer_stack[i].data);
+    layer_stack[i].interface.init(&layer_stack[i].layer);
   }
 
   float time = 0.F;
@@ -50,14 +53,14 @@ int main(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (size_t i = 0; i < layer_count; ++i) {
-      layer_stack[i].update(&layer_stack[i].data, deltatime);
+      layer_stack[i].interface.update(&layer_stack[i].layer, deltatime);
     }
 
     cm_window_update(app.window);
   }
 
   for (size_t i = 0; i < layer_count; ++i) {
-    layer_stack[i].free(&layer_stack[i].data);
+    layer_stack[i].interface.free(&layer_stack[i].layer);
   }
 
   cm_renderer_shutdown();

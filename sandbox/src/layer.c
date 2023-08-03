@@ -20,7 +20,7 @@ static struct {
 } RenderData;
 static struct ShaderData shader;
 
-const float rotation = 360.F;
+const float rotation = 90.F;
 mat4 model;
 
 const struct Vertex {
@@ -68,8 +68,8 @@ static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
   }
 }
 
-static bool sandbox_init(CmLayerData *layer) {
-  glfwSwapInterval(0); // Set vsync
+static bool sandbox_init(CmLayer *layer) {
+  glfwSwapInterval(1); // Set vsync
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)sandbox_key_callback);
   cm_event_set_callback(CM_EVENT_MOUSE,
@@ -111,7 +111,7 @@ static bool sandbox_init(CmLayerData *layer) {
   return true;
 }
 
-static bool sandbox_update(CmLayerData *layer, float dt) {
+static bool sandbox_update(CmLayer *layer, float dt) {
   mat4 vp;
   mat4 mvp;
 
@@ -143,12 +143,12 @@ static bool sandbox_update(CmLayerData *layer, float dt) {
   return true;
 }
 
-static bool sandbox_free(CmLayerData *layer) {
+static bool sandbox_free(CmLayer *layer) {
   (void)layer;
   return true;
 }
 
-CmLayer sandbox_layer(void) {
-  return (CmLayer){
+CmLayerInterface sandbox_layer(void) {
+  return (CmLayerInterface){
       .init = sandbox_init, .free = sandbox_free, .update = sandbox_update};
 }

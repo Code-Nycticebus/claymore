@@ -7,8 +7,8 @@
 #define WINDOW_WIDTH 620
 #define WINDOW_HEIGHT 420
 
-extern CmLayer sandbox_layer(void);
-extern CmLayer sandbox_overlay(void);
+extern CmLayerInterface sandbox_layer(void);
+extern CmLayerInterface sandbox_overlay(void);
 
 ClaymoreConfig claymore_config(void) {
   return (const ClaymoreConfig){

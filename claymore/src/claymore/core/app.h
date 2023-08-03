@@ -19,20 +19,18 @@ typedef struct {
 #endif
 
 typedef struct {
-  void *state;
   Camera camera;
   CmApp *app;
-} CmLayerData;
-
-typedef struct {
-  bool (*init)(CmLayerData *layer);
-  bool (*update)(CmLayerData *layer, float dt);
-  bool (*free)(CmLayerData *layer);
-
-  CmLayerData data;
+  void *state;
 } CmLayer;
 
-typedef CmLayer (*cm_layer_create)(void);
+typedef struct {
+  bool (*init)(CmLayer *layer);
+  bool (*update)(CmLayer *layer, float dt);
+  bool (*free)(CmLayer *layer);
+} CmLayerInterface;
+
+typedef CmLayerInterface (*cm_layer_create_fn)(void);
 
 typedef struct ClaymoreConfig {
   struct {
@@ -41,7 +39,7 @@ typedef struct ClaymoreConfig {
     const char *title;
   } window;
 
-  cm_layer_create layers[CM_LAYER_COUNT];
+  cm_layer_create_fn layers[CM_LAYER_COUNT];
 } ClaymoreConfig;
 
 bool cm_app_init(CmApp *app, const ClaymoreConfig *config);
