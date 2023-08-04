@@ -150,5 +150,6 @@ static bool sandbox_free(CmLayer *layer) {
 
 CmLayerInterface sandbox_layer(void) {
   return (CmLayerInterface){
-      .init = sandbox_init, .free = sandbox_free, .update = sandbox_update};
+      .init = sandbox_init, .free = sandbox_free, .update = sandbox_update, 
+  };
 }

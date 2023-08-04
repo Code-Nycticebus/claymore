@@ -74,7 +74,7 @@ static bool overlay_update(CmLayer *layer, float dt) {
 
   cm_renderer_push_quad_color(
       (vec2){0, 0}, 0,
-      (vec2){layer->app->window->width / 4, layer->app->window->height / 2},
+      (vec2){(float)layer->app->window->width / 4, (float)layer->app->window->height / 2},
       (vec4){1.F, 1.F, 1.F, 1.F});
 
   cm_renderer_end();
@@ -89,5 +89,6 @@ static bool overlay_free(CmLayer *layer) {
 
 CmLayerInterface sandbox_overlay(void) {
   return (CmLayerInterface){
-      .init = overlay_init, .free = overlay_free, .update = overlay_update};
+      .init = overlay_init, .free = overlay_free, .update = overlay_update,
+  };
 }
