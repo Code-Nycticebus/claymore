@@ -48,10 +48,16 @@ static bool overlay_init(CmLayer *layer) {
 static bool overlay_update(CmLayer *layer, float dt) {
   glDisable(GL_DEPTH_TEST);
 
+  static float time = 0;
+  time += dt;
+  if (time > 1) {
 #define TITLE_MAX 128
-  char title[TITLE_MAX];
-  snprintf(title, TITLE_MAX, "%s FPS: %0.f", layer->app->window->title, 1 / dt);
-  glfwSetWindowTitle(layer->app->window->ctx, title);
+    char title[TITLE_MAX];
+    snprintf(title, TITLE_MAX, "%s FPS: %0.f", layer->app->window->title,
+             1 / dt);
+    glfwSetWindowTitle(layer->app->window->ctx, title);
+    time = 0;
+  }
 
   mat4 vp;
   mat4 mvp;

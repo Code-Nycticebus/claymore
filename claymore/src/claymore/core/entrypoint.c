@@ -48,7 +48,7 @@ int main(void) {
   while (app.run) {
     time = cm_window_time();
     deltatime = time - time_last_frame;
-    time_last_frame = cm_window_time();
+    time_last_frame = time;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
