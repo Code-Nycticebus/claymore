@@ -104,12 +104,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)../../claymore/src;$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\glew\glew\include;$(SolutionDir)..\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)../../claymore/src;$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\glew\glew\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\..\deps\glfw\glfw\build\src\Debug;$(SolutionDir)..\..\deps\glew\glew;$(SolutionDir)..\..\deps\cglm\cglm\win\x64\Debug;$(SolutionDir)..\..\claymore\win\x64\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\..\deps\glfw\glfw\build\src\Debug;$(SolutionDir)..\..\deps\glew\glew;$(SolutionDir)..\..\deps\cglm\cglm\win\x64\Debug;$(SolutionDir)\x64\Debug\</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);glfw3.lib;opengl32.lib;glew32s.lib;cglm.lib;claymore.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -133,6 +133,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\layer.c" />
+    <ClCompile Include="..\src\overlay.c" />
     <ClCompile Include="..\src\sandbox.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

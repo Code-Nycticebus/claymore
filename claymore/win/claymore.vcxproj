@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\glew\glew\include;$(SolutionDir)..\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\glew\glew\include;$(SolutionDir)..\src;$(SolutionDir)../../claymore/src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
