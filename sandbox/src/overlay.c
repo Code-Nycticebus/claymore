@@ -27,7 +27,6 @@ static void overlay_mouse_callback(CmApp *app, CmMouseEvent *event) {
 }
 
 static bool overlay_init(CmLayer *layer) {
-
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
   shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
@@ -78,10 +77,10 @@ static bool overlay_update(CmLayer *layer, float dt) {
 
   cm_renderer_begin();
 
-  cm_renderer_push_quad_color(
-      (vec2){0, 0}, 0,
-      (vec2){(float)layer->app->window->width / 4, (float)layer->app->window->height / 2},
-      (vec4){1.F, 1.F, 1.F, 1.F});
+  cm_renderer_push_quad_color((vec2){0, 0}, 0,
+                              (vec2){(float)layer->app->window->width / 4,
+                                     (float)layer->app->window->height / 2},
+                              (vec4){1.F, 1.F, 1.F, 1.F});
 
   cm_renderer_end();
   glEnable(GL_DEPTH_TEST);
@@ -95,6 +94,8 @@ static bool overlay_free(CmLayer *layer) {
 
 CmLayerInterface sandbox_overlay(void) {
   return (CmLayerInterface){
-      .init = overlay_init, .free = overlay_free, .update = overlay_update,
+      .init = overlay_init,
+      .free = overlay_free,
+      .update = overlay_update,
   };
 }
