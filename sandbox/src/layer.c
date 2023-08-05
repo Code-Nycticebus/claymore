@@ -121,20 +121,17 @@ static void sandbox_scroll_callback(CmApp *app, CmScrollEvent *event) {
   (void)app, (void)event;
   vec3 direction;
   vec3 center = {0, 0, 0};
-  float distance = glm_vec3_distance(center, camera_pos);
   const float max_distance = 0.1F;
 
-  if (max_distance < distance) {
-    glm_vec3_sub(center, camera_pos, direction);
-    glm_vec3_normalize(direction);
-    glm_vec3_scale(direction, event->yoffset, direction);
+  glm_vec3_sub(center, camera_pos, direction);
+  glm_vec3_normalize(direction);
+  glm_vec3_scale(direction, event->yoffset, direction);
 
-    vec3 new_camera_pos;
-    glm_vec3_add(camera_pos, direction, new_camera_pos);
-    float new_distance = glm_vec3_distance(new_camera_pos, center);
-    if (max_distance <= new_distance) {
-      glm_vec3_copy(new_camera_pos, camera_pos);
-    }
+  vec3 new_camera_pos;
+  glm_vec3_add(camera_pos, direction, new_camera_pos);
+  float new_distance = glm_vec3_distance(new_camera_pos, center);
+  if (max_distance <= new_distance) {
+    glm_vec3_copy(new_camera_pos, camera_pos);
   }
 }
 
