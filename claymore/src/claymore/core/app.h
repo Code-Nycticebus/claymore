@@ -25,9 +25,9 @@ typedef struct {
 } CmLayer;
 
 typedef struct {
-  bool (*init)(CmLayer *layer);
-  bool (*update)(CmLayer *layer, float dt);
-  bool (*free)(CmLayer *layer);
+  void (*init)(CmLayer *layer);
+  void (*update)(CmLayer *layer, float dt);
+  void (*free)(CmLayer *layer);
 } CmLayerInterface;
 
 typedef CmLayerInterface (*cm_layer_create_fn)(void);

@@ -23,6 +23,8 @@ static struct {
 static struct ShaderData shader;
 
 const float rotation = 90.F;
+// Used for input without deltatime
+const float rotation_scale = 0.02F;
 mat4 model;
 
 const struct Vertex {
@@ -67,7 +69,7 @@ static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
 
       glm_vec2_sub(mouse_pos, last_pos, dir);
 
-      glm_rotate(model, glm_rad(rotation / 100.F),
+      glm_rotate(model, glm_rad(rotation * rotation_scale),
                  (vec3){0 - dir[1], dir[0], 0.F});
 
       glm_vec2_copy(mouse_pos, last_pos);
@@ -80,12 +82,11 @@ static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F5) {
       glm_mat4_identity(model);
-      // event->base.handled = true;
     }
   }
 }
 
-static bool sandbox_init(CmLayer *layer) {
+static void sandbox_init(CmLayer *layer) {
   glfwSwapInterval(1); // Set vsync
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)sandbox_key_callback);
@@ -125,10 +126,9 @@ static bool sandbox_init(CmLayer *layer) {
                GL_STATIC_DRAW);
 
   glm_mat4_identity(model);
-  return true;
 }
 
-static bool sandbox_update(CmLayer *layer, float dt) {
+static void sandbox_update(CmLayer *layer, float dt) {
   mat4 vp;
   mat4 mvp;
 
@@ -156,13 +156,10 @@ static bool sandbox_update(CmLayer *layer, float dt) {
   glBindVertexArray(RenderData.vba);
 
   glDrawElements(GL_TRIANGLES, indices_count, GL_UNSIGNED_INT, NULL);
-
-  return true;
 }
 
-static bool sandbox_free(CmLayer *layer) {
+static void sandbox_free(CmLayer *layer) {
   (void)layer;
-  return true;
 }
 
 CmLayerInterface sandbox_layer(void) {
