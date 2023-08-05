@@ -26,10 +26,7 @@ int main(void) {
 
   cm_renderer_init();
 
-  for (size_t i = 0; i < CM_LAYER_COUNT; ++i) {
-    if (config.layers[i] == NULL) {
-      break;
-    }
+  for (size_t i = 0; i < CM_LAYER_COUNT && config.layers[i] != NULL; ++i) {
     layer_stack[i].interface = config.layers[i]();
     layer_stack[i].layer.app = &app;
     layer_count++;
