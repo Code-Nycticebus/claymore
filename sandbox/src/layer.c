@@ -1,5 +1,7 @@
 
+#include "cglm/vec2.h"
 #include "claymore.h"
+#include "claymore/events/mouse.h"
 #include <stdio.h>
 
 static const float near = 0.1F;
@@ -56,6 +58,20 @@ static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
   if (event->action == CM_MOUSE_CLICK) {
     printf("LAYER CLICK!\n");
     event->base.handled = true;
+  } else if (event->action == CM_MOUSE_MOVE) {
+    if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+      vec2 mouse_pos;
+      cm_mouseinfo_pos(mouse_pos);
+      static vec2 last_pos = {0, 0};
+      vec2 dir;
+
+      glm_vec2_sub(mouse_pos, last_pos, dir);
+
+      glm_rotate(model, glm_rad(rotation / 100.F),
+                 (vec3){0 - dir[1], dir[0], 0.F});
+
+      glm_vec2_copy(mouse_pos, last_pos);
+    }
   }
 }
 
@@ -64,6 +80,7 @@ static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F5) {
       glm_mat4_identity(model);
+      // event->base.handled = true;
     }
   }
 }

@@ -1,5 +1,6 @@
 #include "claymore.h"
 #include "claymore/events/event.h"
+#include "claymore/events/mouse.h"
 #include <GL/gl.h>
 #include <stdio.h>
 
@@ -17,15 +18,16 @@ static struct ShaderData shader;
 
 static void overlay_mouse_callback(CmApp *app, CmMouseEvent *event) {
   (void)app;
-  if (event->action == CM_MOUSE_CLICK) {
-    if (event->info.pos[0] < app->window->width / 4 &&
-        event->info.pos[1] < app->window->height / 2) {
-      printf("OVERLAY CLICK!\n");
+  if (event->info.pos[0] < 100.F && event->info.pos[1] < app->window->height) {
+
+    if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+      if (event->action == CM_MOUSE_CLICK) {
+        printf("OVERLAY CLICK!\n");
+      }
       event->base.handled = true;
     }
   }
 }
-
 static bool overlay_init(CmLayer *layer) {
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
@@ -61,7 +63,6 @@ static bool overlay_update(CmLayer *layer, float dt) {
   mat4 vp;
   mat4 mvp;
   mat4 model;
-  glm_mat4_identity(model);
 
   glm_ortho(0.0F, (float)layer->app->window->width, 0.0F,
             (float)layer->app->window->height, near, 100.0F,
@@ -70,19 +71,18 @@ static bool overlay_update(CmLayer *layer, float dt) {
   // Calculates camera perspective
   glm_mat4_mul(layer->camera.projection, layer->camera.view, vp);
 
+  glm_mat4_identity(model);
   glm_mat4_mul(vp, model, mvp);
 
   glUseProgram(shader.id);
   glUniformMatrix4fv(shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer_begin();
-
-  cm_renderer_push_quad_color((vec2){0, 0}, 0,
-                              (vec2){(float)layer->app->window->width / 4,
-                                     (float)layer->app->window->height / 2},
-                              (vec4){1.F, 1.F, 1.F, 1.F});
-
+  cm_renderer_push_quad_color(
+      (vec2){0, 0}, 0, (vec2){100.F, (float)layer->app->window->height / 2},
+      (vec4){0.F, 1.F, 1.F, 1.F});
   cm_renderer_end();
+
   glEnable(GL_DEPTH_TEST);
   return true;
 }
