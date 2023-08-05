@@ -82,12 +82,9 @@ static void overlay_update(CmLayer *layer, float dt) {
   cm_renderer_end();
 
   glEnable(GL_DEPTH_TEST);
-  return true;
 }
 
-static void overlay_free(CmLayer *layer) {
-  (void)layer;
-}
+static void overlay_free(CmLayer *layer) { (void)layer; }
 
 CmLayerInterface sandbox_overlay(void) {
   return (CmLayerInterface){

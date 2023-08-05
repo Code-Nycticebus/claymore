@@ -9,6 +9,7 @@
 
 extern CmLayerInterface sandbox_layer(void);
 extern CmLayerInterface sandbox_overlay(void);
+extern CmLayerInterface sandbox_fps(void);
 
 ClaymoreConfig claymore_config(void) {
   return (const ClaymoreConfig){
@@ -22,7 +23,7 @@ ClaymoreConfig claymore_config(void) {
           {
               sandbox_layer,
               sandbox_overlay,
-              NULL,
+              sandbox_fps,
           },
   };
 }
