@@ -15,7 +15,7 @@ typedef struct {
 } CmApp;
 
 #ifndef CM_LAYER_COUNT
-#define CM_LAYER_COUNT 3
+#define CM_LAYER_COUNT 5
 #endif
 
 typedef struct {

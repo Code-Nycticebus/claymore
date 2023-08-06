@@ -20,6 +20,7 @@ ClaymoreConfig claymore_config(void) {
               sandbox_layer,
               sandbox_overlay,
               sandbox_fps,
+              NULL,
           },
   };
 }
