@@ -75,7 +75,7 @@ static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
     vec2 dir;
     glm_vec2_sub(mouse_pos, last_pos, dir);
     glm_vec2_normalize(dir);
-    glm_vec2_scale(dir, (float)2, dir);
+    glm_vec2_scale(dir, (float)3, dir);
 
     glm_vec2_copy(mouse_pos, last_pos);
 
@@ -125,7 +125,7 @@ static void sandbox_scroll_callback(CmApp *app, CmScrollEvent *event) {
 
   glm_vec3_sub(center, camera_pos, direction);
   glm_vec3_normalize(direction);
-  glm_vec3_scale(direction, event->yoffset, direction);
+  glm_vec3_scale(direction, (float)event->yoffset, direction);
 
   vec3 new_camera_pos;
   glm_vec3_add(camera_pos, direction, new_camera_pos);

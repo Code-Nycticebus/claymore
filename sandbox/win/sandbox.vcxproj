@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\fps.c" />
     <ClCompile Include="..\src\layer.c" />
     <ClCompile Include="..\src\overlay.c" />
     <ClCompile Include="..\src\sandbox.c" />
