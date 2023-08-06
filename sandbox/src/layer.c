@@ -118,7 +118,7 @@ static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
 }
 
 static void sandbox_scroll_callback(CmApp *app, CmScrollEvent *event) {
-  (void)app, (void)event;
+  (void)app;
   vec3 direction;
   vec3 center = {0, 0, 0};
   const float max_distance = 0.1F;
