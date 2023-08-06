@@ -1,8 +1,4 @@
 #include "claymore.h"
-#include "claymore/events/event.h"
-#include "claymore/events/mouse.h"
-#include <GL/gl.h>
-#include <stdio.h>
 
 static void fps_init(CmLayer *layer) { (void)layer; }
 

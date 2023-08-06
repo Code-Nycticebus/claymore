@@ -1,7 +1,3 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "claymore.h"
 
 #define WINDOW_WIDTH 620

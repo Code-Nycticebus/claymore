@@ -1,12 +1,4 @@
-
-#include "cglm/affine.h"
-#include "cglm/types.h"
-#include "cglm/vec2.h"
-#include "cglm/vec3-ext.h"
-#include "cglm/vec3.h"
 #include "claymore.h"
-#include "claymore/events/mouse.h"
-#include <stdio.h>
 
 static const float near = 0.1F;
 static vec3 up = {0, 1, 0};
