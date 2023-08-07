@@ -55,8 +55,7 @@ vec3 camera_pos = {0, 0, 4};
 
 #define UPPEST_DEGREE 89.F
 
-static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
-  (void)app;
+static void sandbox_mouse_callback(CmLayer *layer, CmMouseEvent *event) {
   if (event->action == CM_MOUSE_CLICK) {
     printf("LAYER CLICK!\n");
     event->base.handled = true;
@@ -97,8 +96,7 @@ static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
   }
 }
 
-static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
-  (void)app;
+static void sandbox_key_callback(CmLayer *layer, CmKeyEvent *event) {
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F5) {
       glm_vec3_copy((vec3){0, 0, 4}, camera_pos);
@@ -106,8 +104,7 @@ static void sandbox_key_callback(CmApp *app, CmKeyEvent *event) {
   }
 }
 
-static void sandbox_scroll_callback(CmApp *app, CmScrollEvent *event) {
-  (void)app;
+static void sandbox_scroll_callback(CmLayer *layer, CmScrollEvent *event) {
   vec3 direction;
   vec3 center = {0, 0, 0};
   const float max_distance = 0.1F;
@@ -126,11 +123,12 @@ static void sandbox_scroll_callback(CmApp *app, CmScrollEvent *event) {
 
 static void sandbox_init(CmLayer *layer) {
   glfwSwapInterval(1); // Set vsync
-  cm_event_set_callback(CM_EVENT_KEYBOARD,
+  CM_DEBUG("LAYER: %p\n", (void *)layer);
+  cm_event_set_callback(layer, CM_EVENT_KEYBOARD,
                         (cm_event_callback)sandbox_key_callback);
-  cm_event_set_callback(CM_EVENT_MOUSE,
+  cm_event_set_callback(layer, CM_EVENT_MOUSE,
                         (cm_event_callback)sandbox_mouse_callback);
-  cm_event_set_callback(CM_EVENT_SCROLL,
+  cm_event_set_callback(layer, CM_EVENT_SCROLL,
                         (cm_event_callback)sandbox_scroll_callback);
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
