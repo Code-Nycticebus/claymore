@@ -1,3 +1,4 @@
+#include "cglm/util.h"
 #include "claymore.h"
 
 static const float near = 0.1F;
@@ -81,12 +82,8 @@ static void sandbox_mouse_callback(CmApp *app, CmMouseEvent *event) {
       static float rotation_vertical_deg = 0.F;
       rotation_vertical_deg += -dir[1];
 
-      rotation_vertical_deg = rotation_vertical_deg < UPPEST_DEGREE
-                                  ? rotation_vertical_deg
-                                  : UPPEST_DEGREE;
-      rotation_vertical_deg = -UPPEST_DEGREE < rotation_vertical_deg
-                                  ? rotation_vertical_deg
-                                  : -UPPEST_DEGREE;
+      rotation_vertical_deg =
+          glm_clamp(rotation_vertical_deg, -UPPEST_DEGREE, UPPEST_DEGREE);
 
       rotation_horizontal += glm_rad(-dir[0]);
       rotation_vertical = glm_rad(rotation_vertical_deg);

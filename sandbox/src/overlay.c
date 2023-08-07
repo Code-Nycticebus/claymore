@@ -14,7 +14,8 @@ static struct ShaderData shader;
 
 static void overlay_mouse_callback(CmApp *app, CmMouseEvent *event) {
   (void)app;
-  if (event->info.pos[0] < 100.F && event->info.pos[1] < app->window->height) {
+  if (event->info.pos[0] < 100.F &&
+      event->info.pos[1] < app->window->height / 2) {
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       if (event->action == CM_MOUSE_CLICK) {
         printf("OVERLAY CLICK!\n");
