@@ -10,7 +10,7 @@ struct ShaderData {
 
 static struct ShaderData shader;
 
-static void overlay_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
+static void gui_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   if (event->info.pos[0] < 100.F &&
       event->info.pos[1] < layer->app->window->height / 2) {
     if (event->action == CM_MOUSE_CLICK) {
@@ -22,7 +22,7 @@ static void overlay_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   }
 }
 
-static void overlay_init(CmLayer *layer) {
+static void gui_init(CmLayer *layer) {
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
   shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
@@ -34,11 +34,11 @@ static void overlay_init(CmLayer *layer) {
   glm_mat4_identity(layer->camera.view);
   layer->camera.update = true;
 
-  cm_event_set_callback(CM_EVENT_MOUSE,
-                        (cm_event_callback)overlay_mouse_callback, layer);
+  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)gui_mouse_callback,
+                        layer);
 }
 
-static void overlay_update(CmLayer *layer, float dt) {
+static void gui_update(CmLayer *layer, float dt) {
   glDisable(GL_DEPTH_TEST);
 
   static float time = 0;
@@ -70,12 +70,12 @@ static void overlay_update(CmLayer *layer, float dt) {
   glEnable(GL_DEPTH_TEST);
 }
 
-static void overlay_free(CmLayer *layer) { (void)layer; }
+static void gui_free(CmLayer *layer) { (void)layer; }
 
-CmLayerInterface sandbox_overlay(void) {
+CmLayerInterface sandbox_gui(void) {
   return (CmLayerInterface){
-      .init = overlay_init,
-      .free = overlay_free,
-      .update = overlay_update,
+      .init = gui_init,
+      .free = gui_free,
+      .update = gui_update,
   };
 }

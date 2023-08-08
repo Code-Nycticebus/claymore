@@ -77,9 +77,15 @@ void cm_renderer_end(void) {
                   render_data->data);
   glBindVertexArray(render_data->vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data->ibo);
+
   cm_renderer_draw();
+
   render_data->vertecies_count = 0;
   render_data->indecies_count = 0;
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void cm_renderer_draw(void) {

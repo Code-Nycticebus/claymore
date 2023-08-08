@@ -1,6 +1,4 @@
-
 #include "claymore.h"
-#include "claymore/events/event.h"
 
 struct ShaderData {
   uint32_t id;
@@ -9,48 +7,29 @@ struct ShaderData {
     GLint mvp;
   } uniform_loc;
 };
+static struct ShaderData cube_shader;
 
 static struct {
   GLuint vbo;
-  GLuint vba;
+  GLuint vao;
   GLuint ibo;
 } RenderData;
-static struct ShaderData shader;
+
+static GLenum draw_mode = GL_FILL;
 
 const float rotation = 90.F;
-mat4 model = GLM_MAT4_IDENTITY_INIT;
+static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
-const struct Vertex {
+struct Vertex {
   vec3 pos;
   vec4 color;
-} vertecies[] = {
-    // 1
-    {{-1.F, -1.F, 1.F}, {1.F, 1.F, 0.F, 1.F}},
-    {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
-    {{1.F, 1.F, 1.F}, {0.F, 1.F, 1.F, 1.F}},
-    {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
-
-    // 2
-    {{-1.F, -1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}},
-    {{1.F, -1.F, -1.F}, {0.F, 1.F, 1.F, 1.F}},
-    {{1.F, 1.F, -1.F}, {1.F, 0.F, 1.F, 1.F}},
-    {{-1.F, 1.F, -1.F}, {1.F, 1.F, 0.F, 1.F}},
 };
 
-const uint32_t indices[] = {
-    0, 1, 2, 0, 2, 3, // 1
-    4, 5, 6, 4, 6, 7, // 2
-    0, 4, 5, 0, 5, 1, // 3
-    0, 4, 7, 0, 3, 7, // 4
-    1, 2, 5, 5, 6, 2, // 5
-    2, 3, 6, 3, 6, 7, // 6
-};
+static const uint32_t indices_count = 36;
 
-uint32_t indices_count = sizeof(indices) / sizeof(indices[0]);
+static const float fov = 45.F;
 
-const float fov = 45.F;
-
-static void layer_camera_controll(CmMouseEvent *event, CmCamera *camera) {
+static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_CLICK) {
     printf("LAYER CLICK!\n");
     event->base.handled = true;
@@ -94,7 +73,7 @@ static void layer_camera_controll(CmMouseEvent *event, CmCamera *camera) {
   }
 }
 
-static void layer_camera_scroll(CmScrollEvent *event, CmCamera *camera) {
+static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
   vec3 direction;
   vec3 center = {0, 0, 0};
   const float max_distance = 0.1F;
@@ -111,7 +90,7 @@ static void layer_camera_scroll(CmScrollEvent *event, CmCamera *camera) {
   }
 }
 
-static void layer_camera_resize(CmWindowEvent *event, CmCamera *camera) {
+static void camera_resize(CmWindowEvent *event, CmCamera *camera) {
   (void)event;
   glm_perspective(glm_rad(fov),
                   (float)event->window->width / (float)event->window->height,
@@ -119,7 +98,7 @@ static void layer_camera_resize(CmWindowEvent *event, CmCamera *camera) {
   camera->update = true;
 }
 
-static void sandbox_key_callback(CmKeyEvent *event, CmLayer *layer) {
+static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F5) {
       cm_camera_position(&layer->camera, (vec3){0, 0, 4});
@@ -130,36 +109,54 @@ static void sandbox_key_callback(CmKeyEvent *event, CmLayer *layer) {
           .event.window.window = layer->app->window,
       });
       event->base.handled = true;
+    } else if (event->code == CM_KEY_F1) {
+      draw_mode = draw_mode == GL_LINE ? GL_FILL : GL_LINE;
     }
   }
 }
 
-static void sandbox_init(CmLayer *layer) {
-  glfwSwapInterval(0); // Set vsync
-  cm_event_set_callback(CM_EVENT_KEYBOARD,
-                        (cm_event_callback)sandbox_key_callback, layer);
+static void cube_init(CmLayer *layer) {
+  glfwSwapInterval(1); // Set vsync
+  cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)cube_key_callback,
+                        layer);
 
-  cm_event_set_callback(
-      CM_EVENT_MOUSE, (cm_event_callback)layer_camera_controll, &layer->camera);
-  cm_event_set_callback(CM_EVENT_SCROLL, (cm_event_callback)layer_camera_scroll,
+  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)camera_controll,
+                        &layer->camera);
+  cm_event_set_callback(CM_EVENT_SCROLL, (cm_event_callback)camera_scroll,
                         &layer->camera);
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)layer_camera_resize, &layer->camera);
+                        (cm_event_callback)camera_resize, &layer->camera);
 
-  shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                       "res/shader/basic.fs.glsl");
-  shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
+  cube_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+                                            "res/shader/basic.fs.glsl");
+  cube_shader.uniform_loc.mvp =
+      cm_shader_get_uniform_location(cube_shader.id, "u_mvp");
 
   layer->camera = cm_camera_init_perspective(
       (vec3){0, 0, 4}, (vec3){0}, fov,
       (float)layer->app->window->width / (float)layer->app->window->height);
 
+  struct Vertex cube_vertecies[] = {
+      // 1
+      {{-1.F, -1.F, 1.F}, {1.F, 1.F, 0.F, 1.F}},
+      {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
+      {{1.F, 1.F, 1.F}, {0.F, 1.F, 1.F, 1.F}},
+      {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
+
+      // 2
+      {{-1.F, -1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}},
+      {{1.F, -1.F, -1.F}, {0.F, 1.F, 1.F, 1.F}},
+      {{1.F, 1.F, -1.F}, {1.F, 0.F, 1.F, 1.F}},
+      {{-1.F, 1.F, -1.F}, {1.F, 1.F, 0.F, 1.F}},
+  };
+
   glGenBuffers(1, &RenderData.vbo);
   glBindBuffer(GL_ARRAY_BUFFER, RenderData.vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertecies), vertecies, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertecies), cube_vertecies,
+               GL_STATIC_DRAW);
 
-  glGenVertexArrays(1, &RenderData.vba);
-  glBindVertexArray(RenderData.vba);
+  glGenVertexArrays(1, &RenderData.vao);
+  glBindVertexArray(RenderData.vao);
 
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
@@ -168,33 +165,47 @@ static void sandbox_init(CmLayer *layer) {
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
                         (void *)offsetof(struct Vertex, color)); // NOLINT
 
+  const uint32_t cube_indices[] = {
+      0, 1, 2, 0, 2, 3, // 1
+      4, 5, 6, 4, 6, 7, // 2
+      0, 4, 5, 0, 5, 1, // 3
+      0, 4, 7, 0, 3, 7, // 4
+      1, 2, 5, 5, 6, 2, // 5
+      2, 3, 6, 3, 6, 7, // 6
+  };
+
   glGenBuffers(1, &RenderData.ibo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices,
                GL_STATIC_DRAW);
 }
 
-static void sandbox_update(CmLayer *layer, float dt) {
-  mat4 mvp;
+static void cube_update(CmLayer *layer, float dt) {
+  glPolygonMode(GL_FRONT_AND_BACK, draw_mode);
+  static mat4 mvp;
   (void)dt;
 
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  glUseProgram(shader.id);
-  glUniformMatrix4fv(shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  glUseProgram(cube_shader.id);
+  glUniformMatrix4fv(cube_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
+  glBindVertexArray(RenderData.vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
-  glBindVertexArray(RenderData.vba);
-
   glDrawElements(GL_TRIANGLES, indices_count, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray(0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glUseProgram(0);
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to normal mode
 }
 
-static void sandbox_free(CmLayer *layer) { (void)layer; }
+static void cube_free(CmLayer *layer) { (void)layer; }
 
-CmLayerInterface sandbox_layer(void) {
+CmLayerInterface sandbox_cube(void) {
   return (const CmLayerInterface){
-      .init = sandbox_init,
-      .free = sandbox_free,
-      .update = sandbox_update,
+      .init = cube_init,
+      .free = cube_free,
+      .update = cube_update,
   };
 }
