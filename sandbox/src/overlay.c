@@ -1,7 +1,5 @@
 #include "claymore.h"
 
-static const float near = 0.1F;
-
 struct ShaderData {
   uint32_t id;
 
@@ -14,13 +12,13 @@ static struct ShaderData shader;
 
 static void overlay_mouse_callback(CmLayer *layer, CmMouseEvent *event) {
   if (event->info.pos[0] < 100.F &&
-      event->info.pos[1] < app->window->height / 2) {
-    if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-      if (event->action == CM_MOUSE_CLICK) {
+      event->info.pos[1] < layer->app->window->height / 2) {
+    if (event->action == CM_MOUSE_CLICK) {
+      if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
         printf("OVERLAY CLICK!\n");
       }
-      event->base.handled = true;
     }
+    event->base.handled = true;
   }
 }
 
@@ -30,11 +28,11 @@ static void overlay_init(CmLayer *layer) {
   shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
 
   glm_ortho(0.0F, (float)layer->app->window->width, 0.0F,
-            (float)layer->app->window->height, near, 100.0F,
+            (float)layer->app->window->height, -1.F, 1.F,
             layer->camera.projection);
 
   vec3 up = {0, 1, 0};
-  glm_lookat((vec3){0, 0, 3}, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
+  glm_lookat((vec3){0, 0, 1}, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
 
   cm_event_set_callback(layer, CM_EVENT_MOUSE,
                         (cm_event_callback)overlay_mouse_callback);
@@ -54,19 +52,11 @@ static void overlay_update(CmLayer *layer, float dt) {
     time = 0;
   }
 
-  mat4 vp;
   mat4 mvp;
   mat4 model;
 
-  glm_ortho(0.0F, (float)layer->app->window->width, 0.0F,
-            (float)layer->app->window->height, near, 100.0F,
-            layer->camera.projection);
-
-  // Calculates camera perspective
-  glm_mat4_mul(layer->camera.projection, layer->camera.view, vp);
-
   glm_mat4_identity(model);
-  glm_mat4_mul(vp, model, mvp);
+  glm_mat4_mul(layer->camera.vp, model, mvp);
 
   glUseProgram(shader.id);
   glUniformMatrix4fv(shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);

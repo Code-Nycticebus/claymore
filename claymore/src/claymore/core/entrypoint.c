@@ -1,3 +1,4 @@
+#include "claymore/core/camera.h"
 #include "cm.h"
 
 #include "GLFW/glfw3.h"
@@ -47,6 +48,7 @@ int main(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (size_t i = 0; i < layer_count; ++i) {
+      cm_camera_update(&layer_stack[i].layer.camera);
       layer_stack[i].interface.update(&layer_stack[i].layer, deltatime);
     }
 

@@ -1,6 +1,7 @@
 #ifndef __CM_APP_H__
 #define __CM_APP_H__
 
+#include "camera.h"
 #include "claymore/events/event.h"
 #include "window.h"
 
@@ -19,7 +20,7 @@ typedef struct {
 #endif
 
 typedef struct {
-  Camera camera;
+  CmCamera camera;
   CmApp *app;
   void *state;
 } CmLayer;

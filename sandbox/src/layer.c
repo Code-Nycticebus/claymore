@@ -1,8 +1,5 @@
-#include "cglm/util.h"
-#include "claymore.h"
 
-static const float near = 0.1F;
-static vec3 up = {0, 1, 0};
+#include "claymore.h"
 
 struct ShaderData {
   uint32_t id;
@@ -20,7 +17,7 @@ static struct {
 static struct ShaderData shader;
 
 const float rotation = 90.F;
-mat4 model;
+mat4 model = GLM_MAT4_IDENTITY_INIT;
 
 const struct Vertex {
   vec3 pos;
@@ -51,11 +48,8 @@ const uint32_t indices[] = {
 uint32_t indices_count = sizeof(indices) / sizeof(indices[0]);
 
 const float fov = 45.F;
-vec3 camera_pos = {0, 0, 4};
 
-#define UPPEST_DEGREE 89.F
-
-static void sandbox_mouse_callback(CmLayer *layer, CmMouseEvent *event) {
+static void layer_camera_controll(CmCamera *camera, CmMouseEvent *event) {
   if (event->action == CM_MOUSE_CLICK) {
     printf("LAYER CLICK!\n");
     event->base.handled = true;
@@ -73,73 +67,85 @@ static void sandbox_mouse_callback(CmLayer *layer, CmMouseEvent *event) {
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       float camera_distance =
-          glm_vec3_distance(camera_pos, (vec3){0.F, 0.F, 0.F});
+          glm_vec3_distance(camera->position, camera->lookat);
 
       static float rotation_horizontal = 0.F;
       static float rotation_vertical = 0.F;
 
-      static float rotation_vertical_deg = 0.F;
-      rotation_vertical_deg += -dir[1];
-
-      rotation_vertical_deg =
-          glm_clamp(rotation_vertical_deg, -UPPEST_DEGREE, UPPEST_DEGREE);
-
       rotation_horizontal += glm_rad(-dir[0]);
-      rotation_vertical = glm_rad(rotation_vertical_deg);
+      rotation_vertical += glm_rad(-dir[1]);
 
-      camera_pos[0] =
-          camera_distance * sinf(rotation_horizontal) * cosf(rotation_vertical);
-      camera_pos[1] = camera_distance * sinf(rotation_vertical);
-      camera_pos[2] =
-          camera_distance * cosf(rotation_horizontal) * cosf(rotation_vertical);
+      const float limit = glm_rad(89.F);
+      rotation_vertical = glm_clamp(rotation_vertical, -limit, limit);
+
+      vec3 new_camera_pos;
+      new_camera_pos[0] = camera->lookat[0] + camera_distance *
+                                                  sinf(rotation_horizontal) *
+                                                  cosf(rotation_vertical);
+      new_camera_pos[1] =
+          camera->lookat[1] + camera_distance * sinf(rotation_vertical);
+      new_camera_pos[2] = camera->lookat[2] + camera_distance *
+                                                  cosf(rotation_horizontal) *
+                                                  cosf(rotation_vertical);
+
+      cm_camera_position(camera, new_camera_pos);
     }
   }
+}
+
+static void layer_camera_scroll(CmCamera *camera, CmScrollEvent *event) {
+  vec3 direction;
+  vec3 center = {0, 0, 0};
+  const float max_distance = 0.1F;
+
+  glm_vec3_sub(center, camera->position, direction);
+  glm_vec3_normalize(direction);
+  glm_vec3_scale(direction, (float)event->yoffset, direction);
+
+  vec3 new_camera_pos;
+  glm_vec3_add(camera->position, direction, new_camera_pos);
+  float new_distance = glm_vec3_distance(new_camera_pos, center);
+  if (max_distance <= new_distance) {
+    cm_camera_position(camera, new_camera_pos);
+  }
+}
+
+static void layer_camera_resize(CmCamera *camera, CmWindowEvent *event) {
+  (void)event;
+  glm_perspective(glm_rad(fov),
+                  (float)event->window->width / (float)event->window->height,
+                  1 / 100.F, 100.F, camera->projection);
+  camera->update = true;
 }
 
 static void sandbox_key_callback(CmLayer *layer, CmKeyEvent *event) {
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F5) {
-      glm_vec3_copy((vec3){0, 0, 4}, camera_pos);
+      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
+      event->base.handled = true;
     }
-  }
-}
-
-static void sandbox_scroll_callback(CmLayer *layer, CmScrollEvent *event) {
-  vec3 direction;
-  vec3 center = {0, 0, 0};
-  const float max_distance = 0.1F;
-
-  glm_vec3_sub(center, camera_pos, direction);
-  glm_vec3_normalize(direction);
-  glm_vec3_scale(direction, (float)event->yoffset, direction);
-
-  vec3 new_camera_pos;
-  glm_vec3_add(camera_pos, direction, new_camera_pos);
-  float new_distance = glm_vec3_distance(new_camera_pos, center);
-  if (max_distance <= new_distance) {
-    glm_vec3_copy(new_camera_pos, camera_pos);
   }
 }
 
 static void sandbox_init(CmLayer *layer) {
   glfwSwapInterval(1); // Set vsync
-  CM_DEBUG("LAYER: %p\n", (void *)layer);
   cm_event_set_callback(layer, CM_EVENT_KEYBOARD,
                         (cm_event_callback)sandbox_key_callback);
-  cm_event_set_callback(layer, CM_EVENT_MOUSE,
-                        (cm_event_callback)sandbox_mouse_callback);
-  cm_event_set_callback(layer, CM_EVENT_SCROLL,
-                        (cm_event_callback)sandbox_scroll_callback);
+
+  cm_event_set_callback(&layer->camera, CM_EVENT_MOUSE,
+                        (cm_event_callback)layer_camera_controll);
+  cm_event_set_callback(&layer->camera, CM_EVENT_SCROLL,
+                        (cm_event_callback)layer_camera_scroll);
+  cm_event_set_callback(&layer->camera, CM_EVENT_WINDOW_RESIZE,
+                        (cm_event_callback)layer_camera_resize);
+
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
   shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
 
-  glm_perspective(glm_rad(fov),
-                  (float)layer->app->window->width /
-                      (float)layer->app->window->height,
-                  near, 100.F, layer->camera.projection);
-
-  glm_lookat(camera_pos, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
+  layer->camera = cm_camera_init_perspective(
+      (vec3){0, 0, 4}, (vec3){0}, fov,
+      (float)layer->app->window->width / (float)layer->app->window->height);
 
   glGenBuffers(1, &RenderData.vbo);
   glBindBuffer(GL_ARRAY_BUFFER, RenderData.vbo);
@@ -159,21 +165,14 @@ static void sandbox_init(CmLayer *layer) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
-
-  glm_mat4_identity(model);
 }
 
 static void sandbox_update(CmLayer *layer, float dt) {
-  mat4 vp;
   mat4 mvp;
   (void)dt;
 
-  glm_lookat(camera_pos, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
+  glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  // Calculates camera perspective
-  glm_mat4_mul(layer->camera.projection, layer->camera.view, vp);
-
-  glm_mat4_mul(vp, model, mvp);
   glUseProgram(shader.id);
   glUniformMatrix4fv(shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 

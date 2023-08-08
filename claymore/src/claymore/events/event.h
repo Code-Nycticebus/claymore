@@ -9,9 +9,6 @@
 
 typedef void (*cm_event_callback)(void *data, CmEventUnion *event);
 
-typedef void (*cm_event_callback)(App *app, CmEventUnion *event);
-
-void cm_event_init(App *app);
 void cm_event_dispatch(CmEvent event);
 void cm_event_set_callback(void *data, CmEventType type,
                            cm_event_callback callback);

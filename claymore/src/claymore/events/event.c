@@ -9,7 +9,6 @@
 #define CM_EVENT_MAX_CALLBACKS 16
 
 typedef struct {
-  App *app;
   uint32_t count;
   struct {
     void *data;
