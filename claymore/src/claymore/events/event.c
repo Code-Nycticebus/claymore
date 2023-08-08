@@ -24,8 +24,8 @@ static CmEventPool cbs[] = {
     [CM_EVENT_SCROLL] = {0},
 };
 
-void cm_event_set_callback(void *data, CmEventType type,
-                           cm_event_callback callback) {
+void cm_event_set_callback(CmEventType type, cm_event_callback callback,
+                           void *data) {
   assert(CM_EVENT_MOUSE <= type && type <= CM_EVENT_SCROLL);
   assert(cbs[type].count < CM_EVENT_MAX_CALLBACKS);
   cbs[type].callback[cbs[type].count].data = data;
@@ -35,8 +35,8 @@ void cm_event_set_callback(void *data, CmEventType type,
 
 void cm_event_dispatch(CmEvent event) {
   for (int32_t i = cbs[event.type].count - 1; 0 <= i; --i) {
-    cbs[event.type].callback[i].fn(cbs[event.type].callback[i].data,
-                                   &event.event);
+    cbs[event.type].callback[i].fn(&event.event,
+                                   cbs[event.type].callback[i].data);
     if (event.event.base.handled) {
       break;
     }

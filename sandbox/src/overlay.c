@@ -10,7 +10,7 @@ struct ShaderData {
 
 static struct ShaderData shader;
 
-static void overlay_mouse_callback(CmLayer *layer, CmMouseEvent *event) {
+static void overlay_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   if (event->info.pos[0] < 100.F &&
       event->info.pos[1] < layer->app->window->height / 2) {
     if (event->action == CM_MOUSE_CLICK) {
@@ -34,8 +34,8 @@ static void overlay_init(CmLayer *layer) {
   glm_mat4_identity(layer->camera.view);
   layer->camera.update = true;
 
-  cm_event_set_callback(layer, CM_EVENT_MOUSE,
-                        (cm_event_callback)overlay_mouse_callback);
+  cm_event_set_callback(CM_EVENT_MOUSE,
+                        (cm_event_callback)overlay_mouse_callback, layer);
 }
 
 static void overlay_update(CmLayer *layer, float dt) {

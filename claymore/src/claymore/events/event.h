@@ -7,10 +7,10 @@
 #include "mouse.h"
 #include <stdbool.h>
 
-typedef void (*cm_event_callback)(void *data, CmEventUnion *event);
+typedef void (*cm_event_callback)(CmEventUnion *event, void *data);
 
 void cm_event_dispatch(CmEvent event);
-void cm_event_set_callback(void *data, CmEventType type,
-                           cm_event_callback callback);
+void cm_event_set_callback(CmEventType type, cm_event_callback callback,
+                           void *data);
 
 #endif /* !__CM_EVENTS_H__ */

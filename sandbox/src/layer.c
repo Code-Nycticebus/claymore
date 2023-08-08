@@ -1,5 +1,6 @@
 
 #include "claymore.h"
+#include "claymore/events/event.h"
 
 struct ShaderData {
   uint32_t id;
@@ -49,7 +50,7 @@ uint32_t indices_count = sizeof(indices) / sizeof(indices[0]);
 
 const float fov = 45.F;
 
-static void layer_camera_controll(CmCamera *camera, CmMouseEvent *event) {
+static void layer_camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_CLICK) {
     printf("LAYER CLICK!\n");
     event->base.handled = true;
@@ -93,7 +94,7 @@ static void layer_camera_controll(CmCamera *camera, CmMouseEvent *event) {
   }
 }
 
-static void layer_camera_scroll(CmCamera *camera, CmScrollEvent *event) {
+static void layer_camera_scroll(CmScrollEvent *event, CmCamera *camera) {
   vec3 direction;
   vec3 center = {0, 0, 0};
   const float max_distance = 0.1F;
@@ -110,7 +111,7 @@ static void layer_camera_scroll(CmCamera *camera, CmScrollEvent *event) {
   }
 }
 
-static void layer_camera_resize(CmCamera *camera, CmWindowEvent *event) {
+static void layer_camera_resize(CmWindowEvent *event, CmCamera *camera) {
   (void)event;
   glm_perspective(glm_rad(fov),
                   (float)event->window->width / (float)event->window->height,
@@ -118,26 +119,32 @@ static void layer_camera_resize(CmCamera *camera, CmWindowEvent *event) {
   camera->update = true;
 }
 
-static void sandbox_key_callback(CmLayer *layer, CmKeyEvent *event) {
+static void sandbox_key_callback(CmKeyEvent *event, CmLayer *layer) {
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F5) {
       cm_camera_position(&layer->camera, (vec3){0, 0, 4});
+      event->base.handled = true;
+    } else if (event->code == CM_KEY_ESCAPE) {
+      cm_event_dispatch((CmEvent){
+          .type = CM_EVENT_WINDOW_CLOSE,
+          .event.window.window = layer->app->window,
+      });
       event->base.handled = true;
     }
   }
 }
 
 static void sandbox_init(CmLayer *layer) {
-  glfwSwapInterval(1); // Set vsync
-  cm_event_set_callback(layer, CM_EVENT_KEYBOARD,
-                        (cm_event_callback)sandbox_key_callback);
+  glfwSwapInterval(0); // Set vsync
+  cm_event_set_callback(CM_EVENT_KEYBOARD,
+                        (cm_event_callback)sandbox_key_callback, layer);
 
-  cm_event_set_callback(&layer->camera, CM_EVENT_MOUSE,
-                        (cm_event_callback)layer_camera_controll);
-  cm_event_set_callback(&layer->camera, CM_EVENT_SCROLL,
-                        (cm_event_callback)layer_camera_scroll);
-  cm_event_set_callback(&layer->camera, CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)layer_camera_resize);
+  cm_event_set_callback(
+      CM_EVENT_MOUSE, (cm_event_callback)layer_camera_controll, &layer->camera);
+  cm_event_set_callback(CM_EVENT_SCROLL, (cm_event_callback)layer_camera_scroll,
+                        &layer->camera);
+  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
+                        (cm_event_callback)layer_camera_resize, &layer->camera);
 
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
