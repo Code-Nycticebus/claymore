@@ -23,7 +23,9 @@ static char *_cm_shader_slurp_file(const char *filename) {
     return NULL;
   }
 
-  fread(data, sizeof(char), size, file);
+  if (fread(data, sizeof(char), size, file) < size) {
+    return NULL;
+  }
 
   return data;
 }
