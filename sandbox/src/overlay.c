@@ -31,8 +31,8 @@ static void overlay_init(CmLayer *layer) {
             (float)layer->app->window->height, -1.F, 1.F,
             layer->camera.projection);
 
-  vec3 up = {0, 1, 0};
-  glm_lookat((vec3){0, 0, 1}, (vec3){0, 0, 0}, (float *)up, layer->camera.view);
+  glm_mat4_identity(layer->camera.view);
+  layer->camera.update = true;
 
   cm_event_set_callback(layer, CM_EVENT_MOUSE,
                         (cm_event_callback)overlay_mouse_callback);
