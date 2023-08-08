@@ -60,6 +60,9 @@
     <ClInclude Include="..\src\claymore\logger\logger.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\claymore\core\camera.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\claymore\core\app.c">
@@ -93,6 +96,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\src\claymore\events\mouse.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\core\camera.c">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

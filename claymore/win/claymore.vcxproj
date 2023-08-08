@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\claymore.h" />
     <ClInclude Include="..\src\claymore\core\app.h" />
+    <ClInclude Include="..\src\claymore\core\camera.h" />
     <ClInclude Include="..\src\claymore\core\shader.h" />
     <ClInclude Include="..\src\claymore\core\window.h" />
     <ClInclude Include="..\src\claymore\debug\debug.h" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\claymore\core\app.c" />
+    <ClCompile Include="..\src\claymore\core\camera.c" />
     <ClCompile Include="..\src\claymore\core\entrypoint.c" />
     <ClCompile Include="..\src\claymore\core\shader.c" />
     <ClCompile Include="..\src\claymore\core\window.c" />
