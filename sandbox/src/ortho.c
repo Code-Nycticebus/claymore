@@ -73,7 +73,9 @@ static void ortho_update(CmLayer *layer, float dt) {
 
   glBindVertexArray(OrthoRenderData.vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, OrthoRenderData.ibo);
+
   glDrawElements(GL_TRIANGLES, OrthoRenderData.i, GL_UNSIGNED_INT, NULL);
+
   glBindVertexArray(0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   glUseProgram(0);
