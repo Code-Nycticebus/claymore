@@ -23,10 +23,8 @@ static char *_cm_shader_slurp_file(const char *filename) {
     return NULL;
   }
 
-  if (fread(data, sizeof(char), size, file) < size) {
-    return NULL;
-  }
-
+  (void)fread(data, sizeof(char), size, file);
+  
   return data;
 }
 
@@ -76,6 +74,7 @@ GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
     return 0;
   }
 
+  CM_INFO("Shader: '%s' and '%s' compiled succesfully %d\n", vs_src, fs_src);
   return program;
 }
 
