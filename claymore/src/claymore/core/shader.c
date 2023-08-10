@@ -78,7 +78,6 @@ GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
 }
 
 GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
-
   GLuint vs_id = _cm_compile_shader(vs_src, GL_VERTEX_SHADER);
   if (!_cm_shader_check_error(vs_id, GL_COMPILE_STATUS)) {
     CM_ERROR("%s\n", vs_src);
@@ -116,6 +115,7 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
 }
 
 GLint cm_shader_get_uniform_location(GLuint shader, const char *uniform_name) {
+  assert(shader != 0);
   GLint location = glGetUniformLocation(shader, uniform_name);
   if (location == -1) {
     CM_ERROR("Uniform location '%s' not found in shader %u\n", uniform_name,
