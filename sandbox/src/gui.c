@@ -28,7 +28,7 @@ static void gui_init(CmLayer *layer) {
   shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
 
   glm_ortho(0.0F, (float)layer->app->window->width, 0.0F,
-            (float)layer->app->window->height, -1.F, 1.F,
+            (float)layer->app->window->height, -100.F, 100.F,
             layer->camera.projection);
 
   glm_mat4_identity(layer->camera.view);
@@ -63,7 +63,7 @@ static void gui_update(CmLayer *layer, float dt) {
 
   cm_renderer_begin();
   cm_renderer_push_quad_color(
-      (vec2){0, 0}, 0, (vec2){100.F, (float)layer->app->window->height / 2},
+      (vec2){0, 0}, -10.F, (vec2){100.F, (float)layer->app->window->height / 2},
       (vec4){0.F, 1.F, 1.F, 1.F});
   cm_renderer_end();
 

@@ -30,10 +30,7 @@ static const uint32_t indices_count = 36;
 static const float fov = 45.F;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
-  if (event->action == CM_MOUSE_CLICK) {
-    printf("LAYER CLICK!\n");
-    event->base.handled = true;
-  } else if (event->action == CM_MOUSE_MOVE) {
+  if (event->action == CM_MOUSE_MOVE) {
     vec2 mouse_pos;
     cm_mouseinfo_pos(mouse_pos);
     static vec2 last_pos = {0, 0};
@@ -100,17 +97,27 @@ static void camera_resize(CmWindowEvent *event, CmCamera *camera) {
 
 static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
   if (event->action == CM_KEY_PRESS) {
-    if (event->code == CM_KEY_F5) {
-      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
-      event->base.handled = true;
-    } else if (event->code == CM_KEY_ESCAPE) {
-      cm_event_dispatch((CmEvent){
-          .type = CM_EVENT_WINDOW_CLOSE,
-          .event.window.window = layer->app->window,
+    event->base.handled = true;
+    switch (event->code) {
+    case CM_KEY_F5: {
+      cm_camera_position(&layer->camera, (vec3) { 0, 0, 4 });
+      break;
+    }
+    case CM_KEY_ESCAPE: {
+      // TODO cm_app_close()
+      cm_event_dispatch((CmEvent) {
+        .type = CM_EVENT_WINDOW_CLOSE,
+        .event.window.window = layer->app->window,
       });
-      event->base.handled = true;
-    } else if (event->code == CM_KEY_F1) {
+      break;
+    }
+    case CM_KEY_F1: {
       draw_mode = draw_mode == GL_LINE ? GL_FILL : GL_LINE;
+      break;
+    }
+    default:
+      event->base.handled = false;
+      break;
     }
   }
 }

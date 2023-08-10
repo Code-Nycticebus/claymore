@@ -30,7 +30,7 @@ static void ortho_init(CmLayer *layer) {
   ortho_shader.uniform_loc.mvp =
       cm_shader_get_uniform_location(ortho_shader.id, "u_mvp");
 
-  glm_ortho(-1.F, 1.F, -1.F, 1.F, -1.F, 100.F, layer->camera.projection);
+  glm_ortho(-1.F, 1.F, -1.F, 1.F, -100.F, 100.F, layer->camera.projection);
   glm_mat4_identity(layer->camera.view);
   layer->camera.update = true;
 
