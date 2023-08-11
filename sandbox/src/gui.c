@@ -63,7 +63,7 @@ static void gui_update(CmLayer *layer, float dt) {
 
   cm_renderer_begin();
   cm_renderer_push_quad_color(
-      (vec2){0, 0}, -10.F, (vec2){100.F, (float)layer->app->window->height / 2},
+      (vec2){0, 0}, 1.F, (vec2){100.F, (float)layer->app->window->height / 2},
       (vec4){0.F, 1.F, 1.F, 1.F});
   cm_renderer_end();
 
