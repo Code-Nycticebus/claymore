@@ -1,4 +1,7 @@
+#include "cglm/vec3.h"
 #include "claymore.h"
+
+#include "stb_image.h"
 
 struct Vertex {
   vec3 pos;
@@ -10,6 +13,7 @@ struct ShaderData {
 
   struct {
     GLint mvp;
+    GLint texture;
   } uniform_loc;
 };
 
@@ -19,35 +23,45 @@ static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
 static CmRenderBuffer render_data;
 
-#define INITIAL_ZOOM 10.F
-static float zoom = INITIAL_ZOOM;
+static uint32_t texture_id;
 
-static float gcd(uint32_t a, uint32_t b) { return b == 0 ? a : gcd(b, a % b); }
-
-typedef struct {
-  uint32_t w;
-  uint32_t h;
-} Aspect;
-
-static Aspect get_aspect(uint32_t width, uint32_t height) {
-  float divisor = gcd(width, height);
-  return (Aspect){.w = width / divisor, .h = height / divisor};
-}
+static float zoom = 1.F;
+static float aspect;
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
-  zoom = glm_max(zoom + event->yoffset * 2, 1.F);
-  Aspect aspect = get_aspect(event->window->width, event->window->height);
-  glm_ortho(-zoom * aspect.w, zoom * aspect.w, -zoom * aspect.h,
-            zoom * aspect.h, -100.F, 100.F, layer->camera.projection);
+  const float min_zoom = 0.1F;
+  zoom = glm_max(zoom - event->yoffset / 2, min_zoom);
+  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
+            layer->camera.projection);
   layer->camera.update = true;
 }
 
 static void ortho_window_resize_callback(CmWindowEvent *event,
                                          CmCamera *camera) {
-  Aspect aspect = get_aspect(event->window->width, event->window->height);
-  glm_ortho(-zoom * aspect.w, zoom * aspect.w, -zoom * aspect.h,
-            zoom * aspect.h, -100.F, 100.F, camera->projection);
+  aspect = (float)event->window->width / (float)event->window->height;
+  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
+            camera->projection);
   camera->update = true;
+}
+
+static void ortho_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
+  if (event->action == CM_MOUSE_MOVE) {
+    static vec3 last_position = {0};
+    vec2 pos;
+    vec2 direction;
+    cm_mouseinfo_pos(pos);
+    glm_vec2_sub(pos, last_position, direction);
+    glm_vec2_copy(pos, last_position);
+
+    if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+      glm_vec2_scale(direction, zoom / 100.F, direction);
+      glm_vec2_add(layer->camera.position, direction, layer->camera.position);
+
+      glm_mat4_identity(layer->camera.view);
+      glm_translate(layer->camera.view, layer->camera.position);
+      layer->camera.update = true;
+    }
+  }
 }
 
 static void ortho_init(CmLayer *layer) {
@@ -89,24 +103,27 @@ static void ortho_init(CmLayer *layer) {
     stbi_image_free(texture_buffer);
   }
 
-  Aspect aspect =
-      get_aspect(layer->app->window->width, layer->app->window->height);
-  glm_ortho(-zoom * aspect.w, zoom * aspect.w, -zoom * aspect.h,
-            zoom * aspect.h, -100.F, 100.F, layer->camera.projection);
+  aspect = (float)layer->app->window->width / (float)layer->app->window->height;
+  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
+            layer->camera.projection);
   glm_mat4_identity(layer->camera.view);
+  glm_vec3_copy((vec3){0}, layer->camera.position);
+  glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)ortho_window_resize_callback,
                         &layer->camera);
+  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)ortho_mouse_callback,
+                        &layer->camera);
   cm_event_set_callback(CM_EVENT_SCROLL,
                         (cm_event_callback)ortho_scroll_callback, layer);
 
   struct Vertex vertecies[] = {
-      {{-100.F, -100.F, 0.F}, {0.F, 0.F}}, //
-      {{100.F, -100.F, 0.F}, {1.F, 0.F}},  //
-      {{100.F, 100.F, 0.F}, {1.F, 1.F}},   //
-      {{-100.F, 100.F, 0.F}, {0.F, 1.F}},
+      {{-1.F, -1.F, 0.F}, {0.F, 0.F}}, //
+      {{1.F, -1.F, 0.F}, {1.F, 0.F}},  //
+      {{1.F, 1.F, 0.F}, {1.F, 1.F}},   //
+      {{-1.F, 1.F, 0.F}, {0.F, 1.F}},
   };
   const size_t vertecies_count = 4;
 
@@ -132,15 +149,21 @@ static void ortho_update(CmLayer *layer, float dt) {
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
   glUseProgram(ortho_shader.id);
   glUniformMatrix4fv(ortho_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  glUniform1i(texture_id, 0);
 
   cm_renderer_draw_indexed(&render_data, render_data.index_buffer.count);
 
   glUseProgram(0);
 }
 
-static void ortho_free(CmLayer *layer) { (void)layer; }
+static void ortho_free(CmLayer *layer) {
+  (void)layer;
+  glDeleteTextures(1, &texture_id);
+}
 
 CmLayerInterface sandbox_ortho(void) {
   return (CmLayerInterface){
