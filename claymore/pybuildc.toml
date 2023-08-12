@@ -11,3 +11,5 @@ glew = { lib="GLEW", dir="../deps/glew/glew/lib/", include=["../deps/glew/glew/i
 glfw = { lib="glfw3", dir="../deps/glfw/glfw/build/src/", include=["../deps/glfw/glfw/include/"] }
 math = { lib="m" }
 cglm = { lib="cglm", dir="../deps/cglm/cglm/build/", include=["../deps/cglm/cglm/include/"]}
+
+stb_image = { dir="../deps/stb_image/", dep_type="pybuildc" }

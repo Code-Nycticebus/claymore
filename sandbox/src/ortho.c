@@ -55,6 +55,39 @@ static void ortho_init(CmLayer *layer) {
                                              "res/shader/texture.fs.glsl");
   ortho_shader.uniform_loc.mvp =
       cm_shader_get_uniform_location(ortho_shader.id, "u_mvp");
+  ortho_shader.uniform_loc.texture =
+      cm_shader_get_uniform_location(ortho_shader.id, "u_texture");
+
+  int32_t texture_width = 0;
+  int32_t texture_height = 0;
+  int32_t bits_per_pixel;
+
+  stbi_set_flip_vertically_on_load(true);
+  unsigned char *texture_buffer =
+      stbi_load("res/textures/apple.png", &texture_width, &texture_height,
+                &bits_per_pixel, 4);
+  const char *fail = stbi_failure_reason();
+  if (fail) {
+    cm_log_error("%s\n", fail);
+  }
+
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture_width, texture_height, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  if (texture_buffer) {
+    stbi_image_free(texture_buffer);
+  }
 
   Aspect aspect =
       get_aspect(layer->app->window->width, layer->app->window->height);
