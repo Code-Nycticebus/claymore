@@ -10,29 +10,18 @@
 #define CM_LOGGER_FORMAT(...)
 #endif
 
-typedef enum {
-  CM_LOG_FATAL = 0,
-  CM_LOG_ERROR,
-  CM_LOG_WARN,
-  CM_LOG_INFO,
-  CM_LOG_DEBUG,
-  CM_LOG_TRACE,
-} CmLogLevel;
-
-#define CM_FATAL(...) cm_log(CM_LOG_FATAL, __VA_ARGS__)
-#define CM_ERROR(...) cm_log(CM_LOG_ERROR, __VA_ARGS__)
-#define CM_WARN(...) cm_log(CM_LOG_WARN, __VA_ARGS__)
-#define CM_INFO(...) cm_log(CM_LOG_INFO, __VA_ARGS__)
+void cm_log_fatal(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
+void cm_log_error(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
+void cm_log_warning(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
+void cm_log_info(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 
 #ifdef _CM_DEBUG
-#define CM_DEBUG(...) cm_log(CM_LOG_DEBUG, __VA_ARGS__)
-#define CM_TRACE(...) cm_log(CM_LOG_TRACE, __VA_ARGS__)
+void cm_log_debug(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
+void cm_log_trace(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 #else
-#define CM_DEBUG(...)
-#define CM_TRACE(...)
+#define cm_log_debug(...)
+#define cm_log_trace(...)
 #endif
-
-void cm_log(CmLogLevel log_level, const char *fmt, ...) CM_LOGGER_FORMAT(2, 3);
 
 void cm_logger_init(void);
 void cm_logger_destroy(void);

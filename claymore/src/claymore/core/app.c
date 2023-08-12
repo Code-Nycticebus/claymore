@@ -7,7 +7,7 @@
 static void _cm_app_key_event(CmKeyEvent *key, CmApp *app) {
   (void)app;
   if (key->action == CM_KEY_PRESS || key->action == CM_KEY_REPEAT) {
-    CM_TRACE("Pressed %d\n", key->code);
+    cm_log_trace("Pressed %d\n", key->code);
   }
 }
 
@@ -31,7 +31,7 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
     return false;
   }
 
-  CM_INFO("%s\n", cm_debug_enabled ? "Claymore Debug" : "Claymore Release");
+  cm_log_info("%s\n", cm_debug_enabled ? "Claymore Debug" : "Claymore Release");
 
   app->run = true;
   return true;

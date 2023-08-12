@@ -24,6 +24,19 @@ static struct ShaderData ortho_shader;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
+typedef struct {
+  size_t stride;
+  size_t index;
+} VertexAttribute;
+
+static void cm_vertex_attribute_push(VertexAttribute *attr, GLenum type,
+                                     size_t count, size_t offset) {
+  glEnableVertexAttribArray(attr->index);
+  glVertexAttribPointer(attr->index, count, type, GL_FALSE, attr->stride,
+                        (const void *)offset); // NOLINT
+  attr->index++;
+}
+
 static void ortho_init(CmLayer *layer) {
   ortho_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                              "res/shader/basic.fs.glsl");
@@ -47,12 +60,9 @@ static void ortho_init(CmLayer *layer) {
   glGenVertexArrays(1, &OrthoRenderData.vao);
   glBindVertexArray(OrthoRenderData.vao);
 
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
-                        (void *)offsetof(struct Vertex, pos));
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
-                        (void *)offsetof(struct Vertex, color)); // NOLINT
+  VertexAttribute attr = {.index = 0, .stride = sizeof(struct Vertex)};
+  cm_vertex_attribute_push(&attr, GL_FLOAT, 3, offsetof(struct Vertex, pos));
+  cm_vertex_attribute_push(&attr, GL_FLOAT, 4, offsetof(struct Vertex, color));
 
   GLuint indices[] = {0, 1, 2};
   OrthoRenderData.i = 3;

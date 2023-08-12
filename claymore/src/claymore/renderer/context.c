@@ -13,13 +13,13 @@ bool cm_context_init(WindowHandle *window_handle) {
 
   GLenum err = glewInit();
   if (err != GLEW_OK) {
-    CM_ERROR("GLEW initialization failed: %s", glewGetString(err));
+    cm_log_error("GLEW initialization failed: %s", glewGetString(err));
     return false;
   }
-  CM_INFO("Glew version: %s\n", glewGetString(GLEW_VERSION));
-  CM_INFO("OpenGl %s\n", glGetString(GL_VERSION));
-  CM_INFO("GPU: %s\n", glGetString(GL_RENDERER));
-  CM_INFO("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  cm_log_info("Glew version: %s\n", glewGetString(GLEW_VERSION));
+  cm_log_info("OpenGl %s\n", glGetString(GL_VERSION));
+  cm_log_info("GPU: %s\n", glGetString(GL_RENDERER));
+  cm_log_info("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
   glEnable(GL_DEPTH_TEST);
 
