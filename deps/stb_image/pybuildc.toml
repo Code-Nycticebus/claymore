@@ -1,0 +1,8 @@
+[project]
+name="stb_image"
+version="1.0"
+cc="gcc"
+bin="static"
+
+[dependecies]
+math = { lib="m" }
