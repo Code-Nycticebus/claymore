@@ -22,6 +22,12 @@ static void gui_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   }
 }
 
+static void gui_resize_callback(CmWindowEvent *event, CmCamera *camera) {
+  glm_ortho(0.0F, (float)event->window->width, 0.0F,
+            (float)event->window->height, -100.F, 100.F, camera->projection);
+  camera->update = true;
+}
+
 static void gui_init(CmLayer *layer) {
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
@@ -36,6 +42,8 @@ static void gui_init(CmLayer *layer) {
 
   cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)gui_mouse_callback,
                         layer);
+  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
+                        (cm_event_callback)gui_resize_callback, layer);
 }
 
 static void gui_update(CmLayer *layer, float dt) {
@@ -65,24 +73,6 @@ static void gui_update(CmLayer *layer, float dt) {
   cm_renderer2d_push_quad_color(
       (vec2){0, 0}, 1.F, (vec2){100.F, (float)layer->app->window->height / 2},
       (vec4){0.F, 1.F, 1.F, 1.F});
-  cm_renderer2d_end();
-
-  cm_renderer2d_begin();
-  static float past_time = 0;
-  static float y = 0;
-  y += 100.F * sinf(past_time) * dt * 2;
-  past_time += dt;
-  y = glm_clamp(y, 0.F, layer->app->window->height - 100.F);
-
-  const uint32_t num_quads = 8000;
-  const float alpha_factor = (1.F / (float)num_quads);
-  const float xs = (float)layer->app->window->width / num_quads;
-  for (size_t i = 0; i < num_quads; i++) {
-    float x = xs * i;
-    float a = alpha_factor * i + alpha_factor;
-    cm_renderer2d_push_quad_color((vec2){x, y}, 1.F, (vec2){xs, 100.F},
-                                  (vec4){1.F, 0.F, 0.F, a});
-  }
   cm_renderer2d_end();
 
   glEnable(GL_DEPTH_TEST);

@@ -89,6 +89,8 @@ void cm_renderer2d_push_quad_color(const vec2 position, float z,
   if (!(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES)) {
     cm_renderer2d_flush();
   }
+
+  // For safety i still assert
   assert(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
   assert(render_data->indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
@@ -97,7 +99,7 @@ void cm_renderer2d_push_quad_color(const vec2 position, float z,
   const float y = position[1];
   const float ys = size[1];
 
-  CmVertex vertecies[] = {
+  CmVertex vertecies[CM_RENDERER2D_VERTECIES_PER_QUAD] = {
       {{x, y, z}, {color[0], color[1], color[2], color[3]}},           // a
       {{x + xs, y, z}, {color[0], color[1], color[2], color[3]}},      // b
       {{x + xs, y + ys, z}, {color[0], color[1], color[2], color[3]}}, // c

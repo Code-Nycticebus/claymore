@@ -7,6 +7,7 @@ extern CmLayerInterface sandbox_cube(void);
 extern CmLayerInterface sandbox_gui(void);
 extern CmLayerInterface sandbox_ortho(void);
 extern CmLayerInterface sandbox_fps(void);
+extern CmLayerInterface sandbox_batch_test(void);
 
 ClaymoreConfig claymore_config(void) {
   return (const ClaymoreConfig){
@@ -19,8 +20,9 @@ ClaymoreConfig claymore_config(void) {
       .layers =
           {
               sandbox_ortho,
-              sandbox_cube,
+              // sandbox_cube,
               sandbox_gui,
+              sandbox_batch_test,
               NULL,
           },
   };
