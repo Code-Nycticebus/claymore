@@ -13,7 +13,7 @@ struct Render2dData {
   CmRenderBuffer renderer;
 
   size_t vertecies_count;
-  VertexColor2D data[CM_RENDERER2D_MAX_VERTECIES];
+  CmVertex data[CM_RENDERER2D_MAX_VERTECIES];
 
   size_t indecies_count;
   uint32_t indecies[CM_RENDERER2D_MAX_INDECIES];
@@ -27,18 +27,18 @@ void cm_renderer_init(void) {
   render_data = (struct Render2dData *)calloc(1, sizeof(struct Render2dData));
 
   // Initialize Quad primitive buffer
-  render_data->renderer.vertex_buffer = cm_vertex_buffer_create(
-      CM_RENDERER2D_MAX_VERTECIES, sizeof(VertexColor2D), render_data->data,
-      GL_DYNAMIC_DRAW);
+  render_data->renderer.vertex_buffer =
+      cm_vertex_buffer_create(CM_RENDERER2D_MAX_VERTECIES, sizeof(CmVertex),
+                              render_data->data, GL_DYNAMIC_DRAW);
 
   render_data->vertecies_count = 0;
 
   render_data->renderer.vertex_attribute =
       cm_vertex_attribute_create(&render_data->renderer.vertex_buffer);
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(VertexColor2D, pos));
+                           offsetof(CmVertex, pos));
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 4, GL_FLOAT,
-                           offsetof(VertexColor2D, color));
+                           offsetof(CmVertex, color));
 
   // Generates indices in advance
   uint32_t base_indices[CM_RENDERER_INDICES_PER_SQUAD] = {
@@ -62,12 +62,14 @@ void cm_renderer_shutdown(void) {
   free(render_data);
 }
 
-void cm_renderer_begin(void) {}
+void cm_renderer2d_begin(void) {}
 
-void cm_renderer_end(void) {
+void cm_renderer2d_end(void) { cm_renderer2d_flush(); }
+
+void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, render_data->renderer.vertex_buffer.id);
   glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(VertexColor2D) * render_data->vertecies_count,
+                  sizeof(CmVertex) * render_data->vertecies_count,
                   render_data->data);
 
   cm_renderer_draw_indexed(&render_data->renderer, render_data->indecies_count);
@@ -78,12 +80,15 @@ void cm_renderer_end(void) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void cm_renderer_push_quad(const vec2 position, float z, const vec2 size) {
-  cm_renderer_push_quad_color(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F});
+void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size) {
+  cm_renderer2d_push_quad_color(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F});
 }
 
-void cm_renderer_push_quad_color(const vec2 position, float z, const vec2 size,
-                                 const vec4 color) {
+void cm_renderer2d_push_quad_color(const vec2 position, float z,
+                                   const vec2 size, const vec4 color) {
+  if (!(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES)) {
+    cm_renderer2d_flush();
+  }
   assert(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
   assert(render_data->indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
@@ -92,7 +97,7 @@ void cm_renderer_push_quad_color(const vec2 position, float z, const vec2 size,
   const float y = position[1];
   const float ys = size[1];
 
-  VertexColor2D vertecies[] = {
+  CmVertex vertecies[] = {
       {{x, y, z}, {color[0], color[1], color[2], color[3]}},           // a
       {{x + xs, y, z}, {color[0], color[1], color[2], color[3]}},      // b
       {{x + xs, y + ys, z}, {color[0], color[1], color[2], color[3]}}, // c

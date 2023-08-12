@@ -1,7 +1,7 @@
 #ifndef __CM_RENDER_BUFFER_H__
 #define __CM_RENDER_BUFFER_H__
 
-#include "cm.h"
+#include "renderer_defines.h"
 
 typedef struct {
   uint32_t id;

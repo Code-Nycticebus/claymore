@@ -38,9 +38,9 @@ static void cm_log(CmLogLevel log_level, size_t size, const char *msg) {
       [CM_LOG_FATAL] = {"FATAL", "\033[1m\033[91m"},
       [CM_LOG_ERROR] = {"ERROR", "\033[91m"},
       [CM_LOG_WARN] = {"WARN", "\033[33m"},
-      [CM_LOG_INFO] = {"INFO", "\033[32m"},
+      [CM_LOG_INFO] = {"INFO", "\033[34m"},
       [CM_LOG_DEBUG] = {"DEBUG", "\033[1m\033[95m"},
-      [CM_LOG_TRACE] = {"TRACE", "\033[37m"},
+      [CM_LOG_TRACE] = {"TRACE", "\033[97m"},
   };
 
   (void)size;

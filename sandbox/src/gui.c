@@ -61,11 +61,29 @@ static void gui_update(CmLayer *layer, float dt) {
   glUseProgram(shader.id);
   glUniformMatrix4fv(shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
-  cm_renderer_begin();
-  cm_renderer_push_quad_color(
+  cm_renderer2d_begin();
+  cm_renderer2d_push_quad_color(
       (vec2){0, 0}, 1.F, (vec2){100.F, (float)layer->app->window->height / 2},
       (vec4){0.F, 1.F, 1.F, 1.F});
-  cm_renderer_end();
+  cm_renderer2d_end();
+
+  cm_renderer2d_begin();
+  static float past_time = 0;
+  static float y = 0;
+  y += 100.F * sinf(past_time) * dt * 2;
+  past_time += dt;
+  y = glm_clamp(y, 0.F, layer->app->window->height - 100.F);
+
+  const uint32_t num_quads = 8000;
+  const float alpha_factor = (1.F / (float)num_quads);
+  const float xs = (float)layer->app->window->width / num_quads;
+  for (size_t i = 0; i < num_quads; i++) {
+    float x = xs * i;
+    float a = alpha_factor * i + alpha_factor;
+    cm_renderer2d_push_quad_color((vec2){x, y}, 1.F, (vec2){xs, 100.F},
+                                  (vec4){1.F, 0.F, 0.F, a});
+  }
+  cm_renderer2d_end();
 
   glEnable(GL_DEPTH_TEST);
 }

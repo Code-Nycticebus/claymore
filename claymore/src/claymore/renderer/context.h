@@ -1,7 +1,7 @@
 #ifndef __CM_CONTEXT_H__
 #define __CM_CONTEXT_H__
 
-#include "cm.h"
+#include "renderer_defines.h"
 
 typedef void WindowHandle;
 
