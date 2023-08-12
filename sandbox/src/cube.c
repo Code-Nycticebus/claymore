@@ -1,5 +1,8 @@
 #include "claymore.h"
 
+#include "claymore/renderer/render_buffer.h"
+#include "claymore/renderer/render_command.h"
+
 struct ShaderData {
   uint32_t id;
 
@@ -9,11 +12,7 @@ struct ShaderData {
 };
 static struct ShaderData cube_shader;
 
-static struct {
-  GLuint vbo;
-  GLuint vao;
-  GLuint ibo;
-} RenderData;
+static CmRenderBuffer render_data;
 
 static GLenum draw_mode = GL_FILL;
 
@@ -24,8 +23,6 @@ struct Vertex {
   vec3 pos;
   vec4 color;
 };
-
-static const uint32_t indices_count = 36;
 
 static const float fov = 45.F;
 
@@ -100,14 +97,14 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
     event->base.handled = true;
     switch (event->code) {
     case CM_KEY_F5: {
-      cm_camera_position(&layer->camera, (vec3) { 0, 0, 4 });
+      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
       break;
     }
     case CM_KEY_ESCAPE: {
       // TODO cm_app_close()
-      cm_event_dispatch((CmEvent) {
-        .type = CM_EVENT_WINDOW_CLOSE,
-        .event.window.window = layer->app->window,
+      cm_event_dispatch((CmEvent){
+          .type = CM_EVENT_WINDOW_CLOSE,
+          .event.window.window = layer->app->window,
       });
       break;
     }
@@ -156,21 +153,17 @@ static void cube_init(CmLayer *layer) {
       {{1.F, 1.F, -1.F}, {1.F, 0.F, 1.F, 1.F}},
       {{-1.F, 1.F, -1.F}, {1.F, 1.F, 0.F, 1.F}},
   };
+  const size_t vertecies_count = 8;
 
-  glGenBuffers(1, &RenderData.vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, RenderData.vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertecies), cube_vertecies,
-               GL_STATIC_DRAW);
+  render_data.vertex_buffer = cm_vertex_buffer_create(
+      vertecies_count, sizeof(struct Vertex), cube_vertecies, GL_STATIC_DRAW);
 
-  glGenVertexArrays(1, &RenderData.vao);
-  glBindVertexArray(RenderData.vao);
-
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
-                        (void *)offsetof(struct Vertex, pos));
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vertex),
-                        (void *)offsetof(struct Vertex, color)); // NOLINT
+  render_data.vertex_attribute =
+      cm_vertex_attribute_create(&render_data.vertex_buffer);
+  cm_vertex_attribute_push(&render_data.vertex_attribute, 3, GL_FLOAT,
+                           offsetof(struct Vertex, pos));
+  cm_vertex_attribute_push(&render_data.vertex_attribute, 4, GL_FLOAT,
+                           offsetof(struct Vertex, color));
 
   const uint32_t cube_indices[] = {
       0, 1, 2, 0, 2, 3, // 1
@@ -180,11 +173,11 @@ static void cube_init(CmLayer *layer) {
       1, 2, 5, 5, 6, 2, // 5
       2, 3, 6, 3, 6, 7, // 6
   };
+  const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
 
-  glGenBuffers(1, &RenderData.ibo);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cube_indices), cube_indices,
-               GL_STATIC_DRAW);
+  render_data.index_buffer =
+      cm_index_buffer_create(&render_data.vertex_attribute, indices_count,
+                             cube_indices, GL_STATIC_DRAW);
 }
 
 static void cube_update(CmLayer *layer, float dt) {
@@ -197,11 +190,8 @@ static void cube_update(CmLayer *layer, float dt) {
   glUseProgram(cube_shader.id);
   glUniformMatrix4fv(cube_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
-  glBindVertexArray(RenderData.vao);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, RenderData.ibo);
-  glDrawElements(GL_TRIANGLES, indices_count, GL_UNSIGNED_INT, NULL);
-  glBindVertexArray(0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  cm_renderer_draw_indexed(&render_data, render_data.index_buffer.count);
+
   glUseProgram(0);
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to normal mode

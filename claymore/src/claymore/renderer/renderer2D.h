@@ -13,10 +13,6 @@
 
 typedef struct {
   vec3 pos;
-} VertexUniform2D;
-
-typedef struct {
-  vec3 pos;
   vec4 color;
 } VertexColor2D;
 
@@ -40,7 +36,6 @@ void cm_renderer_push_quad_color(const vec2 position, float z, const vec2 size,
 #ifdef _CM_RENDERER_INTERNAL
 void cm_renderer_init(void);
 void cm_renderer_shutdown(void);
-void cm_renderer_draw(void);
 #endif // !_CM_RENDERER_INTERNAL
 
 #endif // !__CM_RENDERER2D_H__
