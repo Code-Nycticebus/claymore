@@ -118,8 +118,6 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *title) {
 
   cm_context_init(window);
 
-  glViewport(0, 0, width, height);
-
   glfwSetKeyCallback(window, _cm_window_key_callback);
   glfwSetCursorPosCallback(window, _cm_window_mouse_pos_callback);
   glfwSetMouseButtonCallback(window, _cm_window_mouse_button_callback);

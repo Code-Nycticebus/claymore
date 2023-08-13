@@ -15,8 +15,8 @@ typedef struct {
   bool run;
 } CmApp;
 
-#ifndef CM_LAYER_COUNT
-#define CM_LAYER_COUNT 5
+#ifndef CM_LAYER_MAX
+#define CM_LAYER_MAX 5
 #endif
 
 typedef struct {
@@ -40,11 +40,13 @@ typedef struct ClaymoreConfig {
     const char *title;
   } window;
 
-  cm_layer_create_fn layers[CM_LAYER_COUNT];
+  cm_layer_create_fn layers[CM_LAYER_MAX];
 } ClaymoreConfig;
 
 bool cm_app_init(CmApp *app, const ClaymoreConfig *config);
 void cm_app_shutdown(CmApp *app);
+
+void cm_app_run(CmApp *app);
 
 /* User functions! */
 extern ClaymoreConfig claymore_config(void);

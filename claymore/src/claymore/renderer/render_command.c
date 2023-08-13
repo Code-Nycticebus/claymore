@@ -10,3 +10,11 @@ void cm_renderer_draw_indexed(CmRenderBuffer *render_buffer,
   glBindVertexArray(0);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
+
+void cm_renderer_clear(void) {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void cm_renderer_clear_color(vec4 color) {
+  glClearColor(color[0], color[1], color[2], color[3]);
+}

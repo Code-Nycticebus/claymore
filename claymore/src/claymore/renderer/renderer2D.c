@@ -21,7 +21,7 @@ struct Render2dData {
 
 static struct Render2dData *render_data = NULL;
 
-void cm_renderer_init(void) {
+void cm_renderer2d_init(void) {
   // INITS VERTEX ARRAY
   assert(render_data == NULL && "Renderer was initialized twice!");
   render_data = (struct Render2dData *)calloc(1, sizeof(struct Render2dData));
@@ -55,7 +55,7 @@ void cm_renderer_init(void) {
       render_data->indecies, GL_STATIC_DRAW);
 }
 
-void cm_renderer_shutdown(void) {
+void cm_renderer2d_shutdown(void) {
   glDeleteBuffers(1, &render_data->renderer.vertex_buffer.id);
   glDeleteVertexArrays(1, &render_data->renderer.vertex_attribute.id);
   glDeleteBuffers(1, &render_data->renderer.index_buffer.id);

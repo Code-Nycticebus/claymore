@@ -24,7 +24,7 @@ static void gui_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
 
 static void gui_resize_callback(CmWindowEvent *event, CmCamera *camera) {
   glm_ortho(0.0F, (float)event->window->width, 0.0F,
-            (float)event->window->height, -100.F, 100.F, camera->projection);
+            (float)event->window->height, -1.F, 1.F, camera->projection);
   camera->update = true;
 }
 
@@ -38,6 +38,8 @@ static void gui_init(CmLayer *layer) {
             layer->camera.projection);
 
   glm_mat4_identity(layer->camera.view);
+  glm_vec3_copy((vec3){0}, layer->camera.position);
+  glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
   cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)gui_mouse_callback,
@@ -74,7 +76,7 @@ static void gui_update(CmLayer *layer, float dt) {
       (vec2){0, 0}, 1.F, (vec2){100.F, (float)layer->app->window->height / 2},
       (vec4){0.F, 1.F, 1.F, 1.F});
   cm_renderer2d_end();
-
+  glUseProgram(0);
   glEnable(GL_DEPTH_TEST);
 }
 

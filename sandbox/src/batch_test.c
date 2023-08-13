@@ -12,7 +12,7 @@ static struct ShaderData shader;
 
 static void batch_resize_callback(CmWindowEvent *event, CmCamera *camera) {
   glm_ortho(0.0F, (float)event->window->width, 0.0F,
-            (float)event->window->height, -100.F, 100.F, camera->projection);
+            (float)event->window->height, -1.F, 1.F, camera->projection);
   camera->update = true;
 }
 
@@ -23,9 +23,11 @@ static void batch_init(CmLayer *layer) {
   shader.uniform_loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
 
   glm_ortho(0.0F, (float)layer->app->window->width, 0.0F,
-            (float)layer->app->window->height, -100.F, 100.F,
+            (float)layer->app->window->height, -1.F, 1.F,
             layer->camera.projection);
   glm_mat4_identity(layer->camera.view);
+  glm_vec3_copy((vec3){0}, layer->camera.position);
+  glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
@@ -34,6 +36,7 @@ static void batch_init(CmLayer *layer) {
 }
 
 static void batch_update(CmLayer *layer, float dt) {
+  glDisable(GL_DEPTH_TEST);
   mat4 mvp;
   mat4 model;
 
@@ -61,6 +64,8 @@ static void batch_update(CmLayer *layer, float dt) {
                                   (vec4){1.F, 0.F, 0.F, a});
   }
   cm_renderer2d_end();
+  glUseProgram(0);
+  glEnable(GL_DEPTH_TEST);
 }
 
 static void batch_free(CmLayer *layer) { (void)layer; }

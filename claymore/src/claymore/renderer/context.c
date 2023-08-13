@@ -21,11 +21,14 @@ bool cm_context_init(WindowHandle *window_handle) {
   cm_log_info("GPU: %s\n", glGetString(GL_RENDERER));
   cm_log_info("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-  glEnable(GL_DEPTH_TEST);
-
   // Transparency
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  int32_t width;
+  int32_t height;
+  glfwGetWindowSize(window_handle, &width, &height);
+  glViewport(0, 0, width, height);
 
 #ifdef _CM_DEBUG
   glEnable(GL_DEBUG_OUTPUT);

@@ -1,12 +1,11 @@
 #include "claymore/core/camera.h"
 #include "cm.h"
 
-#include "GLFW/glfw3.h"
 #include "claymore/core/app.h"
 #include "claymore/logger/logger.h"
 
 #define _CM_RENDERER_INTERNAL
-#include "claymore/renderer/renderer2D.h"
+#include "claymore/renderer/renderer.h"
 
 int main(void) {
 
@@ -25,7 +24,7 @@ int main(void) {
     return -1;
   }
 
-  cm_renderer_init();
+  cm_renderer2d_init();
 
   for (size_t i = 0; i < CM_LAYER_COUNT && config.layers[i] != NULL; ++i) {
     layer_stack[i].interface = config.layers[i]();
@@ -45,7 +44,7 @@ int main(void) {
     deltatime = time - time_last_frame;
     time_last_frame = time;
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    cm_renderer_clear();
 
     for (size_t i = 0; i < layer_count; ++i) {
       cm_camera_update(&layer_stack[i].layer.camera);
@@ -59,7 +58,7 @@ int main(void) {
     layer_stack[i].interface.free(&layer_stack[i].layer);
   }
 
-  cm_renderer_shutdown();
+  cm_renderer2d_shutdown();
 
   cm_app_shutdown(&app);
 
