@@ -13,3 +13,4 @@ math = { lib="m" }
 cglm = { lib="cglm", dir="../deps/cglm/cglm/build/", include=["../deps/cglm/cglm/include/"]}
 
 stb_image = { dir="../deps/stb_image/", dep_type="pybuildc" }
+stb_truetype = { dir="../deps/stb_truetype/", dep_type="pybuildc" }
