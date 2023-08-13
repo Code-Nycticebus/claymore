@@ -39,6 +39,8 @@ void cm_renderer2d_init(void) {
                            offsetof(CmVertex, pos));
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 4, GL_FLOAT,
                            offsetof(CmVertex, color));
+  cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 2, GL_FLOAT,
+                           offsetof(CmVertex, uv));
 
   // Generates indices in advance
   uint32_t base_indices[CM_RENDERER_INDICES_PER_SQUAD] = {
@@ -80,12 +82,9 @@ void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size) {
-  cm_renderer2d_push_quad_color(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F});
-}
-
-void cm_renderer2d_push_quad_color(const vec2 position, float z,
-                                   const vec2 size, const vec4 color) {
+static void _cm_renderer2d_push_quad(const vec2 position, float z,
+                                     const vec2 size, const vec4 color,
+                                     vec2 texture_coord, vec2 texture_size) {
   if (!(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES)) {
     cm_renderer2d_flush();
   }
@@ -100,14 +99,43 @@ void cm_renderer2d_push_quad_color(const vec2 position, float z,
   const float ys = size[1];
 
   CmVertex vertecies[CM_RENDERER2D_VERTECIES_PER_QUAD] = {
-      {{x, y, z}, {color[0], color[1], color[2], color[3]}},           // a
-      {{x + xs, y, z}, {color[0], color[1], color[2], color[3]}},      // b
-      {{x + xs, y + ys, z}, {color[0], color[1], color[2], color[3]}}, // c
-      {{x, y + ys, z}, {color[0], color[1], color[2], color[3]}},      // d
+      {
+          {x, y, z},
+          {color[0], color[1], color[2], color[3]},
+          {texture_coord[0], texture_coord[1]},
+      }, // a
+      {
+          {x + xs, y, z},
+          {color[0], color[1], color[2], color[3]},
+          {texture_coord[0] + texture_size[0], texture_coord[1]},
+      }, // b
+      {
+          {x + xs, y + ys, z},
+          {color[0], color[1], color[2], color[3]},
+          {texture_coord[0] + texture_size[0],
+           texture_coord[1] + texture_size[1]},
+
+      }, // c
+      {
+          {x, y + ys, z},
+          {color[0], color[1], color[2], color[3]},
+          {texture_coord[0], texture_coord[1] + texture_size[1]},
+      }, // d
   };
   memcpy(&render_data->data[render_data->vertecies_count], vertecies,
          sizeof(vertecies));
 
   render_data->vertecies_count += CM_RENDERER2D_VERTECIES_PER_QUAD;
   render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
+}
+
+void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size,
+                             vec2 texture_coord, vec2 texture_size) {
+  _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
+                           texture_coord, texture_size);
+}
+
+void cm_renderer2d_push_quad_color(const vec2 position, float z,
+                                   const vec2 size, const vec4 color) {
+  _cm_renderer2d_push_quad(position, z, size, color, (vec2){0}, (vec2){0});
 }

@@ -50,18 +50,7 @@ static void gui_init(CmLayer *layer) {
 
 static void gui_update(CmLayer *layer, float dt) {
   glDisable(GL_DEPTH_TEST);
-
-  static float time = 0;
-  time += dt;
-  if (time > 1) {
-#define TITLE_MAX 128
-    char title[TITLE_MAX] = {0};
-    snprintf(title, TITLE_MAX - 1, "%s FPS: %0.f", layer->app->window->title,
-             1 / dt);
-    glfwSetWindowTitle(layer->app->window->ctx, title);
-    time = 0;
-  }
-
+  (void)dt;
   mat4 mvp;
   mat4 model;
 

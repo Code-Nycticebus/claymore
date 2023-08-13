@@ -21,6 +21,7 @@ bool cm_context_init(WindowHandle *window_handle) {
   cm_log_info("GPU: %s\n", glGetString(GL_RENDERER));
   cm_log_info("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+  glEnable(GL_DEPTH_TEST);
   // Transparency
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

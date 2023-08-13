@@ -23,8 +23,6 @@ static struct ShaderData grid_shader;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
-static CmRenderBuffer render_data;
-
 static uint32_t texture_id;
 
 static float zoom = 1.F;
@@ -123,7 +121,6 @@ static void ortho_init(CmLayer *layer) {
     cm_log_error("%s\n", fail);
   }
 
-  glActiveTexture(GL_TEXTURE0);
   glGenTextures(1, &texture_id);
   glBindTexture(GL_TEXTURE_2D, texture_id);
 
@@ -160,29 +157,6 @@ static void ortho_init(CmLayer *layer) {
 
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)ortho_key_callback, layer);
-
-  struct Vertex vertecies[] = {
-      {{-1.F, -1.F, 1.F}, {0.F, 0.F}}, //
-      {{1.F, -1.F, 1.F}, {1.F, 0.F}},  //
-      {{1.F, 1.F, 1.F}, {1.F, 1.F}},   //
-      {{-1.F, 1.F, 1.F}, {0.F, 1.F}},
-  };
-  const size_t vertecies_count = 4;
-
-  render_data.vertex_buffer = cm_vertex_buffer_create(
-      vertecies_count, sizeof(struct Vertex), vertecies, GL_STATIC_DRAW);
-
-  render_data.vertex_attribute =
-      cm_vertex_attribute_create(&render_data.vertex_buffer);
-  cm_vertex_attribute_push(&render_data.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(struct Vertex, pos));
-  cm_vertex_attribute_push(&render_data.vertex_attribute, 2, GL_FLOAT,
-                           offsetof(struct Vertex, uv));
-
-  uint32_t indices[] = {0, 1, 2, 0, 2, 3};
-  const uint32_t indices_count = 6;
-  render_data.index_buffer = cm_index_buffer_create(
-      &render_data.vertex_attribute, indices_count, indices, GL_STATIC_DRAW);
 }
 
 static void ortho_update(CmLayer *layer, float dt) {
@@ -214,7 +188,10 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(ortho_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
   glUniform1i(ortho_shader.uniform_loc.texture, 0);
 
-  cm_renderer_draw_indexed(&render_data, render_data.index_buffer.count);
+  cm_renderer2d_begin();
+  cm_renderer2d_push_quad((vec2){0.F, 0.F}, 1.F, (vec2){1.F, 1.F},
+                          (vec2){0.F, 0.F}, (vec2){1.F, 1.F});
+  cm_renderer2d_end();
 
   glUseProgram(0);
   glBindTexture(GL_TEXTURE_2D, 0);
