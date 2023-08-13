@@ -21,7 +21,6 @@ ClaymoreConfig claymore_config(void) {
           {
               sandbox_ortho,
               // sandbox_cube,
-              sandbox_batch_test,
               sandbox_gui,
               NULL,
           },

@@ -66,8 +66,38 @@ static void ortho_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   }
 }
 
+static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
+  if (event->action == CM_KEY_PRESS) {
+    event->base.handled = true;
+    switch (event->code) {
+    case CM_KEY_F5: {
+      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
+      break;
+    }
+    case CM_KEY_ESCAPE: {
+      // TODO cm_app_close()
+      cm_event_dispatch((CmEvent){
+          .type = CM_EVENT_WINDOW_CLOSE,
+          .event.window.window = layer->app->window,
+      });
+      break;
+    }
+
+    case CM_KEY_F2: {
+      static bool vsync = true;
+      vsync = !vsync;
+      glfwSwapInterval(vsync);
+      cm_log_info("vsync turned %s\n", vsync ? "on" : "off");
+      break;
+    }
+    default:
+      event->base.handled = false;
+      break;
+    }
+  }
+}
+
 static void ortho_init(CmLayer *layer) {
-  glfwSwapInterval(0); // Set vsync
   ortho_shader.id = cm_load_shader_from_file("res/shader/texture.vs.glsl",
                                              "res/shader/texture.fs.glsl");
   ortho_shader.uniform_loc.mvp =
@@ -127,6 +157,9 @@ static void ortho_init(CmLayer *layer) {
                         &layer->camera);
   cm_event_set_callback(CM_EVENT_SCROLL,
                         (cm_event_callback)ortho_scroll_callback, layer);
+
+  cm_event_set_callback(CM_EVENT_KEYBOARD,
+                        (cm_event_callback)ortho_key_callback, layer);
 
   struct Vertex vertecies[] = {
       {{-1.F, -1.F, 1.F}, {0.F, 0.F}}, //

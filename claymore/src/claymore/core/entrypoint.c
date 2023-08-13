@@ -17,7 +17,7 @@ int main(void) {
   struct {
     CmLayerInterface interface;
     CmLayer layer;
-  } layer_stack[CM_LAYER_COUNT];
+  } layer_stack[CM_LAYER_MAX];
   uint32_t layer_count = 0;
 
   if (!cm_app_init(&app, &config)) {
@@ -26,7 +26,7 @@ int main(void) {
 
   cm_renderer2d_init();
 
-  for (size_t i = 0; i < CM_LAYER_COUNT && config.layers[i] != NULL; ++i) {
+  for (size_t i = 0; i < CM_LAYER_MAX && config.layers[i] != NULL; ++i) {
     layer_stack[i].interface = config.layers[i]();
     layer_stack[i].layer.app = &app;
     layer_count++;

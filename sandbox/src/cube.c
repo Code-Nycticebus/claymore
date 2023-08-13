@@ -112,6 +112,13 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
       draw_mode = draw_mode == GL_LINE ? GL_FILL : GL_LINE;
       break;
     }
+    case CM_KEY_F2: {
+      static bool vsync = true;
+      vsync = !vsync;
+      glfwSwapInterval(vsync);
+      cm_log_info("vsync turned %s\n", vsync ? "on" : "off");
+      break;
+    }
     default:
       event->base.handled = false;
       break;
@@ -120,7 +127,6 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
 }
 
 static void cube_init(CmLayer *layer) {
-  glfwSwapInterval(1); // Set vsync
   cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)cube_key_callback,
                         layer);
 
