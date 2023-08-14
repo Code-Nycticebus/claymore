@@ -84,7 +84,7 @@ void cm_renderer2d_flush(void) {
 
 static void _cm_renderer2d_push_quad(const vec2 position, float z,
                                      const vec2 size, const vec4 color,
-                                     vec2 texture_coord, vec2 texture_size) {
+                                     vec2 text_coord, vec2 text_size) {
   if (!(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES)) {
     cm_renderer2d_flush();
   }
@@ -102,25 +102,23 @@ static void _cm_renderer2d_push_quad(const vec2 position, float z,
       {
           {x, y, z},
           {color[0], color[1], color[2], color[3]},
-          {texture_coord[0], texture_coord[1]},
-      }, // a
+          {text_coord[0], text_coord[1]},
+      },
       {
           {x + xs, y, z},
           {color[0], color[1], color[2], color[3]},
-          {texture_coord[0] + texture_size[0], texture_coord[1]},
-      }, // b
+          {text_coord[0] + text_size[0], text_coord[1]},
+      },
       {
           {x + xs, y + ys, z},
           {color[0], color[1], color[2], color[3]},
-          {texture_coord[0] + texture_size[0],
-           texture_coord[1] + texture_size[1]},
-
-      }, // c
+          {text_coord[0] + text_size[0], text_coord[1] + text_size[1]},
+      },
       {
           {x, y + ys, z},
           {color[0], color[1], color[2], color[3]},
-          {texture_coord[0], texture_coord[1] + texture_size[1]},
-      }, // d
+          {text_coord[0], text_coord[1] + text_size[1]},
+      },
   };
   memcpy(&render_data->data[render_data->vertecies_count], vertecies,
          sizeof(vertecies));

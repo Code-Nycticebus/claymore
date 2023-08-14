@@ -168,7 +168,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUseProgram(grid_shader.id);
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
   cm_renderer2d_begin();
-  const size_t grid_size = 100;
+  const size_t grid_size = 500;
   const float quad_size = 0.05F;
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
