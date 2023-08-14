@@ -1,14 +1,11 @@
 #include "context.h"
 
-#include "GL/gl.h"
 #include "GLFW/glfw3.h"
 
 #include "claymore/debug/debug.h"
 #include "claymore/logger/logger.h"
 
 bool cm_context_init(WindowHandle *window_handle) {
-
-  /* Make the window's context current */
   glfwMakeContextCurrent(window_handle);
 
   GLenum err = glewInit();
@@ -16,14 +13,15 @@ bool cm_context_init(WindowHandle *window_handle) {
     cm_log_error("GLEW initialization failed: %s", glewGetString(err));
     return false;
   }
-  cm_log_info("Glew version: %s\n", glewGetString(GLEW_VERSION));
+
+  /* Logs info */
   cm_log_info("OpenGl %s\n", glGetString(GL_VERSION));
   cm_log_info("GPU: %s\n", glGetString(GL_RENDERER));
   cm_log_info("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
+  /* Default OpenGl Options */
   glEnable(GL_DEPTH_TEST);
-  // Transparency
-  glEnable(GL_BLEND);
+  glEnable(GL_BLEND); // Enables Transparency of png files
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   int32_t width;
@@ -33,7 +31,7 @@ bool cm_context_init(WindowHandle *window_handle) {
 
 #ifdef _CM_DEBUG
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, 0);
+  glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);
 #endif
 
   return true;

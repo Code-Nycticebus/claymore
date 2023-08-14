@@ -6,6 +6,7 @@
 const bool cm_debug_enabled = true;
 
 #include <stdio.h>
+#include <stdlib.h>
 
 void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
                                GLenum severity, GLsizei length,

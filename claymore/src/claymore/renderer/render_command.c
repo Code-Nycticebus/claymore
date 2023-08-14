@@ -15,6 +15,6 @@ void cm_renderer_clear(void) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void cm_renderer_clear_color(vec4 color) {
+void cm_renderer_set_clear_color(vec4 color) {
   glClearColor(color[0], color[1], color[2], color[3]);
 }
