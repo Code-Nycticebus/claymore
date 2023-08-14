@@ -114,8 +114,8 @@ static void ortho_init(CmLayer *layer) {
 
   stbi_set_flip_vertically_on_load(true);
   unsigned char *texture_buffer =
-      stbi_load("res/textures/apple.png", &texture_width, &texture_height,
-                &bits_per_pixel, 4);
+      stbi_load("res/textures/claymore-sword.png", &texture_width,
+                &texture_height, &bits_per_pixel, 4);
   const char *fail = stbi_failure_reason();
   if (fail) {
     cm_log_error("%s\n", fail);
@@ -125,10 +125,10 @@ static void ortho_init(CmLayer *layer) {
   glBindTexture(GL_TEXTURE_2D, texture_id);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture_width, texture_height, 0,
                GL_RGBA, GL_UNSIGNED_BYTE, texture_buffer);
@@ -165,10 +165,25 @@ static void ortho_update(CmLayer *layer, float dt) {
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  glUseProgram(ortho_shader.id);
+  glUniformMatrix4fv(ortho_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  glUniform1i(ortho_shader.uniform_loc.texture, 0);
+
+  cm_renderer2d_begin();
+  cm_renderer2d_push_quad((vec2){-1000.F, -1000.F}, -0.1F,
+                          (vec2){2000.F, 2000.F}, (vec2){0.F, 0.F},
+                          (vec2){2000.F, 2000.F});
+  cm_renderer2d_end();
+
+  glUseProgram(0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
   glUseProgram(grid_shader.id);
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
   cm_renderer2d_begin();
-  const size_t grid_size = 500;
+  const size_t grid_size = 100;
   const float quad_size = 0.05F;
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
@@ -181,20 +196,6 @@ static void ortho_update(CmLayer *layer, float dt) {
 
   cm_renderer2d_end();
   glUseProgram(0);
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, texture_id);
-  glUseProgram(ortho_shader.id);
-  glUniformMatrix4fv(ortho_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
-  glUniform1i(ortho_shader.uniform_loc.texture, 0);
-
-  cm_renderer2d_begin();
-  cm_renderer2d_push_quad((vec2){0.F, 0.F}, 1.F, (vec2){1.F, 1.F},
-                          (vec2){0.F, 0.F}, (vec2){1.F, 1.F});
-  cm_renderer2d_end();
-
-  glUseProgram(0);
-  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 static void ortho_free(CmLayer *layer) {
