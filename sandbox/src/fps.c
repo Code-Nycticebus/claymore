@@ -44,6 +44,9 @@ typedef struct {
 
 static FontRenderer font_renderer;
 
+
+static uint8_t* ttf_buffer;
+
 static void fps_init(CmLayer *layer) {
   (void)layer;
   font_shader.id = cm_load_shader_from_file("res/shader/font.vs.glsl",
@@ -63,7 +66,7 @@ static void fps_init(CmLayer *layer) {
   layer->camera.update = true;
 
 #define TTF_BUFFER_MAX (1 << 20)
-  uint8_t ttf_buffer[TTF_BUFFER_MAX];
+  ttf_buffer = (uint8_t*)malloc(TTF_BUFFER_MAX*sizeof(uint8_t));
 
 #define TTF_BITMAP_RESOLUTION 512
 #define TTF_BITMAP_MAX (TTF_BITMAP_RESOLUTION * TTF_BITMAP_RESOLUTION)
@@ -186,7 +189,9 @@ static void fps_update(CmLayer *layer, float dt) {
   glEnable(GL_DEPTH_TEST);
 }
 
-static void fps_free(CmLayer *layer) { (void)layer; }
+static void fps_free(CmLayer *layer) { (void)layer;
+  free(ttf_buffer);
+}
 
 CmLayerInterface sandbox_fps(void) {
   return (CmLayerInterface){

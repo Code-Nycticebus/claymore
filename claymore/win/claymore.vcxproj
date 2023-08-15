@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\claymore\src;$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\cglm\cglm\include;;$(SolutionDir)..\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\claymore\src;$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\stb_truetype\src;$(SolutionDir)..\..\deps\stb_image\src;$(SolutionDir)..\..\deps\cglm\cglm\include;;$(SolutionDir)..\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,7 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\claymore\src;$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\cglm\cglm\include;%(AdditionalIncludeDirectories);$(SolutionDir)..\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\claymore\src;$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\stb_truetype\src;$(SolutionDir)..\..\deps\stb_image\src;$(SolutionDir)..\..\deps\cglm\cglm\include;%(AdditionalIncludeDirectories);$(SolutionDir)..\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,9 +144,14 @@
     <ClInclude Include="..\src\claymore\logger\logger.h" />
     <ClInclude Include="..\src\claymore\renderer\context.h" />
     <ClInclude Include="..\src\claymore\renderer\renderer2D.h" />
+    <ClInclude Include="..\src\claymore\renderer\renderer_defines.h" />
+    <ClInclude Include="..\src\claymore\renderer\render_buffer.h" />
+    <ClInclude Include="..\src\claymore\renderer\render_command.h" />
     <ClInclude Include="..\src\cm.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\deps\stb_image\src\stb_image.c" />
+    <ClCompile Include="..\..\deps\stb_truetype\src\stb_truetype.c" />
     <ClCompile Include="..\src\claymore\core\app.c" />
     <ClCompile Include="..\src\claymore\core\camera.c" />
     <ClCompile Include="..\src\claymore\core\entrypoint.c" />
@@ -159,6 +164,8 @@
     <ClCompile Include="..\src\claymore\logger\logger.c" />
     <ClCompile Include="..\src\claymore\renderer\context.c" />
     <ClCompile Include="..\src\claymore\renderer\renderer2D.c" />
+    <ClCompile Include="..\src\claymore\renderer\render_buffer.c" />
+    <ClCompile Include="..\src\claymore\renderer\render_command.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
