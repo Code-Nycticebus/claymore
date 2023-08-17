@@ -18,8 +18,8 @@ ClaymoreConfig claymore_config(void) {
           },
       .layers =
           {
-              //sandbox_ortho,
-               sandbox_cube,
+              sandbox_ortho,
+              // sandbox_cube,
               sandbox_gui,
               sandbox_fps,
               NULL,
