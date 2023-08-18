@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #define CM_LOGGER_FORMAT(__fmt_arg, __var_args)                                \
   __attribute__((format(printf, __fmt_arg, __var_args)))
 #else

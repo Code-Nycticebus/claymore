@@ -33,7 +33,7 @@ typedef struct {
 
 typedef CmLayerInterface (*cm_layer_create_fn)(void);
 
-typedef struct ClaymoreConfig {
+typedef struct {
   struct {
     uint32_t width;
     uint32_t height;
@@ -46,7 +46,7 @@ typedef struct ClaymoreConfig {
 bool cm_app_init(CmApp *app, const ClaymoreConfig *config);
 void cm_app_shutdown(CmApp *app);
 
-void cm_app_run(CmApp *app);
+void cm_app_run(CmApp *app, const ClaymoreConfig *config);
 
 /* User functions! */
 extern ClaymoreConfig claymore_config(void);

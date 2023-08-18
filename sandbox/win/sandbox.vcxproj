@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\claymore\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\claymore\src;$(SolutionDir)..\..\deps\stb_truetype\src;$(SolutionDir)..\..\deps\stb_image\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\claymore\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src;$(SolutionDir)..\..\deps\glew\glew-2.1.0\include;$(SolutionDir)..\..\deps\glfw\glfw\include;$(SolutionDir)..\..\deps\cglm\cglm\include;$(SolutionDir)..\..\claymore\src;$(SolutionDir)..\..\deps\stb_truetype\src;$(SolutionDir)..\..\deps\stb_image\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

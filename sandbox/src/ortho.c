@@ -173,10 +173,11 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(ortho_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
   glUniform1i(ortho_shader.uniform_loc.texture, 0);
 
+  const float background_size = 100000.F;
   cm_renderer2d_begin();
-  cm_renderer2d_push_quad((vec2){-1000.F, -1000.F}, -0.1F,
-                          (vec2){2000.F, 2000.F}, (vec2){0.F, 0.F},
-                          (vec2){2000.F, 2000.F});
+  cm_renderer2d_push_quad((vec2){-background_size/2, -background_size/2}, -0.1F,
+                          (vec2){background_size, background_size}, (vec2){0.F, 0.F},
+                          (vec2){background_size, background_size});
   cm_renderer2d_end();
 
   glUseProgram(0);
@@ -188,7 +189,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   const size_t grid_size = 100;
   const float quad_size = 0.05F;
   for (size_t i = 0; i < grid_size; i++) {
-    for (size_t j = 0; j < grid_size; j++) {
+      for (size_t j = 0; j < grid_size; j++) {
       cm_renderer2d_push_quad_color((vec2){i * (quad_size + quad_size / 4),
                                            j * (quad_size + quad_size / 4)},
                                     0.F, (vec2){quad_size, quad_size},

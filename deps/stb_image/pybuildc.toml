@@ -1,8 +1,8 @@
 [project]
 name="stb_image"
 version="1.0"
-cc="gcc"
+cc="clang"
 bin="static"
 
-[dependecies]
+[dependecies.linux]
 math = { lib="m" }

@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{883c1683-421d-4edb-ac38-ec2455834298}</UniqueIdentifier>
     </Filter>
+    <Filter Include="stb">
+      <UniqueIdentifier>{03ea8513-d7ac-4473-8cd5-14c921e552e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\claymore.h">
@@ -54,6 +57,15 @@
     <ClInclude Include="..\src\claymore\renderer\renderer2D.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\claymore\renderer\render_buffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\renderer\render_command.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\claymore\renderer\renderer_defines.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\claymore\core\app.c">
@@ -90,6 +102,18 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\claymore\renderer\renderer2D.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\stb_image\src\stb_image.c">
+      <Filter>stb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\deps\stb_truetype\src\stb_truetype.c">
+      <Filter>stb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\renderer\render_buffer.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\claymore\renderer\render_command.c">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
