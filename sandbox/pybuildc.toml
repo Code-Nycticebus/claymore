@@ -1,7 +1,7 @@
 [project]
 name="sandbox"
 version="0.1.0"
-cc="gcc"
+cc="clang"
 bin="exe"
 
 [dependencies.claymore]

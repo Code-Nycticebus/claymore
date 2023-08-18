@@ -1,16 +1,28 @@
 [project]
 name="claymore"
 version="0.1.0"
-cc="gcc"
+cc="clang"
 bin="static"
 
 
 [dependencies]
+stb_image = { dir="../deps/stb_image/", dep_type="pybuildc" }
+stb_truetype = { dir="../deps/stb_truetype/", dep_type="pybuildc" }
+
+[dependencies.linux]
 gl   = { lib="GL" }
 glew = { lib="GLEW", dir="../deps/glew/glew/lib/", include=["../deps/glew/glew/include/"] }
 glfw = { lib="glfw3", dir="../deps/glfw/glfw/build/src/", include=["../deps/glfw/glfw/include/"] }
 math = { lib="m" }
 cglm = { lib="cglm", dir="../deps/cglm/cglm/build/", include=["../deps/cglm/cglm/include/"]}
 
-stb_image = { dir="../deps/stb_image/", dep_type="pybuildc" }
-stb_truetype = { dir="../deps/stb_truetype/", dep_type="pybuildc" }
+
+
+[dependencies.windows]
+Shell32 = { lib="Shell32" }
+User32 = { lib="User32" }
+Gdi32 = { lib="Gdi32" }
+gl   = { lib="opengl32" }
+glew = { lib="GLEW", dir="../deps/glew/glew/lib/", include=["../deps/glew/glew-win/include/"] }
+glfw = { lib="glfw3", dir="../deps/glfw/glfw/build/src/", include=["../deps/glfw-win/glfw/include/"] }
+cglm = { lib="cglm", dir="../deps/cglm/cglm/build/Release", include=["../deps/cglm/cglm/include/"]}
