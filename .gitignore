@@ -1,3 +1,4 @@
 .build/
-./deps/*/*-linux/
-./deps/*/*-win/
+deps/*/*-linux/
+deps/*/*-win/
+

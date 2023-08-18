@@ -1,9 +1,9 @@
 [project]
 name="stb_truetype"
 version="1.0"
-cc="gcc"
+cc="clang"
 bin="static"
 
 
-[dependencies]
+[dependencies.linux]
 math = { lib="m" }

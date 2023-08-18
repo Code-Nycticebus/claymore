@@ -19,10 +19,8 @@ void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size,
 void cm_renderer2d_push_quad_color(const vec2 position, float z,
                                    const vec2 size, const vec4 color);
 
-#ifdef _CM_RENDERER_INTERNAL
 void cm_renderer2d_init(void);
 void cm_renderer2d_shutdown(void);
 void cm_renderer2d_flush(void);
-#endif // !_CM_RENDERER_INTERNAL
 
 #endif // !__CM_RENDERER2D_H__

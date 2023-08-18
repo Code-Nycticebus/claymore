@@ -1,2 +1,2 @@
-cmake -S ./cglm -B ./cglm/build -DCGLM_SHARED=OFF
-msbuild ./cglm/build/cglm.sln /property:Configuration=Release /property:OutputPath=./cglm-win/
+cmake -S ./cglm -B ./cglm-win -DCGLM_SHARED=OFF
+msbuild ./cglm-win/cglm.sln /property:Configuration=Release

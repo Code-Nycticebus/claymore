@@ -4,8 +4,11 @@ version="0.1.0"
 cc="clang"
 bin="exe"
 
+cflags = ["-Wno-static-in-inline", "-D_CRT_SECURE_NO_WARNINGS"]
+
 [dependencies.claymore]
 dir="../claymore/" 
 dep_type="pybuildc"
 target="debug"
+build=true
 

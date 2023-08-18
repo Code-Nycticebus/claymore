@@ -1,4 +1,5 @@
 #include "claymore.h"
+#include "claymore/core/entrypoint.h"
 
 #define WINDOW_WIDTH 620
 #define WINDOW_HEIGHT 420
