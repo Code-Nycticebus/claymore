@@ -1,8 +1,8 @@
 #include "app.h"
 
 #include "claymore/core/camera.h"
-#include "cm.h"
 #include "claymore/logger/logger.h"
+#include "cm.h"
 
 #include "claymore/renderer/renderer.h"
 
@@ -43,9 +43,8 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
 
 void cm_app_shutdown(CmApp *app) { cm_window_close(app->window); }
 
-
-void cm_app_run(CmApp* app, const ClaymoreConfig* config) {
- // Layer stack
+void cm_app_run(CmApp *app, const ClaymoreConfig *config) {
+  // Layer stack
   struct {
     CmLayerInterface interface;
     CmLayer layer;
@@ -87,5 +86,4 @@ void cm_app_run(CmApp* app, const ClaymoreConfig* config) {
   }
 
   cm_renderer2d_shutdown();
-
 }
