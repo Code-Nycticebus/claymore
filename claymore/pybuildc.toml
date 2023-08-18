@@ -17,13 +17,11 @@ glfw = { lib="glfw3", dir="../deps/glfw/glfw/build/src/", include=["../deps/glfw
 math = { lib="m" }
 cglm = { lib="cglm", dir="../deps/cglm/cglm/build/", include=["../deps/cglm/cglm/include/"]}
 
-
-
 [dependencies.windows]
 Shell32 = { lib="Shell32" }
-User32 = { lib="User32" }
-Gdi32 = { lib="Gdi32" }
-gl   = { lib="opengl32" }
-glew = { lib="glew32s", dir="../deps/glew/glew-win/lib/Release/Win32", include=["../deps/glew/glew-win/include/"] }
-glfw = { lib="glfw3_mt", dir="../deps/glfw/glfw-win/lib-vc2022/", include=["../deps/glfw/glfw-win/include/"] }
-cglm  = { lib="cglm", dir="../deps/cglm/cglm-win/Release", include=["../deps/cglm/cglm/include"] }
+User32  = { lib="User32" }
+Gdi32   = { lib="Gdi32" }
+gl      = { lib="opengl32" }
+glew    = { lib="glew32s", dir="../deps/glew/glew-win/lib/Release/Win32", include=["../deps/glew/glew-win/include/"] }
+glfw    = { lib="glfw3_mt", dir="../deps/glfw/glfw-win/lib-vc2022/", include=["../deps/glfw/glfw-win/include/"] }
+cglm    = { lib="cglm", dir="../deps/cglm/cglm-win/Release", include=["../deps/cglm/cglm/include"] }
