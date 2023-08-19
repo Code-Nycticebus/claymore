@@ -32,7 +32,7 @@ static char *_cm_shader_slurp_file(const char *filename) {
   return data;
 }
 
-#define _cm_check(shader_id, gl_check, gl_get_iv, gl_get_log)                  \
+#define _cm_check_shader(shader_id, gl_check, gl_get_iv, gl_get_log)           \
   {                                                                            \
     GLint result = GL_FALSE;                                                   \
     GLsizei lenght = 0;                                                        \
@@ -50,15 +50,17 @@ static char *_cm_shader_slurp_file(const char *filename) {
 
 bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
   if (gl_check == GL_COMPILE_STATUS) {
-    _cm_check(shader_id, gl_check, glGetShaderiv, glGetShaderInfoLog);
+    _cm_check_shader(shader_id, gl_check, glGetShaderiv, glGetShaderInfoLog);
   }
   if (gl_check == GL_LINK_STATUS) {
-    _cm_check(shader_id, gl_check, glGetProgramiv, glGetProgramInfoLog);
+    _cm_check_shader(shader_id, gl_check, glGetProgramiv, glGetProgramInfoLog);
   }
 
   assert(gl_check == GL_COMPILE_STATUS || gl_check == GL_LINK_STATUS);
   return false;
 }
+
+#undef _cm_check_shader
 
 static GLuint _cm_compile_shader(const char *shader_src, GLenum type) {
   assert((type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER) &&
