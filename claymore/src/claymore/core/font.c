@@ -182,4 +182,4 @@ void cm_font_draw(mat4 mvp, float x, float y, size_t len, const char *text) {
   glUseProgram(0);
 }
 
-void cm_font_free(void) {}
+void cm_font_free(void) { free(font_renderer); }
