@@ -32,27 +32,25 @@ static char *_cm_shader_slurp_file(const char *filename) {
   return data;
 }
 
-
-
-#define _cm_check(shader_id, gl_check, gl_get_iv, gl_get_log)\
-{\
-  GLint result = GL_FALSE;\
-  GLsizei lenght = 0;\
-  gl_get_iv(shader_id, gl_check, &result);\
-  gl_get_iv(shader_id, GL_INFO_LOG_LENGTH, &lenght);\
-  if (lenght > 0) {\
-    char *err_msg = calloc(sizeof(char), lenght);\
-    gl_get_log(shader_id, lenght, NULL, err_msg);\
-    cm_log_error("%s", err_msg);\
-    free(err_msg);\
-    return false;\
-  }\
-  return true;\
-}
+#define _cm_check(shader_id, gl_check, gl_get_iv, gl_get_log)                  \
+  {                                                                            \
+    GLint result = GL_FALSE;                                                   \
+    GLsizei lenght = 0;                                                        \
+    gl_get_iv(shader_id, gl_check, &result);                                   \
+    gl_get_iv(shader_id, GL_INFO_LOG_LENGTH, &lenght);                         \
+    if (lenght > 0) {                                                          \
+      char *err_msg = calloc(sizeof(char), lenght);                            \
+      gl_get_log(shader_id, lenght, NULL, err_msg);                            \
+      cm_log_error("%s", err_msg);                                             \
+      free(err_msg);                                                           \
+      return false;                                                            \
+    }                                                                          \
+    return true;                                                               \
+  }
 
 bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
   if (gl_check == GL_COMPILE_STATUS) {
-    _cm_check(shader_id, gl_check,glGetShaderiv, glGetShaderInfoLog);
+    _cm_check(shader_id, gl_check, glGetShaderiv, glGetShaderInfoLog);
   }
   if (gl_check == GL_LINK_STATUS) {
     _cm_check(shader_id, gl_check, glGetProgramiv, glGetProgramInfoLog);
