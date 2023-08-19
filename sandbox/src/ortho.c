@@ -157,7 +157,6 @@ static void ortho_init(CmLayer *layer) {
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)ortho_key_callback, layer);
 
-  cm_renderer_set_clear_color((vec4){1.F, 1.F, 0.F, 1.F});
 }
 
 static void ortho_update(CmLayer *layer, float dt) {

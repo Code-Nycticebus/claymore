@@ -52,6 +52,7 @@ void cm_app_run(CmApp *app, const ClaymoreConfig *config) {
   uint32_t layer_count = 0;
 
   cm_renderer2d_init();
+  cm_renderer_set_clear_color((vec4){1.F, 0.F, 1.F, 1.F});
 
   for (size_t i = 0; i < CM_LAYER_MAX && config->layers[i] != NULL; ++i) {
     layer_stack[i].interface = config->layers[i]();
