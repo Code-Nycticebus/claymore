@@ -48,7 +48,6 @@ bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
 }
 
 static GLuint _cm_compile_shader(const char *shader_src, GLenum type) {
-
   assert((type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER) &&
          "Shader only supports this for now!");
 
@@ -60,7 +59,6 @@ static GLuint _cm_compile_shader(const char *shader_src, GLenum type) {
 }
 
 GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
-
   char *vs_src = _cm_shader_slurp_file(vs_file);
   if (vs_src == NULL) {
     return 0;
@@ -87,7 +85,6 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
     cm_log_error("%s\n", vs_src);
     return 0;
   }
-
   GLuint fs_id = _cm_compile_shader(fs_src, GL_FRAGMENT_SHADER);
   if (!_cm_shader_check_error(fs_id, GL_COMPILE_STATUS)) {
     cm_log_error("%s\n", fs_src);
