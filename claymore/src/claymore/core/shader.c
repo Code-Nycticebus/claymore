@@ -32,19 +32,36 @@ static char *_cm_shader_slurp_file(const char *filename) {
   return data;
 }
 
-bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
+static bool _cm_check(GLuint shader_id, GLenum gl_check,
+                      void (*gl_get_iv)(GLuint, GLenum, GLint *),
+                      void (*gl_get_log)(GLuint, GLsizei, GLsizei *,
+                                         GLchar *)) {
   GLint result = GL_FALSE;
   GLsizei lenght = 0;
-  glGetShaderiv(shader_id, gl_check, &result);
-  glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &lenght);
+  gl_get_iv(shader_id, gl_check, &result);
+  gl_get_iv(shader_id, GL_INFO_LOG_LENGTH, &lenght);
+
   if (lenght > 0) {
     char *err_msg = calloc(sizeof(char), lenght);
-    glGetShaderInfoLog(shader_id, lenght, NULL, err_msg);
-    cm_log_error("%s\n", err_msg);
+    gl_get_log(shader_id, lenght, NULL, err_msg);
+
+    cm_log_error("%s", err_msg);
     free(err_msg);
     return false;
   }
   return true;
+}
+
+bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check) {
+  if (gl_check == GL_COMPILE_STATUS) {
+    return _cm_check(shader_id, gl_check, glGetShaderiv, glGetShaderInfoLog);
+  }
+  if (gl_check == GL_LINK_STATUS) {
+    return _cm_check(shader_id, gl_check, glGetProgramiv, glGetProgramInfoLog);
+  }
+
+  assert(gl_check == GL_COMPILE_STATUS || gl_check == GL_LINK_STATUS);
+  return false;
 }
 
 static GLuint _cm_compile_shader(const char *shader_src, GLenum type) {
@@ -72,7 +89,8 @@ GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
   free(vs_src);
   free(fs_src);
   if (program == 0) {
-    cm_log_error("%s\n%s\n", vs_file, fs_file);
+    cm_log_error("Vertex Shader %s\n", vs_file);
+    cm_log_error("Fragment Shader %s\n", fs_file);
     return 0;
   }
 
@@ -82,12 +100,12 @@ GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
 GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   GLuint vs_id = _cm_compile_shader(vs_src, GL_VERTEX_SHADER);
   if (!_cm_shader_check_error(vs_id, GL_COMPILE_STATUS)) {
-    cm_log_error("%s\n", vs_src);
+    cm_log_error("Vertex Shader:\n%s\n", vs_src);
     return 0;
   }
   GLuint fs_id = _cm_compile_shader(fs_src, GL_FRAGMENT_SHADER);
   if (!_cm_shader_check_error(fs_id, GL_COMPILE_STATUS)) {
-    cm_log_error("%s\n", fs_src);
+    cm_log_error("Fragment Shader:\n%s\n", fs_src);
     return 0;
   }
 
@@ -100,15 +118,9 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   glDeleteShader(vs_id);
   glDeleteShader(fs_id);
 
-  GLint result = GL_FALSE;
-  GLsizei lenght = 0;
-  glGetProgramiv(program, GL_LINK_STATUS, &result);
-  glGetProgramiv(program, GL_INFO_LOG_LENGTH, &lenght);
-  if (lenght > 0) {
-    char *err_msg = calloc(sizeof(char), lenght);
-    glGetProgramInfoLog(program, lenght, NULL, err_msg);
-    cm_log_error("%s\n", err_msg);
-    free(err_msg);
+  if (!_cm_shader_check_error(program, GL_LINK_STATUS)) {
+    cm_log_error("Vertex Shader: \n%s\n", vs_src);
+    cm_log_error("Fragment Shader: \n%s\n", fs_src);
     return 0;
   }
 
