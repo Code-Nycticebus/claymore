@@ -83,7 +83,8 @@ void cm_font_init(const char *filename) {
 
   FILE *ttf_file = fopen(filename, "rb");
   if (ttf_file == NULL) {
-    cm_log_error("Could not open %s: %s", filename, strerror(errno));
+    cm_log_error("Could not open %s: %s\n", filename, strerror(errno));
+    return;
   }
 
   fread(ttf_buffer, 1, TTF_BUFFER_MAX, ttf_file);

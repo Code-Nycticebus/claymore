@@ -1,5 +1,4 @@
 #include "claymore.h"
-#include <stdio.h>
 
 static void fps_init(CmLayer *layer) {
   (void)layer;
