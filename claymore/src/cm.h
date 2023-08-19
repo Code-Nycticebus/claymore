@@ -8,7 +8,7 @@
 #include "GL/glew.h"
 
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wattributes"
+#pragma clang diagnostic ignored "-Wstatic-in-inline"
 #include "cglm/cglm.h"
 #pragma clang diagnostic pop
 

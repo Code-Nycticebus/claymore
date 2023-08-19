@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "cglm/vec3.h"
 
 CmCamera cm_camera_init_perspective(vec3 position, vec3 lookat, float fov,
                                     float aspect_ratio) {

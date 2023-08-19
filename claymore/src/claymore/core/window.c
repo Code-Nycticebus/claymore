@@ -2,7 +2,6 @@
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
-#include "cglm/vec2.h"
 #include <stdio.h>
 
 #include "cm.h"
