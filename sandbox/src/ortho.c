@@ -1,4 +1,3 @@
-#include "cglm/vec3.h"
 #include "claymore.h"
 
 #include "claymore/renderer/renderer2D.h"

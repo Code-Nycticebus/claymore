@@ -7,7 +7,10 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wattributes"
 #include "cglm/cglm.h"
+#pragma clang diagnostic pop
 
 #include "claymore/debug/debug.h"
 #include "claymore/logger/logger.h"
