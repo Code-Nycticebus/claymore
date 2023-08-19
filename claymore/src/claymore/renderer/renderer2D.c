@@ -98,30 +98,46 @@ static void _cm_renderer2d_push_quad(const vec2 position, float z,
   const float y = position[1];
   const float ys = size[1];
 
-  CmVertex vertecies[CM_RENDERER2D_VERTECIES_PER_QUAD] = {
-      {
-          {x, y, z},
-          {color[0], color[1], color[2], color[3]},
-          {text_coord[0], text_coord[1]},
-      },
-      {
-          {x + xs, y, z},
-          {color[0], color[1], color[2], color[3]},
-          {text_coord[0] + text_size[0], text_coord[1]},
-      },
-      {
-          {x + xs, y + ys, z},
-          {color[0], color[1], color[2], color[3]},
-          {text_coord[0] + text_size[0], text_coord[1] + text_size[1]},
-      },
-      {
-          {x, y + ys, z},
-          {color[0], color[1], color[2], color[3]},
-          {text_coord[0], text_coord[1] + text_size[1]},
-      },
-  };
-  memcpy(&render_data->data[render_data->vertecies_count], vertecies,
-         sizeof(vertecies));
+  CmVertex* vertecies  = &render_data->data[render_data->vertecies_count];
+  vertecies[0].pos[0] = x;
+  vertecies[0].pos[1] = y;
+  vertecies[0].pos[2] = z;
+  vertecies[0].color[0] = color[0];
+  vertecies[0].color[1] = color[1];
+  vertecies[0].color[2] = color[2];
+  vertecies[0].color[3] = color[3];
+  vertecies[0].uv[0] = text_coord[0];
+  vertecies[0].uv[1] = text_coord[1];
+
+  vertecies[1].pos[0] = x + xs;
+  vertecies[1].pos[1] = y;
+  vertecies[1].pos[2] = z;
+  vertecies[1].color[0] = color[0];
+  vertecies[1].color[1] = color[1];
+  vertecies[1].color[2] = color[2];
+  vertecies[1].color[3] = color[3];
+  vertecies[1].uv[0] = text_coord[0] + text_size[0];
+  vertecies[1].uv[1] = text_coord[1];
+
+  vertecies[2].pos[0] = x + xs;
+  vertecies[2].pos[1] = y + ys;
+  vertecies[2].pos[2] = z;
+  vertecies[2].color[0] = color[0];
+  vertecies[2].color[1] = color[1];
+  vertecies[2].color[2] = color[2];
+  vertecies[2].color[3] = color[3];
+  vertecies[2].uv[0] = text_coord[0] + text_size[0];
+  vertecies[2].uv[1] = text_coord[1] + text_size[1];
+
+  vertecies[3].pos[0] = x;
+  vertecies[3].pos[1] = y + ys;
+  vertecies[3].pos[2] = z;
+  vertecies[3].color[0] = color[0];
+  vertecies[3].color[1] = color[1];
+  vertecies[3].color[2] = color[2];
+  vertecies[3].color[3] = color[3];
+  vertecies[3].uv[0] = text_coord[0];
+  vertecies[3].uv[1] = text_coord[1] + text_size[1];
 
   render_data->vertecies_count += CM_RENDERER2D_VERTECIES_PER_QUAD;
   render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
