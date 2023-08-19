@@ -4,9 +4,10 @@
 #define WINDOW_WIDTH 620
 #define WINDOW_HEIGHT 420
 
+extern CmLayerInterface sandbox_background(void);
+extern CmLayerInterface sandbox_ortho(void);
 extern CmLayerInterface sandbox_cube(void);
 extern CmLayerInterface sandbox_gui(void);
-extern CmLayerInterface sandbox_ortho(void);
 extern CmLayerInterface sandbox_fps(void);
 
 ClaymoreConfig claymore_config(void) {
@@ -19,6 +20,7 @@ ClaymoreConfig claymore_config(void) {
           },
       .layers =
           {
+              sandbox_background,
               sandbox_ortho,
               // sandbox_cube,
               sandbox_gui,

@@ -14,8 +14,7 @@ struct ShaderData {
   } uniform_loc;
 };
 
-static struct ShaderData grid_shader;
-
+static struct ShaderData background_shader;
 static Texture background_texture;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
@@ -90,11 +89,15 @@ static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
   }
 }
 
-static void ortho_init(CmLayer *layer) {
-  grid_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                            "res/shader/basic.fs.glsl");
-  grid_shader.uniform_loc.mvp =
-      cm_shader_get_uniform_location(grid_shader.id, "u_mvp");
+static void background_init(CmLayer *layer) {
+  background_shader.id = cm_load_shader_from_file("res/shader/texture.vs.glsl",
+                                                  "res/shader/texture.fs.glsl");
+  background_shader.uniform_loc.mvp =
+      cm_shader_get_uniform_location(background_shader.id, "u_mvp");
+  background_shader.uniform_loc.texture =
+      cm_shader_get_uniform_location(background_shader.id, "u_texture");
+
+  background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
   aspect = (float)layer->app->window->width / (float)layer->app->window->height;
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
@@ -116,39 +119,40 @@ static void ortho_init(CmLayer *layer) {
                         (cm_event_callback)ortho_key_callback, layer);
 }
 
-static void ortho_update(CmLayer *layer, float dt) {
+static void background_update(CmLayer *layer, float dt) {
   (void)dt;
 
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  glUseProgram(grid_shader.id);
-  glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
-  cm_renderer2d_begin();
-  const size_t grid_size = 100;
-  const float quad_size = 0.05F;
-  for (size_t i = 0; i < grid_size; i++) {
-    for (size_t j = 0; j < grid_size; j++) {
-      cm_renderer2d_push_quad_color((vec2){i * (quad_size + quad_size / 4),
-                                           j * (quad_size + quad_size / 4)},
-                                    0.F, (vec2){quad_size, quad_size},
-                                    (vec4){0.F, 0.F, 1.F, 1.F});
-    }
-  }
+  cm_texture_bind(&background_texture, 0);
 
+  glUseProgram(background_shader.id);
+  glUniformMatrix4fv(background_shader.uniform_loc.mvp, 1, GL_FALSE,
+                     (float *)mvp);
+  glUniform1i(background_shader.uniform_loc.texture, 0);
+
+  const float background_size = 100000.F;
+  const float background_layer = -0.99F;
+  cm_renderer2d_begin();
+  cm_renderer2d_push_quad(
+      (vec2){-background_size / 2, -background_size / 2}, background_layer,
+      (vec2){background_size, background_size}, (vec2){0.F, 0.F},
+      (vec2){background_size, background_size});
   cm_renderer2d_end();
   glUseProgram(0);
+  cm_texture_unbind(0);
 }
 
-static void ortho_free(CmLayer *layer) {
+static void background_free(CmLayer *layer) {
   (void)layer;
   cm_texture_delete(&background_texture);
 }
 
-CmLayerInterface sandbox_ortho(void) {
+CmLayerInterface sandbox_background(void) {
   return (CmLayerInterface){
-      .init = ortho_init,
-      .free = ortho_free,
-      .update = ortho_update,
+      .init = background_init,
+      .free = background_free,
+      .update = background_update,
   };
 }
