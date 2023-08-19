@@ -63,10 +63,6 @@ static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
   if (event->action == CM_KEY_PRESS) {
     event->base.handled = true;
     switch (event->code) {
-    case CM_KEY_F5: {
-      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
-      break;
-    }
     case CM_KEY_ESCAPE: {
       // TODO cm_app_close()
       cm_event_dispatch((CmEvent){

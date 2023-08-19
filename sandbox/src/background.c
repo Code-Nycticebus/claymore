@@ -22,7 +22,7 @@ static mat4 model = GLM_MAT4_IDENTITY_INIT;
 static float zoom = 1.F;
 static float aspect;
 
-static void ortho_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
+static void background_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
   const float min_zoom = 0.1F;
   zoom = glm_max(zoom - event->yoffset, min_zoom);
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
@@ -30,15 +30,15 @@ static void ortho_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
   layer->camera.update = true;
 }
 
-static void ortho_window_resize_callback(CmWindowEvent *event,
-                                         CmCamera *camera) {
+static void background_window_resize_callback(CmWindowEvent *event,
+                                              CmCamera *camera) {
   aspect = (float)event->window->width / (float)event->window->height;
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
             camera->projection);
   camera->update = true;
 }
 
-static void ortho_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
+static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   if (event->action == CM_MOUSE_MOVE) {
     static vec3 last_position = {0};
     vec2 pos;
@@ -54,37 +54,6 @@ static void ortho_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
       glm_mat4_identity(layer->camera.view);
       glm_translate(layer->camera.view, layer->camera.position);
       layer->camera.update = true;
-    }
-  }
-}
-
-static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
-  if (event->action == CM_KEY_PRESS) {
-    event->base.handled = true;
-    switch (event->code) {
-    case CM_KEY_F5: {
-      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
-      break;
-    }
-    case CM_KEY_ESCAPE: {
-      // TODO cm_app_close()
-      cm_event_dispatch((CmEvent){
-          .type = CM_EVENT_WINDOW_CLOSE,
-          .event.window.window = layer->app->window,
-      });
-      break;
-    }
-
-    case CM_KEY_F2: {
-      static bool vsync = true;
-      vsync = !vsync;
-      glfwSwapInterval(vsync);
-      cm_log_info("vsync turned %s\n", vsync ? "on" : "off");
-      break;
-    }
-    default:
-      event->base.handled = false;
-      break;
     }
   }
 }
@@ -108,15 +77,13 @@ static void background_init(CmLayer *layer) {
   layer->camera.update = true;
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)ortho_window_resize_callback,
+                        (cm_event_callback)background_window_resize_callback,
                         &layer->camera);
-  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)ortho_mouse_callback,
+  cm_event_set_callback(CM_EVENT_MOUSE,
+                        (cm_event_callback)background_mouse_callback,
                         &layer->camera);
   cm_event_set_callback(CM_EVENT_SCROLL,
-                        (cm_event_callback)ortho_scroll_callback, layer);
-
-  cm_event_set_callback(CM_EVENT_KEYBOARD,
-                        (cm_event_callback)ortho_key_callback, layer);
+                        (cm_event_callback)background_scroll_callback, layer);
 }
 
 static void background_update(CmLayer *layer, float dt) {
