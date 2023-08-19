@@ -1,5 +1,9 @@
 sudo apt install xorg-dev
 
+mkdir glfw-linux
+cd glfw-linux
 
-cmake -S ./glfw -B ./glfw/build
-make -C ./glfw/build
+git clone https://github.com/glfw/glfw.git
+
+cmake -S ./glfw -B ./build
+make -C ./build

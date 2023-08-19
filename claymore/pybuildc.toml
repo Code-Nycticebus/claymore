@@ -12,10 +12,10 @@ stb_truetype = { dir="../deps/stb_truetype/", dep_type="pybuildc" }
 
 [dependencies.linux]
 gl   = { lib="GL" }
-glew = { lib="GLEW", dir="../deps/glew/glew/lib/", include=["../deps/glew/glew/include/"] }
-glfw = { lib="glfw3", dir="../deps/glfw/glfw/build/src/", include=["../deps/glfw/glfw/include/"] }
+glew = { lib="GLEW", dir="../deps/glew/glew-linux/lib", include=["../deps/glew/glew-linux/glew/include/"] }
+glfw = { lib="glfw3", dir="../deps/glfw/glfw-linux/build/src/", include=["../deps/glfw/glfw-linux/glfw/include/"] }
+cglm = { lib="cglm", dir="../deps/cglm/cglm-linux/build", include=["../deps/cglm/cglm-linux/cglm/include/"]}
 math = { lib="m" }
-cglm = { lib="cglm", dir="../deps/cglm/cglm/build/", include=["../deps/cglm/cglm/include/"]}
 
 [dependencies.windows]
 Shell32 = { lib="Shell32" }
@@ -24,4 +24,4 @@ Gdi32   = { lib="Gdi32" }
 gl      = { lib="opengl32" }
 glew    = { lib="glew32s", dir="../deps/glew/glew-win/lib/Release/Win32", include=["../deps/glew/glew-win/include/"] }
 glfw    = { lib="glfw3_mt", dir="../deps/glfw/glfw-win/lib-vc2022/", include=["../deps/glfw/glfw-win/include/"] }
-cglm    = { lib="cglm", dir="../deps/cglm/cglm-win/Release", include=["../deps/cglm/cglm/include"] }
+cglm    = { lib="cglm", dir="../deps/cglm/cglm-win/build/Release", include=["../deps/cglm/cglm-win/cglm/include"] }
