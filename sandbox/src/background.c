@@ -93,12 +93,10 @@ static void background_update(CmLayer *layer, float dt) {
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
   cm_texture_bind(&background_texture, 0);
-
   glUseProgram(background_shader.id);
   glUniformMatrix4fv(background_shader.uniform_loc.mvp, 1, GL_FALSE,
                      (float *)mvp);
   glUniform1i(background_shader.uniform_loc.texture, 0);
-
   const float background_size = 100000.F;
   const float background_layer = -0.99F;
   cm_renderer2d_begin();
