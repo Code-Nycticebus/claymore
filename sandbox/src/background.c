@@ -48,7 +48,8 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
     glm_vec2_copy(pos, last_position);
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-      glm_vec2_scale(direction, zoom / 100.F, direction);
+      const float zoom_scale = 200.F;
+      glm_vec2_scale(direction, zoom / zoom_scale, direction);
       glm_vec2_add(layer->camera.position, direction, layer->camera.position);
 
       glm_mat4_identity(layer->camera.view);
