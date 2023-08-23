@@ -122,14 +122,8 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  cm_renderer2d_push_quad_color_rotated(
-      (vec2){-10.F, 10.F}, 0.F, (vec2){5.F, 5.F}, (vec4){.1F, .61F, .61F, 1.F},
-      glm_rad(30.F));
-  cm_renderer2d_end();
-
-  cm_renderer2d_begin();
   const size_t grid_size = 200;
-  const float quad_size = 0.05F;
+  const float quad_size = 0.5F;
   static float rotation = 1.F;
   rotation += 45.F * dt;
   for (size_t i = 0; i < grid_size; i++) {
@@ -138,7 +132,7 @@ static void ortho_update(CmLayer *layer, float dt) {
           (vec2){i * (quad_size + quad_size / 2),
                  j * (quad_size + quad_size / 2)},
           0.F, (vec2){quad_size, quad_size}, (vec4){0.F, 0.F, 1.F, 1.F},
-          glm_rad(rotation));
+          glm_rad(rotation + i + j));
     }
   }
 
