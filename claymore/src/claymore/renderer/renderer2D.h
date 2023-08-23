@@ -3,7 +3,7 @@
 
 #include "renderer_defines.h"
 
-#define CM_RENDERER2D_MAX_QUADS 2000
+#define CM_RENDERER2D_MAX_QUADS 3000
 #define CM_RENDERER2D_VERTECIES_PER_QUAD 4
 #define CM_RENDERER2D_MAX_VERTECIES                                            \
   (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTECIES_PER_QUAD)
@@ -16,8 +16,16 @@ void cm_renderer2d_end(void);
 
 void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size,
                              vec2 texture_coord, vec2 texture_size);
+
+void cm_renderer2d_push_quad_rotated(const vec2 position, float z,
+                                     const vec2 size, vec2 texture_coord,
+                                     vec2 texture_size, float rotation);
+
 void cm_renderer2d_push_quad_color(const vec2 position, float z,
                                    const vec2 size, const vec4 color);
+void cm_renderer2d_push_quad_color_rotated(const vec2 position, float z,
+                                           const vec2 size, const vec4 color,
+                                           float rotation);
 
 void cm_renderer2d_init(void);
 void cm_renderer2d_shutdown(void);

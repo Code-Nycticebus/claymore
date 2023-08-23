@@ -1,3 +1,5 @@
+#include <assert.h>
+#include <stddef.h>
 #define _CM_RENDERER_INTERNAL
 #include "renderer2D.h"
 
@@ -82,9 +84,14 @@ void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-static void _cm_renderer2d_push_quad(const vec2 position, float z,
-                                     const vec2 size, const vec4 color,
-                                     vec2 text_coord, vec2 text_size) {
+#if defined(__clang__)
+#pragma clang optimize on
+#endif
+
+static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
+                                            const vec2 size, const vec4 color,
+                                            vec2 text_coord, vec2 text_size,
+                                            float rotation) {
   if (!(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES)) {
     cm_renderer2d_flush();
   }
@@ -93,51 +100,34 @@ static void _cm_renderer2d_push_quad(const vec2 position, float z,
   assert(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
   assert(render_data->indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
-  const float x = position[0];
-  const float xs = size[0];
-  const float y = position[1];
-  const float ys = size[1];
+  // Define the vertices' positions and attributes
+  const float vertex_positions[4][2] = {
+      {position[0], position[1]},
+      {position[0] + size[0], position[1]},
+      {position[0] + size[0], position[1] + size[1]},
+      {position[0], position[1] + size[1]}};
 
-  CmVertex* vertecies  = &render_data->data[render_data->vertecies_count];
-  vertecies[0].pos[0] = x;
-  vertecies[0].pos[1] = y;
-  vertecies[0].pos[2] = z;
-  vertecies[0].color[0] = color[0];
-  vertecies[0].color[1] = color[1];
-  vertecies[0].color[2] = color[2];
-  vertecies[0].color[3] = color[3];
-  vertecies[0].uv[0] = text_coord[0];
-  vertecies[0].uv[1] = text_coord[1];
+  CmVertex *vertices = &render_data->data[render_data->vertecies_count];
+  for (int i = 0; i < CM_RENDERER2D_VERTECIES_PER_QUAD; ++i) {
+    vertices[i].pos[0] = vertex_positions[i][0];
+    vertices[i].pos[1] = vertex_positions[i][1];
+    vertices[i].pos[2] = z;
+    vertices[i].color[0] = color[0];
+    vertices[i].color[1] = color[1];
+    vertices[i].color[2] = color[2];
+    vertices[i].color[3] = color[3];
+    vertices[i].uv[0] = text_coord[0] + (i == 1 || i == 2 ? text_size[0] : 0);
+    vertices[i].uv[1] = text_coord[1] + (i == 2 || i == 3 ? text_size[1] : 0);
 
-  vertecies[1].pos[0] = x + xs;
-  vertecies[1].pos[1] = y;
-  vertecies[1].pos[2] = z;
-  vertecies[1].color[0] = color[0];
-  vertecies[1].color[1] = color[1];
-  vertecies[1].color[2] = color[2];
-  vertecies[1].color[3] = color[3];
-  vertecies[1].uv[0] = text_coord[0] + text_size[0];
-  vertecies[1].uv[1] = text_coord[1];
-
-  vertecies[2].pos[0] = x + xs;
-  vertecies[2].pos[1] = y + ys;
-  vertecies[2].pos[2] = z;
-  vertecies[2].color[0] = color[0];
-  vertecies[2].color[1] = color[1];
-  vertecies[2].color[2] = color[2];
-  vertecies[2].color[3] = color[3];
-  vertecies[2].uv[0] = text_coord[0] + text_size[0];
-  vertecies[2].uv[1] = text_coord[1] + text_size[1];
-
-  vertecies[3].pos[0] = x;
-  vertecies[3].pos[1] = y + ys;
-  vertecies[3].pos[2] = z;
-  vertecies[3].color[0] = color[0];
-  vertecies[3].color[1] = color[1];
-  vertecies[3].color[2] = color[2];
-  vertecies[3].color[3] = color[3];
-  vertecies[3].uv[0] = text_coord[0];
-  vertecies[3].uv[1] = text_coord[1] + text_size[1];
+    if (rotation != 0.F) {
+      const float cos_theta = cosf(rotation);
+      const float sin_theta = sinf(rotation);
+      float x = vertices[i].pos[0] - position[0];
+      float y = vertices[i].pos[1] - position[1];
+      vertices[i].pos[0] = x * cos_theta - y * sin_theta + position[0];
+      vertices[i].pos[1] = x * sin_theta + y * cos_theta + position[1];
+    }
+  }
 
   render_data->vertecies_count += CM_RENDERER2D_VERTECIES_PER_QUAD;
   render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
@@ -146,10 +136,24 @@ static void _cm_renderer2d_push_quad(const vec2 position, float z,
 void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size,
                              vec2 texture_coord, vec2 texture_size) {
   _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
-                           texture_coord, texture_size);
+                           texture_coord, texture_size, 0.F);
+}
+
+void cm_renderer2d_push_quad_rotated(const vec2 position, float z,
+                                     const vec2 size, vec2 texture_coord,
+                                     vec2 texture_size, float rotation) {
+  _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
+                           texture_coord, texture_size, rotation);
 }
 
 void cm_renderer2d_push_quad_color(const vec2 position, float z,
                                    const vec2 size, const vec4 color) {
-  _cm_renderer2d_push_quad(position, z, size, color, (vec2){0}, (vec2){0});
+  _cm_renderer2d_push_quad(position, z, size, color, (vec2){0}, (vec2){0}, 0.F);
+}
+
+void cm_renderer2d_push_quad_color_rotated(const vec2 position, float z,
+                                           const vec2 size, const vec4 color,
+                                           float rotation) {
+  _cm_renderer2d_push_quad(position, z, size, color, (vec2){0}, (vec2){0},
+                           rotation);
 }
