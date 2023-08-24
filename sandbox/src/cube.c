@@ -184,7 +184,7 @@ static void cube_init(CmLayer *layer) {
   render_data.index_buffer =
       cm_index_buffer_create(&render_data.vertex_attribute, indices_count,
                              cube_indices, GL_STATIC_DRAW);
-  cm_renderer_set_clear_color((vec4){0.F , 0.F, 0.F, 1.F});
+  cm_renderer_set_clear_color((vec4){0.F, 0.F, 0.F, 1.F});
 }
 
 static void cube_update(CmLayer *layer, float dt) {
