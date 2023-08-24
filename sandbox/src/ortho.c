@@ -18,7 +18,7 @@ static struct ShaderData grid_shader;
 
 static Texture background_texture;
 
-static CmFont* font;
+static CmFont *font;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
@@ -26,8 +26,9 @@ static float zoom = 100.F;
 static float aspect;
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
-  const float min_zoom = 0.1F;
-  zoom = glm_max(zoom - event->yoffset, min_zoom);
+  const float min_zoom = 1.F;
+  const float scroll_speed = 100.F;
+  zoom = glm_max(zoom - event->yoffset * scroll_speed, min_zoom);
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
             layer->camera.projection);
   layer->camera.update = true;
@@ -102,7 +103,7 @@ static void ortho_init(CmLayer *layer) {
   glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
-  font = cm_font_init("res/fonts/Ubuntu.ttf", 32.F);
+  font = cm_font_init("res/fonts/Silkscreen.ttf", 100.F);
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)ortho_window_resize_callback,
@@ -122,15 +123,13 @@ static void ortho_update(CmLayer *layer, float dt) {
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-
   glUseProgram(grid_shader.id);
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
   const size_t grid_size = 100;
-  const float quad_size = 10.F;
+  const float quad_size = 100.F;
   static float rotation = 0.F;
-  rotation += 45.F * dt;
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
       cm_renderer2d_push_quad_color_rotated(
@@ -140,11 +139,11 @@ static void ortho_update(CmLayer *layer, float dt) {
           glm_rad(rotation + i + j));
     }
   }
-
   cm_renderer2d_end();
   glUseProgram(0);
 
-  cm_font_draw(font, mvp, 0.F, 0.F, 1.F, 5, "Hello");
+  const char label[] = "Quad Batch renderer";
+  cm_font_draw(font, mvp, 0.F, -100, 1.F, sizeof(label) - 1, label);
 }
 
 static void ortho_free(CmLayer *layer) {

@@ -48,7 +48,7 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
     glm_vec2_copy(pos, last_position);
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-      const float zoom_scale = 200.F;
+      const float zoom_scale = 100.F;
       glm_vec2_scale(direction, zoom / zoom_scale, direction);
       glm_vec2_add(layer->camera.position, direction, layer->camera.position);
 
@@ -85,7 +85,6 @@ static void background_init(CmLayer *layer) {
                         &layer->camera);
   cm_event_set_callback(CM_EVENT_SCROLL,
                         (cm_event_callback)background_scroll_callback, layer);
-  glm_scale(model, (vec3){100.F, 100.F, 0.F});
 }
 
 static void background_update(CmLayer *layer, float dt) {
