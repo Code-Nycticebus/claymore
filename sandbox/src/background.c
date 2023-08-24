@@ -19,7 +19,7 @@ static Texture background_texture;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
-static float zoom = 1.F;
+static float zoom = .5F;
 static float aspect;
 
 static void background_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
@@ -85,6 +85,7 @@ static void background_init(CmLayer *layer) {
                         &layer->camera);
   cm_event_set_callback(CM_EVENT_SCROLL,
                         (cm_event_callback)background_scroll_callback, layer);
+  glm_scale(model, (vec3){100.F, 100.F, 0.F});
 }
 
 static void background_update(CmLayer *layer, float dt) {

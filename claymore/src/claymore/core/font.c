@@ -98,7 +98,7 @@ CmFont* cm_font_init(const char *filename, const float font_height) {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, TTF_BITMAP_RESOLUTION,
                TTF_BITMAP_RESOLUTION, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   font_renderer->vertex_buffer = cm_vertex_buffer_create(
@@ -124,8 +124,7 @@ void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len,
   glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
   mat4 inverted_mvp;
-  glm_mat4_copy(mvp, inverted_mvp);
-  glm_scale(inverted_mvp, (vec3){1.0f, -1.0f, 1.0f});
+  glm_scale_to(mvp, (vec3){1.0f, -1.0f, 1.0f}, inverted_mvp);
 
   glUseProgram(font->shader.id);
   glUniformMatrix4fv(font->shader.uniform_loc.mvp, 1, GL_FALSE,

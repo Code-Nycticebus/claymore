@@ -22,7 +22,7 @@ static CmFont* font;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
-static float zoom = 1.F;
+static float zoom = 100.F;
 static float aspect;
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
@@ -102,8 +102,7 @@ static void ortho_init(CmLayer *layer) {
   glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
-
-  font = cm_font_init("res/fonts/Silkscreen.ttf", 32.F);
+  font = cm_font_init("res/fonts/Ubuntu.ttf", 32.F);
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)ortho_window_resize_callback,
@@ -129,8 +128,8 @@ static void ortho_update(CmLayer *layer, float dt) {
 
   cm_renderer2d_begin();
   const size_t grid_size = 100;
-  const float quad_size = 0.5F;
-  static float rotation = 1.F;
+  const float quad_size = 10.F;
+  static float rotation = 0.F;
   rotation += 45.F * dt;
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
