@@ -1,10 +1,13 @@
 #include "claymore.h"
 
+static CmFont* font;
+const float font_size = 24.F;
+
 static void fps_init(CmLayer *layer) {
   (void)layer;
-  cm_font_init("res/fonts/Ubuntu.ttf", 24.F);
+  font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
   glm_ortho(0.F, (float)layer->app->window->width,
-            (float)layer->app->window->height, 0.F, -1.F, 100.F,
+            0.F, (float)layer->app->window->height, -1.F, 100.F,
             layer->camera.projection);
 
   glm_mat4_identity(layer->camera.view);
@@ -22,19 +25,18 @@ static void fps_update(CmLayer *layer, float dt) {
   glm_mat4_identity(model);
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  const float fps_y = 20.F;
-  const float fps_x = 5.F;
+  const float fps_y = layer->app->window->height - font_size;
+  const float fps_x = 0.F;
 #define FPS_MAX 64
   char fps_buffer[FPS_MAX] = {0};
   size_t len = snprintf(fps_buffer, FPS_MAX - 1, "%.0f FPS (%.1fms) ", 1 / dt, dt*1000);
-  cm_font_draw(mvp, fps_x, fps_y, len, fps_buffer);
-
+  cm_font_draw(font, mvp, fps_x, fps_y, 0, len, fps_buffer);
   glEnable(GL_DEPTH_TEST);
 }
 
 static void fps_free(CmLayer *layer) {
   (void)layer;
-  cm_font_free();
+  cm_font_free(font);
 }
 
 CmLayerInterface sandbox_fps(void) {

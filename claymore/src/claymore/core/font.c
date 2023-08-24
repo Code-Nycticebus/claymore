@@ -50,22 +50,21 @@ struct Vertex {
 #define FONT_RENDERER_VERTECIES_MAX                                            \
   FONT_RENDERER_CHAR_MAX *FONT_RENDERER_VERTECIES_PER_CHAR
 
-static stbtt_bakedchar cdata[FONT_CHAR_MAX];
-
-typedef struct {
+struct CmFont {
   FontShader shader;
   GLuint texture_id;
   CmVertexBuffer vertex_buffer;
   CmVertexAttribute vertex_attrib;
 
+  stbtt_bakedchar cdata[FONT_CHAR_MAX];
+
   struct Vertex buffer[FONT_RENDERER_VERTECIES_MAX];
   size_t vertex_count;
-} FontRenderer;
-static FontRenderer *font_renderer;
+};
 
-void cm_font_init(const char *filename, const float font_height) {
-  assert(font_renderer == NULL && "Fonts initialized twice");
-  font_renderer = (FontRenderer *)calloc(sizeof(FontRenderer), 1);
+
+CmFont* cm_font_init(const char *filename, const float font_height) {
+  CmFont* font_renderer = (CmFont *)calloc(sizeof(CmFont), 1);
   uint8_t *ttf_buffer;
   font_renderer->shader.id = cm_load_shader_from_memory(font_vs, font_fs);
   font_renderer->shader.uniform_loc.mvp =
@@ -83,14 +82,14 @@ void cm_font_init(const char *filename, const float font_height) {
   FILE *ttf_file = fopen(filename, "rb");
   if (ttf_file == NULL) {
     cm_log_error("Could not open %s: %s\n", filename, strerror(errno));
-    return;
+    return NULL;
   }
 
   fread(ttf_buffer, 1, TTF_BUFFER_MAX, ttf_file);
 
   stbtt_BakeFontBitmap(ttf_buffer, 0, font_height, ttf_bitmap,
                        TTF_BITMAP_RESOLUTION, TTF_BITMAP_RESOLUTION,
-                       FONT_CHAR_MIN, FONT_CHAR_MAX, cdata);
+                       FONT_CHAR_MIN, FONT_CHAR_MAX, font_renderer->cdata);
 
   fclose(ttf_file);
 
@@ -99,6 +98,7 @@ void cm_font_init(const char *filename, const float font_height) {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, TTF_BITMAP_RESOLUTION,
                TTF_BITMAP_RESOLUTION, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glBindTexture(GL_TEXTURE_2D, 0);
 
   font_renderer->vertex_buffer = cm_vertex_buffer_create(
@@ -116,70 +116,71 @@ void cm_font_init(const char *filename, const float font_height) {
   glBindVertexArray(0);
 
   free(ttf_buffer);
+  return font_renderer;
 }
 
-void cm_font_draw(mat4 mvp, float x, float y, size_t len, const char *text) {
+void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len, const char *text) {
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, font_renderer->texture_id);
+  glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
-  glUseProgram(font_renderer->shader.id);
-  glUniformMatrix4fv(font_renderer->shader.uniform_loc.mvp, 1, GL_FALSE,
-                     (float *)mvp);
-  glUniform1i(font_renderer->shader.uniform_loc.texture, 0);
-  glBindBuffer(GL_ARRAY_BUFFER, font_renderer->vertex_buffer.id);
-  glBindVertexArray(font_renderer->vertex_attrib.id);
+  mat4 inverted_mvp;
+  glm_mat4_copy(mvp, inverted_mvp);
+  glm_scale(inverted_mvp, (vec3){1.0f, -1.0f, 1.0f});
 
-  struct Vertex *current_vertex = font_renderer->buffer;
-  static bool start = false;
+  glUseProgram(font->shader.id);
+  glUniformMatrix4fv(font->shader.uniform_loc.mvp, 1, GL_FALSE,
+                     (float *)inverted_mvp);
+  glUniform1i(font->shader.uniform_loc.texture, 0);
+  glBindBuffer(GL_ARRAY_BUFFER, font->vertex_buffer.id);
+  glBindVertexArray(font->vertex_attrib.id);
+
+
+  float inverted_y = -y;
+  struct Vertex *current_vertex = font->buffer;
   for (size_t i = 0; i < len; i++) {
     if (FONT_CHAR_MIN <= text[i] &&
         text[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
+
       stbtt_aligned_quad q;
-      stbtt_GetBakedQuad(cdata, TTF_BITMAP_RESOLUTION, TTF_BITMAP_RESOLUTION,
-                         text[i] - FONT_CHAR_MIN, &x, &y, &q, 1);
+      stbtt_GetBakedQuad(font->cdata, TTF_BITMAP_RESOLUTION, TTF_BITMAP_RESOLUTION,
+                   text[i] - FONT_CHAR_MIN, &x, &inverted_y, &q, 1);
 
-      glm_vec3_copy((vec3){q.x0, q.y0, 0.0F}, current_vertex[0].pos);
-
+      glm_vec3_copy((vec3){q.x0, q.y0, z}, current_vertex[0].pos);
       glm_vec2_copy((vec2){q.s0, q.t0}, current_vertex[0].uv);
 
-      glm_vec3_copy((vec3){q.x1, q.y0, 0.0F}, current_vertex[1].pos);
+      glm_vec3_copy((vec3){q.x1, q.y0, z}, current_vertex[1].pos);
       glm_vec2_copy((vec2){q.s1, q.t0}, current_vertex[1].uv);
 
-      glm_vec3_copy((vec3){q.x1, q.y1, 0.0F}, current_vertex[2].pos);
+      glm_vec3_copy((vec3){q.x1, q.y1, z}, current_vertex[2].pos);
       glm_vec2_copy((vec2){q.s1, q.t1}, current_vertex[2].uv);
 
-      glm_vec3_copy((vec3){q.x0, q.y1, 0.0F}, current_vertex[3].pos);
+      glm_vec3_copy((vec3){q.x0, q.y1, z}, current_vertex[3].pos);
       glm_vec2_copy((vec2){q.s0, q.t1}, current_vertex[3].uv);
 
-      glm_vec3_copy((vec3){q.x0, q.y0, 0.0F}, current_vertex[4].pos);
+      glm_vec3_copy((vec3){q.x0, q.y0, z}, current_vertex[4].pos);
       glm_vec2_copy((vec2){q.s0, q.t0}, current_vertex[4].uv);
 
-      glm_vec3_copy((vec3){q.x1, q.y1, 0.0F}, current_vertex[4 + 1].pos);
+      glm_vec3_copy((vec3){q.x1, q.y1, z}, current_vertex[4 + 1].pos);
       glm_vec2_copy((vec2){q.s1, q.t1}, current_vertex[4 + 1].uv);
 
-      if (start) {
-        cm_log_trace("%f %f %f\n", current_vertex[0].pos[0],
-                     current_vertex[0].pos[1], current_vertex[0].pos[2]);
-        start = true;
-      }
-
-      font_renderer->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
+      font->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
       current_vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
 
-      assert(font_renderer->vertex_count < FONT_RENDERER_VERTECIES_MAX);
+      // TODO batch renderer
+      assert(font->vertex_count < FONT_RENDERER_VERTECIES_MAX);
     }
   }
 
   glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(struct Vertex) * font_renderer->vertex_count,
-                  font_renderer->buffer);
+                  sizeof(struct Vertex) * font->vertex_count,
+                  font->buffer);
 
-  glDrawArrays(GL_TRIANGLES, 0, font_renderer->vertex_count);
+  glDrawArrays(GL_TRIANGLES, 0, font->vertex_count);
 
-  font_renderer->vertex_count = 0;
+  font->vertex_count = 0;
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glUseProgram(0);
 }
 
-void cm_font_free(void) { free(font_renderer); }
+void cm_font_free(CmFont* font) { free(font); }

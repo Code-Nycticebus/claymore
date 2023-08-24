@@ -18,6 +18,8 @@ static struct ShaderData grid_shader;
 
 static Texture background_texture;
 
+static CmFont* font;
+
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
 static float zoom = 1.F;
@@ -100,6 +102,9 @@ static void ortho_init(CmLayer *layer) {
   glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
+
+  font = cm_font_init("res/fonts/Silkscreen.ttf", 32.F);
+
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)ortho_window_resize_callback,
                         &layer->camera);
@@ -117,6 +122,7 @@ static void ortho_update(CmLayer *layer, float dt) {
 
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
+
 
   glUseProgram(grid_shader.id);
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
@@ -138,6 +144,8 @@ static void ortho_update(CmLayer *layer, float dt) {
 
   cm_renderer2d_end();
   glUseProgram(0);
+
+  cm_font_draw(font, mvp, 0.F, 0.F, 1.F, 5, "Hello");
 }
 
 static void ortho_free(CmLayer *layer) {
