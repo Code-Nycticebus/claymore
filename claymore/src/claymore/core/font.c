@@ -42,11 +42,10 @@ struct Vertex {
   vec2 uv;
 };
 
-#define FONT_HEIGHT 32.F
 #define FONT_CHAR_MIN 32
 #define FONT_CHAR_MAX 96
 
-#define FONT_RENDERER_CHAR_MAX 20
+#define FONT_RENDERER_CHAR_MAX 128
 #define FONT_RENDERER_VERTECIES_PER_CHAR 6
 #define FONT_RENDERER_VERTECIES_MAX                                            \
   FONT_RENDERER_CHAR_MAX *FONT_RENDERER_VERTECIES_PER_CHAR
@@ -64,7 +63,7 @@ typedef struct {
 } FontRenderer;
 static FontRenderer *font_renderer;
 
-void cm_font_init(const char *filename) {
+void cm_font_init(const char *filename, const float font_height) {
   assert(font_renderer == NULL && "Fonts initialized twice");
   font_renderer = (FontRenderer *)calloc(sizeof(FontRenderer), 1);
   uint8_t *ttf_buffer;
@@ -89,7 +88,7 @@ void cm_font_init(const char *filename) {
 
   fread(ttf_buffer, 1, TTF_BUFFER_MAX, ttf_file);
 
-  stbtt_BakeFontBitmap(ttf_buffer, 0, FONT_HEIGHT, ttf_bitmap,
+  stbtt_BakeFontBitmap(ttf_buffer, 0, font_height, ttf_bitmap,
                        TTF_BITMAP_RESOLUTION, TTF_BITMAP_RESOLUTION,
                        FONT_CHAR_MIN, FONT_CHAR_MAX, cdata);
 

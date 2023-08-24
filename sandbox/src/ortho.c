@@ -122,7 +122,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  const size_t grid_size = 200;
+  const size_t grid_size = 100;
   const float quad_size = 0.5F;
   static float rotation = 1.F;
   rotation += 45.F * dt;
