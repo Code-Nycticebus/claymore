@@ -60,11 +60,13 @@ struct CmFont {
 
   struct Vertex buffer[FONT_RENDERER_VERTECIES_MAX];
   size_t vertex_count;
+
+  float height;
+  size_t ttf_resoulution;
 };
 
-
-CmFont* cm_font_init(const char *filename, const float font_height) {
-  CmFont* font_renderer = (CmFont *)calloc(sizeof(CmFont), 1);
+CmFont *cm_font_init(const char *filename, const float font_height) {
+  CmFont *font_renderer = (CmFont *)calloc(sizeof(CmFont), 1);
   uint8_t *ttf_buffer;
   font_renderer->shader.id = cm_load_shader_from_memory(font_vs, font_fs);
   font_renderer->shader.uniform_loc.mvp =
@@ -72,12 +74,13 @@ CmFont* cm_font_init(const char *filename, const float font_height) {
   font_renderer->shader.uniform_loc.texture =
       cm_shader_get_uniform_location(font_renderer->shader.id, "u_texture");
 
-#define TTF_BUFFER_MAX (1 << 20)
-  ttf_buffer = (uint8_t *)malloc(TTF_BUFFER_MAX * sizeof(uint8_t));
+  GLint max_texture_size;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 
-#define TTF_BITMAP_RESOLUTION 512
-#define TTF_BITMAP_MAX (TTF_BITMAP_RESOLUTION * TTF_BITMAP_RESOLUTION)
-  uint8_t ttf_bitmap[TTF_BITMAP_MAX];
+  const size_t ttf_bitmap_resolution =
+      glm_min(512 * ceilf(font_height / 100.F), max_texture_size);
+  const size_t ttf_bitmap_size = ttf_bitmap_resolution * ttf_bitmap_resolution;
+  uint8_t *ttf_bitmap = (uint8_t *)calloc(1, sizeof(uint8_t) * ttf_bitmap_size);
 
   FILE *ttf_file = fopen(filename, "rb");
   if (ttf_file == NULL) {
@@ -85,21 +88,29 @@ CmFont* cm_font_init(const char *filename, const float font_height) {
     return NULL;
   }
 
-  fread(ttf_buffer, 1, TTF_BUFFER_MAX, ttf_file);
+  fseek(ttf_file, 0, SEEK_END);
+  const size_t buffer_size = ftell(ttf_file);
+  fseek(ttf_file, 0, SEEK_SET);
+
+  ttf_buffer = (uint8_t *)malloc(buffer_size * sizeof(uint8_t));
+
+  fread(ttf_buffer, 1, buffer_size, ttf_file);
 
   stbtt_BakeFontBitmap(ttf_buffer, 0, font_height, ttf_bitmap,
-                       TTF_BITMAP_RESOLUTION, TTF_BITMAP_RESOLUTION,
+                       ttf_bitmap_resolution, ttf_bitmap_resolution,
                        FONT_CHAR_MIN, FONT_CHAR_MAX, font_renderer->cdata);
-
-  fclose(ttf_file);
 
   glGenTextures(1, &font_renderer->texture_id);
   glBindTexture(GL_TEXTURE_2D, font_renderer->texture_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, TTF_BITMAP_RESOLUTION,
-               TTF_BITMAP_RESOLUTION, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ttf_bitmap_resolution,
+               ttf_bitmap_resolution, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glBindTexture(GL_TEXTURE_2D, 0);
+
+  free(ttf_bitmap);
+  free(ttf_buffer);
+  fclose(ttf_file);
 
   font_renderer->vertex_buffer = cm_vertex_buffer_create(
       FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX,
@@ -115,11 +126,14 @@ CmFont* cm_font_init(const char *filename, const float font_height) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 
-  free(ttf_buffer);
+  font_renderer->height = font_height;
+  font_renderer->ttf_resoulution = ttf_bitmap_resolution;
+
   return font_renderer;
 }
 
-void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len, const char *text) {
+void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
+                  const char *text) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
@@ -133,7 +147,6 @@ void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len,
   glBindBuffer(GL_ARRAY_BUFFER, font->vertex_buffer.id);
   glBindVertexArray(font->vertex_attrib.id);
 
-
   float inverted_y = -y;
   struct Vertex *current_vertex = font->buffer;
   for (size_t i = 0; i < len; i++) {
@@ -141,8 +154,9 @@ void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len,
         text[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
 
       stbtt_aligned_quad q;
-      stbtt_GetBakedQuad(font->cdata, TTF_BITMAP_RESOLUTION, TTF_BITMAP_RESOLUTION,
-                   text[i] - FONT_CHAR_MIN, &x, &inverted_y, &q, 1);
+      stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution,
+                         font->ttf_resoulution, text[i] - FONT_CHAR_MIN, &x,
+                         &inverted_y, &q, 1);
 
       glm_vec3_copy((vec3){q.x0, q.y0, z}, current_vertex[0].pos);
       glm_vec2_copy((vec2){q.s0, q.t0}, current_vertex[0].uv);
@@ -171,8 +185,7 @@ void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len,
   }
 
   glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(struct Vertex) * font->vertex_count,
-                  font->buffer);
+                  sizeof(struct Vertex) * font->vertex_count, font->buffer);
 
   glDrawArrays(GL_TRIANGLES, 0, font->vertex_count);
 
@@ -182,4 +195,4 @@ void cm_font_draw(CmFont* font, mat4 mvp, float x, float y, float z, size_t len,
   glUseProgram(0);
 }
 
-void cm_font_free(CmFont* font) { free(font); }
+void cm_font_free(CmFont *font) { free(font); }
