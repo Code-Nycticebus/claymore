@@ -146,7 +146,7 @@ static void cube_init(CmLayer *layer) {
       (vec3){0, 0, 4}, (vec3){0}, fov,
       (float)layer->app->window->width / (float)layer->app->window->height);
 
-  struct Vertex cube_vertecies[] = {
+  struct Vertex cube_vertices[] = {
       // 1
       {{-1.F, -1.F, 1.F}, {1.F, 1.F, 0.F, 1.F}},
       {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}},
@@ -159,10 +159,10 @@ static void cube_init(CmLayer *layer) {
       {{1.F, 1.F, -1.F}, {1.F, 0.F, 1.F, 1.F}},
       {{-1.F, 1.F, -1.F}, {1.F, 1.F, 0.F, 1.F}},
   };
-  const size_t vertecies_count = 8;
+  const size_t vertices_count = 8;
 
   render_data.vertex_buffer = cm_vertex_buffer_create(
-      vertecies_count, sizeof(struct Vertex), cube_vertecies, GL_STATIC_DRAW);
+      vertices_count, sizeof(struct Vertex), cube_vertices, GL_STATIC_DRAW);
 
   render_data.vertex_attribute =
       cm_vertex_attribute_create(&render_data.vertex_buffer);

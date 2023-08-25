@@ -4,9 +4,9 @@
 #include "renderer_defines.h"
 
 #define CM_RENDERER2D_MAX_QUADS 3000
-#define CM_RENDERER2D_VERTECIES_PER_QUAD 4
-#define CM_RENDERER2D_MAX_VERTECIES                                            \
-  (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTECIES_PER_QUAD)
+#define CM_RENDERER2D_VERTICES_PER_QUAD 4
+#define CM_RENDERER2D_MAX_VERTICES                                             \
+  (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTICES_PER_QUAD)
 #define CM_RENDERER_INDICES_PER_SQUAD 6
 #define CM_RENDERER2D_MAX_INDECIES                                             \
   (CM_RENDERER2D_MAX_QUADS * CM_RENDERER_INDICES_PER_SQUAD)

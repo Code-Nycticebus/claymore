@@ -14,8 +14,8 @@
 struct Render2dData {
   CmRenderBuffer renderer;
 
-  size_t vertecies_count;
-  CmVertex data[CM_RENDERER2D_MAX_VERTECIES];
+  size_t vertices_count;
+  CmVertex data[CM_RENDERER2D_MAX_VERTICES];
 
   size_t indecies_count;
   uint32_t indecies[CM_RENDERER2D_MAX_INDECIES];
@@ -30,10 +30,10 @@ void cm_renderer2d_init(void) {
 
   // Initialize Quad primitive buffer
   render_data->renderer.vertex_buffer =
-      cm_vertex_buffer_create(CM_RENDERER2D_MAX_VERTECIES, sizeof(CmVertex),
+      cm_vertex_buffer_create(CM_RENDERER2D_MAX_VERTICES, sizeof(CmVertex),
                               render_data->data, GL_DYNAMIC_DRAW);
 
-  render_data->vertecies_count = 0;
+  render_data->vertices_count = 0;
 
   render_data->renderer.vertex_attribute =
       cm_vertex_attribute_create(&render_data->renderer.vertex_buffer);
@@ -73,12 +73,12 @@ void cm_renderer2d_end(void) { cm_renderer2d_flush(); }
 void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, render_data->renderer.vertex_buffer.id);
   glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(CmVertex) * render_data->vertecies_count,
+                  sizeof(CmVertex) * render_data->vertices_count,
                   render_data->data);
 
   cm_renderer_draw_indexed(&render_data->renderer, render_data->indecies_count);
 
-  render_data->vertecies_count = 0;
+  render_data->vertices_count = 0;
   render_data->indecies_count = 0;
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -92,23 +92,22 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
                                             const vec2 size, const vec4 color,
                                             vec2 text_coord, vec2 text_size,
                                             float rotation) {
-  if (!(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES)) {
+  if (!(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES)) {
     cm_renderer2d_flush();
   }
 
   // For safety i still assert
-  assert(render_data->vertecies_count < CM_RENDERER2D_MAX_VERTECIES);
+  assert(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES);
   assert(render_data->indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
-  // Define the vertices' positions and attributes
-  const float vertex_positions[4][2] = {
+  const vec2 vertex_positions[CM_RENDERER2D_VERTICES_PER_QUAD] = {
       {position[0], position[1]},
       {position[0] + size[0], position[1]},
       {position[0] + size[0], position[1] + size[1]},
       {position[0], position[1] + size[1]}};
 
-  CmVertex *vertices = &render_data->data[render_data->vertecies_count];
-  for (int i = 0; i < CM_RENDERER2D_VERTECIES_PER_QUAD; ++i) {
+  CmVertex *vertices = &render_data->data[render_data->vertices_count];
+  for (int i = 0; i < CM_RENDERER2D_VERTICES_PER_QUAD; ++i) {
     vertices[i].pos[0] = vertex_positions[i][0];
     vertices[i].pos[1] = vertex_positions[i][1];
     vertices[i].pos[2] = z;
@@ -129,7 +128,7 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
     }
   }
 
-  render_data->vertecies_count += CM_RENDERER2D_VERTECIES_PER_QUAD;
+  render_data->vertices_count += CM_RENDERER2D_VERTICES_PER_QUAD;
   render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
 }
 
