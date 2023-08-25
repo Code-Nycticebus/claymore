@@ -127,7 +127,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  const uint64_t grid_size = 200; // 317^2 == 100'000 quads
+  const uint64_t grid_size = 100; // 317^2 == 100'000 quads
   const float quad_size = 10.F;
   static float rotation = 0.F;
   rotation += 45.F * dt;

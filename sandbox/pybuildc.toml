@@ -9,6 +9,6 @@ cflags = ["-D_CRT_SECURE_NO_WARNINGS"]
 [dependencies.claymore]
 dir="../claymore/" 
 dep_type="pybuildc"
-target="release"
+target="debug"
 build=true
 
