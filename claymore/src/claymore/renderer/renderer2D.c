@@ -84,10 +84,6 @@ void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-#if defined(__clang__)
-#pragma clang optimize on
-#endif
-
 static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
                                             const vec2 size, const vec4 color,
                                             vec2 text_coord, vec2 text_size,
@@ -104,7 +100,15 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
       {position[0], position[1]},
       {position[0] + size[0], position[1]},
       {position[0] + size[0], position[1] + size[1]},
-      {position[0], position[1] + size[1]}};
+      {position[0], position[1] + size[1]},
+  };
+
+  float cos_theta;
+  float sin_theta;
+  if (rotation != 0) {
+    cos_theta = cosf(rotation);
+    sin_theta = sinf(rotation);
+  }
 
   CmVertex *vertices = &render_data->data[render_data->vertices_count];
   for (int i = 0; i < CM_RENDERER2D_VERTICES_PER_QUAD; ++i) {
@@ -119,8 +123,6 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
     vertices[i].uv[1] = text_coord[1] + (i == 2 || i == 3 ? text_size[1] : 0);
 
     if (rotation != 0.F) {
-      const float cos_theta = cosf(rotation);
-      const float sin_theta = sinf(rotation);
       float x = vertices[i].pos[0] - position[0];
       float y = vertices[i].pos[1] - position[1];
       vertices[i].pos[0] = x * cos_theta - y * sin_theta + position[0];
