@@ -10,11 +10,10 @@
 #if defined(_WIN32) && !defined(_CM_DEBUG)
 #pragma comment(linker, "/subsystem:windows")
 #include <windows.h>
-#define main(...) WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#define main(...)                                                              \
+  WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,                 \
+                 LPSTR lpCmdLine, int nCmdShow)
 #endif
-
-
-
 
 int main(void) {
   const ClaymoreConfig config = claymore_config();

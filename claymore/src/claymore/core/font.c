@@ -46,9 +46,9 @@ struct Vertex {
 #define FONT_CHAR_MAX 96
 
 #define FONT_RENDERER_CHAR_MAX 128
-#define FONT_RENDERER_VERTICES_PER_CHAR 6
-#define FONT_RENDERER_VERTICES_MAX                                             \
-  FONT_RENDERER_CHAR_MAX *FONT_RENDERER_VERTICES_PER_CHAR
+#define FONT_RENDERER_VERTECIES_PER_CHAR 6
+#define FONT_RENDERER_VERTECIES_MAX                                            \
+  FONT_RENDERER_CHAR_MAX *FONT_RENDERER_VERTECIES_PER_CHAR
 
 struct CmFont {
   FontShader shader;
@@ -58,7 +58,7 @@ struct CmFont {
 
   stbtt_bakedchar cdata[FONT_CHAR_MAX];
 
-  struct Vertex buffer[FONT_RENDERER_VERTICES_MAX];
+  struct Vertex buffer[FONT_RENDERER_VERTECIES_MAX];
   size_t vertex_count;
 
   float height;
@@ -113,7 +113,7 @@ CmFont *cm_font_init(const char *filename, const float font_height) {
   fclose(ttf_file);
 
   font_renderer->vertex_buffer = cm_vertex_buffer_create(
-      FONT_RENDERER_VERTICES_PER_CHAR * FONT_RENDERER_CHAR_MAX,
+      FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX,
       sizeof(struct Vertex), 0, GL_DYNAMIC_DRAW);
 
   font_renderer->vertex_attrib =
@@ -176,11 +176,11 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
       glm_vec3_copy((vec3){q.x1, q.y1, z}, current_vertex[4 + 1].pos);
       glm_vec2_copy((vec2){q.s1, q.t1}, current_vertex[4 + 1].uv);
 
-      font->vertex_count += FONT_RENDERER_VERTICES_PER_CHAR;
-      current_vertex += FONT_RENDERER_VERTICES_PER_CHAR;
+      font->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
+      current_vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
 
       // TODO batch renderer
-      assert(font->vertex_count < FONT_RENDERER_VERTICES_MAX);
+      assert(font->vertex_count < FONT_RENDERER_VERTECIES_MAX);
     }
   }
 

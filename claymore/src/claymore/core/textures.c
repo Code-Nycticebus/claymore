@@ -38,7 +38,7 @@ void cm_texture_bind(Texture *texture, uint32_t slot) {
   glBindTextureUnit(slot, texture->id);
 }
 
-void cm_texture_unbind(uint32_t slot) { 
+void cm_texture_unbind(uint32_t slot) {
   glActiveTexture(GL_TEXTURE0 + slot);
-  glBindTexture(GL_TEXTURE_2D, 0); 
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
