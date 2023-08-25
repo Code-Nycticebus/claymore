@@ -127,10 +127,11 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  const uint64_t grid_size = 100; // 317^2 == 100'000 quads
+  const uint32_t grid_size = 100; // 317^2 == 100'000 quads
   const float quad_size = 10.F;
   static float rotation = 0.F;
-  rotation += 45.F * dt;
+  const float rotation_speed = 45.F;
+  rotation += rotation_speed * dt;
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
       cm_renderer2d_push_quad_color_rotated(
@@ -146,7 +147,7 @@ static void ortho_update(CmLayer *layer, float dt) {
 #define LABEL_SIZE 128
   char label_buffer[LABEL_SIZE];
   const size_t len =
-      snprintf(label_buffer, LABEL_SIZE - 1, "Batch renderer: %llu quads",
+      snprintf(label_buffer, LABEL_SIZE - 1, "Batch renderer: %u quads",
                grid_size * grid_size);
   cm_font_draw(font, mvp, 0.F, -100.F, 1.F, len, label_buffer);
 }

@@ -86,7 +86,8 @@ void cm_renderer2d_flush(void) {
 
 static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
                                             const vec2 size, const vec4 color,
-                                            vec2 text_coord, vec2 text_size,
+                                            const vec2 text_coord,
+                                            const vec2 text_size,
                                             float rotation) {
   if (!(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES)) {
     cm_renderer2d_flush();
@@ -135,14 +136,15 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
 }
 
 void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size,
-                             vec2 texture_coord, vec2 texture_size) {
+                             const vec2 texture_coord,
+                             const vec2 texture_size) {
   _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
                            texture_coord, texture_size, 0.F);
 }
 
 void cm_renderer2d_push_quad_rotated(const vec2 position, float z,
-                                     const vec2 size, vec2 texture_coord,
-                                     vec2 texture_size, float rotation) {
+                                     const vec2 size, const vec2 texture_coord,
+                                     const vec2 texture_size, float rotation) {
   _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
                            texture_coord, texture_size, rotation);
 }

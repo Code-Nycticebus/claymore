@@ -138,7 +138,7 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
   glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
   mat4 inverted_mvp;
-  glm_scale_to(mvp, (vec3){1.0f, -1.0f, 1.0f}, inverted_mvp);
+  glm_scale_to(mvp, (vec3){1.0F, -1.0F, 1.0F}, inverted_mvp);
 
   glUseProgram(font->shader.id);
   glUniformMatrix4fv(font->shader.uniform_loc.mvp, 1, GL_FALSE,
@@ -195,4 +195,9 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
   glUseProgram(0);
 }
 
-void cm_font_free(CmFont *font) { free(font); }
+void cm_font_free(CmFont *font) {
+  glDeleteTextures(1, &font->texture_id);
+  glDeleteBuffers(1, &font->vertex_buffer.id);
+  glDeleteVertexArrays(1, &font->vertex_attrib.id);
+  free(font);
+}

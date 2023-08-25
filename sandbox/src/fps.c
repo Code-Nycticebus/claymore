@@ -40,8 +40,9 @@ static void fps_update(CmLayer *layer, float dt) {
   const float fps_x = 10.F;
 #define FPS_MAX 64
   char fps_buffer[FPS_MAX] = {0};
+  const uint32_t ms_per_second = 1000;
   size_t len = snprintf(fps_buffer, FPS_MAX - 1, "%.0f FPS (%.1fms) ", 1 / dt,
-                        dt * 1000);
+                        dt * ms_per_second);
   cm_font_draw(font, mvp, fps_x, fps_y, 0, len, fps_buffer);
   glEnable(GL_DEPTH_TEST);
 }

@@ -86,7 +86,8 @@ static void background_init(CmLayer *layer) {
   cm_event_set_callback(CM_EVENT_SCROLL,
                         (cm_event_callback)background_scroll_callback, layer);
 
-  glm_scale(model, (vec3){10.F, 10.F, 1.F});
+  const float scale = 10.F;
+  glm_scale(model, (vec3){scale, scale, 1.F});
 }
 
 static void background_update(CmLayer *layer, float dt) {
