@@ -143,7 +143,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUseProgram(0);
 
   const char label[] = "Quad Batch renderer";
-  cm_font_draw(font, mvp, 0.F, -100, 1.F, sizeof(label) - 1, label);
+  cm_font_draw(font, mvp, 0.F, -100.F, 1.F, sizeof(label) - 1, label);
 }
 
 static void ortho_free(CmLayer *layer) {
