@@ -35,6 +35,11 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
     return false;
   }
 
+#if defined(__x86_64__) || defined(_M_X64)
+  cm_log_info("64-bit\n");
+#elif defined(__i386__) || defined(_MIX86)
+  cm_log_info("32-bit\n");
+#endif
   cm_log_info("%s\n", cm_debug_enabled ? "Claymore Debug" : "Claymore Release");
 
   app->run = true;
