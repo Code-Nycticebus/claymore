@@ -101,7 +101,8 @@ static void ortho_init(CmLayer *layer) {
   glm_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
-  font = cm_font_init("res/fonts/Ubuntu.ttf", 101.F);
+  const float font_size = 101.F;
+  font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)ortho_window_resize_callback,
@@ -125,13 +126,8 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-<<<<<<< HEAD
   const uint32_t grid_size = 100; // 317^2 == 100'000 quads
   const float quad_size = 5.F;
-=======
-  const uint32_t grid_size = 200; // 317^2 == 100'000 quads
-  const float quad_size = 10.F;
->>>>>>> 33f058fafde3a2727d1a205f916c010802690f58
   static float rotation = 0.F;
   const float rotation_speed = 45.F;
   rotation += rotation_speed * dt;
