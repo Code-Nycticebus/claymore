@@ -41,8 +41,15 @@ static void fps_update(CmLayer *layer, float dt) {
 #define FPS_MAX 64
   char fps_buffer[FPS_MAX] = {0};
   const uint32_t ms_per_second = 1000;
+<<<<<<< HEAD
   size_t len = snprintf(fps_buffer, FPS_MAX - 1, "%3.0f FPS (%2.1fms) ", 1 / dt,
                         dt * ms_per_second);
+=======
+  float fps = 1 / dt;
+  size_t len = snprintf(fps_buffer, FPS_MAX - 1, "  %.0f FPS (%.1fms)", fps,
+                    dt * ms_per_second);
+
+>>>>>>> 33f058fafde3a2727d1a205f916c010802690f58
   cm_font_draw(font, mvp, fps_x, fps_y, 0, len, fps_buffer);
   glEnable(GL_DEPTH_TEST);
 }
