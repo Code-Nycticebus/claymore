@@ -16,8 +16,6 @@ struct ShaderData {
 
 static struct ShaderData grid_shader;
 
-static Texture background_texture;
-
 static CmFont *font;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
@@ -128,7 +126,7 @@ static void ortho_update(CmLayer *layer, float dt) {
 
   cm_renderer2d_begin();
   const uint32_t grid_size = 100; // 317^2 == 100'000 quads
-  const float quad_size = 10.F;
+  const float quad_size = 5.F;
   static float rotation = 0.F;
   const float rotation_speed = 45.F;
   rotation += rotation_speed * dt;
@@ -142,6 +140,7 @@ static void ortho_update(CmLayer *layer, float dt) {
     }
   }
   cm_renderer2d_end();
+
   glUseProgram(0);
 
 #define LABEL_SIZE 128
@@ -152,10 +151,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   cm_font_draw(font, mvp, 0.F, -100.F, 1.F, len, label_buffer);
 }
 
-static void ortho_free(CmLayer *layer) {
-  (void)layer;
-  cm_texture_delete(&background_texture);
-}
+static void ortho_free(CmLayer *layer) { (void)layer; }
 
 CmLayerInterface sandbox_ortho(void) {
   return (CmLayerInterface){

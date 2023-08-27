@@ -9,6 +9,7 @@ cflags = ["-D_CRT_SECURE_NO_WARNINGS"]
 [dependencies]
 stb_image = { dir="../deps/stb_image/", dep_type="pybuildc" }
 stb_truetype = { dir="../deps/stb_truetype/", dep_type="pybuildc" }
+miniaudio = { dir="../deps/miniaudio/", dep_type="pybuildc" }
 
 [dependencies.linux]
 gl   = { lib="GL" }

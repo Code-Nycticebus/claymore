@@ -2,6 +2,7 @@
 
 #include "claymore/core/camera.h"
 #include "claymore/logger/logger.h"
+#include "claymore/sound/sound.h"
 #include "cm.h"
 
 #include "claymore/renderer/renderer.h"
@@ -41,6 +42,10 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
   cm_log_info("32-bit\n");
 #endif
   cm_log_info("%s\n", cm_debug_enabled ? "Claymore Debug" : "Claymore Release");
+
+  if (!cm_sound_init()) {
+    return false;
+  }
 
   app->run = true;
   return true;
@@ -91,5 +96,6 @@ void cm_app_run(CmApp *app, const ClaymoreConfig *config) {
     layer_stack[i].interface.free(&layer_stack[i].layer);
   }
 
+  cm_sound_shutdown();
   cm_renderer2d_shutdown();
 }

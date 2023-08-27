@@ -1,0 +1,10 @@
+[project]
+name="miniaudio"
+version="0.1.0"
+cc="clang"
+bin="static"
+
+[dependencies.linux]
+dl = { lib="dl" }
+pthread = { lib="pthread" }
+m = { lib="m" }

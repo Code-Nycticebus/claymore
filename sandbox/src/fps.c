@@ -13,7 +13,7 @@ static void window_resize_callback(CmWindowEvent *event, CmLayer *layer) {
 
 static void fps_init(CmLayer *layer) {
   (void)layer;
-  font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
+  font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
   glm_ortho(0.F, (float)layer->app->window->width, 0.F,
             (float)layer->app->window->height, -1.F, 100.F,
             layer->camera.projection);
@@ -41,7 +41,7 @@ static void fps_update(CmLayer *layer, float dt) {
 #define FPS_MAX 64
   char fps_buffer[FPS_MAX] = {0};
   const uint32_t ms_per_second = 1000;
-  size_t len = snprintf(fps_buffer, FPS_MAX - 1, "%.0f FPS (%.1fms) ", 1 / dt,
+  size_t len = snprintf(fps_buffer, FPS_MAX - 1, "%3.0f FPS (%2.1fms) ", 1 / dt,
                         dt * ms_per_second);
   cm_font_draw(font, mvp, fps_x, fps_y, 0, len, fps_buffer);
   glEnable(GL_DEPTH_TEST);

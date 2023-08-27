@@ -9,6 +9,7 @@
 #include "claymore/events/event.h"
 #include "claymore/logger/logger.h"
 #include "claymore/renderer/renderer.h"
+#include "claymore/sound/sound.h"
 
 // TODO: Should not be public
 
