@@ -65,7 +65,7 @@ struct CmFont {
   size_t ttf_resoulution;
 };
 
-CmFont *cm_font_init(const char *filename, const float font_height) {
+CmFont *cm_font_init(const char *filename, float font_height) {
   CmFont *font_renderer = (CmFont *)calloc(sizeof(CmFont), 1);
   uint8_t *ttf_buffer;
   font_renderer->shader.id = cm_load_shader_from_memory(font_vs, font_fs);
@@ -193,6 +193,12 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glUseProgram(0);
+}
+
+void cm_font_draw_cstr(CmFont *font, vec4 *mvp, float x, float y, float z,
+                       const char *text) {
+  size_t len = strlen(text);
+  cm_font_draw(font, mvp, x, y, z, len, text);
 }
 
 void cm_font_free(CmFont *font) {
