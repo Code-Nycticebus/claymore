@@ -22,10 +22,10 @@ ClaymoreConfig claymore_config(void) {
       .layers =
           {
               sandbox_background,
-              sandbox_quad,
+              //   sandbox_quad,
               sandbox_ortho,
               // sandbox_cube,
-              sandbox_gui,
+              // sandbox_gui,
               sandbox_fps,
           },
   };

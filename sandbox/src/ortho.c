@@ -1,4 +1,5 @@
 #include "claymore.h"
+#include "claymore/renderer/render_command.h"
 
 struct Vertex {
   vec3 pos;
@@ -15,6 +16,7 @@ struct ShaderData {
 };
 
 static struct ShaderData grid_shader;
+static struct ShaderData framebuffer_shader;
 
 static CmFont *font;
 
@@ -22,6 +24,11 @@ static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
 static float zoom = 100.F;
 static float aspect;
+
+uint32_t fbo;
+uint32_t texture;
+uint32_t rbo;
+CmVertexAttribute attributes;
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
   const float min_zoom = 1.F;
@@ -114,10 +121,73 @@ static void ortho_init(CmLayer *layer) {
 
   cm_event_set_callback(CM_EVENT_KEYBOARD,
                         (cm_event_callback)ortho_key_callback, layer);
+
+  /* Frame buffer */
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+  // Texture to render the framebuffer to
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, layer->app->window->width,
+               layer->app->window->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Specify the attachment if not color attachment.
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, 0);
+
+  // Render buffer object
+  glGenRenderbuffers(1, &rbo);
+  glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
+                        layer->app->window->width, layer->app->window->height);
+
+  // Attach the renderbuffer to framebuffer
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                            GL_RENDERBUFFER, rbo);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+    cm_log_error("Frame buffer was not initialized correctly!\n");
+  }
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  const float vertecies[] = {
+      // positions            // texCoords
+      -1.0f, 1.0f,  0.0f, 1.0f, //
+      -1.0f, -1.0f, 0.0f, 0.0f, //
+      1.0f,  -1.0f, 1.0f, 0.0f, //
+
+      -1.0f, 1.0f,  0.0f, 1.0f, //
+      1.0f,  -1.0f, 1.0f, 0.0f, //
+      1.0f,  1.0f,  1.0f, 1.0f, //
+  };
+
+  CmVertexBuffer buffer =
+      cm_vertex_buffer_create(6, 4 * sizeof(float), vertecies, GL_STATIC_DRAW);
+  attributes = cm_vertex_attribute_create(&buffer);
+  cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, 0);
+  cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, sizeof(float) * 2);
+
+  framebuffer_shader.id = cm_load_shader_from_file(
+      "res/shader/framebuffer.vs.glsl", "res/shader/framebuffer.fs.glsl");
+  framebuffer_shader.uniform_loc.texture =
+      glGetUniformLocation(framebuffer_shader.id, "screen_texture");
+
+  cm_renderer_set_clear_color((vec4){0});
 }
 
 static void ortho_update(CmLayer *layer, float dt) {
-  (void)dt;
+  (void)dt, (void)layer, (void)model;
+
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glClear(GL_COLOR_BUFFER_BIT |
+          GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
 
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
@@ -126,7 +196,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  const uint32_t grid_size = 100; // 317^2 == 100'000 quads
+  static uint32_t grid_size = 100; // 317^2 == 100'000 quads
   const float quad_size = 5.F;
   static float rotation = 0.F;
   const float rotation_speed = 45.F;
@@ -150,9 +220,30 @@ static void ortho_update(CmLayer *layer, float dt) {
       snprintf(label_buffer, LABEL_SIZE - 1, "Batch renderer: %u quads",
                grid_size * grid_size);
   cm_font_draw(font, mvp, 0.F, -100.F, 1.F, len, label_buffer);
+
+  // Set the framebuffer to the screens frame buffer
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  glUseProgram(framebuffer_shader.id);
+  {
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(attributes.id);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(framebuffer_shader.uniform_loc.texture, 0);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
+  }
+  glUseProgram(0);
 }
 
-static void ortho_free(CmLayer *layer) { (void)layer; }
+static void ortho_free(CmLayer *layer) {
+  (void)layer;
+  glDeleteFramebuffers(1, &fbo);
+}
 
 CmLayerInterface sandbox_ortho(void) {
   return (CmLayerInterface){
