@@ -15,6 +15,14 @@ CmVertexBuffer cm_vertex_buffer_create(size_t count, size_t element_size,
   return vertex_buffer;
 }
 
+void cm_vertex_buffer_delete(CmVertexBuffer *vertex_buffer) {
+  glDeleteBuffers(1, &vertex_buffer->id);
+
+  vertex_buffer->id = 0;
+  vertex_buffer->element_count = 0;
+  vertex_buffer->element_size = 0;
+}
+
 CmVertexAttribute cm_vertex_attribute_create(CmVertexBuffer *vertex_buffer) {
   CmVertexAttribute vertex_attribute = {
       .id = 0,
@@ -23,6 +31,14 @@ CmVertexAttribute cm_vertex_attribute_create(CmVertexBuffer *vertex_buffer) {
   };
   glGenVertexArrays(1, &vertex_attribute.id);
   return vertex_attribute;
+}
+
+void cm_vertex_attribute_delete(CmVertexAttribute *vertex_attrib) {
+  glDeleteVertexArrays(1, &vertex_attrib->id);
+
+  vertex_attrib->id = 0;
+  vertex_attrib->buffer = NULL;
+  vertex_attrib->index = 0;
 }
 
 void cm_vertex_attribute_push(CmVertexAttribute *attr, size_t count,
@@ -59,4 +75,17 @@ CmIndexBuffer cm_index_buffer_create(CmVertexAttribute *attrib, size_t count,
   glBindVertexArray(0);
 
   return index_buffer;
+}
+
+void cm_index_buffer_delete(CmIndexBuffer *index_buffer) {
+  glDeleteBuffers(1, &index_buffer->id);
+  index_buffer->id = 0;
+  index_buffer->count = 0;
+  index_buffer->attrib = NULL;
+}
+
+void cm_render_buffer_delete(CmRenderBuffer *render_buffer) {
+  cm_vertex_buffer_delete(&render_buffer->vertex_buffer);
+  cm_vertex_attribute_delete(&render_buffer->vertex_attribute);
+  cm_index_buffer_delete(&render_buffer->index_buffer);
 }
