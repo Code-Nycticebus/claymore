@@ -180,6 +180,8 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
       glGetUniformLocation(framebuffer_shader.id, "screen_texture");
 
   cm_renderer_set_clear_color((vec4){0});
+
+  glfwSwapInterval(0);
   return true;
 }
 
@@ -197,7 +199,11 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  const uint32_t grid_size = 100; // 317^2 == 100'000 quads
+  static uint32_t grid_size = 0; // 317^2 == 100'000 quads
+  const float fps_min = 65.F;
+  if (1 / dt > fps_min) {
+    grid_size += 1;
+  }
   const float quad_size = 5.F;
   static float rotation = 0.F;
   const float rotation_speed = 45.F;

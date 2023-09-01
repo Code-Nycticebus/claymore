@@ -36,10 +36,8 @@ static bool _cm_scene_init(size_t scene) {
             &scene_manager.scene, &scene_manager.layer_stack.layer[i])) {
       return false;
     }
-
     scene_manager.layer_stack.count++;
   }
-
   return true;
 }
 
