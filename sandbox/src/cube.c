@@ -100,14 +100,6 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
       cm_camera_position(&layer->camera, (vec3){0, 0, 4});
       break;
     }
-    case CM_KEY_ESCAPE: {
-      // TODO cm_app_close()
-      cm_event_dispatch((CmEvent){
-          .type = CM_EVENT_WINDOW_CLOSE,
-          .event.window.window = layer->app->window,
-      });
-      break;
-    }
     case CM_KEY_F1: {
       draw_mode = draw_mode == GL_LINE ? GL_FILL : GL_LINE;
       break;
@@ -126,7 +118,7 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
   }
 }
 
-static void cube_init(CmLayer *layer) {
+static bool cube_init(CmScene *scene, CmLayer *layer) {
   cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)cube_key_callback,
                         layer);
 
@@ -144,7 +136,7 @@ static void cube_init(CmLayer *layer) {
 
   layer->camera = cm_camera_init_perspective(
       (vec3){0, 0, 4}, (vec3){0}, fov,
-      (float)layer->app->window->width / (float)layer->app->window->height);
+      (float)scene->app->window->width / (float)scene->app->window->height);
 
   struct Vertex cube_vertices[] = {
       // 1
@@ -185,9 +177,11 @@ static void cube_init(CmLayer *layer) {
       cm_index_buffer_create(&render_data.vertex_attribute, indices_count,
                              cube_indices, GL_STATIC_DRAW);
   cm_renderer_set_clear_color((vec4){0.F, 0.F, 0.F, 1.F});
+  return true;
 }
 
-static void cube_update(CmLayer *layer, float dt) {
+static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
+  (void)scene;
   glPolygonMode(GL_FRONT_AND_BACK, draw_mode);
   static mat4 mvp;
   (void)dt;
@@ -204,7 +198,10 @@ static void cube_update(CmLayer *layer, float dt) {
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to normal mode
 }
 
-static void cube_free(CmLayer *layer) { (void)layer; }
+static void cube_free(CmScene *scene, CmLayer *layer) {
+  (void)layer, (void)scene;
+  cm_render_buffer_delete(&render_data);
+}
 
 CmLayerInterface sandbox_cube(void) {
   return (const CmLayerInterface){

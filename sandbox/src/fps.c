@@ -5,17 +5,16 @@ const float font_size = 24.F;
 
 static void window_resize_callback(CmWindowEvent *event, CmLayer *layer) {
   (void)event;
-  glm_ortho(0.F, (float)layer->app->window->width, 0.F,
-            (float)layer->app->window->height, -1.F, 100.F,
-            layer->camera.projection);
+  glm_ortho(0.F, (float)event->window->width, 0.F, (float)event->window->height,
+            -1.F, 100.F, layer->camera.projection);
   layer->camera.update = true;
 }
 
-static void fps_init(CmLayer *layer) {
+static bool fps_init(CmScene *scene, CmLayer *layer) {
   (void)layer;
   font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
-  glm_ortho(0.F, (float)layer->app->window->width, 0.F,
-            (float)layer->app->window->height, -1.F, 100.F,
+  glm_ortho(0.F, (float)scene->app->window->width, 0.F,
+            (float)scene->app->window->height, -1.F, 100.F,
             layer->camera.projection);
 
   glm_mat4_identity(layer->camera.view);
@@ -25,9 +24,10 @@ static void fps_init(CmLayer *layer) {
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)window_resize_callback, layer);
+  return true;
 }
 
-static void fps_update(CmLayer *layer, float dt) {
+static void fps_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)layer, (void)dt;
   glDisable(GL_DEPTH_TEST);
 
@@ -36,7 +36,7 @@ static void fps_update(CmLayer *layer, float dt) {
   glm_mat4_identity(model);
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  const float fps_y = layer->app->window->height - font_size;
+  const float fps_y = scene->app->window->height - font_size;
   const float fps_x = 10.F;
 #define FPS_MAX 64
   char fps_buffer[FPS_MAX] = {0};
@@ -48,8 +48,8 @@ static void fps_update(CmLayer *layer, float dt) {
   glEnable(GL_DEPTH_TEST);
 }
 
-static void fps_free(CmLayer *layer) {
-  (void)layer;
+static void fps_free(CmScene *scene, CmLayer *layer) {
+  (void)layer, (void)scene;
   cm_font_free(font);
 }
 

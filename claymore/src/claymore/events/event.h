@@ -12,5 +12,7 @@ typedef void (*cm_event_callback)(CmEventUnion *event, void *data);
 void cm_event_dispatch(CmEvent event);
 void cm_event_set_callback(CmEventType type, cm_event_callback callback,
                            void *data);
+void cm_event_top_set(void);
+void cm_event_top_reset(void);
 
 #endif /* !__CM_EVENTS_H__ */

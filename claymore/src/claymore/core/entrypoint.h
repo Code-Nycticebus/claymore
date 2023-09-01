@@ -21,12 +21,13 @@ int main(void) {
   CmApp app = {0};
 
   if (!cm_app_init(&app, &config)) {
+    cm_log_fatal("Error initializing app\n");
     return -1;
   }
 
   cm_app_run(&app, &config);
 
-  cm_app_shutdown(&app);
+  cm_app_shutdown(&app, &config);
 
   cm_window_shutdown();
   return 0;

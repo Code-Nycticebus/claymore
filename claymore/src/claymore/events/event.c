@@ -10,6 +10,7 @@
 
 typedef struct {
   uint32_t count;
+  uint32_t top;
   struct {
     void *data;
     cm_event_callback fn;
@@ -23,6 +24,19 @@ static CmEventPool cbs[] = {
     [CM_EVENT_WINDOW_CLOSE] = {0},  //
     [CM_EVENT_SCROLL] = {0},
 };
+const size_t cbs_count = sizeof(cbs) / sizeof(cbs[0]);
+
+void cm_event_top_set(void) {
+  for (size_t i = 0; i < cbs_count; i++) {
+    cbs[i].top = cbs[i].count;
+  }
+}
+
+void cm_event_top_reset(void) {
+  for (size_t i = 0; i < cbs_count; i++) {
+    cbs[i].count = cbs[i].top;
+  }
+}
 
 void cm_event_set_callback(CmEventType type, cm_event_callback callback,
                            void *data) {

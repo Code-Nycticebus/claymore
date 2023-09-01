@@ -1,5 +1,4 @@
 #include "claymore.h"
-#include "claymore/renderer/render_command.h"
 
 struct Vertex {
   vec3 pos;
@@ -67,7 +66,7 @@ static void ortho_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   }
 }
 
-static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
+static void ortho_key_callback(CmKeyEvent *event, CmScene *scene) {
   if (event->action == CM_KEY_PRESS) {
     event->base.handled = true;
     switch (event->code) {
@@ -75,7 +74,7 @@ static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
       // TODO cm_app_close()
       cm_event_dispatch((CmEvent){
           .type = CM_EVENT_WINDOW_CLOSE,
-          .event.window.window = layer->app->window,
+          .event.window.window = scene->app->window,
       });
       break;
     }
@@ -94,13 +93,13 @@ static void ortho_key_callback(CmKeyEvent *event, CmLayer *layer) {
   }
 }
 
-static void ortho_init(CmLayer *layer) {
+static bool ortho_init(CmScene *scene, CmLayer *layer) {
   grid_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                             "res/shader/basic.fs.glsl");
   grid_shader.uniform_loc.mvp =
       cm_shader_get_uniform_location(grid_shader.id, "u_mvp");
 
-  aspect = (float)layer->app->window->width / (float)layer->app->window->height;
+  aspect = (float)scene->app->window->width / (float)scene->app->window->height;
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
             layer->camera.projection);
   glm_mat4_identity(layer->camera.view);
@@ -120,7 +119,7 @@ static void ortho_init(CmLayer *layer) {
                         (cm_event_callback)ortho_scroll_callback, layer);
 
   cm_event_set_callback(CM_EVENT_KEYBOARD,
-                        (cm_event_callback)ortho_key_callback, layer);
+                        (cm_event_callback)ortho_key_callback, scene);
 
   /* Frame buffer */
   glGenFramebuffers(1, &fbo);
@@ -129,8 +128,8 @@ static void ortho_init(CmLayer *layer) {
   // Texture to render the framebuffer to
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, layer->app->window->width,
-               layer->app->window->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, scene->app->window->width,
+               scene->app->window->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -146,7 +145,7 @@ static void ortho_init(CmLayer *layer) {
   glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 
   glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,
-                        layer->app->window->width, layer->app->window->height);
+                        scene->app->window->width, scene->app->window->height);
 
   // Attach the renderbuffer to framebuffer
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
@@ -159,17 +158,18 @@ static void ortho_init(CmLayer *layer) {
 
   const float vertecies[] = {
       // positions            // texCoords
-      -1.0f, 1.0f,  0.0f, 1.0f, //
-      -1.0f, -1.0f, 0.0f, 0.0f, //
-      1.0f,  -1.0f, 1.0f, 0.0f, //
+      -1.0F, 1.0F,  0.0F, 1.0F, //
+      -1.0F, -1.0F, 0.0F, 0.0F, //
+      1.0F,  -1.0F, 1.0F, 0.0F, //
 
-      -1.0f, 1.0f,  0.0f, 1.0f, //
-      1.0f,  -1.0f, 1.0f, 0.0f, //
-      1.0f,  1.0f,  1.0f, 1.0f, //
+      -1.0F, 1.0F,  0.0F, 1.0F, //
+      1.0F,  -1.0F, 1.0F, 0.0F, //
+      1.0F,  1.0F,  1.0F, 1.0F, //
   };
+  const size_t vertices_count = 6;
 
-  CmVertexBuffer buffer =
-      cm_vertex_buffer_create(6, 4 * sizeof(float), vertecies, GL_STATIC_DRAW);
+  CmVertexBuffer buffer = cm_vertex_buffer_create(
+      vertices_count, 4 * sizeof(float), vertecies, GL_STATIC_DRAW);
   attributes = cm_vertex_attribute_create(&buffer);
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, 0);
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, sizeof(float) * 2);
@@ -180,14 +180,15 @@ static void ortho_init(CmLayer *layer) {
       glGetUniformLocation(framebuffer_shader.id, "screen_texture");
 
   cm_renderer_set_clear_color((vec4){0});
+  return true;
 }
 
-static void ortho_update(CmLayer *layer, float dt) {
-  (void)dt, (void)layer, (void)model;
+static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
+  (void)dt, (void)layer, (void)model, (void)scene;
 
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glClear(GL_COLOR_BUFFER_BIT |
-          GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+  // glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  // glClear(GL_COLOR_BUFFER_BIT |
+  //         GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
 
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
@@ -196,7 +197,7 @@ static void ortho_update(CmLayer *layer, float dt) {
   glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
 
   cm_renderer2d_begin();
-  static uint32_t grid_size = 100; // 317^2 == 100'000 quads
+  const uint32_t grid_size = 100; // 317^2 == 100'000 quads
   const float quad_size = 5.F;
   static float rotation = 0.F;
   const float rotation_speed = 45.F;
@@ -221,27 +222,28 @@ static void ortho_update(CmLayer *layer, float dt) {
                grid_size * grid_size);
   cm_font_draw(font, mvp, 0.F, -100.F, 1.F, len, label_buffer);
 
-  // Set the framebuffer to the screens frame buffer
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  // // Set the framebuffer to the screens frame buffer
+  // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  glUseProgram(framebuffer_shader.id);
-  {
-    glDisable(GL_DEPTH_TEST);
-    glBindVertexArray(attributes.id);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(framebuffer_shader.uniform_loc.texture, 0);
+  // glUseProgram(framebuffer_shader.id);
+  // {
+  //   glDisable(GL_DEPTH_TEST);
+  //   glBindVertexArray(attributes.id);
+  //   glBindTexture(GL_TEXTURE_2D, texture);
+  //   glUniform1i(framebuffer_shader.uniform_loc.texture, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+  //   const uint32_t vertices_count = 6;
+  //   glDrawArrays(GL_TRIANGLES, 0, vertices_count);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindVertexArray(0);
-    glEnable(GL_DEPTH_TEST);
-  }
-  glUseProgram(0);
+  //   glBindTexture(GL_TEXTURE_2D, 0);
+  //   glBindVertexArray(0);
+  //   glEnable(GL_DEPTH_TEST);
+  // }
+  // glUseProgram(0);
 }
 
-static void ortho_free(CmLayer *layer) {
-  (void)layer;
+static void ortho_free(CmScene *scene, CmLayer *layer) {
+  (void)layer, (void)scene;
   glDeleteFramebuffers(1, &fbo);
 }
 

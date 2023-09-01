@@ -59,7 +59,7 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   }
 }
 
-static void background_init(CmLayer *layer) {
+static bool background_init(CmScene *scene, CmLayer *layer) {
   background_shader.id = cm_load_shader_from_file("res/shader/texture.vs.glsl",
                                                   "res/shader/texture.fs.glsl");
   background_shader.uniform_loc.mvp =
@@ -69,7 +69,7 @@ static void background_init(CmLayer *layer) {
 
   background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
-  aspect = (float)layer->app->window->width / (float)layer->app->window->height;
+  aspect = (float)scene->app->window->width / (float)scene->app->window->height;
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
             layer->camera.projection);
   glm_mat4_identity(layer->camera.view);
@@ -88,10 +88,11 @@ static void background_init(CmLayer *layer) {
 
   const float scale = 10.F;
   glm_scale(model, (vec3){scale, scale, 1.F});
+  return true;
 }
 
-static void background_update(CmLayer *layer, float dt) {
-  (void)dt;
+static void background_update(CmScene *scene, CmLayer *layer, float dt) {
+  (void)dt, (void)scene;
 
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
@@ -113,8 +114,8 @@ static void background_update(CmLayer *layer, float dt) {
   cm_texture_unbind(0);
 }
 
-static void background_free(CmLayer *layer) {
-  (void)layer;
+static void background_free(CmScene *scene, CmLayer *layer) {
+  (void)layer, (void)scene;
   cm_texture_delete(&background_texture);
 }
 
