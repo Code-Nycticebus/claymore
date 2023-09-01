@@ -10,7 +10,7 @@
 static char *_cm_shader_slurp_file(const char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    cm_log_error("Could not open sader: %s: %s\n", filename, strerror(errno));
+    cm_log_error("Could not open shader: %s: %s\n", filename, strerror(errno));
     return NULL;
   }
 
@@ -20,15 +20,18 @@ static char *_cm_shader_slurp_file(const char *filename) {
 
   char *data = calloc(sizeof(char), file_size + 1);
   if (data == NULL) {
+    fclose(file);
     return NULL;
   }
 
   if (fread(data, sizeof(char), file_size, file) != file_size && ferror(file)) {
     cm_log_error("Could not read fully slurp the file: %s: %s\n", filename,
                  strerror(errno));
+    fclose(file);
     return NULL;
   }
 
+  fclose(file);
   return data;
 }
 
@@ -80,6 +83,7 @@ GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
   }
   char *fs_src = _cm_shader_slurp_file(fs_file);
   if (fs_src == NULL) {
+    free(vs_src);
     return 0;
   }
 
