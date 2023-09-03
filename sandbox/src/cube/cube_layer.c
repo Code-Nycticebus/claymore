@@ -12,6 +12,7 @@ struct ShaderData {
 };
 static struct ShaderData cube_shader;
 
+static vec2 mouse_last_pos = {0, 0};
 static CmRenderBuffer render_data;
 
 static GLenum draw_mode = GL_FILL;
@@ -30,14 +31,13 @@ static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
     vec2 mouse_pos;
     cm_mouseinfo_pos(mouse_pos);
-    static vec2 last_pos = {0, 0};
 
     vec2 dir;
-    glm_vec2_sub(mouse_pos, last_pos, dir);
+    glm_vec2_sub(mouse_pos, mouse_last_pos, dir);
     glm_vec2_normalize(dir);
     glm_vec2_scale(dir, (float)3, dir);
 
-    glm_vec2_copy(mouse_pos, last_pos);
+    glm_vec2_copy(mouse_pos, mouse_last_pos);
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       float camera_distance =
@@ -177,6 +177,7 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
       cm_index_buffer_create(&render_data.vertex_attribute, indices_count,
                              cube_indices, GL_STATIC_DRAW);
   cm_renderer_set_clear_color((vec4){0.F, 0.F, 0.F, 1.F});
+  cm_mouseinfo_pos(mouse_last_pos);
   return true;
 }
 

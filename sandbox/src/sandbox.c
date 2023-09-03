@@ -5,16 +5,14 @@
 #define WINDOW_HEIGHT 420
 
 #include "cube/cube.h"
+#include "menu/menu.h"
 #include "ortho/ortho.h"
 
 static void app_key_event(CmKeyEvent *event, void *data) {
   (void)data;
   if (event->action == CM_KEY_PRESS) {
-    if (event->code == CM_KEY_1) {
+    if (event->code == CM_KEY_ESCAPE) {
       cm_scene_change(0);
-    }
-    if (event->code == CM_KEY_2) {
-      cm_scene_change(1);
     }
   }
 }
@@ -41,6 +39,7 @@ ClaymoreConfig claymore_config(void) {
           },
       .scenes =
           {
+              scene_menu,
               scene_ortho,
               scene_cube,
               NULL,
