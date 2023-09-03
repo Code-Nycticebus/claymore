@@ -117,6 +117,7 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
 static void background_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
   cm_texture_delete(&background_texture);
+  glDeleteProgram(background_shader.id);
 }
 
 CmLayerInterface sandbox_background(void) {

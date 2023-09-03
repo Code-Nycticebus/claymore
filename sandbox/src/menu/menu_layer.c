@@ -138,12 +138,12 @@ static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
   }
   cm_renderer2d_end();
 
+  glUseProgram(0);
+
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
     cm_font_draw_cstr(font, mvp, buttons[i].text_pos[0], buttons[i].text_pos[1],
                       1, buttons[i].text);
   }
-
-  glUseProgram(0);
 }
 
 static void menu_free(CmScene *scene, CmLayer *layer) {

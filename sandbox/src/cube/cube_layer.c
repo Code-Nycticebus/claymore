@@ -202,6 +202,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 static void cube_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
   cm_render_buffer_delete(&render_data);
+  glDeleteProgram(cube_shader.id);
 }
 
 CmLayerInterface sandbox_cube(void) {

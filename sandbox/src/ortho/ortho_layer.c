@@ -27,10 +27,11 @@ static vec2 camera_initial_position = {0, 0};
 static float aspect;
 static vec3 mouse_last_position = {0};
 
-uint32_t fbo;
-uint32_t texture;
-uint32_t rbo;
-CmVertexAttribute attributes;
+static uint32_t fbo;
+static uint32_t texture;
+static uint32_t rbo;
+static CmVertexBuffer buffer;
+static CmVertexAttribute attributes;
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmCamera *camera) {
   const float min_zoom = 1.F;
@@ -165,8 +166,8 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
   };
   const size_t vertices_count = 6;
 
-  CmVertexBuffer buffer = cm_vertex_buffer_create(
-      vertices_count, 4 * sizeof(float), vertecies, GL_STATIC_DRAW);
+  buffer = cm_vertex_buffer_create(vertices_count, 4 * sizeof(float), vertecies,
+                                   GL_STATIC_DRAW);
   attributes = cm_vertex_attribute_create(&buffer);
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, 0);
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, sizeof(float) * 2);
@@ -248,7 +249,15 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
 
 static void ortho_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
+  // free framebuffer
   glDeleteFramebuffers(1, &fbo);
+  glDeleteRenderbuffers(1, &rbo);
+  glDeleteProgram(framebuffer_shader.id);
+  cm_vertex_buffer_delete(&buffer);
+  cm_vertex_attribute_delete(&attributes);
+  // !free framebuffer
+
+  glDeleteProgram(grid_shader.id);
 }
 
 CmLayerInterface sandbox_ortho(void) {
