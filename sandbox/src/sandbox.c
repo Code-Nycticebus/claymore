@@ -5,6 +5,7 @@
 #define WINDOW_HEIGHT 420
 
 #include "cube/cube.h"
+#include "framebuffer/framebuffer.h"
 #include "menu/menu.h"
 #include "ortho/ortho.h"
 
@@ -42,6 +43,7 @@ ClaymoreConfig claymore_config(void) {
               scene_menu,
               scene_ortho,
               scene_cube,
+              scene_framebuffer,
               NULL,
           },
   };
