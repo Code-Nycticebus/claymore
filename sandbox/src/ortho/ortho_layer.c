@@ -198,9 +198,8 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
 
   cm_renderer2d_begin();
   static uint32_t grid_size = 0; // 317^2 == 100'000 quads
-  const float fps_min = 60.F;
-  float fps = 1 / dt;
-  if (fps > fps_min + 1) {
+  const float dt_min = 1 / 61.F;
+  if (dt < dt_min) {
     grid_size += 1;
   }
   const float quad_size = 5.F;
