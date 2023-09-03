@@ -18,7 +18,7 @@ typedef struct {
   uint32_t scene;
   vec2 pos;
   vec2 size;
-  vec4 color;
+  bool selected;
   vec2 text_pos;
   const char *text;
 } MenuButton;
@@ -29,6 +29,8 @@ static const char *button_labels[] = {
 };
 #define BUTTON_LABELS_COUNT (sizeof(button_labels) / sizeof(button_labels[0]))
 static MenuButton buttons[BUTTON_LABELS_COUNT] = {0};
+// If nothing is selected then i set it one out of bounds!
+size_t buttons_selected = BUTTON_LABELS_COUNT;
 
 const float xs = 300.F;
 const float ys = 50.F;
@@ -52,7 +54,7 @@ static void calculate_menu_button_pos(CMwindow *window) {
     buttons[i].size[0] = xs;
     buttons[i].size[1] = ys;
 
-    glm_vec4_copy((vec4)NORMAL_BG, buttons[i].color);
+    buttons[i].selected = false;
 
     buttons[i].text = button_labels[i];
 
@@ -64,11 +66,11 @@ static void calculate_menu_button_pos(CMwindow *window) {
 static bool point_in_button(const vec2 pos, MenuButton *b) {
   if (b->pos[0] <= pos[0] && pos[0] <= b->pos[0] + b->size[0]) {
     if (b->pos[1] <= pos[1] && pos[1] <= b->pos[1] + b->size[1]) {
-      glm_vec4_copy((vec4)HIGLIGHT_BG, b->color);
+      b->selected = true;
       return true;
     }
   }
-  glm_vec4_copy((vec4)NORMAL_BG, b->color);
+  b->selected = false;
   return false;
 }
 
@@ -77,11 +79,44 @@ static void mouse_callback(CmMouseEvent *event, void *data) {
   if (event->action == CM_MOUSE_MOVE || event->action == CM_MOUSE_CLICK) {
     for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
       if (point_in_button(event->info.pos, &buttons[i])) {
+        buttons_selected = i;
         if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
           cm_scene_change(buttons[i].scene);
           break;
         }
       }
+    }
+  }
+}
+
+static void key_callback(CmKeyEvent *event, void *data) {
+  (void)data;
+
+  if (event->action == CM_KEY_PRESS) {
+    if (event->code == CM_KEY_W || event->code == CM_KEY_UP) {
+      if (0 <= buttons_selected && buttons_selected < BUTTON_LABELS_COUNT) {
+        buttons[buttons_selected].selected = false;
+      }
+      if (buttons_selected <= 0) {
+        buttons_selected = BUTTON_LABELS_COUNT - 1;
+      } else {
+        buttons_selected -= 1;
+      }
+      buttons[buttons_selected].selected = true;
+    }
+    if (event->code == CM_KEY_S || event->code == CM_KEY_DOWN) {
+      if (0 <= buttons_selected && buttons_selected < BUTTON_LABELS_COUNT) {
+        buttons[buttons_selected].selected = false;
+      }
+      if (!(buttons_selected < BUTTON_LABELS_COUNT - 1)) {
+        buttons_selected = 0;
+      } else {
+        buttons_selected += 1;
+      }
+      buttons[buttons_selected].selected = true;
+    }
+    if (event->code == CM_KEY_ENTER) {
+      cm_scene_change(buttons_selected + 1);
     }
   }
 }
@@ -111,6 +146,8 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
                         (cm_event_callback)window_resize_callback, layer);
   cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)mouse_callback,
                         NULL);
+  cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
+                        NULL);
   shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
                                        "res/shader/basic.fs.glsl");
   shader.loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
@@ -134,7 +171,8 @@ static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_renderer2d_begin();
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
     cm_renderer2d_push_quad_color(buttons[i].pos, 0, buttons[i].size,
-                                  buttons[i].color);
+                                  buttons[i].selected ? (vec4)HIGLIGHT_BG
+                                                      : (vec4)NORMAL_BG);
   }
   cm_renderer2d_end();
 
