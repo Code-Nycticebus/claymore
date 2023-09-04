@@ -5,14 +5,7 @@
 static CmFont *font;
 static const float font_size = 25.F;
 
-struct MenuShader {
-  uint32_t id;
-  struct {
-    uint32_t mvp;
-  } loc;
-};
-
-static struct MenuShader shader;
+static CmShader shader;
 
 typedef struct {
   uint32_t scene;
@@ -149,9 +142,8 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
                         NULL);
   cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
                         NULL);
-  shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                       "res/shader/basic.fs.glsl");
-  shader.loc.mvp = cm_shader_get_uniform_location(shader.id, "u_mvp");
+  shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+                                    "res/shader/basic.fs.glsl");
 
   cm_renderer_set_clear_color((vec4){0, 0, 0, 1.F});
   calculate_menu_button_pos(scene->app->window);
@@ -166,8 +158,8 @@ static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
   glm_mat4_identity(model);
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  glUseProgram(shader.id);
-  glUniformMatrix4fv(shader.loc.mvp, 1, GL_FALSE, (float *)mvp);
+  cm_shader_bind(&shader);
+  cm_shader_set_mat4(&shader, "u_mvp", mvp);
 
   cm_renderer2d_begin();
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
@@ -188,7 +180,7 @@ static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
 static void menu_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
   cm_font_free(font);
-  glDeleteProgram(shader.id);
+  cm_shader_delete(&shader);
 }
 
 CmLayerInterface sandbox_menu(void) {

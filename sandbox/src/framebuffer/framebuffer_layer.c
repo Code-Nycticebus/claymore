@@ -1,18 +1,10 @@
 #include "claymore.h"
 
-struct ShaderData {
-  uint32_t id;
-
-  struct {
-    GLint mvp;
-    GLint texture;
-  } uniform_loc;
-};
-static struct ShaderData layer_shader;
+static CmShader layer_shader;
 static float zoom;
 static float aspect;
 
-static struct ShaderData framebuffer_shader;
+static CmShader framebuffer_shader;
 static uint32_t fbo;
 static uint32_t texture;
 static uint32_t rbo;
@@ -21,10 +13,9 @@ static CmVertexAttribute attributes;
 
 static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   (void)scene, (void)layer;
-  layer_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                             "res/shader/basic.fs.glsl");
-  layer_shader.uniform_loc.mvp =
-      cm_shader_get_uniform_location(layer_shader.id, "u_mvp");
+  layer_shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+                                          "res/shader/basic.fs.glsl");
+
   zoom = 100.F;
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
@@ -87,10 +78,8 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, 0);
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, sizeof(float) * 2);
 
-  framebuffer_shader.id = cm_load_shader_from_file(
+  framebuffer_shader = cm_load_shader_from_file(
       "res/shader/framebuffer.vs.glsl", "res/shader/framebuffer.fs.glsl");
-  framebuffer_shader.uniform_loc.texture =
-      glGetUniformLocation(framebuffer_shader.id, "screen_texture");
 
   return true;
 }
@@ -100,7 +89,7 @@ static void framebuffer_free(CmScene *scene, CmLayer *layer) {
   // free framebuffer
   glDeleteFramebuffers(1, &fbo);
   glDeleteRenderbuffers(1, &rbo);
-  glDeleteProgram(framebuffer_shader.id);
+  cm_shader_delete(&framebuffer_shader);
   cm_vertex_buffer_delete(&buffer);
   cm_vertex_attribute_delete(&attributes);
 }
@@ -120,8 +109,8 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   glm_mat4_identity(model);
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  glUseProgram(layer_shader.id);
-  glUniformMatrix4fv(layer_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  cm_shader_bind(&layer_shader);
+  cm_shader_set_mat4(&layer_shader, "u_mvp", mvp);
   cm_renderer2d_begin();
   {
     cm_renderer2d_push_quad_color((vec2){0, 0}, 0, (vec2){100.F, 100.F},
@@ -134,12 +123,12 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   // Set the framebuffer to the screens frame buffer
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-  glUseProgram(framebuffer_shader.id);
+  cm_shader_bind(&framebuffer_shader);
+  cm_shader_set_i32(&framebuffer_shader, "u_texture", 0);
   {
     glDisable(GL_DEPTH_TEST);
     glBindVertexArray(attributes.id);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(framebuffer_shader.uniform_loc.texture, 0);
 
     const uint32_t vertices_count = 6;
     glDrawArrays(GL_TRIANGLES, 0, vertices_count);

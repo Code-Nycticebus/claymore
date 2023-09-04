@@ -5,15 +5,7 @@ struct Vertex {
   vec2 uv;
 };
 
-struct ShaderData {
-  uint32_t id;
-
-  struct {
-    GLint mvp;
-  } uniform_loc;
-};
-
-static struct ShaderData grid_shader;
+static CmShader grid_shader;
 
 static CmFont *font;
 static const float font_size = 64.F;
@@ -21,7 +13,7 @@ static mat4 model = GLM_MAT4_IDENTITY_INIT;
 
 #define ORTHO_INITIAL_ZOOM 1400.F
 static float zoom = ORTHO_INITIAL_ZOOM;
-static vec2 camera_initial_position = {0, 0};
+static vec3 camera_initial_position = {0, 0, 0};
 static float aspect;
 static vec3 mouse_last_position = {0};
 
@@ -82,10 +74,8 @@ static void ortho_key_callback(CmKeyEvent *event, CmScene *scene) {
 }
 
 static bool ortho_init(CmScene *scene, CmLayer *layer) {
-  grid_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                            "res/shader/basic.fs.glsl");
-  grid_shader.uniform_loc.mvp =
-      cm_shader_get_uniform_location(grid_shader.id, "u_mvp");
+  grid_shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+                                         "res/shader/basic.fs.glsl");
 
   cm_mouseinfo_pos(mouse_last_position);
   zoom = ORTHO_INITIAL_ZOOM;
@@ -123,8 +113,8 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   static mat4 mvp;
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  glUseProgram(grid_shader.id);
-  glUniformMatrix4fv(grid_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  cm_shader_bind(&grid_shader);
+  cm_shader_set_mat4(&grid_shader, "u_mvp", mvp);
 
   cm_renderer2d_begin();
   static uint32_t grid_size = 0; // 317^2 == 100'000 quads
@@ -159,8 +149,8 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
 
 static void ortho_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
-
-  glDeleteProgram(grid_shader.id);
+  cm_shader_delete(&grid_shader);
+  cm_font_free(font);
 }
 
 CmLayerInterface sandbox_ortho(void) {

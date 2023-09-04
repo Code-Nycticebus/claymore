@@ -14,7 +14,7 @@ struct ShaderData {
   } uniform_loc;
 };
 
-static struct ShaderData background_shader;
+static CmShader background_shader;
 static Texture background_texture;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
@@ -60,12 +60,8 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
 }
 
 static bool background_init(CmScene *scene, CmLayer *layer) {
-  background_shader.id = cm_load_shader_from_file("res/shader/texture.vs.glsl",
-                                                  "res/shader/texture.fs.glsl");
-  background_shader.uniform_loc.mvp =
-      cm_shader_get_uniform_location(background_shader.id, "u_mvp");
-  background_shader.uniform_loc.texture =
-      cm_shader_get_uniform_location(background_shader.id, "u_texture");
+  background_shader = cm_load_shader_from_file("res/shader/texture.vs.glsl",
+                                               "res/shader/texture.fs.glsl");
 
   background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
@@ -98,10 +94,11 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
   cm_texture_bind(&background_texture, 0);
-  glUseProgram(background_shader.id);
-  glUniformMatrix4fv(background_shader.uniform_loc.mvp, 1, GL_FALSE,
-                     (float *)mvp);
-  glUniform1i(background_shader.uniform_loc.texture, 0);
+
+  cm_shader_bind(&background_shader);
+  cm_shader_set_mat4(&background_shader, "u_mvp", mvp);
+  cm_shader_set_i32(&background_shader, "u_texture", 0);
+
   const float background_size = 100000.F;
   const float background_layer = -0.99F;
   cm_renderer2d_begin();
@@ -117,7 +114,7 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
 static void background_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
   cm_texture_delete(&background_texture);
-  glDeleteProgram(background_shader.id);
+  cm_shader_delete(&background_shader);
 }
 
 CmLayerInterface sandbox_background(void) {

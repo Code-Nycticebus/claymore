@@ -3,14 +3,7 @@
 #include "claymore/renderer/render_buffer.h"
 #include "claymore/renderer/render_command.h"
 
-struct ShaderData {
-  uint32_t id;
-
-  struct {
-    GLint mvp;
-  } uniform_loc;
-};
-static struct ShaderData cube_shader;
+static CmShader cube_shader;
 
 static vec2 mouse_last_pos = {0, 0};
 static CmRenderBuffer render_data;
@@ -129,10 +122,8 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)camera_resize, &layer->camera);
 
-  cube_shader.id = cm_load_shader_from_file("res/shader/basic.vs.glsl",
-                                            "res/shader/basic.fs.glsl");
-  cube_shader.uniform_loc.mvp =
-      cm_shader_get_uniform_location(cube_shader.id, "u_mvp");
+  cube_shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+                                         "res/shader/basic.fs.glsl");
 
   layer->camera = cm_camera_init_perspective(
       (vec3){0, 0, 4}, (vec3){0}, fov,
@@ -189,8 +180,8 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 
   glm_mat4_mul(layer->camera.vp, model, mvp);
 
-  glUseProgram(cube_shader.id);
-  glUniformMatrix4fv(cube_shader.uniform_loc.mvp, 1, GL_FALSE, (float *)mvp);
+  cm_shader_bind(&cube_shader);
+  cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
 
   cm_renderer_draw_indexed(&render_data, render_data.index_buffer.count);
 
@@ -202,7 +193,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 static void cube_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
   cm_render_buffer_delete(&render_data);
-  glDeleteProgram(cube_shader.id);
+  cm_shader_delete(&cube_shader);
 }
 
 CmLayerInterface sandbox_cube(void) {

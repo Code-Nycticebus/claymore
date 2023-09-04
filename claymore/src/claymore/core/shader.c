@@ -76,39 +76,40 @@ static GLuint _cm_compile_shader(const char *shader_src, GLenum type) {
   return shader_id;
 }
 
-GLuint cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
+CmShader cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
   char *vs_src = _cm_shader_slurp_file(vs_file);
   if (vs_src == NULL) {
-    return 0;
+    return (CmShader){.id = 0};
   }
+
   char *fs_src = _cm_shader_slurp_file(fs_file);
   if (fs_src == NULL) {
     free(vs_src);
-    return 0;
+    return (CmShader){.id = 0};
   }
 
-  GLuint program = cm_load_shader_from_memory(vs_src, fs_src);
+  CmShader program = cm_load_shader_from_memory(vs_src, fs_src);
   free(vs_src);
   free(fs_src);
-  if (program == 0) {
+  if (program.id == 0) {
     cm_log_error("Vertex Shader %s\n", vs_file);
     cm_log_error("Fragment Shader %s\n", fs_file);
-    return 0;
+    return (CmShader){.id = 0};
   }
 
   return program;
 }
 
-GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
+CmShader cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   GLuint vs_id = _cm_compile_shader(vs_src, GL_VERTEX_SHADER);
   if (!_cm_shader_check_error(vs_id, GL_COMPILE_STATUS)) {
     cm_log_error("Vertex Shader:\n%s\n", vs_src);
-    return 0;
+    return (CmShader){.id = 0};
   }
   GLuint fs_id = _cm_compile_shader(fs_src, GL_FRAGMENT_SHADER);
   if (!_cm_shader_check_error(fs_id, GL_COMPILE_STATUS)) {
     cm_log_error("Fragment Shader:\n%s\n", fs_src);
-    return 0;
+    return (CmShader){.id = 0};
   }
 
   GLuint program = glCreateProgram();
@@ -123,18 +124,38 @@ GLuint cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
   if (!_cm_shader_check_error(program, GL_LINK_STATUS)) {
     cm_log_error("Vertex Shader: \n%s\n", vs_src);
     cm_log_error("Fragment Shader: \n%s\n", fs_src);
-    return 0;
+    return (CmShader){.id = 0};
   }
 
-  return program;
+  return (CmShader){.id = program};
 }
 
-GLint cm_shader_get_uniform_location(GLuint shader, const char *uniform_name) {
+void cm_shader_delete(CmShader *shader) { glDeleteProgram(shader->id); }
+
+void cm_shader_bind(const CmShader *shader) { glUseProgram(shader->id); }
+
+GLint cm_shader_get_uniform_location(const CmShader *shader,
+                                     const char *uniform_name) {
   assert(shader != 0);
-  GLint location = glGetUniformLocation(shader, uniform_name);
+  GLint location = glGetUniformLocation(shader->id, uniform_name);
   if (location == -1) {
     cm_log_error("Uniform location '%s' not found in shader %u\n", uniform_name,
-                 shader);
+                 shader->id);
   }
   return location;
+}
+
+void cm_shader_set_mat4(CmShader *shader, const char *u_name, const mat4 mat) {
+  GLint location = cm_shader_get_uniform_location(shader, u_name);
+  glUniformMatrix4fv(location, 1, GL_FALSE, (float *)mat);
+}
+
+void cm_shader_set_f32(CmShader *shader, const char *u_name, float value) {
+  GLint location = cm_shader_get_uniform_location(shader, u_name);
+  glUniform1f(location, value);
+}
+
+void cm_shader_set_i32(CmShader *shader, const char *u_name, int32_t value) {
+  GLint location = cm_shader_get_uniform_location(shader, u_name);
+  glUniform1i(location, value);
 }

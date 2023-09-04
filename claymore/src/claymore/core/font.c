@@ -9,15 +9,6 @@
 #include <errno.h>
 #include <string.h>
 
-typedef struct {
-  uint32_t id;
-
-  struct {
-    GLint mvp;
-    GLint texture;
-  } uniform_loc;
-} FontShader;
-
 static const char font_vs[] = //
     "#version 120\n"
     "attribute vec3 a_pos;\n"
@@ -51,7 +42,7 @@ struct Vertex {
   FONT_RENDERER_CHAR_MAX *FONT_RENDERER_VERTECIES_PER_CHAR
 
 struct CmFont {
-  FontShader shader;
+  CmShader shader;
   GLuint texture_id;
   CmVertexBuffer vertex_buffer;
   CmVertexAttribute vertex_attrib;
@@ -68,11 +59,8 @@ struct CmFont {
 CmFont *cm_font_init(const char *filename, float font_height) {
   CmFont *font_renderer = (CmFont *)calloc(sizeof(CmFont), 1);
   uint8_t *ttf_buffer;
-  font_renderer->shader.id = cm_load_shader_from_memory(font_vs, font_fs);
-  font_renderer->shader.uniform_loc.mvp =
-      cm_shader_get_uniform_location(font_renderer->shader.id, "u_mvp");
-  font_renderer->shader.uniform_loc.texture =
-      cm_shader_get_uniform_location(font_renderer->shader.id, "u_texture");
+
+  font_renderer->shader = cm_load_shader_from_memory(font_vs, font_fs);
 
   GLint max_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
@@ -140,10 +128,10 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
   mat4 inverted_mvp;
   glm_scale_to(mvp, (vec3){1.0F, -1.0F, 1.0F}, inverted_mvp);
 
-  glUseProgram(font->shader.id);
-  glUniformMatrix4fv(font->shader.uniform_loc.mvp, 1, GL_FALSE,
-                     (float *)inverted_mvp);
-  glUniform1i(font->shader.uniform_loc.texture, 0);
+  cm_shader_bind(&font->shader);
+  cm_shader_set_mat4(&font->shader, "u_mvp", inverted_mvp);
+  cm_shader_set_i32(&font->shader, "u_texture", 0);
+
   glBindBuffer(GL_ARRAY_BUFFER, font->vertex_buffer.id);
   glBindVertexArray(font->vertex_attrib.id);
 
@@ -205,5 +193,6 @@ void cm_font_free(CmFont *font) {
   glDeleteTextures(1, &font->texture_id);
   glDeleteBuffers(1, &font->vertex_buffer.id);
   glDeleteVertexArrays(1, &font->vertex_attrib.id);
+  cm_shader_delete(&font->shader);
   free(font);
 }
