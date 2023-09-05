@@ -160,7 +160,6 @@ static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
 
   cm_shader_bind(&shader);
   cm_shader_set_mat4(&shader, "u_mvp", mvp);
-
   cm_renderer2d_begin();
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
     cm_renderer2d_push_quad_color(buttons[i].pos, 0, buttons[i].size,
@@ -168,8 +167,7 @@ static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
                                                       : (vec4)NORMAL_BG);
   }
   cm_renderer2d_end();
-
-  glUseProgram(0);
+  cm_shader_unbind();
 
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
     cm_font_draw_cstr(font, mvp, buttons[i].text_pos[0], buttons[i].text_pos[1],

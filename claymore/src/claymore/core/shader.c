@@ -133,6 +133,7 @@ CmShader cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
 void cm_shader_delete(CmShader *shader) { glDeleteProgram(shader->id); }
 
 void cm_shader_bind(const CmShader *shader) { glUseProgram(shader->id); }
+void cm_shader_unbind(void) { glUseProgram(0); }
 
 GLint cm_shader_get_uniform_location(const CmShader *shader,
                                      const char *uniform_name) {

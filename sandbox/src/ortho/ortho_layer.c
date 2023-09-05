@@ -137,7 +137,7 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   }
   cm_renderer2d_end();
 
-  glUseProgram(0);
+  cm_shader_unbind();
 
 #define LABEL_SIZE 128
   char label_buffer[LABEL_SIZE];

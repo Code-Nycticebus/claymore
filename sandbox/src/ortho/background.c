@@ -107,7 +107,7 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
       (vec2){background_size, background_size}, (vec2){0.F, 0.F},
       (vec2){background_size, background_size});
   cm_renderer2d_end();
-  glUseProgram(0);
+  cm_shader_unbind();
   cm_texture_unbind(0);
 }
 

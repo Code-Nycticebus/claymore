@@ -14,6 +14,7 @@ CmShader cm_load_shader_from_memory(const char *vs_src, const char *fs_src);
 void cm_shader_delete(CmShader *shader);
 
 void cm_shader_bind(const CmShader *shader);
+void cm_shader_unbind(void);
 GLint cm_shader_get_uniform_location(const CmShader *shader,
                                      const char *uniform_name);
 void cm_shader_set_mat4(CmShader *shader, const char *u_name, const mat4 mat);

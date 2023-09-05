@@ -117,7 +117,7 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
                                   (vec4){1.F, 0.F, 0.F, 1.F});
   }
   cm_renderer2d_end();
-  glUseProgram(0);
+  cm_shader_unbind();
   /* ! RENDER INTO FRAMEBUFFER */
 
   // Set the framebuffer to the screens frame buffer
@@ -137,7 +137,7 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
     glBindVertexArray(0);
     glEnable(GL_DEPTH_TEST);
   }
-  glUseProgram(0);
+  cm_shader_unbind();
 }
 
 CmLayerInterface sandbox_framebuffer(void) {

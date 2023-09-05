@@ -185,7 +185,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 
   cm_renderer_draw_indexed(&render_data, render_data.index_buffer.count);
 
-  glUseProgram(0);
+  cm_shader_unbind();
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to normal mode
 }
