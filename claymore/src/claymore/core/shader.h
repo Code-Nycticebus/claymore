@@ -3,8 +3,15 @@
 
 #include "cm.h"
 
+#define CM_SHADER_UNIFORM_MAX 3
+
 typedef struct {
   GLint id;
+  size_t cached_uniform_count;
+  struct {
+    const char *u_name;
+    GLint location;
+  } uniform_cache[CM_SHADER_UNIFORM_MAX];
 } CmShader;
 
 // TODO rename to fit the naming schema: cm_shader_load...
@@ -15,8 +22,7 @@ void cm_shader_delete(CmShader *shader);
 
 void cm_shader_bind(const CmShader *shader);
 void cm_shader_unbind(void);
-GLint cm_shader_get_uniform_location(const CmShader *shader,
-                                     const char *uniform_name);
+GLint cm_shader_get_uniform_location(CmShader *shader, const char *u_name);
 void cm_shader_set_mat4(CmShader *shader, const char *u_name, const mat4 mat);
 void cm_shader_set_f32(CmShader *shader, const char *u_name, float value);
 void cm_shader_set_i32(CmShader *shader, const char *u_name, int32_t value);
