@@ -36,7 +36,7 @@ struct Vertex {
 #define FONT_CHAR_MIN 32
 #define FONT_CHAR_MAX 96
 
-#define FONT_RENDERER_CHAR_MAX 128
+#define FONT_RENDERER_CHAR_MAX 64
 #define FONT_RENDERER_VERTECIES_PER_CHAR 6
 #define FONT_RENDERER_VERTECIES_MAX                                            \
   (FONT_RENDERER_CHAR_MAX * FONT_RENDERER_VERTECIES_PER_CHAR)
@@ -120,6 +120,13 @@ CmFont *cm_font_init(const char *filename, float font_height) {
   return font_renderer;
 }
 
+void _cm_font_renderer_flush(CmFont *font) {
+  glBufferSubData(GL_ARRAY_BUFFER, 0,
+                  sizeof(struct Vertex) * font->vertex_count, font->buffer);
+  glDrawArrays(GL_TRIANGLES, 0, font->vertex_count);
+  font->vertex_count = 0;
+}
+
 void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
                   const char *text) {
   glActiveTexture(GL_TEXTURE0);
@@ -140,6 +147,11 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
   for (size_t i = 0; i < len; i++) {
     if (FONT_CHAR_MIN <= text[i] &&
         text[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
+
+      if (!(font->vertex_count < FONT_RENDERER_VERTECIES_MAX)) {
+        _cm_font_renderer_flush(font);
+        current_vertex = font->buffer;
+      }
 
       stbtt_aligned_quad q;
       stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution,
@@ -166,21 +178,12 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
 
       font->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
       current_vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
-
-      // TODO batch renderer
-      assert(font->vertex_count < FONT_RENDERER_VERTECIES_MAX);
     }
   }
 
-  glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(struct Vertex) * font->vertex_count, font->buffer);
-
-  glDrawArrays(GL_TRIANGLES, 0, font->vertex_count);
-
-  font->vertex_count = 0;
-
+  _cm_font_renderer_flush(font);
   glBindTexture(GL_TEXTURE_2D, 0);
-  glUseProgram(0);
+  cm_shader_unbind();
 }
 
 void cm_font_draw_cstr(CmFont *font, vec4 *mvp, float x, float y, float z,
