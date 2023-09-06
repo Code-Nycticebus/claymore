@@ -1,6 +1,4 @@
 #include "claymore.h"
-#include "claymore/core/font.h"
-#include "claymore/renderer/renderer2D.h"
 
 static CmFont *font;
 static const float font_size = 25.F;
