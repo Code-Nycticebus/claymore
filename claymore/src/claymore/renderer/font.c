@@ -1,8 +1,8 @@
 #include "font.h"
 
 #include "claymore/core/app.h"
-#include "claymore/core/shader.h"
 #include "claymore/renderer/renderer.h"
+#include "claymore/renderer/shader.h"
 
 #include "stb_truetype.h"
 
@@ -39,7 +39,7 @@ struct Vertex {
 #define FONT_RENDERER_CHAR_MAX 128
 #define FONT_RENDERER_VERTECIES_PER_CHAR 6
 #define FONT_RENDERER_VERTECIES_MAX                                            \
-  FONT_RENDERER_CHAR_MAX *FONT_RENDERER_VERTECIES_PER_CHAR
+  (FONT_RENDERER_CHAR_MAX * FONT_RENDERER_VERTECIES_PER_CHAR)
 
 struct CmFont {
   CmShader shader;

@@ -4,12 +4,12 @@
 #include "claymore/core/app.h"
 #include "claymore/core/font.h"
 #include "claymore/core/scene.h"
-#include "claymore/core/shader.h"
 #include "claymore/core/textures.h"
 #include "claymore/core/window.h"
 #include "claymore/events/event.h"
 #include "claymore/logger/logger.h"
 #include "claymore/renderer/renderer.h"
+#include "claymore/renderer/shader.h"
 #include "claymore/sound/sound.h"
 
 // TODO: Should not be public

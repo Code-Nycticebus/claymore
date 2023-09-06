@@ -26,4 +26,5 @@ GLint cm_shader_get_uniform_location(CmShader *shader, const char *u_name);
 void cm_shader_set_mat4(CmShader *shader, const char *u_name, const mat4 mat);
 void cm_shader_set_f32(CmShader *shader, const char *u_name, float value);
 void cm_shader_set_i32(CmShader *shader, const char *u_name, int32_t value);
+
 #endif // __CM_SHADER_H__
