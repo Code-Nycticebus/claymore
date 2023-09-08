@@ -120,7 +120,7 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   static uint32_t grid_size = 3; // 317^2 == 100'000 quads
   const float dt_min = 1 / 62.F;
   grid_size += dt < dt_min ? +1 : -1;
-  assert(grid_size < 1000 && "grid size is definetly too big");
+  assert(grid_size < 1000 && "grid size is definitely too big");
 
   const float quad_size = 5.F;
   static float rotation = 0.F;
