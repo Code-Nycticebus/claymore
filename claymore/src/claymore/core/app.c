@@ -79,8 +79,7 @@ void cm_app_run(CmApp *app) {
     time_last_frame = time;
 
 #ifdef CM_DEBUG
-    // This ugly ass code checks if the last frame and the current frame have
-    // performance issues
+    // Warns if the last and current frame has performance issues
     static bool performance_issue_last_frame = false;
     const float min_dt = 1 / 55.F;
     if (min_dt < deltatime) {
