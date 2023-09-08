@@ -78,6 +78,21 @@ void cm_app_run(CmApp *app) {
     deltatime = time - time_last_frame;
     time_last_frame = time;
 
+#ifdef CM_DEBUG
+    static bool performace_issue_last_frame = false;
+    const float min_dt = 1 / 59.F;
+    if (min_dt < deltatime) {
+      if (performace_issue_last_frame) {
+        cm_log_warning("Performance warning: %.0F FPS\n", 1 / deltatime);
+        performace_issue_last_frame = false;
+      } else {
+        performace_issue_last_frame = true;
+      }
+    } else {
+      performace_issue_last_frame = false;
+    }
+#endif
+
     cm_renderer_clear();
 
     cm_scene_update(deltatime);
