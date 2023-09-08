@@ -48,7 +48,7 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
     glm_vec2_copy(pos, last_position);
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-      const float zoom_scale = 100.F;
+      const float zoom_scale = 150.F;
       glm_vec2_scale(direction, zoom / zoom_scale, direction);
       glm_vec2_add(layer->camera.position, direction, layer->camera.position);
 
@@ -102,7 +102,7 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
   const float background_size = 100000.F;
   const float background_layer = -0.99F;
   cm_renderer2d_begin();
-  cm_renderer2d_push_quad(
+  cm_renderer2d_push_quad_textured(
       (vec2){-background_size / 2, -background_size / 2}, background_layer,
       (vec2){background_size, background_size}, (vec2){0.F, 0.F},
       (vec2){background_size, background_size});

@@ -135,16 +135,29 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
   render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
 }
 
-void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size,
-                             const vec2 texture_coord,
-                             const vec2 texture_size) {
+void cm_renderer2d_push_quad(const vec2 position, float z, const vec2 size) {
+  _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
+                           (vec2){0}, (vec2){0}, 0.F);
+}
+
+void cm_renderer2d_push_quad_rotated(const vec2 position, float z,
+                                     const vec2 size, float rotation) {
+  _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
+                           (vec2){0}, (vec2){0}, rotation);
+}
+
+void cm_renderer2d_push_quad_textured(const vec2 position, float z,
+                                      const vec2 size, const vec2 texture_coord,
+                                      const vec2 texture_size) {
   _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
                            texture_coord, texture_size, 0.F);
 }
 
-void cm_renderer2d_push_quad_rotated(const vec2 position, float z,
-                                     const vec2 size, const vec2 texture_coord,
-                                     const vec2 texture_size, float rotation) {
+void cm_renderer2d_push_quad_textured_rotated(const vec2 position, float z,
+                                              const vec2 size,
+                                              const vec2 texture_coord,
+                                              const vec2 texture_size,
+                                              float rotation) {
   _cm_renderer2d_push_quad(position, z, size, (vec4){1.F, 1.F, 1.F, 1.F},
                            texture_coord, texture_size, rotation);
 }
