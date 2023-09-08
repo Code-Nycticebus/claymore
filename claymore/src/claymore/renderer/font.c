@@ -60,7 +60,7 @@ CmFont *cm_font_init(const char *filename, float font_height) {
   CmFont *font_renderer = (CmFont *)calloc(sizeof(CmFont), 1);
   uint8_t *ttf_buffer;
 
-  font_renderer->shader = cm_load_shader_from_memory(font_vs, font_fs);
+  font_renderer->shader = cm_shader_load_from_memory(font_vs, font_fs);
 
   GLint max_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);

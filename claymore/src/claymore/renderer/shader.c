@@ -76,7 +76,7 @@ static GLuint _cm_compile_shader(const char *shader_src, GLenum type) {
   return shader_id;
 }
 
-CmShader cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
+CmShader cm_shader_load_from_file(const char *vs_file, const char *fs_file) {
   char *vs_src = _cm_shader_slurp_file(vs_file);
   if (vs_src == NULL) {
     return (CmShader){0};
@@ -88,7 +88,7 @@ CmShader cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
     return (CmShader){0};
   }
 
-  CmShader program = cm_load_shader_from_memory(vs_src, fs_src);
+  CmShader program = cm_shader_load_from_memory(vs_src, fs_src);
   free(vs_src);
   free(fs_src);
   if (program.id == 0) {
@@ -100,7 +100,7 @@ CmShader cm_load_shader_from_file(const char *vs_file, const char *fs_file) {
   return program;
 }
 
-CmShader cm_load_shader_from_memory(const char *vs_src, const char *fs_src) {
+CmShader cm_shader_load_from_memory(const char *vs_src, const char *fs_src) {
   GLuint vs_id = _cm_compile_shader(vs_src, GL_VERTEX_SHADER);
   if (!_cm_shader_check_error(vs_id, GL_COMPILE_STATUS)) {
     cm_log_error("Vertex Shader:\n%s\n", vs_src);

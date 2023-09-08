@@ -122,7 +122,7 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
                         (cm_event_callback)camera_resize, &layer->camera);
 
-  cube_shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+  cube_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                          "res/shader/basic.fs.glsl");
 
   layer->camera = cm_camera_init_perspective(

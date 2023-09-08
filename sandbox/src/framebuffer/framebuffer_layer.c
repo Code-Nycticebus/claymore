@@ -13,7 +13,7 @@ static CmVertexAttribute attributes;
 
 static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   (void)scene, (void)layer;
-  layer_shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+  layer_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
 
   zoom = 100.F;
@@ -78,7 +78,7 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, 0);
   cm_vertex_attribute_push(&attributes, 2, GL_FLOAT, sizeof(float) * 2);
 
-  framebuffer_shader = cm_load_shader_from_file(
+  framebuffer_shader = cm_shader_load_from_file(
       "res/shader/framebuffer.vs.glsl", "res/shader/framebuffer.fs.glsl");
 
   return true;

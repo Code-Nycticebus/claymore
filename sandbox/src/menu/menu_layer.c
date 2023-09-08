@@ -140,7 +140,7 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
                         NULL);
   cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
                         NULL);
-  shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+  shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                     "res/shader/basic.fs.glsl");
 
   cm_renderer_set_clear_color((vec4){0, 0, 0, 1.F});

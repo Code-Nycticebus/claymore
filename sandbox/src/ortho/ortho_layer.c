@@ -74,7 +74,7 @@ static void ortho_key_callback(CmKeyEvent *event, CmScene *scene) {
 }
 
 static bool ortho_init(CmScene *scene, CmLayer *layer) {
-  grid_shader = cm_load_shader_from_file("res/shader/basic.vs.glsl",
+  grid_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                          "res/shader/basic.fs.glsl");
 
   cm_mouseinfo_pos(mouse_last_position);

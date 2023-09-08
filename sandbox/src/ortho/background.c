@@ -60,7 +60,7 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
 }
 
 static bool background_init(CmScene *scene, CmLayer *layer) {
-  background_shader = cm_load_shader_from_file("res/shader/texture.vs.glsl",
+  background_shader = cm_shader_load_from_file("res/shader/texture.vs.glsl",
                                                "res/shader/texture.fs.glsl");
 
   background_texture = cm_texture2d_create("res/textures/claymore-sword.png");

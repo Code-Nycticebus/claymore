@@ -15,8 +15,8 @@ typedef struct {
 } CmShader;
 
 // TODO rename to fit the naming schema: cm_shader_load...
-CmShader cm_load_shader_from_file(const char *vs_file, const char *fs_file);
-CmShader cm_load_shader_from_memory(const char *vs_src, const char *fs_src);
+CmShader cm_shader_load_from_file(const char *vs_file, const char *fs_file);
+CmShader cm_shader_load_from_memory(const char *vs_src, const char *fs_src);
 
 void cm_shader_delete(CmShader *shader);
 
