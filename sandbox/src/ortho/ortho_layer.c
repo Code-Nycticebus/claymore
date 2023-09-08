@@ -129,8 +129,10 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
       cm_renderer2d_push_quad_color_rotated(
-          (vec2){i * (quad_size + quad_size / 2),
-                 j * (quad_size + quad_size / 2)},
+          (vec2){
+              i * (quad_size + quad_size / 2),
+              j * (quad_size + quad_size / 2),
+          },
           0.F, (vec2){quad_size, quad_size}, (vec4){0.F, 0.F, 1.F, 1.F},
           glm_rad(rotation + i + j));
     }

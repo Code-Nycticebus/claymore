@@ -102,7 +102,6 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
           GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
 
   /* RENDER INTO FRAMEBUFFER */
-
   mat4 model;
   mat4 mvp;
 
@@ -113,7 +112,7 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_mat4(&layer_shader, "u_mvp", mvp);
   cm_renderer2d_begin();
   {
-    cm_renderer2d_push_quad_color((vec2){0, 0}, 0, (vec2){100.F, 100.F},
+    cm_renderer2d_push_quad_color((vec2){0.F, -100.F}, 0, (vec2){100.F, 100.F},
                                   (vec4){1.F, 0.F, 0.F, 1.F});
   }
   cm_renderer2d_end();
