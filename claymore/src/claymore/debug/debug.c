@@ -1,7 +1,7 @@
 #include "debug.h"
 #include "claymore/logger/logger.h"
 
-#ifdef _CM_DEBUG
+#ifdef CM_DEBUG
 
 const bool cm_debug_enabled = true;
 

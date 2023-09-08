@@ -41,28 +41,34 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
 
   app->run = true;
   if (config->app.init) {
-    return config->app.init(app);
+    if (!config->app.init(app)) {
+      return false;
+    }
   }
+  cm_event_top_set(); // Registers all events as app level
+
+  cm_renderer2d_init();
+  cm_renderer_set_clear_color((vec4){1.F, 0.F, 1.F, 1.F});
+
+  if (!cm_scene_init(app, config)) {
+    return false;
+  }
+
   return true;
 }
 
 void cm_app_shutdown(CmApp *app, const ClaymoreConfig *config) {
+  cm_scene_free();
+  cm_sound_shutdown();
+  cm_renderer2d_shutdown();
+
   if (config->app.free) {
     config->app.free(app);
   }
   cm_window_close(app->window);
 }
 
-void cm_app_run(CmApp *app, const ClaymoreConfig *config) {
-  (void)config;
-  cm_event_top_set(); // Registers all events as app level
-
-  // TODO move the inits to the actuall init!
-  cm_renderer2d_init();
-  cm_renderer_set_clear_color((vec4){1.F, 0.F, 1.F, 1.F});
-
-  cm_scene_init(app, config);
-
+void cm_app_run(CmApp *app) {
   float time = 0.F;
   float time_last_frame = 0.F;
   float deltatime = 0.F;
@@ -78,8 +84,4 @@ void cm_app_run(CmApp *app, const ClaymoreConfig *config) {
 
     cm_window_update(app->window);
   }
-
-  cm_scene_free();
-  cm_sound_shutdown();
-  cm_renderer2d_shutdown();
 }

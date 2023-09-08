@@ -57,6 +57,10 @@ void cm_renderer2d_init(void) {
   render_data->renderer.index_buffer = cm_index_buffer_create(
       &render_data->renderer.vertex_attribute, CM_RENDERER2D_MAX_INDECIES,
       render_data->indecies, GL_STATIC_DRAW);
+
+  const float bytes_in_kilboytes = 1000.F;
+  cm_log_info("Renderer: %.0f kb\n",
+              (uint32_t)sizeof(struct Render2dData) / bytes_in_kilboytes);
 }
 
 void cm_renderer2d_shutdown(void) {
@@ -89,6 +93,7 @@ static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
                                             const vec2 text_coord,
                                             const vec2 text_size,
                                             float rotation) {
+  assert(render_data && "Renderer 2D was not initialized!");
   if (!(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES)) {
     cm_renderer2d_flush();
   }

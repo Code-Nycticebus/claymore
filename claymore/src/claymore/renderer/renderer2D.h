@@ -3,7 +3,7 @@
 
 #include "renderer_defines.h"
 
-#define CM_RENDERER2D_MAX_QUADS 3000
+#define CM_RENDERER2D_MAX_QUADS 5000
 #define CM_RENDERER2D_VERTICES_PER_QUAD 4
 #define CM_RENDERER2D_MAX_VERTICES                                             \
   (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTICES_PER_QUAD)
