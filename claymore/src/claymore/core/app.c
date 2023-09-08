@@ -80,7 +80,7 @@ void cm_app_run(CmApp *app) {
 
 #ifdef CM_DEBUG
     static bool performace_issue_last_frame = false;
-    const float min_dt = 1 / 59.F;
+    const float min_dt = 1 / 55.F;
     if (min_dt < deltatime) {
       if (performace_issue_last_frame) {
         cm_log_warning("Performance warning: %.0F FPS\n", 1 / deltatime);

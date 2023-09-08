@@ -117,11 +117,11 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_mat4(&grid_shader, "u_mvp", mvp);
 
   cm_renderer2d_begin();
-  static uint32_t grid_size = 0; // 317^2 == 100'000 quads
-  const float dt_min = 1 / 65.F;
-  if (dt < dt_min) {
-    grid_size += 1;
-  }
+  static uint32_t grid_size = 3; // 317^2 == 100'000 quads
+  const float dt_min = 1 / 62.F;
+  grid_size += dt < dt_min ? +1 : -1;
+  assert(grid_size < 1000 && "grid size is definetly too big");
+
   const float quad_size = 5.F;
   static float rotation = 0.F;
   const float rotation_speed = 45.F;
