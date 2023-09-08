@@ -2,7 +2,8 @@
 #define __CM_DEFINE_H__
 
 #include <stdbool.h>
-#include <stdio.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define GLEW_STATIC
 #include "GL/glew.h"
