@@ -7,7 +7,7 @@
 #include "claymore/core/app.h"
 
 // Turns of console in release build on windows
-#if defined(_WIN32) && !defined(_CM_DEBUG)
+#if defined(_WIN32) && !defined(CM_DEBUG)
 #pragma comment(linker, "/subsystem:windows")
 #include <windows.h>
 #define main(...)                                                              \
