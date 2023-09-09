@@ -15,7 +15,7 @@ struct ShaderData {
 };
 
 static CmShader background_shader;
-static Texture background_texture;
+static CmTexture2D background_texture;
 
 static mat4 model = GLM_MAT4_IDENTITY_INIT;
 

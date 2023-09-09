@@ -141,6 +141,7 @@ void cm_shader_unbind(void) { glUseProgram(0); }
 
 GLint cm_shader_get_uniform_location(CmShader *shader, const char *u_name) {
   assert(shader != 0);
+  glUseProgram(shader->id);
   for (size_t i = 0; i < shader->cached_uniform_count; i++) {
     if (strcmp(shader->uniform_cache[i].u_name, u_name) == 0) {
       return shader->uniform_cache[i].location;
