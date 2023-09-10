@@ -6,8 +6,8 @@ static CmShader texture_shader;
 static CmShader framebuffer_shader;
 static CmShader effect_shader;
 
-const char* vs_file = "res/shader/framebuffer.vs.glsl";
-const char* fs_file = "res/shader/effect.fs.glsl";
+const char *vs_file = "res/shader/framebuffer.vs.glsl";
+const char *fs_file = "res/shader/effect.fs.glsl";
 
 static CmFrameBuffer framebuffer;
 
@@ -126,7 +126,7 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_framebuffer_unbind();
 
   cm_framebuffer_draw(&framebuffer, &rb,
-                      effect ? &effect_shader: &framebuffer_shader );
+                      effect ? &effect_shader : &framebuffer_shader);
 }
 
 CmLayerInterface sandbox_framebuffer(void) {
