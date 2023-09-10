@@ -4,20 +4,27 @@ static CmShader layer_shader;
 static CmShader texture_shader;
 
 static CmShader framebuffer_shader;
-static CmShader greyscale_filter;
+static CmShader effect_shader;
+
+const char* vs_file = "res/shader/framebuffer.vs.glsl";
+const char* fs_file = "res/shader/effect.fs.glsl";
 
 static CmFrameBuffer framebuffer;
 
 static CmTexture2D texture;
 static CmRenderBuffer rb;
 
-static bool grey_scale = false;
+static bool effect = true;
 
 static void key_callback(CmKeyEvent *event, void *data) {
   (void)data;
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F4) {
-      grey_scale = !grey_scale;
+      effect = !effect;
+    } else if (event->code == CM_KEY_F5) {
+      // Reload effect shader
+      cm_shader_delete(&effect_shader);
+      effect_shader = cm_shader_load_from_file(vs_file, fs_file);
     }
   }
 }
@@ -58,8 +65,7 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   framebuffer_shader = cm_shader_load_from_file(
       "res/shader/framebuffer.vs.glsl", "res/shader/framebuffer.fs.glsl");
 
-  greyscale_filter = cm_shader_load_from_file("res/shader/framebuffer.vs.glsl",
-                                              "res/shader/greyscale.fs.glsl");
+  effect_shader = cm_shader_load_from_file(vs_file, fs_file);
 
   framebuffer = cm_framebuffer_create(scene->app->window->width,
                                       scene->app->window->height);
@@ -120,7 +126,7 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_framebuffer_unbind();
 
   cm_framebuffer_draw(&framebuffer, &rb,
-                      grey_scale ? &framebuffer_shader : &greyscale_filter);
+                      effect ? &effect_shader: &framebuffer_shader );
 }
 
 CmLayerInterface sandbox_framebuffer(void) {
