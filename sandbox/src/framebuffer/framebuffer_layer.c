@@ -109,8 +109,8 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_i32(&texture_shader, "u_texture", 0);
   cm_renderer2d_begin();
   {
-    cm_renderer2d_push_quad_textured((vec2){235.F, 120.F}, 0,
-                                     (vec2){200.F, 200.F}, (vec2){0, 0},
+    cm_renderer2d_push_quad_textured((vec2){285.F, 120.F}, 0,
+                                     (vec2){250.F, 250.F}, (vec2){0, 0},
                                      (vec2){1, 1});
   }
   cm_renderer2d_end();
