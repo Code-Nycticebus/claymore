@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stddef.h>
-#define _CM_RENDERER_INTERNAL
+#define CM_RENDERER_PRIVATE
 #include "renderer2D.h"
 
 #include <GL/gl.h>
@@ -10,6 +10,14 @@
 #include "claymore/debug/debug.h"
 #include "render_buffer.h"
 #include "render_command.h"
+
+#define CM_RENDERER2D_MAX_QUADS 5000
+#define CM_RENDERER2D_VERTICES_PER_QUAD 4
+#define CM_RENDERER2D_MAX_VERTICES                                             \
+  (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTICES_PER_QUAD)
+#define CM_RENDERER_INDICES_PER_SQUAD 6
+#define CM_RENDERER2D_MAX_INDECIES                                             \
+  (CM_RENDERER2D_MAX_QUADS * CM_RENDERER_INDICES_PER_SQUAD)
 
 struct Render2dData {
   CmRenderBuffer renderer;
@@ -70,11 +78,7 @@ void cm_renderer2d_shutdown(void) {
   free(render_data);
 }
 
-void cm_renderer2d_begin(void) {}
-
-void cm_renderer2d_end(void) { cm_renderer2d_flush(); }
-
-void cm_renderer2d_flush(void) {
+static void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, render_data->renderer.vertex_buffer.id);
   glBufferSubData(GL_ARRAY_BUFFER, 0,
                   sizeof(CmVertex) * render_data->vertices_count,
@@ -87,6 +91,10 @@ void cm_renderer2d_flush(void) {
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+void cm_renderer2d_begin(void) {}
+
+void cm_renderer2d_end(void) { cm_renderer2d_flush(); }
 
 static inline void _cm_renderer2d_push_quad(const vec2 position, float z,
                                             const vec2 size, const vec4 color,

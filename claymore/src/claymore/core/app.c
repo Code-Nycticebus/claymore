@@ -7,6 +7,7 @@
 #include "claymore/sound/sound.h"
 #include "cm.h"
 
+#define CM_RENDERER_PRIVATE
 #include "claymore/renderer/renderer.h"
 
 #include <stdio.h>
