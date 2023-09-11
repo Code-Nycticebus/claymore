@@ -10,7 +10,7 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstatic-in-inline"
-#include "cglm/cglm.h"
+#include "cglm/struct.h"
 #pragma clang diagnostic pop
 
 #include "claymore/debug/debug.h"

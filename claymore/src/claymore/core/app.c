@@ -10,8 +10,6 @@
 #define CM_RENDERER_PRIVATE
 #include "claymore/renderer/renderer.h"
 
-#include <stdio.h>
-
 static void _cm_app_window_close(CmWindowEvent *window, CmApp *app) {
   (void)window;
   app->run = false;
@@ -49,7 +47,7 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
   cm_event_top_set(); // Registers all events as app level
 
   cm_renderer2d_init();
-  cm_renderer_set_clear_color((vec4){1.F, 0.F, 1.F, 1.F});
+  cm_renderer_set_clear_color((vec4s){{1.F, 0.F, 1.F, 1.F}});
 
   if (!cm_scene_init(app, config)) {
     return false;

@@ -15,7 +15,7 @@ void cm_log_error(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 void cm_log_warning(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 void cm_log_info(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 
-#ifdef _CM_DEBUG
+#ifdef CM_DEBUG
 void cm_log_debug(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 void cm_log_trace(const char *fmt, ...) CM_LOGGER_FORMAT(1, 2);
 #else

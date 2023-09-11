@@ -127,13 +127,13 @@ void _cm_font_renderer_flush(CmFont *font) {
   font->vertex_count = 0;
 }
 
-void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
-                  const char *text) {
+void cm_font_draw(CmFont *font, const mat4s mvp, float x, float y, float z,
+                  size_t len, const char *text) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
-  mat4 inverted_mvp;
-  glm_scale_to(mvp, (vec3){1.0F, -1.0F, 1.0F}, inverted_mvp);
+  mat4s inverted_mvp;
+  inverted_mvp = glms_scale(mvp, (vec3s){{1.0F, -1.0F, 1.0F}});
 
   cm_shader_bind(&font->shader);
   cm_shader_set_mat4(&font->shader, "u_mvp", inverted_mvp);
@@ -186,7 +186,7 @@ void cm_font_draw(CmFont *font, mat4 mvp, float x, float y, float z, size_t len,
   cm_shader_unbind();
 }
 
-void cm_font_draw_cstr(CmFont *font, vec4 *mvp, float x, float y, float z,
+void cm_font_draw_cstr(CmFont *font, const mat4s mvp, float x, float y, float z,
                        const char *text) {
   size_t len = strlen(text);
   cm_font_draw(font, mvp, x, y, z, len, text);

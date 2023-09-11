@@ -53,7 +53,7 @@ void cm_log_error(const char *fmt, ...) { _LOG(CM_LOG_ERROR, fmt); }
 void cm_log_warning(const char *fmt, ...) { _LOG(CM_LOG_WARN, fmt); }
 void cm_log_info(const char *fmt, ...) { _LOG(CM_LOG_INFO, fmt); }
 
-#ifdef _CM_DEBUG
+#ifdef CM_DEBUG
 void cm_log_debug(const char *fmt, ...) { _LOG(CM_LOG_DEBUG, fmt); }
 void cm_log_trace(const char *fmt, ...) { _LOG(CM_LOG_TRACE, fmt); }
 #endif

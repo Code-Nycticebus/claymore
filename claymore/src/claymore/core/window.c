@@ -34,7 +34,7 @@ void _cm_window_mouse_button_callback(GLFWwindow *window, int button,
 static void _cm_window_mouse_pos_callback(GLFWwindow *glfw_window, double xpos,
                                           double ypos) {
   CMwindow *window = glfwGetWindowUserPointer(glfw_window);
-  cm_mouseinfo_set_pos((vec2){xpos, window->height - ypos});
+  cm_mouseinfo_set_pos((vec2s){{xpos, window->height - ypos}});
   cm_event_dispatch((CmEvent){.type = CM_EVENT_MOUSE,
                               .event.mouse = {
                                   .action = CM_MOUSE_MOVE,

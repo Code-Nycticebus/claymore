@@ -24,7 +24,7 @@ typedef struct {
 } CmKeyEvent;
 
 typedef struct {
-  vec2 pos;
+  vec2s pos;
   CmMouseKeycode button;
 } CmMouseInfo;
 

@@ -17,7 +17,7 @@ struct ShaderData {
 static CmShader background_shader;
 static CmTexture2D background_texture;
 
-static mat4 model = GLM_MAT4_IDENTITY_INIT;
+static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
 static float zoom = 1.F;
 static float aspect;
@@ -25,35 +25,35 @@ static float aspect;
 static void background_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
   const float min_zoom = 0.1F;
   zoom = glm_max(zoom - event->yoffset, min_zoom);
-  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
-            layer->camera.projection);
+  layer->camera.projection =
+      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F);
   layer->camera.update = true;
 }
 
 static void background_window_resize_callback(CmWindowEvent *event,
                                               CmCamera *camera) {
   aspect = (float)event->window->width / (float)event->window->height;
-  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F,
-            camera->projection);
+  camera->projection =
+      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F);
   camera->update = true;
 }
 
 static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
   if (event->action == CM_MOUSE_MOVE) {
-    static vec3 last_position = {0};
-    vec2 pos;
-    vec2 direction;
-    cm_mouseinfo_pos(pos);
-    glm_vec2_sub(pos, last_position, direction);
-    glm_vec2_copy(pos, last_position);
+    static vec2s last_position = {0};
+    vec2s pos = cm_mouseinfo_pos();
+    vec2s direction = glms_vec2_sub(pos, last_position);
+    last_position = pos;
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       const float zoom_scale = 150.F;
-      glm_vec2_scale(direction, zoom / zoom_scale, direction);
-      glm_vec2_add(layer->camera.position, direction, layer->camera.position);
+      direction = glms_vec2_scale(direction, zoom / zoom_scale);
+      layer->camera.position = glms_vec3_add(
+          layer->camera.position, (vec3s){{direction.x, direction.y, 0}});
 
-      glm_mat4_identity(layer->camera.view);
-      glm_translate(layer->camera.view, layer->camera.position);
+      layer->camera.view = glms_mat4_identity();
+      layer->camera.view =
+          glms_translate(layer->camera.view, layer->camera.position);
       layer->camera.update = true;
     }
   }
@@ -66,11 +66,12 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
   background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
-  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
-            layer->camera.projection);
-  glm_mat4_identity(layer->camera.view);
-  glm_vec3_copy((vec3){0}, layer->camera.position);
-  glm_translate(layer->camera.view, layer->camera.position);
+  layer->camera.projection =
+      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F);
+  layer->camera.view = glms_mat4_identity();
+  layer->camera.position = (vec3s){0};
+  layer->camera.view =
+      glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
@@ -83,15 +84,15 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
                         (cm_event_callback)background_scroll_callback, layer);
 
   const float scale = 10.F;
-  glm_scale(model, (vec3){scale, scale, 1.F});
+  model = glms_scale(model, (vec3s){{scale, scale, 1.F}});
   return true;
 }
 
 static void background_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)dt, (void)scene;
 
-  static mat4 mvp;
-  glm_mat4_mul(layer->camera.vp, model, mvp);
+  static mat4s mvp;
+  mvp = glms_mat4_mul(layer->camera.vp, model);
 
   cm_texture_bind(&background_texture, 0);
 
@@ -103,9 +104,9 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
   const float background_layer = -0.99F;
   cm_renderer2d_begin();
   cm_renderer2d_push_quad_textured(
-      (vec2){-background_size / 2, -background_size / 2}, background_layer,
-      (vec2){background_size, background_size}, (vec2){0.F, 0.F},
-      (vec2){background_size, background_size});
+      (vec2s){{-background_size / 2, -background_size / 2}}, background_layer,
+      (vec2s){{background_size, background_size}}, (vec2s){{0.F, 0.F}},
+      (vec2s){{background_size, background_size}});
   cm_renderer2d_end();
   cm_shader_unbind();
   cm_texture_unbind(0);

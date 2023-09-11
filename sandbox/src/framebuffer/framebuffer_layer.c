@@ -34,11 +34,12 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   layer_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
 
-  glm_ortho(0, scene->app->window->width, 0, scene->app->window->height, -1.F,
-            100.F, layer->camera.projection);
-  glm_mat4_identity(layer->camera.view);
-  glm_vec3_copy((vec3){0}, layer->camera.position);
-  glm_translate(layer->camera.view, layer->camera.position);
+  layer->camera.projection = glms_ortho(
+      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
+  layer->camera.view = glms_mat4_identity();
+  layer->camera.position = (vec3s){0};
+  layer->camera.view =
+      glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
   const float vertecies[] = {
@@ -93,18 +94,19 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
 
   cm_framebuffer_bind(&framebuffer);
   /* RENDER INTO FRAMEBUFFER */
-  mat4 model;
-  mat4 mvp;
+  mat4s model;
+  mat4s mvp;
 
-  glm_mat4_identity(model);
-  glm_mat4_mul(layer->camera.vp, model, mvp);
+  model = glms_mat4_identity();
+  mvp = glms_mat4_mul(layer->camera.vp, model);
 
   cm_shader_bind(&layer_shader);
   cm_shader_set_mat4(&layer_shader, "u_mvp", mvp);
   cm_renderer2d_begin();
   {
-    cm_renderer2d_push_quad_color((vec2){125.F, 100.F}, 0, (vec2){100.F, 100.F},
-                                  (vec4){1.F, 0.F, 0.F, 1.F});
+    cm_renderer2d_push_quad_color((vec2s){{125.F, 100.F}}, 0,
+                                  (vec2s){{100.F, 100.F}},
+                                  (vec4s){{1.F, 0.F, 0.F, 1.F}});
   }
   cm_renderer2d_end();
   cm_shader_unbind();
@@ -115,9 +117,9 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_i32(&texture_shader, "u_texture", 0);
   cm_renderer2d_begin();
   {
-    cm_renderer2d_push_quad_textured((vec2){285.F, 120.F}, 0,
-                                     (vec2){250.F, 250.F}, (vec2){0, 0},
-                                     (vec2){1, 1});
+    cm_renderer2d_push_quad_textured((vec2s){{285.F, 120.F}}, 0,
+                                     (vec2s){{250.F, 250.F}}, (vec2s){{0, 0}},
+                                     (vec2s){{1, 1}});
   }
   cm_renderer2d_end();
   cm_shader_unbind();

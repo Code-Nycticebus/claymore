@@ -7,10 +7,10 @@ static CmShader shader;
 
 typedef struct {
   uint32_t scene;
-  vec2 pos;
-  vec2 size;
+  vec2s pos;
+  vec2s size;
   bool selected;
-  vec2 text_pos;
+  vec2s text_pos;
   const char *text;
 } MenuButton;
 
@@ -34,30 +34,30 @@ const float margin = 20.F;
 
 static void calculate_menu_button_pos(CMwindow *window) {
   float y = window->height;
-  const float x = window->width / 2 - xs / 2;
+  const float x = (float)window->width / 2 - xs / 2;
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
     buttons[i].scene = i + 1;
 
-    buttons[i].pos[0] = x;
+    buttons[i].pos.x = x;
 
     y -= ys + margin;
-    buttons[i].pos[1] = y;
+    buttons[i].pos.y = y;
 
-    buttons[i].size[0] = xs;
-    buttons[i].size[1] = ys;
+    buttons[i].size.x = xs;
+    buttons[i].size.y = ys;
 
     buttons[i].selected = false;
 
     buttons[i].text = button_labels[i];
 
-    buttons[i].text_pos[0] = x + margin;
-    buttons[i].text_pos[1] = y + ys / 2 - font_size / 4;
+    buttons[i].text_pos.x = x + margin;
+    buttons[i].text_pos.y = y + ys / 2 - font_size / 4;
   }
 }
 
-static bool point_in_button(const vec2 pos, MenuButton *b) {
-  if (b->pos[0] <= pos[0] && pos[0] <= b->pos[0] + b->size[0]) {
-    if (b->pos[1] <= pos[1] && pos[1] <= b->pos[1] + b->size[1]) {
+static bool point_in_button(const vec2s pos, MenuButton *b) {
+  if (b->pos.x <= pos.x && pos.x <= b->pos.x + b->size.x) {
+    if (b->pos.y <= pos.y && pos.y <= b->pos.y + b->size.y) {
       b->selected = true;
       return true;
     }
@@ -115,8 +115,9 @@ static void key_callback(CmKeyEvent *event, void *data) {
 
 static void window_resize_callback(CmWindowEvent *event, CmLayer *layer) {
   (void)event;
-  glm_ortho(0.F, (float)event->window->width, 0.F, (float)event->window->height,
-            -1.F, 100.F, layer->camera.projection);
+  layer->camera.projection =
+      glms_ortho(0.F, (float)event->window->width, 0.F,
+                 (float)event->window->height, -1.F, 100.F);
   layer->camera.update = true;
 
   calculate_menu_button_pos(event->window);
@@ -125,13 +126,14 @@ static void window_resize_callback(CmWindowEvent *event, CmLayer *layer) {
 static bool menu_init(CmScene *scene, CmLayer *layer) {
   (void)layer;
   font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
-  glm_ortho(0.F, (float)scene->app->window->width, 0.F,
-            (float)scene->app->window->height, -1.F, 100.F,
-            layer->camera.projection);
+  layer->camera.projection =
+      glms_ortho(0.F, (float)scene->app->window->width, 0.F,
+                 (float)scene->app->window->height, -1.F, 100.F);
 
-  glm_mat4_identity(layer->camera.view);
-  glm_vec3_copy((vec3){0}, layer->camera.position);
-  glm_translate(layer->camera.view, layer->camera.position);
+  layer->camera.view = glms_mat4_identity();
+  layer->camera.position = (vec3s){0};
+  layer->camera.view =
+      glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
   cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
@@ -143,7 +145,7 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
   shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                     "res/shader/basic.fs.glsl");
 
-  cm_renderer_set_clear_color((vec4){0, 0, 0, 1.F});
+  cm_renderer_set_clear_color((vec4s){{0, 0, 0, 1.F}});
   calculate_menu_button_pos(scene->app->window);
   return true;
 }
@@ -151,24 +153,24 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
 static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)layer, (void)dt, (void)scene;
 
-  mat4 mvp;
-  mat4 model;
-  glm_mat4_identity(model);
-  glm_mat4_mul(layer->camera.vp, model, mvp);
+  mat4s mvp;
+  mat4s model;
+  model = glms_mat4_identity();
+  mvp = glms_mat4_mul(layer->camera.vp, model);
 
   cm_shader_bind(&shader);
   cm_shader_set_mat4(&shader, "u_mvp", mvp);
   cm_renderer2d_begin();
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
     cm_renderer2d_push_quad_color(buttons[i].pos, 0, buttons[i].size,
-                                  buttons[i].selected ? (vec4)HIGLIGHT_BG
-                                                      : (vec4)NORMAL_BG);
+                                  buttons[i].selected ? (vec4s){HIGLIGHT_BG}
+                                                      : (vec4s){NORMAL_BG});
   }
   cm_renderer2d_end();
   cm_shader_unbind();
 
   for (size_t i = 0; i < BUTTON_LABELS_COUNT; i++) {
-    cm_font_draw_cstr(font, mvp, buttons[i].text_pos[0], buttons[i].text_pos[1],
+    cm_font_draw_cstr(font, mvp, buttons[i].text_pos.x, buttons[i].text_pos.y,
                       1, buttons[i].text);
   }
 }

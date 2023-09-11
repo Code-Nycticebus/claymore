@@ -1,17 +1,14 @@
 #include "claymore.h"
 
-#include "claymore/renderer/render_buffer.h"
-#include "claymore/renderer/render_command.h"
-
 static CmShader cube_shader;
 
-static vec2 mouse_last_pos = {0, 0};
+static vec2s mouse_last_pos = {{0, 0}};
 static CmRenderBuffer render_data;
 
 static GLenum draw_mode = GL_FILL;
 
 const float rotation = 90.F;
-static mat4 model = GLM_MAT4_IDENTITY_INIT;
+static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
 struct Vertex {
   vec3 pos;
@@ -22,38 +19,36 @@ static const float fov = 45.F;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
-    vec2 mouse_pos;
-    cm_mouseinfo_pos(mouse_pos);
+    vec2s mouse_pos = cm_mouseinfo_pos();
 
-    vec2 dir;
-    glm_vec2_sub(mouse_pos, mouse_last_pos, dir);
-    glm_vec2_normalize(dir);
-    glm_vec2_scale(dir, (float)3, dir);
+    vec2s dir = glms_vec2_sub(mouse_pos, mouse_last_pos);
+    glms_vec2_normalize(dir);
+    dir = glms_vec2_scale(dir, (float)3);
 
-    glm_vec2_copy(mouse_pos, mouse_last_pos);
+    mouse_last_pos = mouse_pos;
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       float camera_distance =
-          glm_vec3_distance(camera->position, camera->lookat);
+          glms_vec3_distance(camera->position, camera->lookat);
 
       static float rotation_horizontal = 0.F;
       static float rotation_vertical = 0.F;
 
-      rotation_horizontal += glm_rad(-dir[0]);
-      rotation_vertical += glm_rad(-dir[1]);
+      rotation_horizontal += glm_rad(-dir.x);
+      rotation_vertical += glm_rad(-dir.y);
 
       const float limit = glm_rad(89.F);
       rotation_vertical = glm_clamp(rotation_vertical, -limit, limit);
 
-      vec3 new_camera_pos;
-      new_camera_pos[0] = camera->lookat[0] + camera_distance *
-                                                  sinf(rotation_horizontal) *
-                                                  cosf(rotation_vertical);
-      new_camera_pos[1] =
-          camera->lookat[1] + camera_distance * sinf(rotation_vertical);
-      new_camera_pos[2] = camera->lookat[2] + camera_distance *
-                                                  cosf(rotation_horizontal) *
-                                                  cosf(rotation_vertical);
+      vec3s new_camera_pos;
+      new_camera_pos.x = camera->lookat.x + camera_distance *
+                                                sinf(rotation_horizontal) *
+                                                cosf(rotation_vertical);
+      new_camera_pos.y =
+          camera->lookat.y + camera_distance * sinf(rotation_vertical);
+      new_camera_pos.z = camera->lookat.z + camera_distance *
+                                                cosf(rotation_horizontal) *
+                                                cosf(rotation_vertical);
 
       cm_camera_position(camera, new_camera_pos);
     }
@@ -61,27 +56,28 @@ static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
 }
 
 static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
-  vec3 direction;
-  vec3 center = {0, 0, 0};
-  const float max_distance = 0.1F;
+  vec3s direction;
+  vec3s center = {{0, 0, 0}};
+  const float min_distance = 0.1F;
+  const float max_distance = 100.F;
 
-  glm_vec3_sub(center, camera->position, direction);
-  glm_vec3_normalize(direction);
-  glm_vec3_scale(direction, (float)event->yoffset, direction);
+  direction = glms_vec3_sub(center, camera->position);
+  direction = glms_vec3_normalize(direction);
+  direction = glms_vec3_scale(direction, (float)event->yoffset);
 
-  vec3 new_camera_pos;
-  glm_vec3_add(camera->position, direction, new_camera_pos);
-  float new_distance = glm_vec3_distance(new_camera_pos, center);
-  if (max_distance <= new_distance) {
+  vec3s new_camera_pos;
+  new_camera_pos = glms_vec3_add(camera->position, direction);
+  float new_distance = glms_vec3_distance(new_camera_pos, center);
+  if (min_distance <= new_distance && new_distance <= max_distance) {
     cm_camera_position(camera, new_camera_pos);
   }
 }
 
 static void camera_resize(CmWindowEvent *event, CmCamera *camera) {
   (void)event;
-  glm_perspective(glm_rad(fov),
-                  (float)event->window->width / (float)event->window->height,
-                  1 / 100.F, 100.F, camera->projection);
+  camera->projection = glms_perspective(
+      glm_rad(fov), (float)event->window->width / (float)event->window->height,
+      1 / 100.F, 100.F);
   camera->update = true;
 }
 
@@ -90,7 +86,7 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
     event->base.handled = true;
     switch (event->code) {
     case CM_KEY_F5: {
-      cm_camera_position(&layer->camera, (vec3){0, 0, 4});
+      cm_camera_position(&layer->camera, (vec3s){{0, 0, 4}});
       break;
     }
     case CM_KEY_F1: {
@@ -126,7 +122,7 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
                                          "res/shader/basic.fs.glsl");
 
   layer->camera = cm_camera_init_perspective(
-      (vec3){0, 0, 4}, (vec3){0}, fov,
+      (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 
   struct Vertex cube_vertices[] = {
@@ -167,18 +163,18 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
   render_data.index_buffer =
       cm_index_buffer_create(&render_data.vertex_attribute, indices_count,
                              cube_indices, GL_STATIC_DRAW);
-  cm_renderer_set_clear_color((vec4){0.F, 0.F, 0.F, 1.F});
-  cm_mouseinfo_pos(mouse_last_pos);
+  cm_renderer_set_clear_color((vec4s){{0.F, 0.F, 0.F, 1.F}});
+  mouse_last_pos = cm_mouseinfo_pos();
   return true;
 }
 
 static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)scene;
   glPolygonMode(GL_FRONT_AND_BACK, draw_mode);
-  static mat4 mvp;
+  static mat4s mvp;
   (void)dt;
 
-  glm_mat4_mul(layer->camera.vp, model, mvp);
+  mvp = glms_mat4_mul(layer->camera.vp, model);
 
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
