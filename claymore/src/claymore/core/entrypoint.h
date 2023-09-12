@@ -1,5 +1,5 @@
 #if defined(_CM_ENTRYPOINT_H__)
-#error Entrypoint was included twice
+#error "Entrypoint was included twice"
 #endif
 
 #define _CM_ENTRYPOINT_H__

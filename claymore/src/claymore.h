@@ -13,10 +13,9 @@
 #include "claymore/sound/sound.h"
 
 // TODO: Should not be public
-
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wstatic-in-inline"
-#include "cglm/cglm.h"
+#pragma clang diagnostic ignored "-Weverything"
+#include "cglm/struct.h"
 #pragma clang diagnostic pop
 
 #endif /* !__CM_CLAYMORE_H__ */

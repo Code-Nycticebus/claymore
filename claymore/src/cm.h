@@ -8,8 +8,9 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
+// Needed because my compile flags give to many warnings when using cglm
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wstatic-in-inline"
+#pragma clang diagnostic ignored "-Weverything"
 #include "cglm/struct.h"
 #pragma clang diagnostic pop
 
