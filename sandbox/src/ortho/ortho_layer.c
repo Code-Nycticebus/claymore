@@ -86,7 +86,6 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
   layer->camera.view =
       glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
-  printf("%f %f\n", layer->camera.position.x, layer->camera.position.y);
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
 
