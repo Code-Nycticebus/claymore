@@ -10,7 +10,7 @@
 
 // Needed because my compile flags give to many warnings when using cglm
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Weverything"
+#pragma clang diagnostic ignored "-Wstatic-in-inline"
 #include "cglm/struct.h"
 #pragma clang diagnostic pop
 

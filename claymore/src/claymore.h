@@ -14,7 +14,7 @@
 
 // TODO: Should not be public
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Weverything"
+#pragma clang diagnostic ignored "-Wstatic-in-inline"
 #include "cglm/struct.h"
 #pragma clang diagnostic pop
 

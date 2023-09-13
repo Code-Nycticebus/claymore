@@ -2,7 +2,6 @@
 #define __CM_APP_DEFINES_H__
 
 #include "camera.h"
-#include "cglm/struct.h"
 #include "cm.h"
 #include "window.h"
 
