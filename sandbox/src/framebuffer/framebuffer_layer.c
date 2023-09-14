@@ -10,9 +10,11 @@ const char *vs_file = "res/shader/framebuffer.vs.glsl";
 const char *fs_file = "res/shader/effect.fs.glsl";
 
 static CmFrameBuffer framebuffer;
+static CmFrameBuffer framebuffer2;
 
 static CmTexture2D texture;
 static CmRenderBuffer rb;
+static CmRenderBuffer rb2;
 
 static bool effect = true;
 
@@ -71,6 +73,28 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   framebuffer = cm_framebuffer_create(scene->app->window->width,
                                       scene->app->window->height);
 
+  const float vertecies2[] = {
+      // positions // texCoords
+      -1.0F, -1.0F, 0.0F, 0.0F, //
+      -.5F,  -1.0F, 1.0F, 0.0F, //
+      -.5F,  -.5F,  1.0F, 1.0F, //
+      -1.0F, -.5F,  0.0F, 1.0F, //
+  };
+  const size_t vertices_count2 = 4;
+
+  rb2.vertex_buffer = cm_vertex_buffer_create(
+      vertices_count2, 4 * sizeof(float), vertecies2, GL_STATIC_DRAW);
+  rb2.vertex_attribute = cm_vertex_attribute_create(&rb2.vertex_buffer);
+  cm_vertex_attribute_push(&rb2.vertex_attribute, 2, GL_FLOAT, 0);
+  cm_vertex_attribute_push(&rb2.vertex_attribute, 2, GL_FLOAT,
+                           sizeof(float) * 2);
+
+  rb2.index_buffer = cm_index_buffer_create(
+      &rb2.vertex_attribute, indices_count, indices, GL_STATIC_DRAW);
+
+  framebuffer2 = cm_framebuffer_create(scene->app->window->width,
+                                       scene->app->window->height);
+
   texture_shader = cm_shader_load_from_file("res/shader/texture.vs.glsl",
                                             "res/shader/texture.fs.glsl");
   texture = cm_texture2d_create("res/textures/claymore-sword.png");
@@ -123,12 +147,15 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   }
   cm_renderer2d_end();
   cm_shader_unbind();
-
   /* ! RENDER INTO FRAMEBUFFER */
-  cm_framebuffer_unbind();
 
+  cm_framebuffer_bind(&framebuffer2);
+  cm_framebuffer_draw(&framebuffer, &rb, &framebuffer_shader);
+
+  cm_framebuffer_unbind();
   cm_framebuffer_draw(&framebuffer, &rb,
                       effect ? &effect_shader : &framebuffer_shader);
+  cm_framebuffer_draw(&framebuffer2, &rb2, &framebuffer_shader);
 }
 
 CmLayerInterface sandbox_framebuffer(void) {
