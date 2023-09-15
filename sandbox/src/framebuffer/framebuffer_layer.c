@@ -31,6 +31,13 @@ static void key_callback(CmKeyEvent *event, void *data) {
   }
 }
 
+void drop_callback(GLFWwindow *window, int count, const char **paths) {
+  (void)window;
+  for (int i = 0; i < count; i++) {
+    printf("%s\n", paths[i]);
+  }
+}
+
 static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   (void)scene, (void)layer;
   layer_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
@@ -101,6 +108,8 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
 
   cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
                         NULL);
+
+  glfwSetDropCallback(scene->app->window->ctx, drop_callback);
 
   return true;
 }
