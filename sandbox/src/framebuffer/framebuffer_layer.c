@@ -1,4 +1,5 @@
 #include "claymore.h"
+#include <string.h>
 
 static CmShader layer_shader;
 static CmShader texture_shader;
@@ -7,7 +8,7 @@ static CmShader framebuffer_shader;
 static CmShader effect_shader;
 
 const char *vs_file = "res/shader/framebuffer.vs.glsl";
-const char *fs_file = "res/shader/effect.fs.glsl";
+char *fs_file = NULL;
 
 static CmFrameBuffer framebuffer;
 static CmFrameBuffer framebuffer2;
@@ -18,15 +19,26 @@ static CmRenderBuffer rb2;
 
 static bool effect = true;
 
+static char *_strdup(const char *str) {
+  size_t size = strlen(str) + 1;
+  char *s = calloc(size, sizeof(char));
+  strcpy(s, str);
+  return s;
+}
+
+static void reload_shader(void) {
+  // Reload effect shader
+  cm_shader_delete(&effect_shader);
+  effect_shader = cm_shader_load_from_file(vs_file, fs_file);
+}
+
 static void key_callback(CmKeyEvent *event, void *data) {
   (void)data;
   if (event->action == CM_KEY_PRESS) {
     if (event->code == CM_KEY_F4) {
       effect = !effect;
     } else if (event->code == CM_KEY_F5) {
-      // Reload effect shader
-      cm_shader_delete(&effect_shader);
-      effect_shader = cm_shader_load_from_file(vs_file, fs_file);
+      reload_shader();
     }
   }
 }
@@ -34,7 +46,9 @@ static void key_callback(CmKeyEvent *event, void *data) {
 void drop_callback(GLFWwindow *window, int count, const char **paths) {
   (void)window;
   for (int i = 0; i < count; i++) {
-    printf("%s\n", paths[i]);
+    free(fs_file);
+    fs_file = _strdup(paths[i]);
+    reload_shader();
   }
 }
 
@@ -75,6 +89,7 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   framebuffer_shader = cm_shader_load_from_file(
       "res/shader/framebuffer.vs.glsl", "res/shader/framebuffer.fs.glsl");
 
+  fs_file = _strdup("res/shader/effect.fs.glsl");
   effect_shader = cm_shader_load_from_file(vs_file, fs_file);
 
   framebuffer = cm_framebuffer_create(scene->app->window->width,
@@ -116,10 +131,14 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
 
 static void framebuffer_free(CmScene *scene, CmLayer *layer) {
   (void)scene, (void)layer;
+  free(fs_file);
   // free framebuffer
   cm_framebuffer_delete(&framebuffer);
+  cm_framebuffer_delete(&framebuffer2);
   cm_shader_delete(&framebuffer_shader);
+  cm_shader_delete(&effect_shader);
   cm_render_buffer_delete(&rb);
+  cm_render_buffer_delete(&rb2);
 }
 
 static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
