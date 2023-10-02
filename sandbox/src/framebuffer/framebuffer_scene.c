@@ -6,6 +6,7 @@ CmSceneInterface scene_framebuffer(void) {
   return (CmSceneInterface){
       .init = NULL,
       .free = NULL,
+      .update = NULL,
       .layers =
           {
               sandbox_framebuffer,

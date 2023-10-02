@@ -142,17 +142,14 @@ void cm_framebuffer_bind(CmFrameBuffer *framebuffer) {
 
 void cm_framebuffer_unbind(void) { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-void cm_framebuffer_draw(CmFrameBuffer *framebuffer, CmRenderBuffer *rb,
-                         CmShader *shader) {
+void cm_framebuffer_draw(CmFrameBuffer *framebuffer, CmRenderBuffer *rb) {
   glDisable(GL_DEPTH_TEST);
-  cm_shader_bind(shader);
-  cm_shader_set_i32(shader, "u_texture", 0);
+
   glBindTexture(GL_TEXTURE_2D, framebuffer->texture);
 
   cm_renderer_draw_indexed(rb, rb->index_buffer.count);
 
   glBindTexture(GL_TEXTURE_2D, 0);
-  cm_shader_unbind();
   glEnable(GL_DEPTH_TEST);
 }
 

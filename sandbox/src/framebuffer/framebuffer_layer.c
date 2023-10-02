@@ -19,6 +19,8 @@ static CmRenderBuffer rb2;
 
 static bool effect = true;
 
+static float gamma = 2.0F;
+
 static char *_strdup(const char *str) {
   size_t size = strlen(str) + 1;
   char *s = calloc(size, sizeof(char));
@@ -126,6 +128,13 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
 
   glfwSetDropCallback(scene->app->window->ctx, drop_callback);
 
+  const vec4s bg_color = {{
+      pow(0.2, gamma),
+      pow(0.2, gamma),
+      pow(0.2, gamma),
+      1.0,
+  }};
+  cm_renderer_set_clear_color(bg_color);
   return true;
 }
 
@@ -178,12 +187,24 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
   /* ! RENDER INTO FRAMEBUFFER */
 
   cm_framebuffer_bind(&framebuffer2);
-  cm_framebuffer_draw(&framebuffer, &rb, &framebuffer_shader);
 
+  cm_shader_bind(&framebuffer_shader);
+  cm_shader_set_i32(&framebuffer_shader, "u_texture", 0);
+  cm_framebuffer_draw(&framebuffer, &rb);
+
+  // Default framebuffer
   cm_framebuffer_unbind();
-  cm_framebuffer_draw(&framebuffer, &rb,
-                      effect ? &effect_shader : &framebuffer_shader);
-  cm_framebuffer_draw(&framebuffer2, &rb2, &framebuffer_shader);
+
+  // Draw screen with effect
+  cm_shader_bind(effect ? &effect_shader : &framebuffer_shader);
+  if (effect) {
+    cm_shader_set_f32(&effect_shader, "u_gamma", gamma);
+  }
+  cm_framebuffer_draw(&framebuffer, &rb);
+
+  // Draw small view of without effect
+  cm_shader_bind(&framebuffer_shader);
+  cm_framebuffer_draw(&framebuffer2, &rb2);
 }
 
 CmLayerInterface sandbox_framebuffer(void) {

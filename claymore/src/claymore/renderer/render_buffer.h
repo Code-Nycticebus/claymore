@@ -48,15 +48,13 @@ typedef struct {
   uint32_t fbo;
   uint32_t texture;
   uint32_t rbo;
-  CmShader *shader;
   CmRenderBuffer *rb;
 } CmFrameBuffer;
 
 CmFrameBuffer cm_framebuffer_create(uint32_t width, uint32_t height);
 void cm_framebuffer_bind(CmFrameBuffer *framebuffer);
 void cm_framebuffer_unbind(void);
-void cm_framebuffer_draw(CmFrameBuffer *framebuffer, CmRenderBuffer *rb,
-                         CmShader *shader);
+void cm_framebuffer_draw(CmFrameBuffer *framebuffer, CmRenderBuffer *rb);
 void cm_framebuffer_delete(CmFrameBuffer *framebuffer);
 
 #endif // __CM_RENDER_BUFFER_H__

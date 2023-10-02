@@ -47,8 +47,9 @@ bool cm_app_init(CmApp *app, const ClaymoreConfig *config) {
   cm_event_top_set(); // Registers all events as app level
 
   cm_renderer2d_init();
+#ifdef CM_DEBUG
   cm_renderer_set_clear_color((vec4s){{1.F, 0.F, 1.F, 1.F}});
-
+#endif
   if (!cm_scene_init(app, config)) {
     return false;
   }

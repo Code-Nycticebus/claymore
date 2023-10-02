@@ -8,6 +8,7 @@ CmSceneInterface scene_ortho(void) {
   return (CmSceneInterface){
       .init = NULL,
       .free = NULL,
+      .update = NULL,
       .layers =
           {
               sandbox_background,
