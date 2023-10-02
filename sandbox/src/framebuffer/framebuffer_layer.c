@@ -21,7 +21,7 @@ static bool effect = true;
 
 static float gamma = 2.0F;
 
-static char *_strdup(const char *str) {
+static char *custom_strdup(const char *str) {
   size_t size = strlen(str) + 1;
   char *s = calloc(size, sizeof(char));
   strcpy(s, str);
@@ -49,7 +49,7 @@ void drop_callback(GLFWwindow *window, int count, const char **paths) {
   (void)window;
   for (int i = 0; i < count; i++) {
     free(fs_file);
-    fs_file = _strdup(paths[i]);
+    fs_file = custom_strdup(paths[i]);
     reload_shader();
   }
 }
@@ -91,7 +91,7 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   framebuffer_shader = cm_shader_load_from_file(
       "res/shader/framebuffer.vs.glsl", "res/shader/framebuffer.fs.glsl");
 
-  fs_file = _strdup("res/shader/effect.fs.glsl");
+  fs_file = custom_strdup("res/shader/effect.fs.glsl");
   effect_shader = cm_shader_load_from_file(vs_file, fs_file);
 
   framebuffer = cm_framebuffer_create(scene->app->window->width,
