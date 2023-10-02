@@ -136,12 +136,10 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
       glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
-  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)window_resize_callback, layer);
-  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)mouse_callback,
-                        NULL);
-  cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
-                        NULL);
+  cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
+                     (cm_event_callback)window_resize_callback, layer);
+  cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)mouse_callback, NULL);
+  cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback, NULL);
   shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                     "res/shader/basic.fs.glsl");
 

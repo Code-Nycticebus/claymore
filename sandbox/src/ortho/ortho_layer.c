@@ -89,17 +89,16 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
 
-  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)ortho_window_resize_callback,
-                        &layer->camera);
-  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)ortho_mouse_callback,
-                        &layer->camera);
-  cm_event_set_callback(CM_EVENT_SCROLL,
-                        (cm_event_callback)ortho_scroll_callback,
-                        &layer->camera);
+  cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
+                     (cm_event_callback)ortho_window_resize_callback,
+                     &layer->camera);
+  cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)ortho_mouse_callback,
+                     &layer->camera);
+  cm_event_subscribe(CM_EVENT_SCROLL, (cm_event_callback)ortho_scroll_callback,
+                     &layer->camera);
 
-  cm_event_set_callback(CM_EVENT_KEYBOARD,
-                        (cm_event_callback)ortho_key_callback, scene);
+  cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)ortho_key_callback,
+                     scene);
 
   cm_renderer_set_clear_color((vec4s){.r = 0.F, .g = 0.F, .b = 0.F, .a = 1.F});
 

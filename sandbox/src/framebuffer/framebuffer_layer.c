@@ -123,10 +123,8 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
                                             "res/shader/texture.fs.glsl");
   texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
-  cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
-                        NULL);
-
-  cm_event_set_callback(CM_EVENT_DROP, (cm_event_callback)drop_callback, NULL);
+  cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback, NULL);
+  cm_event_subscribe(CM_EVENT_DROP, (cm_event_callback)drop_callback, NULL);
 
   const vec4s bg_color = {{
       pow(0.2, gamma),

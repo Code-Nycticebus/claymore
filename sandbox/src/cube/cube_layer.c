@@ -108,15 +108,15 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
 }
 
 static bool cube_init(CmScene *scene, CmLayer *layer) {
-  cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)cube_key_callback,
-                        layer);
+  cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)cube_key_callback,
+                     layer);
 
-  cm_event_set_callback(CM_EVENT_MOUSE, (cm_event_callback)camera_controll,
-                        &layer->camera);
-  cm_event_set_callback(CM_EVENT_SCROLL, (cm_event_callback)camera_scroll,
-                        &layer->camera);
-  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)camera_resize, &layer->camera);
+  cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)camera_controll,
+                     &layer->camera);
+  cm_event_subscribe(CM_EVENT_SCROLL, (cm_event_callback)camera_scroll,
+                     &layer->camera);
+  cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
+                     &layer->camera);
 
   cube_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                          "res/shader/basic.fs.glsl");

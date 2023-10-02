@@ -39,8 +39,8 @@ void cm_event_top_reset(void) {
   }
 }
 
-void cm_event_set_callback(CmEventType type, cm_event_callback callback,
-                           void *data) {
+void cm_event_subscribe(CmEventType type, cm_event_callback callback,
+                        void *data) {
   assert(CM_EVENT_MOUSE <= type && type <= CM_EVENT_DROP);
   assert(cbs[type].count < CM_EVENT_MAX_CALLBACKS);
   cbs[type].callback[cbs[type].count].data = data;

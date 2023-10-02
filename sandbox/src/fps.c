@@ -24,8 +24,8 @@ static bool fps_init(CmScene *scene, CmLayer *layer) {
       glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
-  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)window_resize_callback, layer);
+  cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
+                     (cm_event_callback)window_resize_callback, layer);
   return true;
 }
 

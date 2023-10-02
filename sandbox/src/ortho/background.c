@@ -74,14 +74,14 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
       glms_translate(layer->camera.view, layer->camera.position);
   layer->camera.update = true;
 
-  cm_event_set_callback(CM_EVENT_WINDOW_RESIZE,
-                        (cm_event_callback)background_window_resize_callback,
-                        &layer->camera);
-  cm_event_set_callback(CM_EVENT_MOUSE,
-                        (cm_event_callback)background_mouse_callback,
-                        &layer->camera);
-  cm_event_set_callback(CM_EVENT_SCROLL,
-                        (cm_event_callback)background_scroll_callback, layer);
+  cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
+                     (cm_event_callback)background_window_resize_callback,
+                     &layer->camera);
+  cm_event_subscribe(CM_EVENT_MOUSE,
+                     (cm_event_callback)background_mouse_callback,
+                     &layer->camera);
+  cm_event_subscribe(CM_EVENT_SCROLL,
+                     (cm_event_callback)background_scroll_callback, layer);
 
   const float scale = 10.F;
   model = glms_scale(model, (vec3s){{scale, scale, 1.F}});

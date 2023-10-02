@@ -20,8 +20,7 @@ static void app_key_event(CmKeyEvent *event, void *data) {
 
 static bool app_init(CmApp *app) {
   (void)app;
-  cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)app_key_event,
-                        NULL);
+  cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)app_key_event, NULL);
   return true;
 }
 
