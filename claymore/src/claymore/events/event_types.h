@@ -58,12 +58,18 @@ typedef struct {
   double xoffset;
 } CmScrollEvent;
 
+typedef struct {
+  size_t count;
+  const char **files;
+} CmDropEvent;
+
 typedef enum {
   CM_EVENT_MOUSE,
   CM_EVENT_KEYBOARD,
   CM_EVENT_WINDOW_RESIZE,
   CM_EVENT_WINDOW_CLOSE,
   CM_EVENT_SCROLL,
+  CM_EVENT_DROP,
 } CmEventType;
 
 typedef union {
@@ -72,6 +78,7 @@ typedef union {
   CmMouseEvent mouse;
   CmWindowEvent window;
   CmScrollEvent scroll;
+  CmDropEvent drop;
 } CmEventUnion;
 
 typedef struct {

@@ -91,6 +91,19 @@ void _cm_window_scroll_callback(GLFWwindow *glfw_window, double xoffset,
   });
 }
 
+void _cm_window_drop_callback(GLFWwindow *window, int count,
+                              const char **paths) {
+  (void)window;
+  cm_event_dispatch((CmEvent){
+      .type = CM_EVENT_DROP,
+      .event.drop =
+          {
+              .count = count,
+              .files = paths,
+          },
+  });
+}
+
 CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *title) {
   GLFWwindow *window;
 
@@ -123,6 +136,7 @@ CMwindow *cm_window_init(uint32_t width, uint32_t height, const char *title) {
   glfwSetFramebufferSizeCallback(window, _cm_window_resize_callback);
   glfwSetWindowCloseCallback(window, _cm_window_close_callback);
   glfwSetScrollCallback(window, _cm_window_scroll_callback);
+  glfwSetDropCallback(window, _cm_window_drop_callback);
 
   window_manager.window.height = height;
   window_manager.window.width = width;

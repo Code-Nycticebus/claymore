@@ -22,7 +22,8 @@ static CmEventPool cbs[] = {
     [CM_EVENT_KEYBOARD] = {0},      //
     [CM_EVENT_WINDOW_RESIZE] = {0}, //
     [CM_EVENT_WINDOW_CLOSE] = {0},  //
-    [CM_EVENT_SCROLL] = {0},
+    [CM_EVENT_SCROLL] = {0},        //
+    [CM_EVENT_DROP] = {0},
 };
 const size_t cbs_count = sizeof(cbs) / sizeof(cbs[0]);
 
@@ -40,7 +41,7 @@ void cm_event_top_reset(void) {
 
 void cm_event_set_callback(CmEventType type, cm_event_callback callback,
                            void *data) {
-  assert(CM_EVENT_MOUSE <= type && type <= CM_EVENT_SCROLL);
+  assert(CM_EVENT_MOUSE <= type && type <= CM_EVENT_DROP);
   assert(cbs[type].count < CM_EVENT_MAX_CALLBACKS);
   cbs[type].callback[cbs[type].count].data = data;
   cbs[type].callback[cbs[type].count].fn = callback;

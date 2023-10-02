@@ -45,11 +45,11 @@ static void key_callback(CmKeyEvent *event, void *data) {
   }
 }
 
-void drop_callback(GLFWwindow *window, int count, const char **paths) {
-  (void)window;
-  for (int i = 0; i < count; i++) {
+void drop_callback(CmDropEvent *event, void *data) {
+  (void)data;
+  for (size_t i = 0; i < event->count; i++) {
     free(fs_file);
-    fs_file = custom_strdup(paths[i]);
+    fs_file = custom_strdup(event->files[i]);
     reload_shader();
   }
 }
@@ -126,7 +126,7 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   cm_event_set_callback(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback,
                         NULL);
 
-  glfwSetDropCallback(scene->app->window->ctx, drop_callback);
+  cm_event_set_callback(CM_EVENT_DROP, (cm_event_callback)drop_callback, NULL);
 
   const vec4s bg_color = {{
       pow(0.2, gamma),
