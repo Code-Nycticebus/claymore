@@ -41,11 +41,6 @@ typedef struct {
   CmMouseInfo info;
 } CmMouseEvent;
 
-typedef enum {
-  CM_WINDOW_CLOSE,
-  CM_WINDOW_RESIZE,
-} CmWindowAction;
-
 typedef struct {
   struct CmEventBase base;
   CMwindow *window;
