@@ -70,6 +70,7 @@ typedef enum {
   CM_EVENT_WINDOW_CLOSE,
   CM_EVENT_SCROLL,
   CM_EVENT_DROP,
+  _CM_EVENT_COUNT,
 } CmEventType;
 
 typedef union {

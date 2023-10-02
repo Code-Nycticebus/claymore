@@ -25,6 +25,8 @@ static CmEventPool cbs[] = {
     [CM_EVENT_SCROLL] = {0},        //
     [CM_EVENT_DROP] = {0},
 };
+static_assert(sizeof(cbs) / sizeof(cbs[0]) == _CM_EVENT_COUNT,
+              "Update the CmEventPool");
 const size_t cbs_count = sizeof(cbs) / sizeof(cbs[0]);
 
 void cm_event_top_set(void) {
@@ -41,7 +43,7 @@ void cm_event_top_reset(void) {
 
 void cm_event_subscribe(CmEventType type, cm_event_callback callback,
                         void *data) {
-  assert(CM_EVENT_MOUSE <= type && type <= CM_EVENT_DROP);
+  assert(CM_EVENT_MOUSE <= type && type < _CM_EVENT_COUNT);
   assert(cbs[type].count < CM_EVENT_MAX_CALLBACKS);
   cbs[type].callback[cbs[type].count].data = data;
   cbs[type].callback[cbs[type].count].fn = callback;
