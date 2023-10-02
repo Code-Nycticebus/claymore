@@ -142,7 +142,8 @@ void cm_font_draw(CmFont *font, const mat4s mvp, float x, float y, float z,
   glBindBuffer(GL_ARRAY_BUFFER, font->vertex_buffer.id);
   glBindVertexArray(font->vertex_attrib.id);
 
-  float inverted_y = -y;
+  float text_y = -y;
+  float text_x = x;
   struct Vertex *current_vertex = font->buffer;
   for (size_t i = 0; i < len; i++) {
     if (FONT_CHAR_MIN <= text[i] &&
@@ -155,8 +156,8 @@ void cm_font_draw(CmFont *font, const mat4s mvp, float x, float y, float z,
 
       stbtt_aligned_quad q;
       stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution,
-                         font->ttf_resoulution, text[i] - FONT_CHAR_MIN, &x,
-                         &inverted_y, &q, 1);
+                         font->ttf_resoulution, text[i] - FONT_CHAR_MIN,
+                         &text_x, &text_y, &q, 1);
 
       glm_vec3_copy((vec3){q.x0, q.y0, z}, current_vertex[0].pos);
       glm_vec2_copy((vec2){q.s0, q.t0}, current_vertex[0].uv);
@@ -178,6 +179,9 @@ void cm_font_draw(CmFont *font, const mat4s mvp, float x, float y, float z,
 
       font->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
       current_vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
+    } else if (text[i] == '\n') {
+      text_y += font->height;
+      text_x = x;
     }
   }
 
