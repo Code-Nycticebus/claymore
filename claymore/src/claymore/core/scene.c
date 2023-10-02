@@ -68,7 +68,7 @@ bool cm_scene_init(CmApp *app, const ClaymoreConfig *config) {
 void cm_scene_update(float dt) {
   cm_camera_update(&scene_manager.scene.camera);
   if (scene_manager.interface.update) {
-    scene_manager.interface.update(&scene_manager.scene);
+    scene_manager.interface.update(&scene_manager.scene, dt);
   }
   for (size_t i = 0; i < layer_stack.count; ++i) {
     cm_camera_update(&layer_stack.stack[i].layer.camera);

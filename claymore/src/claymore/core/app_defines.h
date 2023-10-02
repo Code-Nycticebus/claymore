@@ -36,7 +36,7 @@ typedef CmLayerInterface (*CmLayerCreateFn)(void);
 
 typedef struct {
   bool (*init)(CmScene *);
-  void (*update)(CmScene *);
+  void (*update)(CmScene *, float);
   void (*free)(CmScene *);
   CmLayerCreateFn layers[CM_LAYER_MAX];
 } CmSceneInterface;
