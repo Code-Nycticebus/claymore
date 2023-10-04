@@ -1,5 +1,5 @@
 #include "sound.h"
-#include "miniaudio.h"
+#include <miniaudio.h>
 
 static ma_engine engine;
 

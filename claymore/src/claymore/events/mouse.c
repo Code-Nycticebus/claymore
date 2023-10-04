@@ -1,8 +1,6 @@
 #include "mouse.h"
 #include <stdio.h>
 
-#include "cglm/struct.h"
-
 static CmMouseAction mouse_buttons[CM_MOUSE_BUTTON_COUNT];
 static CmMouseInfo mouse_info;
 

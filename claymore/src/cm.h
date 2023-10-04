@@ -6,12 +6,12 @@
 #include <stdint.h>
 
 #define GLEW_STATIC
-#include "GL/glew.h"
+#include <GL/glew.h>
 
 // Needed because my compile flags give to many warnings when using cglm
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wstatic-in-inline"
-#include "cglm/struct.h"
+#include <cglm/struct.h>
 #pragma clang diagnostic pop
 
 #include "claymore/debug/debug.h"

@@ -1,5 +1,5 @@
 #include "textures.h"
-#include "stb_image.h"
+#include <stb_image.h>
 
 CmTexture2D cm_texture2d_create(const char *filename) {
   CmTexture2D texture = {0};

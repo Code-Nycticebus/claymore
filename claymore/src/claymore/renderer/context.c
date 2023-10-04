@@ -1,6 +1,6 @@
 #include "context.h"
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 #include "claymore/debug/debug.h"
 #include "claymore/logger/logger.h"

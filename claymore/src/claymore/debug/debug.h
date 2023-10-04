@@ -12,7 +12,7 @@ extern const bool cm_debug_enabled;
 #endif
 
 #ifdef CM_DEBUG
-#include "GL/glew.h"
+#include <GL/glew.h>
 void GLEWAPIENTRY cm_debug_message_callback(GLenum source, GLenum type,
                                             GLuint id, GLenum severity,
                                             GLsizei length,
