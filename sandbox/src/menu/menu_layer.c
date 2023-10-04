@@ -18,6 +18,7 @@ static const char *button_labels[] = {
     "Quad Benchmark",
     "3D Cube",
     "Framebuffer",
+    "Texture",
 };
 #define BUTTON_LABELS_COUNT (sizeof(button_labels) / sizeof(button_labels[0]))
 static MenuButton buttons[BUTTON_LABELS_COUNT] = {0};
