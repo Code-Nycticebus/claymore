@@ -25,7 +25,7 @@ int main(void) {
     app.run = false;
   }
 
-  cm_app_run(&app);
+  cm_app_run(&app, &config);
 
   cm_app_shutdown(&app, &config);
 

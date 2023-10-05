@@ -36,6 +36,7 @@ ClaymoreConfig claymore_config(void) {
       .app =
           {
               .init = app_init,
+              .update = NULL,
               .free = NULL,
           },
       .scenes =

@@ -6,7 +6,7 @@
 bool cm_app_init(CmApp *app, const ClaymoreConfig *config);
 void cm_app_shutdown(CmApp *app, const ClaymoreConfig *config);
 
-void cm_app_run(CmApp *app);
+void cm_app_run(CmApp *app, const ClaymoreConfig *config);
 
 /* User functions! */
 extern ClaymoreConfig claymore_config(void);

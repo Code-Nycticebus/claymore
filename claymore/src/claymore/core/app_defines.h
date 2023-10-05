@@ -47,6 +47,7 @@ typedef CmSceneInterface (*CmSceneCreateFn)(void);
 
 typedef struct {
   bool (*init)(CmApp *);
+  void (*update)(CmApp *, float);
   void (*free)(CmApp *);
 } CmAppInterface;
 

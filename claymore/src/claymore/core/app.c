@@ -68,11 +68,10 @@ void cm_app_shutdown(CmApp *app, const ClaymoreConfig *config) {
   cm_window_close(app->window);
 }
 
-void cm_app_run(CmApp *app) {
+void cm_app_run(CmApp *app, const ClaymoreConfig *config) {
   float time = 0.F;
   float time_last_frame = 0.F;
   float deltatime = 0.F;
-  (void)deltatime;
   while (app->run) {
     time = cm_window_time();
     deltatime = time - time_last_frame;
@@ -80,6 +79,9 @@ void cm_app_run(CmApp *app) {
 
     cm_renderer_clear();
 
+    if (config->app.update) {
+      config->app.update(app, deltatime);
+    }
     cm_scene_update(deltatime);
 
     cm_window_update(app->window);
