@@ -1,7 +1,7 @@
 #ifndef __CM_KEYMAP_H__
 #define __CM_KEYMAP_H__
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 typedef enum {
   CM_KEY_UNKNOWN = 0,

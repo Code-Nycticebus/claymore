@@ -4,7 +4,7 @@
 #include "claymore/renderer/renderer.h"
 #include "claymore/renderer/shader.h"
 
-#include "stb_truetype.h"
+#include <stb_truetype.h>
 
 #include <errno.h>
 #include <string.h>
