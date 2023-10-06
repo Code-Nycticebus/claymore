@@ -17,4 +17,6 @@ void cm_window_shutdown(void);
 
 float cm_window_time(void);
 
+void cm_window_set_size(CMwindow *window, uint32_t width, uint32_t height);
+
 #endif /* !__CM_WINDOW_H__ */

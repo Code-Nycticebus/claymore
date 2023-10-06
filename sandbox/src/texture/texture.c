@@ -9,15 +9,26 @@ static const float font_size = 32.F;
 
 static CmTexture2D *texture = NULL;
 
-static void drop_callback(CmDropEvent *event, void *data) {
-  (void)data;
+static void resize_callback(CmWindowEvent *event, CmScene *scene) {
+  (void)event;
+  scene->camera.projection = glms_ortho(
+      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
+  scene->camera.update = true;
+}
+
+static void drop_callback(CmDropEvent *event, CmScene *scene) {
   if (texture) {
     cm_texture_delete(texture);
     free(texture);
   }
   texture = malloc(sizeof(CmTexture2D));
   *texture = cm_texture2d_create(event->files[0]);
-  printf("%s: %d %d\n", event->files[0], texture->width, texture->height);
+
+  cm_window_set_size(scene->app->window, texture->width, texture->height);
+
+  scene->camera.projection = glms_ortho(
+      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
+  scene->camera.update = true;
 }
 
 static bool texture_scene_init(CmScene *scene) {
@@ -25,9 +36,6 @@ static bool texture_scene_init(CmScene *scene) {
   scene->camera.projection = glms_ortho(
       0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
   scene->camera.view = glms_mat4_identity();
-  scene->camera.position = (vec3s){0};
-  scene->camera.view =
-      glms_translate(scene->camera.view, scene->camera.position);
   scene->camera.update = true;
 
   texture_shader = cm_shader_load_from_file("res/shader/texture.vs.glsl",
@@ -35,7 +43,9 @@ static bool texture_scene_init(CmScene *scene) {
 
   text_font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
 
-  cm_event_subscribe(CM_EVENT_DROP, (cm_event_callback)drop_callback, NULL);
+  cm_event_subscribe(CM_EVENT_DROP, (cm_event_callback)drop_callback, scene);
+  cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)resize_callback,
+                     scene);
   return true;
 }
 
@@ -49,11 +59,10 @@ static void texture_scene_update(CmScene *scene, float dt) {
     cm_shader_set_mat4(&texture_shader, "u_mvp", mvp);
     cm_texture_bind(texture, 0);
     cm_renderer2d_begin();
-    float y_offset = (scene->app->window->height / 2) - (texture->height / 2);
-    float x_offset = (scene->app->window->width / 2) - (texture->width / 2);
-    cm_renderer2d_push_quad_textured((vec2s){{x_offset, y_offset}}, 0,
-                                     (vec2s){{texture->width, texture->height}},
-                                     (vec2s){{0, 0}}, (vec2s){{1, 1}});
+    cm_renderer2d_push_quad_textured(
+        (vec2s){{0, 0}}, 0,
+        (vec2s){{scene->app->window->width, scene->app->window->height}},
+        (vec2s){{0, 0}}, (vec2s){{1, 1}});
     cm_renderer2d_end();
     cm_shader_unbind();
     cm_texture_unbind(0);

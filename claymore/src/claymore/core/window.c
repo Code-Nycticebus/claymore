@@ -155,3 +155,9 @@ void cm_window_update(const CMwindow *window) {
 void cm_window_shutdown(void) { glfwTerminate(); }
 
 void cm_window_close(CMwindow *window) { glfwDestroyWindow(window->ctx); }
+
+void cm_window_set_size(CMwindow *window, uint32_t width, uint32_t height) {
+  glfwSetWindowSize(window->ctx, (int)width, (int)height);
+  window->width = width;
+  window->height = height;
+}
