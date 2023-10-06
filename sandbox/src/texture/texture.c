@@ -17,11 +17,14 @@ static void resize_callback(CmWindowEvent *event, CmScene *scene) {
 }
 
 static void drop_callback(CmDropEvent *event, CmScene *scene) {
+
   if (texture) {
     cm_texture_delete(texture);
-    free(texture);
   }
-  texture = malloc(sizeof(CmTexture2D));
+
+  if (!texture) {
+    texture = malloc(sizeof(CmTexture2D));
+  }
   *texture = cm_texture2d_create(event->files[0]);
 
   cm_window_set_size(scene->app->window, texture->width, texture->height);
