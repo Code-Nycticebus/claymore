@@ -12,10 +12,12 @@ static CmTexture2D *texture = NULL;
 static void drop_callback(CmDropEvent *event, void *data) {
   (void)data;
   if (texture) {
+    cm_texture_delete(texture);
     free(texture);
   }
   texture = malloc(sizeof(CmTexture2D));
   *texture = cm_texture2d_create(event->files[0]);
+  printf("%s: %d %d\n", event->files[0], texture->width, texture->height);
 }
 
 static bool texture_scene_init(CmScene *scene) {

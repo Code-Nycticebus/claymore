@@ -152,10 +152,7 @@ static bool menu_init(CmScene *scene, CmLayer *layer) {
 static void menu_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)layer, (void)dt, (void)scene;
 
-  mat4s mvp;
-  mat4s model;
-  model = glms_mat4_identity();
-  mvp = glms_mat4_mul(layer->camera.vp, model);
+  mat4s mvp = glms_mat4_mul(layer->camera.vp, glms_mat4_identity());
 
   cm_shader_bind(&shader);
   cm_shader_set_mat4(&shader, "u_mvp", mvp);

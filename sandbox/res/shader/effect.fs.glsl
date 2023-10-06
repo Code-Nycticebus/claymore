@@ -12,4 +12,3 @@ void main()
     f_color.rgb = pow(fragment.rgb, vec3(1.0 / u_gamma));
     f_color.a = 1.0;
 }
-

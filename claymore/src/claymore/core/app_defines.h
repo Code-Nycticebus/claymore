@@ -43,7 +43,9 @@ typedef struct {
 
 typedef CmSceneInterface (*CmSceneCreateFn)(void);
 
+#ifndef CM_SCENES_MAX
 #define CM_SCENES_MAX 5
+#endif
 
 typedef struct {
   bool (*init)(CmApp *);

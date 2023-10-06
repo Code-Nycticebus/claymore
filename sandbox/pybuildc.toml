@@ -4,11 +4,12 @@ version="0.1.0"
 cc="clang"
 bin="exe"
 
-cflags = ["-D_CRT_SECURE_NO_WARNINGS", "-std=c11"]
+cflags = ["-D_CRT_SECURE_NO_WARNINGS", "-std=c11", "-DCM_SCENES_MAX=6"]
 
 [dependencies.claymore]
 dir="../claymore/" 
 dep_type="pybuildc"
 target="debug"
+cflags=["-DCM_SCENES_MAX=6"]
 build=true
 

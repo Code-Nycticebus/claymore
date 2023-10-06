@@ -46,6 +46,7 @@ ClaymoreConfig claymore_config(void) {
               scene_cube,
               scene_framebuffer,
               scene_texture,
+              NULL,
           },
   };
 }
