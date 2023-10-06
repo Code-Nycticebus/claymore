@@ -132,9 +132,10 @@ static bool menu_init(CmScene *scene) {
   if (!window_init_width && !window_init_height) {
     window_init_width = scene->app->window->width;
     window_init_height = scene->app->window->height;
+  } else {
+    cm_window_set_size(scene->app->window, window_init_width,
+                       window_init_height);
   }
-  cm_window_set_size(scene->app->window, window_init_width, window_init_height);
-
   scene->camera.projection =
       glms_ortho(0.F, (float)scene->app->window->width, 0.F,
                  (float)scene->app->window->height, -1.F, 100.F);
