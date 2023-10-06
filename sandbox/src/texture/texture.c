@@ -9,11 +9,8 @@ static const float font_size = 32.F;
 
 static CmTexture2D *texture = NULL;
 
-static void resize_callback(CmWindowEvent *event, CmScene *scene) {
-  (void)event;
-  scene->camera.projection = glms_ortho(
-      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
-  scene->camera.update = true;
+static void resize_callback(CmWindowEvent *event, CmCamera *camera) {
+  cm_camera_set_screen(camera, event->window->width, event->window->height);
 }
 
 static void drop_callback(CmDropEvent *event, CmScene *scene) {
@@ -29,17 +26,13 @@ static void drop_callback(CmDropEvent *event, CmScene *scene) {
 
   cm_window_set_size(scene->app->window, texture->width, texture->height);
 
-  scene->camera.projection = glms_ortho(
-      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
-  scene->camera.update = true;
+  cm_camera_set_screen(&scene->camera, texture->width, texture->height);
 }
 
 static bool texture_scene_init(CmScene *scene) {
   (void)scene;
-  scene->camera.projection = glms_ortho(
-      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
-  scene->camera.view = glms_mat4_identity();
-  scene->camera.update = true;
+  scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+                                        scene->app->window->height);
 
   texture_shader = cm_shader_load_from_file("res/shader/texture.vs.glsl",
                                             "res/shader/texture.fs.glsl");
@@ -48,7 +41,7 @@ static bool texture_scene_init(CmScene *scene) {
 
   cm_event_subscribe(CM_EVENT_DROP, (cm_event_callback)drop_callback, scene);
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)resize_callback,
-                     scene);
+                     &scene->camera);
   return true;
 }
 
