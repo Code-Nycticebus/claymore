@@ -104,11 +104,11 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, float z,
   assert(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES);
   assert(render_data->indecies_count < CM_RENDERER2D_MAX_INDECIES);
 
-  const vec2s vertex_positions[CM_RENDERER2D_VERTICES_PER_QUAD] = {
-      {{position.x, position.y}},
-      {{position.x + size.x, position.y}},
-      {{position.x + size.x, position.y + size.y}},
-      {{position.x, position.y + size.y}},
+  const vec3s vertex_positions[CM_RENDERER2D_VERTICES_PER_QUAD] = {
+      {{position.x, position.y, z}},
+      {{position.x + size.x, position.y, z}},
+      {{position.x + size.x, position.y + size.y, z}},
+      {{position.x, position.y + size.y, z}},
   };
 
   float cos_theta;
@@ -120,21 +120,16 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, float z,
 
   CmVertex *vertices = &render_data->data[render_data->vertices_count];
   for (int i = 0; i < CM_RENDERER2D_VERTICES_PER_QUAD; ++i) {
-    vertices[i].pos[0] = vertex_positions[i].x;
-    vertices[i].pos[1] = vertex_positions[i].y;
-    vertices[i].pos[2] = z;
-    vertices[i].color[0] = color.r;
-    vertices[i].color[1] = color.g;
-    vertices[i].color[2] = color.b;
-    vertices[i].color[3] = color.a;
-    vertices[i].uv[0] = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);
-    vertices[i].uv[1] = text_coord.v + (i == 2 || i == 3 ? text_size.y : 0);
+    vertices[i].pos = vertex_positions[i];
+    vertices[i].color = color;
+    vertices[i].uv.u = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);
+    vertices[i].uv.v = text_coord.v + (i == 2 || i == 3 ? text_size.y : 0);
 
     if (rotation != 0.F) {
-      float x = vertices[i].pos[0] - position.x;
-      float y = vertices[i].pos[1] - position.y;
-      vertices[i].pos[0] = x * cos_theta - y * sin_theta + position.x;
-      vertices[i].pos[1] = x * sin_theta + y * cos_theta + position.y;
+      float x = vertices[i].pos.x - position.x;
+      float y = vertices[i].pos.y - position.y;
+      vertices[i].pos.x = x * cos_theta - y * sin_theta + position.x;
+      vertices[i].pos.y = x * sin_theta + y * cos_theta + position.y;
     }
   }
 
@@ -176,8 +171,7 @@ void cm_renderer2d_push_quad_textured_rotated(const vec2s position, float z,
 
 void cm_renderer2d_push_quad_color(const vec2s position, float z,
                                    const vec2s size, const vec4s color) {
-  _cm_renderer2d_push_quad(position, z, size, color, (vec2s){0}, (vec2s){0},
-                           0.F);
+  _cm_renderer2d_push_quad(position, z, size, color, (vec2s){0}, (vec2s){0}, 0);
 }
 
 void cm_renderer2d_push_quad_color_rotated(const vec2s position, float z,

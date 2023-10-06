@@ -4,9 +4,9 @@
 #include "cm.h"
 
 typedef struct {
-  vec3 pos;
-  vec4 color;
-  vec2 uv;
+  vec3s pos;
+  vec4s color;
+  vec2s uv;
 } CmVertex;
 
 #endif /* !__CM_RENDERER_DEFINES_H__ */
