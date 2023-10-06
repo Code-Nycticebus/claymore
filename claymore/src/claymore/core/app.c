@@ -1,9 +1,7 @@
 #include "app.h"
 
-#include "claymore/core/camera.h"
 #include "claymore/core/scene.h"
 #include "claymore/events/event.h"
-#include "claymore/logger/logger.h"
 #include "claymore/sound/sound.h"
 #include "cm.h"
 
