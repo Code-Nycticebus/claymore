@@ -96,7 +96,8 @@ static void key_callback(CmKeyEvent *event, void *data) {
       }
       buttons[buttons_selected].selected = true;
     }
-    if (event->code == CM_KEY_S || event->code == CM_KEY_DOWN) {
+    if (event->code == CM_KEY_S || event->code == CM_KEY_DOWN ||
+        event->code == CM_KEY_TAB) {
       if (0 <= buttons_selected && buttons_selected < BUTTON_LABELS_COUNT) {
         buttons[buttons_selected].selected = false;
       }
@@ -128,11 +129,7 @@ static bool menu_init(CmScene *scene) {
   scene->camera.projection =
       glms_ortho(0.F, (float)scene->app->window->width, 0.F,
                  (float)scene->app->window->height, -1.F, 100.F);
-
   scene->camera.view = glms_mat4_identity();
-  scene->camera.position = (vec3s){0};
-  scene->camera.view =
-      glms_translate(scene->camera.view, scene->camera.position);
   scene->camera.update = true;
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
