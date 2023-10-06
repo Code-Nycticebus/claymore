@@ -32,6 +32,9 @@ const float margin = 20.F;
 #define HIGLIGHT_BG                                                            \
   { .5F, .5F, .5F, 1.F }
 
+static uint32_t window_init_width = 0;
+static uint32_t window_init_height = 0;
+
 static void calculate_menu_button_pos(CMwindow *window) {
   float y = window->height;
   const float x = (float)window->width / 2 - xs / 2;
@@ -114,18 +117,25 @@ static void key_callback(CmKeyEvent *event, void *data) {
   }
 }
 
-static void window_resize_callback(CmWindowEvent *event, CmLayer *layer) {
+static void window_resize_callback(CmWindowEvent *event, CmScene *scene) {
   (void)event;
-  layer->camera.projection =
+  scene->camera.projection =
       glms_ortho(0.F, (float)event->window->width, 0.F,
                  (float)event->window->height, -1.F, 100.F);
-  layer->camera.update = true;
+  scene->camera.update = true;
 
   calculate_menu_button_pos(event->window);
 }
 
 static bool menu_init(CmScene *scene) {
   font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
+
+  if (!window_init_width && !window_init_height) {
+    window_init_width = scene->app->window->width;
+    window_init_height = scene->app->window->height;
+  }
+  cm_window_set_size(scene->app->window, window_init_width, window_init_height);
+
   scene->camera.projection =
       glms_ortho(0.F, (float)scene->app->window->width, 0.F,
                  (float)scene->app->window->height, -1.F, 100.F);
@@ -140,7 +150,10 @@ static bool menu_init(CmScene *scene) {
                                     "res/shader/basic.fs.glsl");
 
   cm_renderer_set_clear_color((vec4s){{0, 0, 0, 1.F}});
+
   calculate_menu_button_pos(scene->app->window);
+  buttons_selected = BUTTON_LABELS_COUNT;
+
   return true;
 }
 
