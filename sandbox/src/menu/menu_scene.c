@@ -32,9 +32,6 @@ const float margin = 20.F;
 #define HIGLIGHT_BG                                                            \
   { .5F, .5F, .5F, 1.F }
 
-static uint32_t window_init_width = 0;
-static uint32_t window_init_height = 0;
-
 static void calculate_menu_button_pos(CMwindow *window) {
   float y = window->height;
   const float x = (float)window->width / 2 - xs / 2;
@@ -130,6 +127,8 @@ static void window_resize_callback(CmWindowEvent *event, CmScene *scene) {
 static bool menu_init(CmScene *scene) {
   font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
 
+  static uint32_t window_init_width = 0;
+  static uint32_t window_init_height = 0;
   if (!window_init_width && !window_init_height) {
     window_init_width = scene->app->window->width;
     window_init_height = scene->app->window->height;
