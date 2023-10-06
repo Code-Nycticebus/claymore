@@ -21,17 +21,13 @@ static void ortho_scroll_callback(CmScrollEvent *event, CmCamera *camera) {
   const float min_zoom = 1.F;
   const float scroll_speed = 100.F;
   zoom = glm_max(zoom - event->yoffset * scroll_speed, min_zoom);
-  camera->projection =
-      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F);
-  camera->update = true;
+  cm_camera_zoom(camera, zoom);
 }
 
 static void ortho_window_resize_callback(CmWindowEvent *event,
                                          CmCamera *camera) {
   aspect = (float)event->window->width / (float)event->window->height;
-  camera->projection =
-      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F);
-  camera->update = true;
+  cm_camera_aspect(camera, aspect);
 }
 
 static void ortho_mouse_callback(CmMouseEvent *event, CmCamera *camera) {
@@ -43,12 +39,9 @@ static void ortho_mouse_callback(CmMouseEvent *event, CmCamera *camera) {
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       direction = glms_vec2_scale(direction, zoom / 100.F);
-      camera->position = glms_vec3_add(camera->position,
-                                       (vec3s){{direction.x, direction.y, 0}});
-
-      camera->view = glms_mat4_identity();
-      camera->view = glms_translate(camera->view, camera->position);
-      camera->update = true;
+      cm_camera_translate(
+          camera, glms_vec3_add(camera->position,
+                                (vec3s){{direction.x, direction.y, 0}}));
     }
   }
 }
@@ -79,13 +72,7 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
   mouse_last_position = cm_mouseinfo_pos();
   zoom = ORTHO_INITIAL_ZOOM;
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
-  layer->camera.projection =
-      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F);
-  layer->camera.view = glms_mat4_identity();
-  layer->camera.position = camera_initial_position;
-  layer->camera.view =
-      glms_translate(layer->camera.view, layer->camera.position);
-  layer->camera.update = true;
+  layer->camera = cm_camera_init_ortho(camera_initial_position, aspect, zoom);
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
 

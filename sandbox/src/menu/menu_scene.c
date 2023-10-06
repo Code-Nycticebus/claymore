@@ -114,13 +114,8 @@ static void key_callback(CmKeyEvent *event, void *data) {
   }
 }
 
-static void window_resize_callback(CmWindowEvent *event, CmScene *scene) {
-  (void)event;
-  scene->camera.projection =
-      glms_ortho(0.F, (float)event->window->width, 0.F,
-                 (float)event->window->height, -1.F, 100.F);
-  scene->camera.update = true;
-
+static void window_resize_callback(CmWindowEvent *event, CmCamera *camera) {
+  cm_camera_set_screen(camera, event->window->width, event->window->height);
   calculate_menu_button_pos(event->window);
 }
 
@@ -136,16 +131,15 @@ static bool menu_init(CmScene *scene) {
     cm_window_set_size(scene->app->window, window_init_width,
                        window_init_height);
   }
-  scene->camera.projection =
-      glms_ortho(0.F, (float)scene->app->window->width, 0.F,
-                 (float)scene->app->window->height, -1.F, 100.F);
-  scene->camera.view = glms_mat4_identity();
-  scene->camera.update = true;
+
+  scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+                                        scene->app->window->height);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
-                     (cm_event_callback)window_resize_callback, scene);
+                     (cm_event_callback)window_resize_callback, &scene->camera);
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)mouse_callback, NULL);
   cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback, NULL);
+
   shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                     "res/shader/basic.fs.glsl");
 

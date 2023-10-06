@@ -74,7 +74,6 @@ static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
 }
 
 static void camera_resize(CmWindowEvent *event, CmCamera *camera) {
-  (void)event;
   camera->projection = glms_perspective(
       glm_rad(fov), (float)event->window->width / (float)event->window->height,
       1 / 100.F, 100.F);

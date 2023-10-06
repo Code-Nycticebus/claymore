@@ -59,13 +59,8 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   layer_shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
 
-  layer->camera.projection = glms_ortho(
-      0, scene->app->window->width, 0, scene->app->window->height, -1.F, 100.F);
-  layer->camera.view = glms_mat4_identity();
-  layer->camera.position = (vec3s){0};
-  layer->camera.view =
-      glms_translate(layer->camera.view, layer->camera.position);
-  layer->camera.update = true;
+  layer->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+                                        scene->app->window->height);
 
   const float vertecies[] = {
       // positions // texCoords

@@ -25,17 +25,13 @@ static float aspect;
 static void background_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
   const float min_zoom = 0.1F;
   zoom = glm_max(zoom - event->yoffset, min_zoom);
-  layer->camera.projection =
-      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F);
-  layer->camera.update = true;
+  cm_camera_zoom(&layer->camera, zoom);
 }
 
 static void background_window_resize_callback(CmWindowEvent *event,
                                               CmCamera *camera) {
   aspect = (float)event->window->width / (float)event->window->height;
-  camera->projection =
-      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 1.F);
-  camera->update = true;
+  cm_camera_aspect(camera, aspect);
 }
 
 static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
@@ -66,13 +62,7 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
   background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
-  layer->camera.projection =
-      glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F);
-  layer->camera.view = glms_mat4_identity();
-  layer->camera.position = (vec3s){0};
-  layer->camera.view =
-      glms_translate(layer->camera.view, layer->camera.position);
-  layer->camera.update = true;
+  layer->camera = cm_camera_init_ortho((vec3s){0}, aspect, zoom);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
                      (cm_event_callback)background_window_resize_callback,
