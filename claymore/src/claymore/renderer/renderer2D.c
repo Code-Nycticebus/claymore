@@ -90,11 +90,11 @@ void cm_renderer2d_begin(void) {}
 
 void cm_renderer2d_end(void) { cm_renderer2d_flush(); }
 
-static inline void _cm_renderer2d_push_quad(const vec2s position, float z,
+static inline void _cm_renderer2d_push_quad(const vec2s position, const float z,
                                             const vec2s size, const vec4s color,
                                             const vec2s text_coord,
                                             const vec2s text_size,
-                                            float rotation) {
+                                            const float rotation) {
   assert(render_data && "Renderer 2D was not initialized!");
   if (!(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES)) {
     cm_renderer2d_flush();
@@ -137,20 +137,21 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, float z,
   render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
 }
 
-void cm_renderer2d_push_quad(const vec2s position, float z, const vec2s size) {
+void cm_renderer2d_push_quad(const vec2s position, const float z,
+                             const vec2s size) {
   _cm_renderer2d_push_quad(position, z, size,
                            (vec4s){.r = 1.F, .g = 1.F, .b = 1.F, .a = 1.F},
                            (vec2s){0}, (vec2s){0}, 0.F);
 }
 
-void cm_renderer2d_push_quad_rotated(const vec2s position, float z,
-                                     const vec2s size, float rotation) {
+void cm_renderer2d_push_quad_rotated(const vec2s position, const float z,
+                                     const vec2s size, const float rotation) {
   _cm_renderer2d_push_quad(position, z, size,
                            (vec4s){.r = 1.F, .g = 1.F, .b = 1.F, .a = 1.F},
                            (vec2s){0}, (vec2s){0}, rotation);
 }
 
-void cm_renderer2d_push_quad_textured(const vec2s position, float z,
+void cm_renderer2d_push_quad_textured(const vec2s position, const float z,
                                       const vec2s size,
                                       const vec2s texture_coord,
                                       const vec2s texture_size) {
@@ -159,24 +160,24 @@ void cm_renderer2d_push_quad_textured(const vec2s position, float z,
                            texture_coord, texture_size, 0.F);
 }
 
-void cm_renderer2d_push_quad_textured_rotated(const vec2s position, float z,
-                                              const vec2s size,
+void cm_renderer2d_push_quad_textured_rotated(const vec2s position,
+                                              const float z, const vec2s size,
                                               const vec2s texture_coord,
                                               const vec2s texture_size,
-                                              float rotation) {
+                                              const float rotation) {
   _cm_renderer2d_push_quad(position, z, size,
                            (vec4s){.r = 1.F, .g = 1.F, .b = 1.F, .a = 1.F},
                            texture_coord, texture_size, rotation);
 }
 
-void cm_renderer2d_push_quad_color(const vec2s position, float z,
+void cm_renderer2d_push_quad_color(const vec2s position, const float z,
                                    const vec2s size, const vec4s color) {
   _cm_renderer2d_push_quad(position, z, size, color, (vec2s){0}, (vec2s){0}, 0);
 }
 
-void cm_renderer2d_push_quad_color_rotated(const vec2s position, float z,
+void cm_renderer2d_push_quad_color_rotated(const vec2s position, const float z,
                                            const vec2s size, const vec4s color,
-                                           float rotation) {
+                                           const float rotation) {
   _cm_renderer2d_push_quad(position, z, size, color, (vec2s){0}, (vec2s){0},
                            rotation);
 }
