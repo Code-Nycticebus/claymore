@@ -36,8 +36,8 @@ void particle_emit(vec2s pos) {
       .rotation = rand_float() * 360.F,
       .active = true,
       .color = {0},
-      .color_end = {{1, .3, 0, 1}},
-      .color_start = {{0, .3F, 1, 1}},
+      .color_end = {{.8F, .3F, 0.F, 1.F}},
+      .color_start = {{0.F, .3F, .8F, 1.F}},
       .lifetime = 0,
       .vel = {{rand_float() * 200.F - 100.F, rand_float() * 200.F - 100.F}},
   };
