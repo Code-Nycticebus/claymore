@@ -87,7 +87,7 @@ bool particle_scene_init(CmScene *scene) {
       (float)scene->app->window->width / (float)scene->app->window->height;
   scene->camera = cm_camera_init_ortho((vec3s){0}, aspect, 100.F);
 
-  glfwSwapInterval(1);
+  glfwSwapInterval(0);
   return true;
 }
 
@@ -95,24 +95,28 @@ void particle_scene_update(CmScene *scene, float dt) {
   mat4s model = glms_mat4_identity();
   mat4s mvp = glms_mat4_mul(model, scene->camera.vp);
 
-  if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-    vec2s mouse_pos = cm_mouseinfo_pos();
-    vec2s screen_point = {{
-        (2 * mouse_pos.x / (float)scene->app->window->width) - 1.F,
-        (2 * mouse_pos.y / (float)scene->app->window->height) - 1.F,
-    }};
+  static const float particle_delay = 1.F / 60.F;
+  static float particle_timer = 0;
+  particle_timer += dt;
+  if (particle_delay < particle_timer) {
+    if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+      particle_timer = 0.F;
+      vec2s mouse_pos = cm_mouseinfo_pos();
+      vec2s screen_point = {{
+          (2 * mouse_pos.x / (float)scene->app->window->width) - 1.F,
+          (2 * mouse_pos.y / (float)scene->app->window->height) - 1.F,
+      }};
 
-    vec4s screenspace = {{screen_point.x, screen_point.y, 0, 1}};
-    mat4s inverse_mvp = glms_mat4_inv(mvp);
-    vec4s world_space = glms_mat4_mulv(inverse_mvp, screenspace);
+      vec4s screenspace = {{screen_point.x, screen_point.y, 0, 1}};
+      mat4s inverse_mvp = glms_mat4_inv(mvp);
+      vec4s world_space = glms_mat4_mulv(inverse_mvp, screenspace);
 
-    const size_t num_particles = 10;
-    for (size_t i = 0; i < num_particles; i++) {
-      particle_emit((vec2s){{world_space.x, world_space.y}});
+      const size_t num_particles = 10;
+      for (size_t i = 0; i < num_particles; i++) {
+        particle_emit((vec2s){{world_space.x, world_space.y}});
+      }
     }
   }
-
-  mat4s mvp = glms_mat4_mul(glms_mat4_identity(), scene->camera.vp);
   particle_render(mvp, dt);
 }
 
