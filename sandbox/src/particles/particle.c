@@ -92,6 +92,9 @@ bool particle_scene_init(CmScene *scene) {
 }
 
 void particle_scene_update(CmScene *scene, float dt) {
+  mat4s model = glms_mat4_identity();
+  mat4s mvp = glms_mat4_mul(model, scene->camera.vp);
+
   if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
     vec2s mouse_pos = cm_mouseinfo_pos();
     vec2s screen_point = {{
@@ -100,10 +103,8 @@ void particle_scene_update(CmScene *scene, float dt) {
     }};
 
     vec4s screenspace = {{screen_point.x, screen_point.y, 0, 1}};
-    mat4s inverse_projection = glms_mat4_inv(scene->camera.projection);
-    vec4s view_coords = glms_mat4_mulv(inverse_projection, screenspace);
-    mat4s inverse_view = glms_mat4_inv(scene->camera.view);
-    vec4s world_space = glms_mat4_mulv(inverse_view, view_coords);
+    mat4s inverse_mvp = glms_mat4_inv(mvp);
+    vec4s world_space = glms_mat4_mulv(inverse_mvp, screenspace);
 
     const size_t num_particles = 10;
     for (size_t i = 0; i < num_particles; i++) {
