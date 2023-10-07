@@ -34,20 +34,18 @@ static void ortho_mouse_callback(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
 
     vec2s pos = cm_mouseinfo_pos();
-    vec2s direction = glms_vec2_sub(pos, mouse_last_position);
+    vec2s direction = glms_vec2_sub(mouse_last_position, pos);
     mouse_last_position = pos;
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       direction = glms_vec2_scale(direction, zoom / 100.F);
-      cm_camera_translate(
-          camera, glms_vec3_add(camera->position,
-                                (vec3s){{direction.x, direction.y, 0}}));
+      cm_camera_translate(camera, (vec3s){{direction.x, direction.y, 0}});
     }
   }
 }
 
-static void ortho_key_callback(CmKeyEvent *event, CmScene *scene) {
-  (void)scene;
+static void ortho_key_callback(CmKeyEvent *event, CmCamera *camera) {
+  (void)camera;
   if (event->action == CM_KEY_PRESS) {
     event->base.handled = true;
     switch (event->code) {
@@ -85,7 +83,7 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
                      &layer->camera);
 
   cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)ortho_key_callback,
-                     scene);
+                     &layer->camera);
 
   cm_renderer_set_clear_color((vec4s){.r = 0.F, .g = 0.F, .b = 0.F, .a = 1.F});
 

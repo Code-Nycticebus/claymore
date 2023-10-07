@@ -20,7 +20,8 @@ CmCamera cm_camera_init_ortho(vec3s position, float aspect, float zoom) {
   camera.projection =
       glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F);
   camera.position = position;
-  camera.view = glms_translate(glms_mat4_identity(), camera.position);
+  camera.view = glms_translate(glms_mat4_identity(),
+                               glms_vec3_scale(camera.position, -1));
   camera.aspect = aspect;
   camera.zoom = zoom;
   camera.update = true;
@@ -32,15 +33,17 @@ CmCamera cm_camera_init_screen(vec3s position, float right, float top) {
   CmCamera camera = {0};
   camera.projection = glms_ortho(0.F, right, 0.F, top, -1.F, 100.F);
   camera.position = position;
-  camera.view = glms_translate(glms_mat4_identity(), camera.position);
+  camera.view = glms_translate(glms_mat4_identity(),
+                               glms_vec3_scale(camera.position, -1));
   camera.update = true;
   cm_camera_update(&camera);
   return camera;
 }
 
 void cm_camera_translate(CmCamera *camera, vec3s position) {
-  camera->position = position;
-  camera->view = glms_translate(glms_mat4_identity(), position);
+  camera->position = glms_vec3_add(camera->position, position);
+  camera->view = glms_translate(glms_mat4_identity(),
+                                glms_vec3_scale(camera->position, -1));
   camera->update = true;
 }
 
