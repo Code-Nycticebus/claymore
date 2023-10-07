@@ -19,7 +19,7 @@ typedef struct {
 
 const float particle_lifetime = 2.F;
 
-#define PARTICLES_MAX 1000
+#define PARTICLES_MAX 10000
 
 struct {
   size_t index;
@@ -29,18 +29,19 @@ struct {
 float rand_float(void) { return rand() / (float)RAND_MAX; }
 
 void particle_emit(vec2s pos) {
-  const float size = rand_float() * 10.F + 3.F;
+  const float size = rand_float() * 6.F + 3.F;
   const Particle particle = {
       .pos = pos,
       .size = {{size, size}},
       .rotation = rand_float() * 360.F,
       .active = true,
       .color = {0},
-      .color_end = {{1, 0, 0, 1}},
-      .color_start = {{0, 0, 1, 1}},
+      .color_end = {{1, .5F, 0, 1}},
+      .color_start = {{0, .5F, 1, 1}},
       .lifetime = 0,
-      .vel = {{rand_float() * 100.F - 50.F, rand_float() * 100.F - 50.F}},
+      .vel = {{rand_float() * 300.F - 150.F, rand_float() * 300.F - 150.F}},
   };
+
   particle_pool.pool[particle_pool.index] = particle;
   --particle_pool.index;
   if (particle_pool.index == 0) {
@@ -90,18 +91,20 @@ bool particle_scene_init(CmScene *scene) {
 
 void particle_scene_update(CmScene *scene, float dt) {
   if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-    vec2s mouse_pos = glms_vec2_sub(
-        cm_mouseinfo_pos(), (vec2s){{(float)scene->app->window->width / 2,
-                                     (float)scene->app->window->height / 2}});
+    vec2s mouse_pos = cm_mouseinfo_pos();
+    vec2s screen_point = {{
+        (2 * mouse_pos.x / (float)scene->app->window->width) - 1.F,
+        (2 * mouse_pos.y / (float)scene->app->window->height) - 1.F,
+    }};
 
-    vec4s screenspace = glms_mat4_mulv(
-        scene->camera.vp, (vec4s){{mouse_pos.x, mouse_pos.y, 0, 1}});
-    screenspace = glms_vec4_scale(screenspace, scene->camera.zoom / 2);
-    vec3s world_space =
-        glms_vec3_sub((vec3s){{screenspace.x, screenspace.y, screenspace.z}},
-                      scene->camera.position);
+    vec4s screenspace = {{screen_point.x, screen_point.y, 0, 1}};
+    mat4s inverse_projection = glms_mat4_inv(scene->camera.projection);
+    vec4s view_coords = glms_mat4_mulv(inverse_projection, screenspace);
+    mat4s inverse_view = glms_mat4_inv(scene->camera.view);
+    vec4s world_space = glms_mat4_mulv(inverse_view, view_coords);
 
-    for (size_t i = 0; i < 4; i++) {
+    const size_t num_particles = 10;
+    for (size_t i = 0; i < num_particles; i++) {
       particle_emit((vec2s){{world_space.x, world_space.y}});
     }
   }
