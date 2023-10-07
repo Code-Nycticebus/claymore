@@ -8,6 +8,7 @@
 #include "framebuffer/framebuffer.h"
 #include "menu/menu.h"
 #include "ortho/ortho.h"
+#include "particles/particle.h"
 #include "texture/texture.h"
 
 static void app_key_event(CmKeyEvent *event, void *data) {
@@ -46,7 +47,7 @@ ClaymoreConfig claymore_config(void) {
               scene_cube,
               scene_framebuffer,
               scene_texture,
-              NULL,
+              scene_particle,
           },
   };
 }
