@@ -17,9 +17,9 @@ typedef struct {
   bool active;
 } Particle;
 
-const float particle_lifetime = 2.F;
+const float particle_lifetime = 1.5F;
 
-#define PARTICLES_MAX 10000
+#define PARTICLES_MAX 1000
 
 struct {
   size_t index;
@@ -36,10 +36,10 @@ void particle_emit(vec2s pos) {
       .rotation = rand_float() * 360.F,
       .active = true,
       .color = {0},
-      .color_end = {{1, .5F, 0, 1}},
-      .color_start = {{0, .5F, 1, 1}},
+      .color_end = {{1, .3, 0, 1}},
+      .color_start = {{0, .3F, 1, 1}},
       .lifetime = 0,
-      .vel = {{rand_float() * 300.F - 150.F, rand_float() * 300.F - 150.F}},
+      .vel = {{rand_float() * 200.F - 100.F, rand_float() * 200.F - 100.F}},
   };
 
   particle_pool.pool[particle_pool.index] = particle;
@@ -64,13 +64,15 @@ void particle_render(mat4s mvp, float dt) {
           glms_vec4_lerp(particle->color_end, particle->color_start, progress);
       particle->color.a = 1.F - particle->color.a * progress;
 
+      particle->rotation += 100.F * dt;
+
       particle->lifetime += dt;
       if (particle_lifetime <= particle->lifetime) {
         particle->active = false;
       }
       cm_renderer2d_push_quad_color_rotated(particle->pos, 0, particle->size,
                                             particle->color,
-                                            particle->rotation);
+                                            glm_rad(particle->rotation));
     }
   }
   cm_renderer2d_end();
