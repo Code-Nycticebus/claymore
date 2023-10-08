@@ -19,12 +19,13 @@ static CmTexture2D background_texture;
 
 static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
-static float zoom = 1.F;
 static float aspect;
 
 static void background_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
   const float min_zoom = 0.1F;
-  zoom = glm_max(zoom - event->yoffset, min_zoom);
+  const float scroll_speed = 10.F;
+  float zoom = layer->camera.zoom;
+  zoom = glm_max(zoom - event->yoffset * (zoom / scroll_speed), min_zoom);
   cm_camera_zoom(&layer->camera, zoom);
 }
 
@@ -43,7 +44,7 @@ static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       const float zoom_scale = 150.F;
-      direction = glms_vec2_scale(direction, zoom / zoom_scale);
+      direction = glms_vec2_scale(direction, layer->camera.zoom / zoom_scale);
       layer->camera.position = glms_vec3_add(
           layer->camera.position, (vec3s){{direction.x, direction.y, 0}});
 
@@ -62,7 +63,7 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
   background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
 
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
-  layer->camera = cm_camera_init_ortho((vec3s){0}, aspect, zoom);
+  layer->camera = cm_camera_init_ortho((vec3s){0}, aspect, 100.F);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
                      (cm_event_callback)background_window_resize_callback,

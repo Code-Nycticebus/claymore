@@ -126,7 +126,7 @@ static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
 #define LABEL_SIZE 128
   char label_buffer[LABEL_SIZE];
   const size_t len =
-      snprintf(label_buffer, LABEL_SIZE - 1, "Batch renderer: %u quads",
+      snprintf(label_buffer, LABEL_SIZE - 1, "Rendering %u rotating quads",
                grid_size * grid_size);
   cm_font_draw(font, mvp, 0.F, -100.F, 1.F, len, label_buffer);
 }
