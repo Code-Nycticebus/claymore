@@ -164,6 +164,11 @@ void cm_shader_set_mat4(CmShader *shader, const char *u_name, const mat4s mat) {
   glUniformMatrix4fv(location, 1, GL_FALSE, (float *)&mat);
 }
 
+void cm_shader_set_vec3(CmShader *shader, const char *u_name, const vec3s vec) {
+  GLint location = cm_shader_get_uniform_location(shader, u_name);
+  glUniform3fv(location, 1, (float *)&vec);
+}
+
 void cm_shader_set_f32(CmShader *shader, const char *u_name, float value) {
   GLint location = cm_shader_get_uniform_location(shader, u_name);
   glUniform1f(location, value);
