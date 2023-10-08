@@ -19,8 +19,8 @@ static vec2s mouse_last_position = {0};
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmCamera *camera) {
   const float min_zoom = 1.F;
-  const float scroll_speed = 100.F;
-  zoom = glm_max(zoom - event->yoffset * scroll_speed, min_zoom);
+  const float scroll_speed = 10.F;
+  zoom = glm_max(zoom - event->yoffset * (zoom / scroll_speed), min_zoom);
   cm_camera_zoom(camera, zoom);
 }
 
