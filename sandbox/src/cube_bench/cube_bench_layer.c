@@ -162,19 +162,19 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 
   cm_renderer3d_begin();
   static uint32_t grid_size = 3; // 317^2 == 100'000 quads
-  const float dt_min = 1 / 62.F;
+  const float dt_min = 1 / 70.F;
   grid_size += dt < dt_min ? +1 : -1;
   assert(grid_size < 1000 && "grid size is definitely too big");
 
+  static float cube_rotation = 0;
+  cube_rotation += 4 * dt;
   const vec3s cube_size = {{.5F, .5F, .5F}};
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
       for (size_t z = 0; z < grid_size; z++) {
         cm_renderer3d_push_cube_color_rotated(
-            (vec3s){{i - (grid_size / (float)2), j - (grid_size / (float)2),
-                     z - (grid_size / (float)2)}},
-            cube_size, (vec4s){{1, 0, 0, 1}}, glm_rad(i * j * z),
-            (vec3s){{1, 1, 1}});
+            (vec3s){{i, j, z}}, cube_size, (vec4s){{1, 0, 0, 1}},
+            glm_rad(cube_rotation), (vec3s){{1, 1, 1}});
       }
     }
   }
@@ -186,7 +186,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   char label_buffer[LABEL_SIZE];
   const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%u cubes",
                               grid_size * grid_size * grid_size);
-  cm_font_draw(font, mvp, 0.F, -font_size, 1.F, len, label_buffer);
+  cm_font_draw(font, mvp, 0.F, -font_size, -100.F, len, label_buffer);
 
   cm_shader_bind(&light_shader);
   cm_shader_set_mat4(&light_shader, "u_mvp", mvp);

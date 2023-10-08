@@ -95,13 +95,32 @@ void cm_renderer3d_begin(void) {}
 
 void cm_renderer3d_end(void) { cm_renderer3d_flush(); }
 
-static inline vec3s _rotate_around_axis(float angle, vec3s axis,
-                                        const vec3s vertex,
-                                        const vec3s origin) {
-  vec3s direction = glms_vec3_sub(vertex, origin);
-  vec3s rotation = glms_vec3_rotate(direction, angle, axis);
-  vec3s new_pos = glms_vec3_add(rotation, origin);
-  return new_pos;
+static inline void _renderer_vec3_fast_rotate(float c, float s, vec3 axis,
+                                              vec3 v) {
+  /* This is the glm_vec3_rotate function but i took out the cos and sin
+   * calculations since they use a lot of time */
+  vec3 v1;
+  vec3 v2;
+  vec3 k;
+
+  glm_vec3_normalize_to(axis, k);
+
+  glm_vec3_scale(v, c, v1);
+
+  glm_vec3_cross(k, v, v2);
+  glm_vec3_scale(v2, s, v2);
+
+  glm_vec3_add(v1, v2, v1);
+
+  glm_vec3_scale(k, glm_vec3_dot(k, v) * (1.0F - c), v2);
+  glm_vec3_add(v1, v2, v);
+}
+
+static inline void _rotate_around_axis(float c, float s, vec3 axis, vec3 vertex,
+                                       vec3 origin) {
+  glm_vec3_sub(vertex, origin, vertex);
+  _renderer_vec3_fast_rotate(c, s, axis, vertex);
+  glm_vec3_add(vertex, origin, vertex);
 }
 
 static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
@@ -154,20 +173,23 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
       {{{pos.x, pos.y, pos.z}}, {{0, -1, 0}}},
       {{{pos.x, pos.y, pos.z - size.z}}, {{0, -1, 0}}},
       {{{pos.x + size.x, pos.y, pos.z - size.z}}, {{0, -1, 0}}},
-
   };
+
+  float c;
+  float s;
+  if (rotation != 0) {
+    c = cosf(rotation);
+    s = sinf(rotation);
+  }
 
   CmVertex3D *vertices = &render_data->data[render_data->vertices_count];
   for (int i = 0; i < CM_RENDERER3D_VERTICES_PER_CUBE; ++i) {
-    vertices[i].pos =
-        rotation == 0
-            ? vertex_data[i].position
-            : _rotate_around_axis(rotation, axis, vertex_data[i].position, pos);
-    vertices[i].normal =
-        rotation == 0
-            ? vertex_data[i].normal
-            : _rotate_around_axis(rotation, axis, vertex_data[i].normal, pos);
-    ;
+    vertices[i].pos = vertex_data[i].position;
+    vertices[i].normal = vertex_data[i].normal;
+    if (rotation != 0) {
+      _rotate_around_axis(c, s, axis.raw, vertices[i].pos.raw, pos.raw);
+      _rotate_around_axis(c, s, axis.raw, vertices[i].normal.raw, pos.raw);
+    }
     vertices[i].color = color;
     // vertices[i].uv.u = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);
     // vertices[i].uv.v = text_coord.v + (i == 2 || i == 3 ? text_size.y : 0);
