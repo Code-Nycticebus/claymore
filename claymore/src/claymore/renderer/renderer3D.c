@@ -3,7 +3,7 @@
 #include "render_buffer.h"
 #include "render_command.h"
 
-#define CM_RENDERER3D_MAX_CUBES 400
+#define CM_RENDERER3D_MAX_CUBES 2000
 #define CM_RENDERER3D_VERTICES_PER_CUBE 24
 
 #define CM_RENDERER3D_MAX_VERTICES                                             \
@@ -101,18 +101,15 @@ static inline void _renderer_vec3_fast_rotate(float c, float s, vec3 axis,
    * calculations since they use a lot of time */
   vec3 v1;
   vec3 v2;
-  vec3 k;
-
-  glm_vec3_normalize_to(axis, k);
 
   glm_vec3_scale(v, c, v1);
 
-  glm_vec3_cross(k, v, v2);
+  glm_vec3_cross(axis, v, v2);
   glm_vec3_scale(v2, s, v2);
 
   glm_vec3_add(v1, v2, v1);
 
-  glm_vec3_scale(k, glm_vec3_dot(k, v) * (1.0F - c), v2);
+  glm_vec3_scale(axis, glm_vec3_dot(axis, v) * (1.0F - c), v2);
   glm_vec3_add(v1, v2, v);
 }
 
@@ -177,9 +174,11 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
 
   float c;
   float s;
+  vec3 normalized_axis;
   if (rotation != 0) {
     c = cosf(rotation);
     s = sinf(rotation);
+    glm_vec3_normalize_to(axis.raw, normalized_axis);
   }
 
   CmVertex3D *vertices = &render_data->data[render_data->vertices_count];
@@ -187,8 +186,9 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
     vertices[i].pos = vertex_data[i].position;
     vertices[i].normal = vertex_data[i].normal;
     if (rotation != 0) {
-      _rotate_around_axis(c, s, axis.raw, vertices[i].pos.raw, pos.raw);
-      _rotate_around_axis(c, s, axis.raw, vertices[i].normal.raw, pos.raw);
+      _rotate_around_axis(c, s, normalized_axis, vertices[i].pos.raw, pos.raw);
+      _rotate_around_axis(c, s, normalized_axis, vertices[i].normal.raw,
+                          pos.raw);
     }
     vertices[i].color = color;
     // vertices[i].uv.u = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);

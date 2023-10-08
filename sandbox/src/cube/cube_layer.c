@@ -136,6 +136,7 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
 
   cm_renderer_set_clear_color((vec4s){{0.F, 0.F, 0.F, 1.F}});
   mouse_last_pos = cm_mouseinfo_pos();
+
   return true;
 }
 
@@ -157,6 +158,11 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   const float r = 45;
   float cube_rotation = glm_rad(r);
   // cube_rotation += glm_rad(1 * dt);
+  cm_renderer3d_push_cube_color_rotated((vec3s){{0, 0, 0}}, (vec3s){{2, 2, 2}},
+                                        (vec4s){{1, 1, 0, 1}}, cube_rotation,
+                                        (vec3s){{0, 0, -1}});
+
+  cube_rotation += glm_rad(1 * dt);
   cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 1}}, (vec3s){{2, 2, 2}},
                                         (vec4s){{1, 0, 0, 1}}, cube_rotation,
                                         (vec3s){{1, 0, 0}});
