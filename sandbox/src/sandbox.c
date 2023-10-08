@@ -1,8 +1,8 @@
 #include "claymore.h"
 #include "claymore/core/entrypoint.h"
 
-#define WINDOW_WIDTH 620
-#define WINDOW_HEIGHT 420
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
 
 #include "cube/cube.h"
 #include "cube_bench/cube_bench.h"
