@@ -163,7 +163,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_renderer3d_begin();
   static uint32_t grid_size = 3; // 317^2 == 100'000 quads
   const float dt_min = 1 / 70.F;
-  grid_size += dt < dt_min ? +1 : -1;
+  grid_size += dt < dt_min ? +1 : 0;
   assert(grid_size < 1000 && "grid size is definitely too big");
 
   static float cube_rotation = 0;
