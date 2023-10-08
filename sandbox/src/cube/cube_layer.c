@@ -7,7 +7,6 @@ static CmRenderBuffer render_data;
 
 static GLenum draw_mode = GL_FILL;
 
-const float rotation = 90.F;
 static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
 struct Vertex {
@@ -15,7 +14,7 @@ struct Vertex {
   vec4 color;
 };
 
-static const float fov = 45.F;
+static const float fov = 90.F;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -56,17 +55,16 @@ static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
 }
 
 static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
-  vec3s direction;
-  vec3s center = {{0, 0, 0}};
   const float min_distance = 0.1F;
   const float max_distance = 100.F;
 
+  vec3s direction;
+  vec3s center = {{0, 0, 0}};
   direction = glms_vec3_sub(center, camera->position);
   direction = glms_vec3_normalize(direction);
   direction = glms_vec3_scale(direction, (float)event->yoffset);
 
-  vec3s new_camera_pos;
-  new_camera_pos = glms_vec3_add(camera->position, direction);
+  vec3s new_camera_pos = glms_vec3_add(camera->position, direction);
   float new_distance = glms_vec3_distance(new_camera_pos, center);
   if (min_distance <= new_distance && new_distance <= max_distance) {
     cm_camera_position(camera, new_camera_pos);
