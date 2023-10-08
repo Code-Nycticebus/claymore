@@ -19,6 +19,12 @@ struct Vertex {
 
 static const float fov = 60.F;
 
+#define LIGHT_START_POS                                                        \
+  {                                                                            \
+    { 0, 0, -10.F }                                                            \
+  }
+static vec3s light_pos = LIGHT_START_POS;
+
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
     vec2s mouse_pos = cm_mouseinfo_pos();
@@ -128,45 +134,6 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
       (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 
-  const struct Vertex ligth_vertices[] = {
-      // 1
-      {{2.F, 2.F, -2.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-      {{3.F, 2.F, -2.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-      {{3.F, 3.F, -2.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-      {{2.F, 3.F, -2.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-
-      // 2
-      {{2.F, 2.F, -3.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-      {{3.F, 2.F, -3.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-      {{3.F, 3.F, -3.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-      {{2.F, 3.F, -3.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
-  };
-  const size_t light_vertices_count = 8;
-
-  render_data_light.vertex_buffer =
-      cm_vertex_buffer_create(light_vertices_count, sizeof(struct Vertex),
-                              ligth_vertices, GL_STATIC_DRAW);
-  render_data_light.vertex_attribute =
-      cm_vertex_attribute_create(&render_data_light.vertex_buffer);
-  cm_vertex_attribute_push(&render_data_light.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(struct Vertex, pos));
-  cm_vertex_attribute_push(&render_data_light.vertex_attribute, 4, GL_FLOAT,
-                           offsetof(struct Vertex, color));
-
-  const uint32_t light_indices[] = {
-      0, 1, 2, 0, 2, 3, // 1
-      4, 5, 6, 4, 6, 7, // 2
-      0, 4, 5, 0, 5, 1, // 3
-      0, 4, 7, 0, 3, 7, // 4
-      1, 2, 5, 5, 6, 2, // 5
-      2, 3, 6, 3, 6, 7, // 6
-  };
-  const size_t light_indices_count =
-      sizeof(light_indices) / sizeof(light_indices[0]);
-  render_data_light.index_buffer = cm_index_buffer_create(
-      &render_data_light.vertex_attribute, light_indices_count, light_indices,
-      GL_STATIC_DRAW);
-
   cm_renderer_set_clear_color((vec4s){{0.F, 0.F, 0.F, 1.F}});
   mouse_last_pos = cm_mouseinfo_pos();
   return true;
@@ -183,21 +150,48 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
   cm_shader_set_mat4(&cube_shader, "u_model", model);
-  const vec3s light_pos = {{2.5F, 2.5F, -2.5F}};
   cm_shader_set_vec3(&cube_shader, "u_light_pos", light_pos);
   cm_shader_set_vec3(&cube_shader, "u_view_pos", layer->camera.position);
 
   cm_renderer3d_begin();
-  cm_renderer3d_push_cube((vec3s){{-1, -1, 1}}, (vec3s){{2, 2, 2}});
-  cm_renderer3d_push_cube((vec3s){{-1, -4, 1}}, (vec3s){{2, 2, 2}});
-  cm_renderer3d_end();
+  const float r = 45;
+  float cube_rotation = glm_rad(r);
+  // cube_rotation += glm_rad(1 * dt);
+  cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 1}}, (vec3s){{2, 2, 2}},
+                                        (vec4s){{1, 0, 0, 1}}, cube_rotation,
+                                        (vec3s){{1, 0, 0}});
 
+  cube_rotation += glm_rad(1 * dt);
+  cm_renderer3d_push_cube_color_rotated(
+      (vec3s){{-1, -4, -1}}, (vec3s){{2, 2, 2}}, (vec4s){{0, 0, 1, 1}},
+      cube_rotation, (vec3s){{0, 1, 0}});
+
+  cube_rotation += glm_rad(1 * dt);
+  cm_renderer3d_push_cube_color_rotated((vec3s){{-4, 1, 0}}, (vec3s){{2, 2, 2}},
+                                        (vec4s){{0, 1, 0, 1}}, cube_rotation,
+                                        (vec3s){{0, 0, 1}});
+
+  cm_renderer3d_end();
   cm_shader_unbind();
 
   cm_shader_bind(&light_shader);
   cm_shader_set_mat4(&light_shader, "u_mvp", mvp);
-  cm_renderer_draw_indexed(&render_data_light,
-                           render_data_light.index_buffer.count);
+  cm_renderer3d_begin();
+
+  const vec3s origin = {0};
+  vec3s direction = glms_vec3_sub(light_pos, origin);
+  const float angle = 90 * dt;
+  const vec3s axis = {{1, 1, 0}};
+  vec3s rotation = glms_vec3_rotate(direction, glm_rad(angle), axis);
+  light_pos = glms_vec3_add(rotation, origin);
+
+  const vec3s l_s = {{1, 1, 1}};
+  const float scale = 0.5F;
+  vec3s l_pos = glms_vec3_sub(light_pos, glms_vec3_scale(l_s, scale));
+
+  cm_renderer3d_push_cube(l_pos, l_s);
+
+  cm_renderer3d_end();
   cm_shader_unbind();
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to normal mode

@@ -38,10 +38,10 @@ void cm_renderer3d_init(void) {
       cm_vertex_attribute_create(&render_data->renderer.vertex_buffer);
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 3, GL_FLOAT,
                            offsetof(CmVertex3D, pos));
-  cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(CmVertex3D, normal));
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 4, GL_FLOAT,
                            offsetof(CmVertex3D, color));
+  cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 3, GL_FLOAT,
+                           offsetof(CmVertex3D, normal));
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 2, GL_FLOAT,
                            offsetof(CmVertex3D, uv));
 
@@ -95,7 +95,17 @@ void cm_renderer3d_begin(void) {}
 
 void cm_renderer3d_end(void) { cm_renderer3d_flush(); }
 
-static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size) {
+static inline vec3s _rotate_around_axis(float angle, vec3s axis,
+                                        const vec3s vertex,
+                                        const vec3s origin) {
+  vec3s direction = glms_vec3_sub(vertex, origin);
+  vec3s rotation = glms_vec3_rotate(direction, angle, axis);
+  vec3s new_pos = glms_vec3_add(rotation, origin);
+  return new_pos;
+}
+
+static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
+                                            float rotation, vec3s axis) {
   assert(render_data && "Renderer 3D was not initialized!");
   if (!(render_data->vertices_count < CM_RENDERER3D_MAX_VERTICES)) {
     cm_renderer3d_flush();
@@ -108,7 +118,7 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size) {
   const struct {
     vec3s position;
     vec3s normal;
-  } vertexe_data[CM_RENDERER3D_VERTICES_PER_CUBE] = {
+  } vertex_data[CM_RENDERER3D_VERTICES_PER_CUBE] = {
       // Front
       {{{pos.x, pos.y, pos.z}}, {{0, 0, 1}}},
       {{{pos.x + size.x, pos.y, pos.z}}, {{0, 0, 1}}},
@@ -149,11 +159,16 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size) {
 
   CmVertex3D *vertices = &render_data->data[render_data->vertices_count];
   for (int i = 0; i < CM_RENDERER3D_VERTICES_PER_CUBE; ++i) {
-    printf("%f %f %f\n", vertexe_data[i].position.x, vertexe_data[i].position.y,
-           vertexe_data[i].position.z);
-    vertices[i].pos = vertexe_data[i].position;
-    vertices[i].normal = vertexe_data[i].normal;
-    vertices[i].color = (vec4s){{1, 0, 0, 1}};
+    vertices[i].pos =
+        rotation == 0
+            ? vertex_data[i].position
+            : _rotate_around_axis(rotation, axis, vertex_data[i].position, pos);
+    vertices[i].normal =
+        rotation == 0
+            ? vertex_data[i].normal
+            : _rotate_around_axis(rotation, axis, vertex_data[i].normal, pos);
+    ;
+    vertices[i].color = color;
     // vertices[i].uv.u = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);
     // vertices[i].uv.v = text_coord.v + (i == 2 || i == 3 ? text_size.y : 0);
   }
@@ -163,5 +178,21 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size) {
 }
 
 void cm_renderer3d_push_cube(vec3s position, vec3s size) {
-  _cm_renderer3d_push_cube(position, size);
+  _cm_renderer3d_push_cube(position, size, (vec4s){{1, 1, 1, 1}}, 0,
+                           (vec3s){0});
+}
+void cm_renderer3d_push_cube_rotated(vec3s position, vec3s size, float rotation,
+                                     vec3s axis) {
+  _cm_renderer3d_push_cube(position, size, (vec4s){{1, 1, 1, 1}}, rotation,
+                           axis);
+}
+
+void cm_renderer3d_push_cube_color(vec3s position, vec3s size, vec4s color) {
+  _cm_renderer3d_push_cube(position, size, color, 0, (vec3s){0});
+}
+
+void cm_renderer3d_push_cube_color_rotated(vec3s position, vec3s size,
+                                           vec4s color, float rotation,
+                                           vec3s axis) {
+  _cm_renderer3d_push_cube(position, size, color, rotation, axis);
 }

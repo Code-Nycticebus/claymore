@@ -11,8 +11,8 @@ typedef struct {
 
 typedef struct {
   vec3s pos;
-  vec3s normal;
   vec4s color;
+  vec3s normal;
   vec2s uv;
 } CmVertex3D;
 
