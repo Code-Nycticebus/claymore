@@ -12,21 +12,20 @@ static const float font_size = 64.F;
 static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
 #define ORTHO_INITIAL_ZOOM 1400.F
-static float zoom = ORTHO_INITIAL_ZOOM;
 static vec3s camera_initial_position = {{0, 0, 0}};
-static float aspect;
 static vec2s mouse_last_position = {0};
 
 static void ortho_scroll_callback(CmScrollEvent *event, CmCamera *camera) {
   const float min_zoom = 1.F;
   const float scroll_speed = 10.F;
+  float zoom = camera->zoom;
   zoom = glm_max(zoom - event->yoffset * (zoom / scroll_speed), min_zoom);
   cm_camera_zoom(camera, zoom);
 }
 
 static void ortho_window_resize_callback(CmWindowEvent *event,
                                          CmCamera *camera) {
-  aspect = (float)event->window->width / (float)event->window->height;
+  float aspect = (float)event->window->width / (float)event->window->height;
   cm_camera_aspect(camera, aspect);
 }
 
@@ -38,7 +37,7 @@ static void ortho_mouse_callback(CmMouseEvent *event, CmCamera *camera) {
     mouse_last_position = pos;
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-      direction = glms_vec2_scale(direction, zoom / 100.F);
+      direction = glms_vec2_scale(direction, camera->zoom / 100.F);
       cm_camera_translate(camera, (vec3s){{direction.x, direction.y, 0}});
     }
   }
@@ -68,8 +67,8 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
                                          "res/shader/basic.fs.glsl");
 
   mouse_last_position = cm_mouseinfo_pos();
-  zoom = ORTHO_INITIAL_ZOOM;
-  aspect = (float)scene->app->window->width / (float)scene->app->window->height;
+  float zoom = ORTHO_INITIAL_ZOOM;
+  float aspect = scene->app->window->width / (float)scene->app->window->height;
   layer->camera = cm_camera_init_ortho(camera_initial_position, aspect, zoom);
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
