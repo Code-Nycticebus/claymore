@@ -89,7 +89,7 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
 }
 
 static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
-  (void)dt, (void)layer, (void)scene;
+  (void)scene;
 
   static mat4s model = GLMS_MAT4_IDENTITY_INIT;
   static mat4s mvp;

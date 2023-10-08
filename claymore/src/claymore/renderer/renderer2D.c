@@ -1,7 +1,6 @@
 #define CM_RENDERER_PRIVATE
 #include "renderer2D.h"
 
-#include "claymore/debug/debug.h"
 #include "render_buffer.h"
 #include "render_command.h"
 
@@ -9,56 +8,56 @@
 #define CM_RENDERER2D_VERTICES_PER_QUAD 4
 #define CM_RENDERER2D_MAX_VERTICES                                             \
   (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_VERTICES_PER_QUAD)
-#define CM_RENDERER_INDICES_PER_SQUAD 6
-#define CM_RENDERER2D_MAX_INDECIES                                             \
-  (CM_RENDERER2D_MAX_QUADS * CM_RENDERER_INDICES_PER_SQUAD)
+#define CM_RENDERER2D_INDICES_PER_QUAD 6
+#define CM_RENDERER2D_MAX_INDICES                                              \
+  (CM_RENDERER2D_MAX_QUADS * CM_RENDERER2D_INDICES_PER_QUAD)
 
 struct Render2dData {
   CmRenderBuffer renderer;
 
   size_t vertices_count;
-  CmVertex data[CM_RENDERER2D_MAX_VERTICES];
+  CmVertex2D data[CM_RENDERER2D_MAX_VERTICES];
 
-  size_t indecies_count;
-  uint32_t indecies[CM_RENDERER2D_MAX_INDECIES];
+  size_t indices_count;
+  uint32_t indices[CM_RENDERER2D_MAX_INDICES];
 };
 
 static struct Render2dData *render_data = NULL;
 
 void cm_renderer2d_init(void) {
   // INITS VERTEX ARRAY
-  assert(render_data == NULL && "Renderer was initialized twice!");
+  assert(render_data == NULL && "Renderer2d was initialized twice!");
   render_data = (struct Render2dData *)calloc(1, sizeof(struct Render2dData));
 
   // Initialize Quad primitive buffer
-  render_data->renderer.vertex_buffer =
-      cm_vertex_buffer_create(CM_RENDERER2D_MAX_VERTICES, sizeof(CmVertex),
-                              render_data->data, GL_DYNAMIC_DRAW);
+  render_data->renderer.vertex_buffer = cm_vertex_buffer_create(
+      CM_RENDERER2D_MAX_VERTICES, sizeof(CmVertex2D), NULL, GL_DYNAMIC_DRAW);
 
   render_data->vertices_count = 0;
 
   render_data->renderer.vertex_attribute =
       cm_vertex_attribute_create(&render_data->renderer.vertex_buffer);
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(CmVertex, pos));
+                           offsetof(CmVertex2D, pos));
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 4, GL_FLOAT,
-                           offsetof(CmVertex, color));
+                           offsetof(CmVertex2D, color));
   cm_vertex_attribute_push(&render_data->renderer.vertex_attribute, 2, GL_FLOAT,
-                           offsetof(CmVertex, uv));
+                           offsetof(CmVertex2D, uv));
 
   // Generates indices in advance
-  uint32_t base_indices[CM_RENDERER_INDICES_PER_SQUAD] = {
+  uint32_t base_indices[CM_RENDERER2D_INDICES_PER_QUAD] = {
       0, 1, 3, 1, 2, 3,
   };
-  for (size_t i = 0; i < CM_RENDERER2D_MAX_INDECIES; ++i) {
-    render_data->indecies[i] = base_indices[i % CM_RENDERER_INDICES_PER_SQUAD] +
-                               (4 * (i / CM_RENDERER_INDICES_PER_SQUAD));
+  for (size_t i = 0; i < CM_RENDERER2D_MAX_INDICES; ++i) {
+    render_data->indices[i] = base_indices[i % CM_RENDERER2D_INDICES_PER_QUAD] +
+                              (CM_RENDERER2D_VERTICES_PER_QUAD *
+                               (i / CM_RENDERER2D_INDICES_PER_QUAD));
   }
-  render_data->indecies_count = 0;
+  render_data->indices_count = 0;
 
   render_data->renderer.index_buffer = cm_index_buffer_create(
-      &render_data->renderer.vertex_attribute, CM_RENDERER2D_MAX_INDECIES,
-      render_data->indecies, GL_STATIC_DRAW);
+      &render_data->renderer.vertex_attribute, CM_RENDERER2D_MAX_INDICES,
+      render_data->indices, GL_STATIC_DRAW);
 
   const float bytes_in_kilboytes = 1000.F;
   cm_log_info("Renderer: %.0f kb\n",
@@ -75,13 +74,13 @@ void cm_renderer2d_shutdown(void) {
 static void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, render_data->renderer.vertex_buffer.id);
   glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(CmVertex) * render_data->vertices_count,
+                  sizeof(CmVertex2D) * render_data->vertices_count,
                   render_data->data);
 
-  cm_renderer_draw_indexed(&render_data->renderer, render_data->indecies_count);
+  cm_renderer_draw_indexed(&render_data->renderer, render_data->indices_count);
 
   render_data->vertices_count = 0;
-  render_data->indecies_count = 0;
+  render_data->indices_count = 0;
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -102,7 +101,7 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, const float z,
 
   // For safety i still assert
   assert(render_data->vertices_count < CM_RENDERER2D_MAX_VERTICES);
-  assert(render_data->indecies_count < CM_RENDERER2D_MAX_INDECIES);
+  assert(render_data->indices_count < CM_RENDERER2D_MAX_INDICES);
 
   const vec3s vertex_positions[CM_RENDERER2D_VERTICES_PER_QUAD] = {
       {{position.x, position.y, z}},
@@ -118,7 +117,7 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, const float z,
     sin_theta = sinf(rotation);
   }
 
-  CmVertex *vertices = &render_data->data[render_data->vertices_count];
+  CmVertex2D *vertices = &render_data->data[render_data->vertices_count];
   for (int i = 0; i < CM_RENDERER2D_VERTICES_PER_QUAD; ++i) {
     vertices[i].pos = vertex_positions[i];
     vertices[i].color = color;
@@ -134,7 +133,7 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, const float z,
   }
 
   render_data->vertices_count += CM_RENDERER2D_VERTICES_PER_QUAD;
-  render_data->indecies_count += CM_RENDERER_INDICES_PER_SQUAD;
+  render_data->indices_count += CM_RENDERER2D_INDICES_PER_QUAD;
 }
 
 void cm_renderer2d_push_quad(const vec2s position, const float z,

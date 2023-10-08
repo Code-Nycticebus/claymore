@@ -4,7 +4,7 @@ static CmShader cube_shader;
 static CmShader light_shader;
 
 static vec2s mouse_last_pos = {{0, 0}};
-static CmRenderBuffer render_data_cube;
+
 static CmRenderBuffer render_data_light;
 
 static GLenum draw_mode = GL_FILL;
@@ -128,69 +128,6 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
       (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 
-  struct Vertex cube_vertices[] = {
-      // Front
-      {{-1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-      {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-      {{1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-      {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-
-      // Right
-      {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {1, 0, 0}},
-      {{1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {1, 0, 0}},
-      {{1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {1, 0, 0}},
-      {{1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {1, 0, 0}},
-
-      // Left
-      {{-1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {-1, 0, 0}},
-      {{-1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {-1, 0, 0}},
-      {{-1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {-1, 0, 0}},
-      {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {-1, 0, 0}},
-
-      // Back
-      {{-1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
-      {{1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
-      {{1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
-      {{-1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
-
-      // Top
-      {{1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 1, 0}},
-      {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 1, 0}},
-      {{-1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 1, 0}},
-      {{1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 1, 0}},
-
-      // Bottom
-      {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, -1, 0}},
-      {{-1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, -1, 0}},
-      {{-1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, -1, 0}},
-      {{1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, -1, 0}},
-  };
-  const size_t vertices_count =
-      sizeof(cube_vertices) / sizeof(cube_vertices[0]);
-
-  render_data_cube.vertex_buffer = cm_vertex_buffer_create(
-      vertices_count, sizeof(struct Vertex), cube_vertices, GL_STATIC_DRAW);
-  render_data_cube.vertex_attribute =
-      cm_vertex_attribute_create(&render_data_cube.vertex_buffer);
-  cm_vertex_attribute_push(&render_data_cube.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(struct Vertex, pos));
-  cm_vertex_attribute_push(&render_data_cube.vertex_attribute, 4, GL_FLOAT,
-                           offsetof(struct Vertex, color));
-  cm_vertex_attribute_push(&render_data_cube.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(struct Vertex, normal));
-  const uint32_t cube_indices[] = {
-      0,  1,  2,  0,  2,  3,  // Front
-      4,  5,  6,  4,  6,  7,  // Right
-      8,  9,  10, 8,  10, 11, // Left
-      12, 13, 14, 12, 14, 15, // Back
-      16, 17, 18, 16, 18, 19, // Top
-      20, 21, 22, 20, 22, 23, // Bottom
-  };
-  const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
-  render_data_cube.index_buffer =
-      cm_index_buffer_create(&render_data_cube.vertex_attribute, indices_count,
-                             cube_indices, GL_STATIC_DRAW);
-
   const struct Vertex ligth_vertices[] = {
       // 1
       {{2.F, 2.F, -2.F}, {1.F, 1.F, 1.F, 1.F}, {0}},
@@ -250,8 +187,10 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_vec3(&cube_shader, "u_light_pos", light_pos);
   cm_shader_set_vec3(&cube_shader, "u_view_pos", layer->camera.position);
 
-  cm_renderer_draw_indexed(&render_data_cube,
-                           render_data_cube.index_buffer.count);
+  cm_renderer3d_begin();
+  cm_renderer3d_push_cube((vec3s){{-1, -1, 1}}, (vec3s){{2, 2, 2}});
+  cm_renderer3d_push_cube((vec3s){{-1, -4, 1}}, (vec3s){{2, 2, 2}});
+  cm_renderer3d_end();
 
   cm_shader_unbind();
 
@@ -266,7 +205,6 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 
 static void cube_free(CmScene *scene, CmLayer *layer) {
   (void)layer, (void)scene;
-  cm_render_buffer_delete(&render_data_cube);
   cm_render_buffer_delete(&render_data_light);
   cm_shader_delete(&cube_shader);
   cm_shader_delete(&light_shader);

@@ -7,6 +7,13 @@ typedef struct {
   vec3s pos;
   vec4s color;
   vec2s uv;
-} CmVertex;
+} CmVertex2D;
+
+typedef struct {
+  vec3s pos;
+  vec3s normal;
+  vec4s color;
+  vec2s uv;
+} CmVertex3D;
 
 #endif /* !__CM_RENDERER_DEFINES_H__ */
