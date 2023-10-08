@@ -29,7 +29,10 @@ struct {
 float rand_float(void) { return rand() / (float)RAND_MAX; }
 
 void particle_emit(vec2s pos) {
-  const float size = rand_float() * 6.F + 3.F;
+  const float size = rand_float() * 2.F + 1.F;
+  const vec2s vel = glms_vec2_scale(
+      glms_vec2_normalize((vec2s){{rand_float() - .5F, rand_float() - .5F}}),
+      rand_float() * 100.F);
   const Particle particle = {
       .pos = pos,
       .size = {{size, size}},
@@ -39,7 +42,7 @@ void particle_emit(vec2s pos) {
       .color_end = {{.8F, .3F, 0.F, 1.F}},
       .color_start = {{0.F, .3F, .8F, 1.F}},
       .lifetime = 0,
-      .vel = {{rand_float() * 200.F - 100.F, rand_float() * 200.F - 100.F}},
+      .vel = vel,
   };
 
   particle_pool.pool[particle_pool.index] = particle;
