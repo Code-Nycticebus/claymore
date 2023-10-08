@@ -3,7 +3,7 @@
 #include "render_buffer.h"
 #include "render_command.h"
 
-#define CM_RENDERER3D_MAX_CUBES 200
+#define CM_RENDERER3D_MAX_CUBES 400
 #define CM_RENDERER3D_VERTICES_PER_CUBE 24
 
 #define CM_RENDERER3D_MAX_VERTICES                                             \
@@ -66,7 +66,7 @@ void cm_renderer3d_init(void) {
       render_data->indices, GL_STATIC_DRAW);
 
   const float bytes_in_kilboytes = 1000.F;
-  cm_log_info("Renderer: %.0f kb\n",
+  cm_log_info("Renderer 3D: %.0f kb\n",
               (uint32_t)sizeof(struct Render3dData) / bytes_in_kilboytes);
 }
 

@@ -9,7 +9,7 @@ CmCamera cm_camera_init_perspective(vec3s position, vec3s lookat, float fov,
 
   camera.position = position;
   camera.projection =
-      glms_perspective(glm_rad(fov), aspect_ratio, 1 / 100.F, 100.F);
+      glms_perspective(glm_rad(fov), aspect_ratio, 1 / 100.F, 500.F);
   camera.view = glms_lookat(camera.position, lookat, camera.up);
   cm_camera_update(&camera);
   return camera;

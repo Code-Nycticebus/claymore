@@ -14,7 +14,8 @@ typedef struct {
 } MenuButton;
 
 static const char *button_labels[] = {
-    "Quad Benchmark", "3D Cube", "Framebuffer", "Texture", "Particle",
+    "Quad Benchmark", "Cube Benchmark", "3D Cube",
+    "Framebuffer",    "Texture",        "Particle",
 };
 #define BUTTON_LABELS_COUNT (sizeof(button_labels) / sizeof(button_labels[0]))
 static MenuButton buttons[BUTTON_LABELS_COUNT] = {0};
@@ -22,7 +23,7 @@ static MenuButton buttons[BUTTON_LABELS_COUNT] = {0};
 size_t buttons_selected = BUTTON_LABELS_COUNT;
 
 const float xs = 300.F;
-const float ys = 50.F;
+const float ys = 40.F;
 const float margin = 20.F;
 #define NORMAL_BG                                                              \
   { .2F, .2F, .2F, 1.F }

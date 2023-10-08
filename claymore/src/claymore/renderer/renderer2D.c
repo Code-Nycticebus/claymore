@@ -60,7 +60,7 @@ void cm_renderer2d_init(void) {
       render_data->indices, GL_STATIC_DRAW);
 
   const float bytes_in_kilboytes = 1000.F;
-  cm_log_info("Renderer: %.0f kb\n",
+  cm_log_info("Renderer 2D: %.0f kb\n",
               (uint32_t)sizeof(struct Render2dData) / bytes_in_kilboytes);
 }
 
