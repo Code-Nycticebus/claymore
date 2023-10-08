@@ -19,7 +19,7 @@ static CmRenderBuffer rb2;
 
 static bool effect = true;
 
-static float gamma = 2.0F;
+static float gamma = 2;
 
 static char *custom_strdup(const char *str) {
   size_t size = strlen(str) + 1;
@@ -121,12 +121,7 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)key_callback, NULL);
   cm_event_subscribe(CM_EVENT_DROP, (cm_event_callback)drop_callback, NULL);
 
-  const vec4s bg_color = {{
-      pow(0.2, gamma),
-      pow(0.2, gamma),
-      pow(0.2, gamma),
-      1.0,
-  }};
+  const vec4s bg_color = {{0, 0, 0, 1.0}};
   cm_renderer_set_clear_color(bg_color);
   return true;
 }
@@ -148,11 +143,8 @@ static void framebuffer_update(CmScene *scene, CmLayer *layer, float dt) {
 
   cm_framebuffer_bind(&framebuffer);
   /* RENDER INTO FRAMEBUFFER */
-  mat4s model;
-  mat4s mvp;
-
-  model = glms_mat4_identity();
-  mvp = glms_mat4_mul(layer->camera.vp, model);
+  mat4s model = glms_mat4_identity();
+  mat4s mvp = glms_mat4_mul(layer->camera.vp, model);
 
   cm_shader_bind(&layer_shader);
   cm_shader_set_mat4(&layer_shader, "u_mvp", mvp);
