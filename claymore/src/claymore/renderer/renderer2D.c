@@ -105,9 +105,9 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, const float z,
 
   const vec3s vertex_positions[CM_RENDERER2D_VERTICES_PER_QUAD] = {
       {{position.x, position.y, z}},
-      {{position.x + size.x, position.y, z}},
-      {{position.x + size.x, position.y + size.y, z}},
       {{position.x, position.y + size.y, z}},
+      {{position.x + size.x, position.y + size.y, z}},
+      {{position.x + size.x, position.y, z}},
   };
 
   float cos_theta;

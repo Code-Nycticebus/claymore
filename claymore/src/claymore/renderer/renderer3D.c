@@ -137,15 +137,15 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
   } vertex_data[CM_RENDERER3D_VERTICES_PER_CUBE] = {
       // Front
       {{{pos.x, pos.y, pos.z}}, {{0, 0, 1}}},
-      {{{pos.x + size.x, pos.y, pos.z}}, {{0, 0, 1}}},
-      {{{pos.x + size.x, pos.y + size.y, pos.z}}, {{0, 0, 1}}},
       {{{pos.x, pos.y + size.y, pos.z}}, {{0, 0, 1}}},
+      {{{pos.x + size.x, pos.y + size.y, pos.z}}, {{0, 0, 1}}},
+      {{{pos.x + size.x, pos.y, pos.z}}, {{0, 0, 1}}},
 
       // Right
       {{{pos.x + size.x, pos.y, pos.z}}, {{1, 0, 0}}},
-      {{{pos.x + size.x, pos.y, pos.z - size.z}}, {{1, 0, 0}}},
-      {{{pos.x + size.x, pos.y + size.y, pos.z - size.z}}, {{1, 0, 0}}},
       {{{pos.x + size.x, pos.y + size.y, pos.z}}, {{1, 0, 0}}},
+      {{{pos.x + size.x, pos.y + size.y, pos.z - size.z}}, {{1, 0, 0}}},
+      {{{pos.x + size.x, pos.y, pos.z - size.z}}, {{1, 0, 0}}},
 
       // Left
       {{{pos.x, pos.y, pos.z}}, {{-1, 0, 0}}},
@@ -167,9 +167,10 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
 
       // Bottom
       {{{pos.x + size.x, pos.y, pos.z}}, {{0, -1, 0}}},
-      {{{pos.x, pos.y, pos.z}}, {{0, -1, 0}}},
-      {{{pos.x, pos.y, pos.z - size.z}}, {{0, -1, 0}}},
       {{{pos.x + size.x, pos.y, pos.z - size.z}}, {{0, -1, 0}}},
+      {{{pos.x, pos.y, pos.z - size.z}}, {{0, -1, 0}}},
+      {{{pos.x, pos.y, pos.z}}, {{0, -1, 0}}},
+
   };
 
   float c;

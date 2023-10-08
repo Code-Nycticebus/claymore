@@ -158,12 +158,11 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   const float r = 45;
   float cube_rotation = glm_rad(r);
   // cube_rotation += glm_rad(1 * dt);
-  cm_renderer3d_push_cube_color_rotated((vec3s){{0, 0, 0}}, (vec3s){{2, 2, 2}},
-                                        (vec4s){{1, 1, 0, 1}}, cube_rotation,
-                                        (vec3s){{0, 0, -1}});
+  cm_renderer3d_push_cube_color((vec3s){{0, 0, 0}}, (vec3s){{2, 2, 2}},
+                                (vec4s){{1, 1, 0, 1}});
 
   cube_rotation += glm_rad(1 * dt);
-  cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 1}}, (vec3s){{2, 2, 2}},
+  cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 2}}, (vec3s){{2, 2, 2}},
                                         (vec4s){{1, 0, 0, 1}}, cube_rotation,
                                         (vec3s){{1, 0, 0}});
 
