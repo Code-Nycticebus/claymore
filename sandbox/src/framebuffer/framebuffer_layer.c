@@ -65,9 +65,9 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   const float vertecies[] = {
       // positions // texCoords
       -1.0F, -1.0F, 0.0F, 0.0F, //
-      1.0F,  -1.0F, 1.0F, 0.0F, //
-      1.0F,  1.0F,  1.0F, 1.0F, //
       -1.0F, 1.0F,  0.0F, 1.0F, //
+      1.0F,  1.0F,  1.0F, 1.0F, //
+      1.0F,  -1.0F, 1.0F, 0.0F, //
   };
   const size_t vertices_count = 4;
 
@@ -95,9 +95,9 @@ static bool framebuffer_init(CmScene *scene, CmLayer *layer) {
   const float vertecies2[] = {
       // positions // texCoords
       -1.0F, -1.0F, 0.0F, 0.0F, //
-      -.5F,  -1.0F, 1.0F, 0.0F, //
-      -.5F,  -.5F,  1.0F, 1.0F, //
       -1.0F, -.5F,  0.0F, 1.0F, //
+      -.5F,  -.5F,  1.0F, 1.0F, //
+      -.5F,  -1.0F, 1.0F, 0.0F, //
   };
   const size_t vertices_count2 = 4;
 
