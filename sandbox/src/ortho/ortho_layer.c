@@ -6,10 +6,8 @@ struct Vertex {
 };
 
 static CmShader grid_shader;
-
 static CmFont *font;
 static const float font_size = 64.F;
-static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
 #define ORTHO_INITIAL_ZOOM 1400.F
 static vec3s camera_initial_position = {{0, 0, 0}};
@@ -93,6 +91,7 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
 static void ortho_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)dt, (void)layer, (void)scene;
 
+  static mat4s model = GLMS_MAT4_IDENTITY_INIT;
   static mat4s mvp;
   mvp = glms_mat4_mul(layer->camera.vp, model);
 
