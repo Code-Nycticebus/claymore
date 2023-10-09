@@ -15,7 +15,7 @@ struct Vertex {
   vec3 normal;
 };
 
-static const float fov = 60.F;
+static const float fov = 80.F;
 
 #define LIGHT_START_POS                                                        \
   {                                                                            \
@@ -126,7 +126,7 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
                                           "res/shader/basic.fs.glsl");
 
   layer->camera = cm_camera_init_perspective(
-      (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
+      (vec3s){{0, 0, 4 * 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 
   cm_renderer_set_clear_color((vec4s){{0.F, 0.F, 0.F, 1.F}});
@@ -156,17 +156,17 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_renderer3d_push_cube_color((vec3s){{0, 0, 0}}, (vec3s){{2, 2, 2}},
                                 (vec4s){{1, 1, 0, 1}});
 
-  cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 3}}, (vec3s){{2, 2, 2}},
+  cm_renderer3d_push_cube_color_rotated((vec3s){{2, 1, 3}}, (vec3s){{2, 2, 2}},
                                         (vec4s){{1, 0, 0, 1}}, cube_rotation,
-                                        (vec3s){{1, 0, 0}});
+                                        (vec3s){{1, 1, 0}});
 
   cm_renderer3d_push_cube_color_rotated(
       (vec3s){{-1, -4, -3}}, (vec3s){{2, 2, 2}}, (vec4s){{0, 0, 1, 1}},
-      cube_rotation, (vec3s){{0, 0, 1}});
+      cube_rotation, (vec3s){{0, 1, 1}});
 
   cm_renderer3d_push_cube_color_rotated(
       (vec3s){{-4, 2, -1}}, (vec3s){{2, 2, 2}}, (vec4s){{0, 1, 0, 1}},
-      cube_rotation, (vec3s){{0, 1, 0}});
+      cube_rotation, (vec3s){{0, 1, 1}});
 
   cm_renderer3d_end();
   cm_shader_unbind();
@@ -178,7 +178,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   const vec3s origin = {0};
   vec3s direction = glms_vec3_sub(light_pos, origin);
   const float angle = 45 * dt;
-  const vec3s axis = {{1, sinf(cm_window_time()) / 2, 0}};
+  const vec3s axis = {{1, 0.5, 0}};
   vec3s rotation = glms_vec3_rotate(direction, glm_rad(angle), axis);
   light_pos = glms_vec3_add(rotation, origin);
 
@@ -186,7 +186,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   const float scale = 0.5F;
   vec3s l_pos = glms_vec3_sub(light_pos, glms_vec3_scale(l_s, scale));
 
-  cm_renderer3d_push_cube(l_pos, l_s);
+  cm_renderer3d_push_cube_rotated(l_pos, l_s, angle, axis);
 
   cm_renderer3d_end();
   cm_shader_unbind();
