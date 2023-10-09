@@ -25,6 +25,7 @@ typedef struct {
 
 typedef struct {
   vec2s pos;
+  vec2s direction;
   CmMouseKeycode button;
 } CmMouseInfo;
 

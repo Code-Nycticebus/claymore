@@ -9,6 +9,7 @@ CmMouseInfo cm_mouseinfo(void);
 
 CmMouseAction cm_mouseinfo_button(CmMouseKeycode button);
 vec2s cm_mouseinfo_pos(void);
+vec2s cm_mouseinfo_direction(void);
 
 // TODO set private
 void cm_mouseinfo_set_pos(vec2s pos);

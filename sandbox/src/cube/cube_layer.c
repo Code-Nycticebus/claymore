@@ -3,8 +3,6 @@
 static CmShader cube_shader;
 static CmShader light_shader;
 
-static vec2s mouse_last_pos = {{0, 0}};
-
 static CmRenderBuffer render_data_light;
 
 static GLenum draw_mode = GL_FILL;
@@ -27,13 +25,10 @@ static vec3s light_pos = LIGHT_START_POS;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
-    vec2s mouse_pos = cm_mouseinfo_pos();
 
-    vec2s dir = glms_vec2_sub(mouse_pos, mouse_last_pos);
+    vec2s dir = cm_mouseinfo_direction();
     glms_vec2_normalize(dir);
     dir = glms_vec2_scale(dir, (float)3);
-
-    mouse_last_pos = mouse_pos;
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       float camera_distance =
@@ -135,7 +130,6 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
       (float)scene->app->window->width / (float)scene->app->window->height);
 
   cm_renderer_set_clear_color((vec4s){{0.F, 0.F, 0.F, 1.F}});
-  mouse_last_pos = cm_mouseinfo_pos();
 
   return true;
 }
