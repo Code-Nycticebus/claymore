@@ -3,8 +3,6 @@
 static CmShader cube_shader;
 static CmShader light_shader;
 
-static vec2s mouse_last_pos = {{0, 0}};
-
 static CmRenderBuffer render_data_light;
 
 static GLenum draw_mode = GL_FILL;
@@ -22,21 +20,11 @@ static const float fov = 60.F;
 static CmFont *font;
 static const float font_size = 24.F;
 
-#define LIGHT_START_POS                                                        \
-  {                                                                            \
-    { 0, 0, -10.F }                                                            \
-  }
-static vec3s light_pos = LIGHT_START_POS;
-
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
-    vec2s mouse_pos = cm_mouseinfo_pos();
-
-    vec2s dir = glms_vec2_sub(mouse_pos, mouse_last_pos);
+    vec2s dir = cm_mouseinfo_direction();
     glms_vec2_normalize(dir);
     dir = glms_vec2_scale(dir, (float)3);
-
-    mouse_last_pos = mouse_pos;
 
     if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
       float camera_distance =
@@ -138,7 +126,6 @@ static bool cube_init(CmScene *scene, CmLayer *layer) {
       (float)scene->app->window->width / (float)scene->app->window->height);
 
   cm_renderer_set_clear_color((vec4s){{0.F, 0.F, 0.F, 1.F}});
-  mouse_last_pos = cm_mouseinfo_pos();
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
 
@@ -157,7 +144,7 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
   cm_shader_set_mat4(&cube_shader, "u_model", model);
-  cm_shader_set_vec3(&cube_shader, "u_light_pos", light_pos);
+  cm_shader_set_vec3(&cube_shader, "u_light_pos", layer->camera.position);
   cm_shader_set_vec3(&cube_shader, "u_view_pos", layer->camera.position);
 
   cm_renderer3d_begin();
@@ -168,13 +155,20 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 
   static float cube_rotation = 0;
   cube_rotation += 4 * dt;
-  const vec3s cube_size = {{.5F, .5F, .5F}};
+  const vec3s cube_size = {{.6F, .6F, .6F}};
+  const float color_min = 0.2F;
+  const float color_max = 0.8F;
   for (size_t i = 0; i < grid_size; i++) {
     for (size_t j = 0; j < grid_size; j++) {
       for (size_t z = 0; z < grid_size; z++) {
+        const vec3s color =
+            glms_vec3_clamp((vec3s){{i / (float)grid_size, j / (float)grid_size,
+                                     z / (float)grid_size}},
+                            color_min, color_max);
         cm_renderer3d_push_cube_color_rotated(
-            (vec3s){{i, j, z}}, cube_size, (vec4s){{1, 0, 0, 1}},
-            glm_rad(cube_rotation), (vec3s){{1, 1, 1}});
+            (vec3s){{i, j, z}}, cube_size,
+            (vec4s){{color.r, color.g, color.b, 1}}, glm_rad(cube_rotation),
+            (vec3s){{1, 1, 1}});
       }
     }
   }
@@ -187,26 +181,6 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%u cubes",
                               grid_size * grid_size * grid_size);
   cm_font_draw(font, mvp, 0.F, -font_size, -100.F, len, label_buffer);
-
-  cm_shader_bind(&light_shader);
-  cm_shader_set_mat4(&light_shader, "u_mvp", mvp);
-  cm_renderer3d_begin();
-
-  const vec3s origin = {0};
-  vec3s direction = glms_vec3_sub(light_pos, origin);
-  const float angle = 90 * dt;
-  const vec3s axis = {{1, 1, 0}};
-  vec3s rotation = glms_vec3_rotate(direction, glm_rad(angle), axis);
-  light_pos = glms_vec3_add(rotation, origin);
-
-  const vec3s l_s = {{1, 1, 1}};
-  const float scale = 0.5F;
-  vec3s l_pos = glms_vec3_sub(light_pos, glms_vec3_scale(l_s, scale));
-
-  cm_renderer3d_push_cube(l_pos, l_s);
-
-  cm_renderer3d_end();
-  cm_shader_unbind();
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Reset to normal mode
 }
