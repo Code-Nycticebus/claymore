@@ -188,8 +188,7 @@ static inline void _cm_renderer3d_push_cube(vec3s pos, vec3s size, vec4s color,
     vertices[i].normal = vertex_data[i].normal;
     if (rotation != 0) {
       _rotate_around_axis(c, s, normalized_axis, vertices[i].pos.raw, pos.raw);
-      _rotate_around_axis(c, s, normalized_axis, vertices[i].normal.raw,
-                          pos.raw);
+      _renderer_vec3_fast_rotate(c, s, normalized_axis, vertices[i].normal.raw);
     }
     vertices[i].color = color;
     // vertices[i].uv.u = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);

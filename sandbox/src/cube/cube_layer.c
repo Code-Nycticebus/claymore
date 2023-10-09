@@ -149,26 +149,24 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_vec3(&cube_shader, "u_view_pos", layer->camera.position);
 
   cm_renderer3d_begin();
-  const float r = 45;
-  float cube_rotation = glm_rad(r);
-  // cube_rotation += glm_rad(1 * dt);
+  const float r = 10;
+  static float cube_rotation = 0;
+  // cube_rotation = glm_rad(r);
+  cube_rotation += glm_rad(r * dt);
   cm_renderer3d_push_cube_color((vec3s){{0, 0, 0}}, (vec3s){{2, 2, 2}},
                                 (vec4s){{1, 1, 0, 1}});
 
-  cube_rotation += glm_rad(1 * dt);
-  cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 2}}, (vec3s){{2, 2, 2}},
+  cm_renderer3d_push_cube_color_rotated((vec3s){{1, 1, 3}}, (vec3s){{2, 2, 2}},
                                         (vec4s){{1, 0, 0, 1}}, cube_rotation,
                                         (vec3s){{1, 0, 0}});
 
-  cube_rotation += glm_rad(1 * dt);
   cm_renderer3d_push_cube_color_rotated(
-      (vec3s){{-1, -4, -1}}, (vec3s){{2, 2, 2}}, (vec4s){{0, 0, 1, 1}},
-      cube_rotation, (vec3s){{0, 1, 0}});
+      (vec3s){{-1, -4, -3}}, (vec3s){{2, 2, 2}}, (vec4s){{0, 0, 1, 1}},
+      cube_rotation, (vec3s){{0, 0, 1}});
 
-  cube_rotation += glm_rad(1 * dt);
-  cm_renderer3d_push_cube_color_rotated((vec3s){{-4, 1, 0}}, (vec3s){{2, 2, 2}},
-                                        (vec4s){{0, 1, 0, 1}}, cube_rotation,
-                                        (vec3s){{0, 0, 1}});
+  cm_renderer3d_push_cube_color_rotated(
+      (vec3s){{-4, 2, -1}}, (vec3s){{2, 2, 2}}, (vec4s){{0, 1, 0, 1}},
+      cube_rotation, (vec3s){{0, 1, 0}});
 
   cm_renderer3d_end();
   cm_shader_unbind();
@@ -179,8 +177,8 @@ static void cube_update(CmScene *scene, CmLayer *layer, float dt) {
 
   const vec3s origin = {0};
   vec3s direction = glms_vec3_sub(light_pos, origin);
-  const float angle = 90 * dt;
-  const vec3s axis = {{1, 1, 0}};
+  const float angle = 45 * dt;
+  const vec3s axis = {{1, sinf(cm_window_time()) / 2, 0}};
   vec3s rotation = glms_vec3_rotate(direction, glm_rad(angle), axis);
   light_pos = glms_vec3_add(rotation, origin);
 

@@ -30,4 +30,5 @@ void main() {
 
   vec3 color = (ambient + diffuse + specular) * v_color.rgb;
   f_color = vec4(color, v_color.a);
+  // f_color = vec4((v_normal + 1) / 2, 1.0);
 }
