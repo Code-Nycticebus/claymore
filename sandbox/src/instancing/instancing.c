@@ -1,4 +1,5 @@
 #include "instancing.h"
+#include <stdlib.h>
 
 CmLayerInterface sandbox_fps(void);
 
@@ -13,6 +14,8 @@ static CmRenderBuffer render_data_cube;
 static CmVertexBuffer vbo;
 
 static const float fov = 60.F;
+
+#define INSTANCED_CUBES 100000
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -168,10 +171,23 @@ static bool instancing_scene_init(CmScene *scene) {
       cm_index_buffer_create(&render_data_cube.vertex_attribute, indices_count,
                              cube_indices, GL_STATIC_DRAW);
 
-  mat4s transforms[] = {
-      glms_mat4_identity(),
-      glms_translate_make((vec3s){{2, 2, 2}}),
-  };
+  mat4s transforms[INSTANCED_CUBES];
+  for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
+    float x = rand() % 500 - 250;
+    float y = rand() % 500 - 250;
+    float z = rand() % 500 - 250;
+    float s = rand() % 10 + 5;
+
+    float r = rand() % 360;
+    vec3s axis = {{1, 0, 0}};
+
+    mat4s scale = glms_scale_make((vec3s){{s, s, s}});
+    mat4s rot = glms_rotate_make(r, axis);
+    mat4s trans = glms_translate_make((vec3s){{x, y, z}});
+
+    transforms[i] = glms_mat4_mul(scale, rot);
+    transforms[i] = glms_mat4_mul(transforms[i], trans);
+  }
 
   vbo = cm_vertex_buffer_create(1, sizeof(transforms), transforms,
                                 GL_STATIC_DRAW);
@@ -221,9 +237,8 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   glBindVertexArray(render_data_cube.vertex_attribute.id);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data_cube.index_buffer.id);
 
-  const size_t num_instances = 2;
   glDrawElementsInstanced(GL_TRIANGLES, render_data_cube.index_buffer.count,
-                          GL_UNSIGNED_INT, NULL, num_instances);
+                          GL_UNSIGNED_INT, NULL, INSTANCED_CUBES);
 
   cm_shader_unbind();
   (void)mvp;
