@@ -7,6 +7,7 @@
 #include "cube/cube.h"
 #include "cube_bench/cube_bench.h"
 #include "framebuffer/framebuffer.h"
+#include "instancing/instancing.h"
 #include "menu/menu.h"
 #include "ortho/ortho.h"
 #include "particles/particle.h"
@@ -50,6 +51,7 @@ ClaymoreConfig claymore_config(void) {
               scene_framebuffer,
               scene_texture,
               scene_particle,
+              scene_instancing,
           },
   };
 }

@@ -14,8 +14,8 @@ typedef struct {
 } MenuButton;
 
 static const char *button_labels[] = {
-    "Quad Benchmark", "Cube Benchmark", "3D Cube",
-    "Framebuffer",    "Texture",        "Particle",
+    "Quad Benchmark", "Cube Benchmark", "3D Cube",    "Framebuffer",
+    "Texture",        "Particle",       "Instancing",
 };
 #define BUTTON_LABELS_COUNT (sizeof(button_labels) / sizeof(button_labels[0]))
 static MenuButton buttons[BUTTON_LABELS_COUNT] = {0};
