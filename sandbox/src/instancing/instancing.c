@@ -18,7 +18,7 @@ static const float fov = 60.F;
 size_t transform_count;
 mat4s *transform;
 
-#define INSTANCED_CUBES 20000
+#define INSTANCED_CUBES 60000
 
 static struct {
   vec3s position;
@@ -63,13 +63,13 @@ static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
 
 static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
   const float min_distance = 0.1F;
-  const float max_distance = 100.F;
+  const float max_distance = 1000.F;
 
   vec3s direction;
   vec3s center = {{0, 0, 0}};
   direction = glms_vec3_sub(center, camera->position);
   direction = glms_vec3_normalize(direction);
-  direction = glms_vec3_scale(direction, (float)event->yoffset);
+  direction = glms_vec3_scale(direction, (float)event->yoffset * 100.F);
 
   vec3s new_camera_pos = glms_vec3_add(camera->position, direction);
   float new_distance = glms_vec3_distance(new_camera_pos, center);
@@ -207,10 +207,10 @@ static bool instancing_scene_init(CmScene *scene) {
   glVertexAttribDivisor(6, 1);
 
   for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    const float x = rand() % 500 - 250;
-    const float y = rand() % 500 - 250;
-    const float z = rand() % 500 - 250;
-    const float s = rand() % 10 + 5;
+    const float x = rand() % 200 - 100;
+    const float y = rand() % 200 - 100;
+    const float z = rand() % 200 - 100;
+    const float s = rand() % 2 + 1;
     const float r = rand() % 360;
     vec3s axis = {{1, 1, 1}};
 
