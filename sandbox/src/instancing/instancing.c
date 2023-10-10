@@ -14,8 +14,18 @@ static CmRenderBuffer render_data_cube;
 static CmVertexBuffer vbo;
 
 static const float fov = 60.F;
+
+size_t transform_count;
 mat4s *transform;
-#define INSTANCED_CUBES 300000
+
+#define INSTANCED_CUBES 20000
+
+static struct {
+  vec3s position;
+  vec3s size;
+  float rotation;
+  vec3s axis;
+} Cubes[INSTANCED_CUBES];
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -172,22 +182,6 @@ static bool instancing_scene_init(CmScene *scene) {
                              cube_indices, GL_STATIC_DRAW);
 
   transform = malloc(sizeof(mat4s) * INSTANCED_CUBES);
-  for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    float x = rand() % 500 - 250;
-    float y = rand() % 500 - 250;
-    float z = rand() % 500 - 250;
-    float s = rand() % 10 + 5;
-
-    float r = rand() % 360;
-    vec3s axis = {{1, 1, 1}};
-
-    mat4s scale = glms_scale_make((vec3s){{s, s, s}});
-    mat4s rot = glms_rotate_make(r, axis);
-    mat4s trans = glms_translate_make((vec3s){{x, y, z}});
-
-    transform[i] = glms_mat4_mul(scale, rot);
-    transform[i] = glms_mat4_mul(transform[i], trans);
-  }
 
   vbo = cm_vertex_buffer_create(1, sizeof(mat4s) * INSTANCED_CUBES, transform,
                                 GL_STATIC_DRAW);
@@ -212,6 +206,20 @@ static bool instancing_scene_init(CmScene *scene) {
   glVertexAttribDivisor(5, 1);
   glVertexAttribDivisor(6, 1);
 
+  for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
+    const float x = rand() % 500 - 250;
+    const float y = rand() % 500 - 250;
+    const float z = rand() % 500 - 250;
+    const float s = rand() % 10 + 5;
+    const float r = rand() % 360;
+    vec3s axis = {{1, 1, 1}};
+
+    Cubes[i].position = (vec3s){{x, y, z}};
+    Cubes[i].size = (vec3s){{s, s, s}};
+    Cubes[i].rotation = r;
+    Cubes[i].axis = axis;
+  }
+
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
                      &scene->camera);
 
@@ -232,9 +240,23 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   mat4s model = glms_mat4_identity();
   mat4s mvp = glms_mat4_mul(scene->camera.vp, model);
 
+  glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(mat4s) * INSTANCED_CUBES,
+                  transform);
+
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
   glBindVertexArray(render_data_cube.vertex_attribute.id);
+  for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
+    const float rotation_pers_second = 20;
+    Cubes[i].rotation += rotation_pers_second * dt;
+    mat4s scale = glms_scale_make(Cubes[i].size);
+    mat4s rot = glms_rotate_make(glm_rad(Cubes[i].rotation), Cubes[i].axis);
+    mat4s trans = glms_translate_make(Cubes[i].position);
+
+    transform[i] = glms_mat4_mul(scale, trans);
+    transform[i] = glms_mat4_mul(transform[i], rot);
+  }
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data_cube.index_buffer.id);
 
   glDrawElementsInstanced(GL_TRIANGLES, render_data_cube.index_buffer.count,
