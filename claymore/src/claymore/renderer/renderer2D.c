@@ -121,8 +121,8 @@ static inline void _cm_renderer2d_push_quad(const vec2s position, const float z,
   for (int i = 0; i < CM_RENDERER2D_VERTICES_PER_QUAD; ++i) {
     vertices[i].pos = vertex_positions[i];
     vertices[i].color = color;
-    vertices[i].uv.u = text_coord.u + (i == 1 || i == 2 ? text_size.x : 0);
-    vertices[i].uv.v = text_coord.v + (i == 2 || i == 3 ? text_size.y : 0);
+    vertices[i].uv.u = text_coord.u + (i == 2 || i == 3 ? text_size.x : 0);
+    vertices[i].uv.v = text_coord.v + (i == 1 || i == 2 ? text_size.y : 0);
 
     if (rotation != 0.F) {
       float x = vertices[i].pos.x - position.x;
