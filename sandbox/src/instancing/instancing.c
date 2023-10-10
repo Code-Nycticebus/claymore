@@ -20,7 +20,7 @@ struct Transform {
   mat4s transform;
 } *transform;
 
-#define INSTANCED_CUBES 60000
+#define INSTANCED_CUBES 15000
 
 static struct {
   vec3s position;
@@ -193,7 +193,7 @@ static bool instancing_scene_init(CmScene *scene) {
   glBindVertexArray(render_data_cube.vertex_attribute.id);
 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void *)0);
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_TRUE, sizeof(mat4), (void *)0);
   glEnableVertexAttribArray(4);
   glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(mat4),
                         (void *)(sizeof(vec4)));
@@ -210,14 +210,15 @@ static bool instancing_scene_init(CmScene *scene) {
   glVertexAttribDivisor(6, 1);
 
   for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    const float x = rand() % 200 - 100;
-    const float y = rand() % 200 - 100;
-    const float z = rand() % 200 - 100;
+    const float x = (rand() / (float)RAND_MAX) - .5F;
+    const float y = (rand() / (float)RAND_MAX) - .5F;
+    const float z = (rand() / (float)RAND_MAX) - .5F;
     const float s = rand() % 2 + 1;
     const float r = rand() % 360;
     vec3s axis = {{1, 1, 1}};
 
-    Cubes[i].position = (vec3s){{x, y, z}};
+    Cubes[i].position =
+        glms_vec3_scale(glms_vec3_normalize((vec3s){{x, y, z}}), rand() % 200);
     Cubes[i].size = (vec3s){{s, s, s}};
     Cubes[i].rotation = r;
     Cubes[i].axis = axis;
@@ -241,6 +242,9 @@ static bool instancing_scene_init(CmScene *scene) {
 static void instancing_scene_update(CmScene *scene, float dt) {
   (void)scene, (void)dt;
   mat4s model = glms_mat4_identity();
+  static float rr = 0;
+  rr += 1 * dt;
+  model = glms_rotate(model, glm_rad(rr), (vec3s){{1, 1, 0}});
   mat4s mvp = glms_mat4_mul(scene->camera.vp, model);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
