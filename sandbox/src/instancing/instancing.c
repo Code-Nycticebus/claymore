@@ -16,7 +16,9 @@ static CmVertexBuffer vbo;
 static const float fov = 60.F;
 
 size_t transform_count;
-mat4s *transform;
+struct Transform {
+  mat4s transform;
+} *transform;
 
 #define INSTANCED_CUBES 60000
 
@@ -25,6 +27,7 @@ static struct {
   vec3s size;
   float rotation;
   vec3s axis;
+  vec4s color;
 } Cubes[INSTANCED_CUBES];
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
@@ -181,10 +184,10 @@ static bool instancing_scene_init(CmScene *scene) {
       cm_index_buffer_create(&render_data_cube.vertex_attribute, indices_count,
                              cube_indices, GL_STATIC_DRAW);
 
-  transform = malloc(sizeof(mat4s) * INSTANCED_CUBES);
+  transform = malloc(sizeof(struct Transform) * INSTANCED_CUBES);
 
-  vbo = cm_vertex_buffer_create(1, sizeof(mat4s) * INSTANCED_CUBES, transform,
-                                GL_STATIC_DRAW);
+  vbo = cm_vertex_buffer_create(1, sizeof(struct Transform) * INSTANCED_CUBES,
+                                transform, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
   glBindVertexArray(render_data_cube.vertex_attribute.id);
@@ -241,22 +244,23 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   mat4s mvp = glms_mat4_mul(scene->camera.vp, model);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(mat4s) * INSTANCED_CUBES,
-                  transform);
 
-  cm_shader_bind(&cube_shader);
-  cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
   glBindVertexArray(render_data_cube.vertex_attribute.id);
   for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    const float rotation_pers_second = 20;
-    Cubes[i].rotation += rotation_pers_second * dt;
+    const float rotation_per_second = 20;
+    Cubes[i].rotation += rotation_per_second * dt;
     mat4s scale = glms_scale_make(Cubes[i].size);
     mat4s rot = glms_rotate_make(glm_rad(Cubes[i].rotation), Cubes[i].axis);
     mat4s trans = glms_translate_make(Cubes[i].position);
 
-    transform[i] = glms_mat4_mul(scale, trans);
-    transform[i] = glms_mat4_mul(transform[i], rot);
+    transform[i].transform = glms_mat4_mul(scale, trans);
+    transform[i].transform = glms_mat4_mul(transform[i].transform, rot);
   }
+  glBufferSubData(GL_ARRAY_BUFFER, 0,
+                  sizeof(struct Transform) * INSTANCED_CUBES, transform);
+
+  cm_shader_bind(&cube_shader);
+  cm_shader_set_mat4(&cube_shader, "u_mvp", mvp);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data_cube.index_buffer.id);
 
   glDrawElementsInstanced(GL_TRIANGLES, render_data_cube.index_buffer.count,
