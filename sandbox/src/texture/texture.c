@@ -1,7 +1,4 @@
 #include "texture.h"
-#include "claymore/renderer/font.h"
-#include "claymore/renderer/renderer2D.h"
-#include "claymore/renderer/textures.h"
 
 static CmShader texture_shader;
 static CmFont *text_font;
@@ -65,9 +62,9 @@ static void texture_scene_update(CmScene *scene, float dt) {
   } else {
     const char text[] = "Drag a texture inside the window";
     size_t str_len = (sizeof(text) - 1);
-    float y_offset = (scene->app->window->height / 2) - (font_size / 2);
-    float x_offset =
-        (scene->app->window->width / 2) - ((str_len / 2) * (font_size / 2));
+    float y_offset = ((float)scene->app->window->height / 2) - (font_size / 2);
+    float x_offset = ((float)scene->app->window->width / 2) -
+                     (((float)str_len / 2) * (font_size / 2));
     cm_font_draw_cstr(text_font, mvp, x_offset, y_offset, 0, text);
   }
 }
