@@ -13,14 +13,14 @@ static CmShader cube_shader;
 static CmRenderBuffer render_data_cube;
 static CmVertexBuffer vbo;
 
-static const float fov = 60.F;
+static const float fov = 90.F;
 
 size_t transform_count;
 struct Transform {
   mat4s transform;
 } *transform;
 
-#define INSTANCED_CUBES 15000
+#define INSTANCED_CUBES 10000
 
 static struct {
   vec3s position;
@@ -70,9 +70,10 @@ static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
 
   vec3s direction;
   vec3s center = {{0, 0, 0}};
+  float distance = glms_vec3_distance(center, camera->position);
   direction = glms_vec3_sub(center, camera->position);
   direction = glms_vec3_normalize(direction);
-  direction = glms_vec3_scale(direction, (float)event->yoffset);
+  direction = glms_vec3_scale(direction, (float)event->yoffset * distance / 2);
 
   vec3s new_camera_pos = glms_vec3_add(camera->position, direction);
   float new_distance = glms_vec3_distance(new_camera_pos, center);
@@ -109,6 +110,11 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
       break;
     }
   }
+}
+
+static float rand_float(void) {
+  const float x = 0.5F;
+  return (rand() / (float)RAND_MAX) - x;
 }
 
 static bool instancing_scene_init(CmScene *scene) {
@@ -210,11 +216,11 @@ static bool instancing_scene_init(CmScene *scene) {
   glVertexAttribDivisor(6, 1);
 
   for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    const float x = (rand() / (float)RAND_MAX) - .5F;
-    const float y = (rand() / (float)RAND_MAX) - .5F;
-    const float z = (rand() / (float)RAND_MAX) - .5F;
-    const float spread = rand() % 150;
-    const float s = rand() % 2 + 1;
+    const float x = rand_float();
+    const float y = rand_float();
+    const float z = rand_float();
+    const float spread = rand() % 100 + 25;
+    const float s = rand_float() * 3 + 1;
     const float r = rand() % 360;
     vec3s axis = {{1, 1, 1}};
 
