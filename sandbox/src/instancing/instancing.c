@@ -65,14 +65,14 @@ static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
 }
 
 static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
-  const float min_distance = 0.1F;
+  const float min_distance = 1.F;
   const float max_distance = 1000.F;
 
   vec3s direction;
   vec3s center = {{0, 0, 0}};
   direction = glms_vec3_sub(center, camera->position);
   direction = glms_vec3_normalize(direction);
-  direction = glms_vec3_scale(direction, (float)event->yoffset * 100.F);
+  direction = glms_vec3_scale(direction, (float)event->yoffset);
 
   vec3s new_camera_pos = glms_vec3_add(camera->position, direction);
   float new_distance = glms_vec3_distance(new_camera_pos, center);
@@ -121,40 +121,40 @@ static bool instancing_scene_init(CmScene *scene) {
 
   struct Vertex cube_vertices[] = {
       // Front
-      {{-1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-      {{-1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-      {{1.F, 1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
-      {{1.F, -1.F, 1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
+      {{0.F, 0.F, 0.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
+      {{0.F, 1.F, 0.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
+      {{1.F, 1.F, 0.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
+      {{1.F, 0.F, 0.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, 1}},
 
       // Right
-      {{1.F, -1.F, 1.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
-      {{1.F, 1.F, 1.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
+      {{1.F, 0.F, 0.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
+      {{1.F, 1.F, 0.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
       {{1.F, 1.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
-      {{1.F, -1.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
+      {{1.F, 0.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {1, 0, 0}},
 
       // Left
-      {{-1.F, -1.F, 1.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
-      {{-1.F, -1.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
-      {{-1.F, 1.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
-      {{-1.F, 1.F, 1.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
+      {{0.F, 0.F, 0.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
+      {{0.F, 0.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
+      {{0.F, 1.F, -1.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
+      {{0.F, 1.F, 0.F}, {0.F, 1.F, 0.F, 1.F}, {-1, 0, 0}},
 
       // Back
-      {{-1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
-      {{1.F, -1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
+      {{0.F, 0.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
+      {{1.F, 0.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
       {{1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
-      {{-1.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
+      {{0.F, 1.F, -1.F}, {1.F, 0.F, 0.F, 1.F}, {0, 0, -1}},
 
       // Top
-      {{1.F, 1.F, 1.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
-      {{-1.F, 1.F, 1.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
-      {{-1.F, 1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
+      {{1.F, 1.F, 0.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
+      {{0.F, 1.F, 0.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
+      {{0.F, 1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
       {{1.F, 1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, 1, 0}},
 
       // Bottom
-      {{1.F, -1.F, 1.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
-      {{1.F, -1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
-      {{-1.F, -1.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
-      {{-1.F, -1.F, 1.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
+      {{1.F, 0.F, 0.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
+      {{1.F, 0.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
+      {{0.F, 0.F, -1.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
+      {{0.F, 0.F, 0.F}, {0.F, 0.F, 1.F, 1.F}, {0, -1, 0}},
 
   };
   const size_t vertices_count =
@@ -213,12 +213,13 @@ static bool instancing_scene_init(CmScene *scene) {
     const float x = (rand() / (float)RAND_MAX) - .5F;
     const float y = (rand() / (float)RAND_MAX) - .5F;
     const float z = (rand() / (float)RAND_MAX) - .5F;
+    const float spread = rand() % 150;
     const float s = rand() % 2 + 1;
     const float r = rand() % 360;
     vec3s axis = {{1, 1, 1}};
 
     Cubes[i].position =
-        glms_vec3_scale(glms_vec3_normalize((vec3s){{x, y, z}}), rand() % 200);
+        glms_vec3_scale(glms_vec3_normalize((vec3s){{x, y, z}}), spread);
     Cubes[i].size = (vec3s){{s, s, s}};
     Cubes[i].rotation = r;
     Cubes[i].axis = axis;
@@ -248,17 +249,17 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   mat4s mvp = glms_mat4_mul(scene->camera.vp, model);
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-
   glBindVertexArray(render_data_cube.vertex_attribute.id);
   for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
     const float rotation_per_second = 20;
     Cubes[i].rotation += rotation_per_second * dt;
-    mat4s scale = glms_scale_make(Cubes[i].size);
-    mat4s rot = glms_rotate_make(glm_rad(Cubes[i].rotation), Cubes[i].axis);
-    mat4s trans = glms_translate_make(Cubes[i].position);
 
-    transform[i].transform = glms_mat4_mul(scale, trans);
-    transform[i].transform = glms_mat4_mul(transform[i].transform, rot);
+    mat4s trans = glms_translate_make(Cubes[i].position);
+    mat4s rot = glms_rotate_make(glm_rad(Cubes[i].rotation), Cubes[i].axis);
+    mat4s scale = glms_scale_make(Cubes[i].size);
+
+    transform[i].transform = glms_mat4_mul(trans, rot);
+    transform[i].transform = glms_mat4_mul(transform[i].transform, scale);
   }
   glBufferSubData(GL_ARRAY_BUFFER, 0,
                   sizeof(struct Transform) * INSTANCED_CUBES, transform);
