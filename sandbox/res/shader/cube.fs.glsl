@@ -18,7 +18,7 @@ void main() {
   vec3 view_dir = normalize(u_view_pos - v_frag_pos);
   vec3 reflect_dir = reflect(-light_dir, norm);
 
-  const float shininess = 32;
+  const float shininess = 256;
   float spec = pow(max(dot(view_dir, reflect_dir), 0.0), shininess);
   vec3 specular = specular_strenght * spec * light_color;
 

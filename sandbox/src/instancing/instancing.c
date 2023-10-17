@@ -3,14 +3,10 @@
 
 CmLayerInterface sandbox_fps(void);
 
-struct Vertex {
-  vec3 pos;
-  vec3 normal;
-};
-
 static CmShader cube_shader;
-static CmRenderBuffer render_data_cube;
-static CmVertexBuffer vbo;
+
+static CmFont *font;
+static const float font_size = 24.F;
 
 static const float fov = 90.F;
 
@@ -20,17 +16,127 @@ typedef struct Transform {
   mat4s transform;
 } Transform;
 
-Transform *transform;
+#define INSTANCED_DYNAMIC_CUBES 100000
 
-#define INSTANCED_CUBES 50000
+typedef struct {
+  vec3 pos;
+  vec3 normal;
+} Vertex;
 
-static struct {
-  vec3s position;
-  vec3s size;
-  float rotation;
-  vec3s axis;
-  vec4s color;
-} Cubes[INSTANCED_CUBES];
+typedef struct {
+  bool init_stage_over;
+  CmVertexBuffer vbo;
+  size_t cap;
+  size_t static_count;
+  size_t count;
+  Transform *transforms;
+} Transforms;
+
+typedef struct {
+  size_t id;
+  CmRenderBuffer buffer;
+  Transforms transforms;
+} Mesh;
+
+#define MESHMANAGER_MAX 10
+typedef struct {
+  size_t count;
+  Mesh meshes[MESHMANAGER_MAX];
+} MeshManager;
+
+static MeshManager mesh_manager;
+
+void mesh_manager_finish_init(void) {
+  for (size_t i = 0; i < mesh_manager.count; i++) {
+    mesh_manager.meshes[i].transforms.init_stage_over = true;
+    glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.meshes[i].transforms.vbo.id);
+    glBufferSubData(GL_ARRAY_BUFFER, 0,
+                    sizeof(Transform) * mesh_manager.meshes[i].transforms.count,
+                    mesh_manager.meshes[i].transforms.transforms);
+    mesh_manager.meshes[i].transforms.static_count =
+        mesh_manager.meshes[i].transforms.count;
+  }
+}
+
+void mesh_manager_free(void) {
+  for (size_t i = 0; i < MESHMANAGER_MAX; i++) {
+    if (mesh_manager.meshes[i].transforms.transforms != NULL) {
+      free(mesh_manager.meshes[i].transforms.transforms);
+    }
+  }
+}
+
+Mesh *mesh_create(const Vertex *vertices, size_t vertices_count,
+                  const uint32_t *indices, size_t indices_count,
+                  size_t transforms) {
+  Mesh mesh = {0};
+  mesh.buffer.vertex_buffer = cm_vertex_buffer_create(
+      vertices_count, sizeof(Vertex), vertices, GL_STATIC_DRAW);
+  mesh.buffer.vertex_attribute =
+      cm_vertex_attribute_create(&mesh.buffer.vertex_buffer);
+  cm_vertex_attribute_push(&mesh.buffer.vertex_attribute, 3, GL_FLOAT,
+                           offsetof(Vertex, pos));
+  cm_vertex_attribute_push(&mesh.buffer.vertex_attribute, 3, GL_FLOAT,
+                           offsetof(Vertex, normal));
+  mesh.buffer.index_buffer = cm_index_buffer_create(
+      &mesh.buffer.vertex_attribute, indices_count, indices, GL_STATIC_DRAW);
+
+  if (transforms != 0) {
+    mesh.transforms.transforms = malloc(sizeof(Transform) * transforms);
+    mesh.transforms.cap = transforms;
+    mesh.transforms.vbo = cm_vertex_buffer_create(
+        1, sizeof(Transform) * transforms, NULL, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh.transforms.vbo.id);
+    glBindVertexArray(mesh.buffer.vertex_attribute.id);
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
+                          (void *)offsetof(Transform, color));
+    glVertexAttribDivisor(2, 1);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(
+        3, 4, GL_FLOAT, GL_TRUE, sizeof(Transform),
+        (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 0));
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(
+        4, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
+        (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 1));
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(
+        5, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
+        (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 2));
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(
+        6, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
+        (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 3));
+
+    glVertexAttribDivisor(3, 1);
+    glVertexAttribDivisor(4, 1);
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+  }
+  mesh.id = mesh_manager.count;
+  mesh_manager.meshes[mesh_manager.count] = mesh;
+  mesh_manager.count++;
+  return &mesh_manager.meshes[mesh.id];
+}
+
+void mesh_push_static_transform(Mesh *mesh, Transform transform) {
+  assert(mesh->transforms.init_stage_over == false);
+  assert(mesh->transforms.count < mesh->transforms.cap);
+  mesh->transforms.transforms[mesh->transforms.count] = transform;
+  mesh->transforms.count++;
+}
+
+void mesh_push_dynamic_transform(Mesh *mesh, Transform transform) {
+  assert(mesh->transforms.count < mesh->transforms.cap);
+  mesh->transforms.transforms[mesh->transforms.count] = transform;
+  mesh->transforms.count++;
+}
+
+Mesh *cube_mesh;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -75,7 +181,7 @@ static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
   float distance = glms_vec3_distance(center, camera->position);
   direction = glms_vec3_sub(center, camera->position);
   direction = glms_vec3_normalize(direction);
-  direction = glms_vec3_scale(direction, (float)event->yoffset * distance / 2);
+  direction = glms_vec3_scale(direction, (float)event->yoffset * distance / 4);
 
   vec3s new_camera_pos = glms_vec3_add(camera->position, direction);
   float new_distance = glms_vec3_distance(new_camera_pos, center);
@@ -114,11 +220,6 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
   }
 }
 
-static float rand_float(void) {
-  const float x = 0.5F;
-  return (rand() / (float)RAND_MAX) - x;
-}
-
 static bool instancing_scene_init(CmScene *scene) {
   (void)scene;
   scene->camera = cm_camera_init_perspective(
@@ -127,7 +228,7 @@ static bool instancing_scene_init(CmScene *scene) {
   cube_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
                                          "res/shader/cube.fs.glsl");
 
-  struct Vertex cube_vertices[] = {
+  Vertex cube_vertices[] = {
       // Front
       {{0.F, 0.F, 0.F}, {0, 0, 1}},
       {{0.F, 1.F, 0.F}, {0, 0, 1}},
@@ -163,19 +264,9 @@ static bool instancing_scene_init(CmScene *scene) {
       {{1.F, 0.F, -1.F}, {0, -1, 0}},
       {{0.F, 0.F, -1.F}, {0, -1, 0}},
       {{0.F, 0.F, 0.F}, {0, -1, 0}},
-
   };
   const size_t vertices_count =
       sizeof(cube_vertices) / sizeof(cube_vertices[0]);
-
-  render_data_cube.vertex_buffer = cm_vertex_buffer_create(
-      vertices_count, sizeof(struct Vertex), cube_vertices, GL_STATIC_DRAW);
-  render_data_cube.vertex_attribute =
-      cm_vertex_attribute_create(&render_data_cube.vertex_buffer);
-  cm_vertex_attribute_push(&render_data_cube.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(struct Vertex, pos));
-  cm_vertex_attribute_push(&render_data_cube.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(struct Vertex, normal));
 
   const uint32_t cube_indices[] = {
       0,  1,  2,  0,  2,  3,  // Front
@@ -186,65 +277,11 @@ static bool instancing_scene_init(CmScene *scene) {
       20, 21, 22, 20, 22, 23, // Bottom
   };
   const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
-  render_data_cube.index_buffer =
-      cm_index_buffer_create(&render_data_cube.vertex_attribute, indices_count,
-                             cube_indices, GL_STATIC_DRAW);
 
-  transform = malloc(sizeof(Transform) * INSTANCED_CUBES);
+  cube_mesh = mesh_create(cube_vertices, vertices_count, cube_indices,
+                          indices_count, INSTANCED_DYNAMIC_CUBES);
 
-  vbo = cm_vertex_buffer_create(1, sizeof(Transform) * INSTANCED_CUBES,
-                                transform, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  glBindVertexArray(render_data_cube.vertex_attribute.id);
-
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
-                        (void *)offsetof(Transform, color));
-  glVertexAttribDivisor(2, 1);
-
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(
-      3, 4, GL_FLOAT, GL_TRUE, sizeof(Transform),
-      (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 0));
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(
-      4, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
-      (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 1));
-  glEnableVertexAttribArray(5);
-  glVertexAttribPointer(
-      5, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
-      (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 2));
-  glEnableVertexAttribArray(6);
-  glVertexAttribPointer(
-      6, 4, GL_FLOAT, GL_FALSE, sizeof(Transform),
-      (void *)(offsetof(Transform, transform) + sizeof(vec4s) * 3));
-
-  glVertexAttribDivisor(3, 2);
-  glVertexAttribDivisor(4, 2);
-  glVertexAttribDivisor(5, 2);
-  glVertexAttribDivisor(6, 2);
-
-  for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    const float x = rand_float();
-    const float y = rand_float();
-    const float z = rand_float();
-    const float spread = rand() % 1000 + 20;
-    const float s = rand_float() + 0.55F;
-    const float r = rand() % 360;
-    vec3s axis = {{1, 1, 1}};
-
-    Cubes[i].position =
-        glms_vec3_scale(glms_vec3_normalize((vec3s){{x, y, z}}), spread);
-    Cubes[i].size = (vec3s){{s, s, s}};
-    Cubes[i].rotation = r;
-    Cubes[i].axis = axis;
-
-    Cubes[i].color.r = rand() / (float)RAND_MAX;
-    Cubes[i].color.g = rand() / (float)RAND_MAX;
-    Cubes[i].color.b = rand() / (float)RAND_MAX;
-    Cubes[i].color.a = 1;
-  }
+  mesh_manager_finish_init();
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
                      &scene->camera);
@@ -258,15 +295,15 @@ static bool instancing_scene_init(CmScene *scene) {
                      &scene->camera);
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
                      &scene->camera);
+
+  font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
+  glfwSwapInterval(0);
   return true;
 }
 
 static void instancing_scene_update(CmScene *scene, float dt) {
   (void)scene, (void)dt;
   mat4s model = glms_mat4_identity();
-  static float rr = 0;
-  rr += 1 * dt;
-  model = glms_rotate(model, glm_rad(rr), (vec3s){{1, 1, 0}});
 
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
@@ -275,37 +312,56 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   cm_shader_set_vec3(&cube_shader, "u_light_pos", (vec3s){0});
   cm_shader_set_vec3(&cube_shader, "u_view_pos", scene->camera.position);
 
-  // static bool set = false;
-  // if (!set) {
-  //   set = true;
-  glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  for (size_t i = 0; i < INSTANCED_CUBES; ++i) {
-    const float rotation_per_second = 20;
-    Cubes[i].rotation += rotation_per_second * dt;
-
-    mat4s trans = glms_translate_make(Cubes[i].position);
-    mat4s rot = glms_rotate_make(glm_rad(Cubes[i].rotation), Cubes[i].axis);
-    mat4s scale = glms_scale_make(Cubes[i].size);
-
-    transform[i].transform = glms_mat4_mul(trans, rot);
-    transform[i].transform = glms_mat4_mul(transform[i].transform, scale);
-    transform[i].color = Cubes[i].color;
+  static size_t grid_size = 3;
+  assert(grid_size < 1000 && "grid to big");
+  const float dt_max = 1 / 65.F;
+  const float dt_min = 1 / 57.F;
+  static float rotation = 0;
+  const vec3s size = (vec3s){{.5F, .5F, .5F}};
+  rotation += 4 * dt;
+  grid_size += dt < dt_max ? +1 : dt > dt_min ? -1 : 0;
+  for (size_t x = 0; x < grid_size; x++) {
+    for (size_t y = 0; y < grid_size; y++) {
+      for (size_t z = 0; z < grid_size; z++) {
+        mat4s trans = glms_translate_make((vec3s){{x, y, z}});
+        mat4s rot = glms_rotate_make(glm_rad(rotation), (vec3s){{1, 1, 1}});
+        mat4s scale = glms_scale_make(size);
+        Transform t;
+        t.transform = glms_mat4_mul(trans, rot);
+        t.transform = glms_mat4_mul(t.transform, scale);
+        t.color = (vec4s){{x / (float)grid_size, y / (float)grid_size,
+                           z / (float)grid_size, 1}};
+        mesh_push_dynamic_transform(cube_mesh, t);
+      }
+    }
   }
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Transform) * INSTANCED_CUBES,
-                  transform);
-  // }
 
-  glBindVertexArray(render_data_cube.vertex_attribute.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, render_data_cube.index_buffer.id);
-  glDrawElementsInstanced(GL_TRIANGLES, render_data_cube.index_buffer.count,
-                          GL_UNSIGNED_INT, NULL, INSTANCED_CUBES);
+  glBindBuffer(GL_ARRAY_BUFFER, cube_mesh->transforms.vbo.id);
+  glBufferSubData(
+      GL_ARRAY_BUFFER, sizeof(Transform) * cube_mesh->transforms.static_count,
+      sizeof(Transform) *
+          (cube_mesh->transforms.count - cube_mesh->transforms.static_count),
+      &cube_mesh->transforms.transforms[cube_mesh->transforms.static_count]);
 
+  glBindVertexArray(cube_mesh->buffer.vertex_attribute.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_mesh->buffer.index_buffer.id);
+  glDrawElementsInstanced(GL_TRIANGLES, cube_mesh->buffer.index_buffer.count,
+                          GL_UNSIGNED_INT, NULL, cube_mesh->transforms.count);
+
+  cube_mesh->transforms.count = cube_mesh->transforms.static_count;
   cm_shader_unbind();
+
+#define LABEL_SIZE 128
+  char label_buffer[LABEL_SIZE];
+  const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%lu cubes",
+                              grid_size * grid_size * (uint64_t)grid_size);
+  mat4s mvp = glms_mat4_mul(model, scene->camera.vp);
+  cm_font_draw(font, mvp, 0.F, -font_size, -100.F, len, label_buffer);
 }
 
 static void instancing_scene_free(CmScene *scene) {
   (void)scene;
-  free(transform);
+  mesh_manager_free();
 }
 
 CmSceneInterface scene_instancing(void) {
