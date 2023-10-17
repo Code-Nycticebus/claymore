@@ -3,8 +3,6 @@
 
 CmLayerInterface sandbox_fps(void);
 
-static CmShader cube_shader;
-
 static CmFont *font;
 static const float font_size = 24.F;
 
@@ -24,10 +22,8 @@ typedef struct {
 } Vertex;
 
 typedef struct {
-  bool init_stage_over;
   CmVertexBuffer vbo;
   size_t cap;
-  size_t static_count;
   size_t count;
   Transform *transforms;
 } Transforms;
@@ -45,18 +41,15 @@ typedef struct {
 } MeshManager;
 
 static MeshManager mesh_manager;
+static CmShader cube_shader;
+Mesh *cube_dynamic_mesh;
 
-void mesh_manager_finish_init(void) {
-  for (size_t i = 0; i < mesh_manager.count; i++) {
-    mesh_manager.meshes[i].transforms.init_stage_over = true;
-    glBindBuffer(GL_ARRAY_BUFFER, mesh_manager.meshes[i].transforms.vbo.id);
-    glBufferSubData(GL_ARRAY_BUFFER, 0,
-                    sizeof(Transform) * mesh_manager.meshes[i].transforms.count,
-                    mesh_manager.meshes[i].transforms.transforms);
-    mesh_manager.meshes[i].transforms.static_count =
-        mesh_manager.meshes[i].transforms.count;
-  }
-}
+struct {
+  vec3s pos;
+  vec4s color;
+} light;
+static CmShader light_shader;
+Mesh *cube_static_mesh;
 
 void mesh_manager_free(void) {
   for (size_t i = 0; i < MESHMANAGER_MAX; i++) {
@@ -123,20 +116,11 @@ Mesh *mesh_create(const Vertex *vertices, size_t vertices_count,
   return &mesh_manager.meshes[mesh.id];
 }
 
-void mesh_push_static_transform(Mesh *mesh, Transform transform) {
-  assert(mesh->transforms.init_stage_over == false);
+void mesh_push_transform(Mesh *mesh, Transform transform) {
   assert(mesh->transforms.count < mesh->transforms.cap);
   mesh->transforms.transforms[mesh->transforms.count] = transform;
   mesh->transforms.count++;
 }
-
-void mesh_push_dynamic_transform(Mesh *mesh, Transform transform) {
-  assert(mesh->transforms.count < mesh->transforms.cap);
-  mesh->transforms.transforms[mesh->transforms.count] = transform;
-  mesh->transforms.count++;
-}
-
-Mesh *cube_mesh;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -227,7 +211,8 @@ static bool instancing_scene_init(CmScene *scene) {
       (float)scene->app->window->width / (float)scene->app->window->height);
   cube_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
                                          "res/shader/cube.fs.glsl");
-
+  light_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
+                                          "res/shader/basic_instance.fs.glsl");
   Vertex cube_vertices[] = {
       // Front
       {{0.F, 0.F, 0.F}, {0, 0, 1}},
@@ -278,10 +263,16 @@ static bool instancing_scene_init(CmScene *scene) {
   };
   const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
 
-  cube_mesh = mesh_create(cube_vertices, vertices_count, cube_indices,
-                          indices_count, INSTANCED_DYNAMIC_CUBES);
+  cube_dynamic_mesh = mesh_create(cube_vertices, vertices_count, cube_indices,
+                                  indices_count, INSTANCED_DYNAMIC_CUBES);
+  cube_static_mesh = mesh_create(cube_vertices, vertices_count, cube_indices,
+                                 indices_count, 1);
 
-  mesh_manager_finish_init();
+  light.pos = (vec3s){{-4, 4, 4}};
+  light.color = (vec4s){{1, 1, 1, 1}};
+  mesh_push_transform(cube_static_mesh,
+                      (Transform){.transform = glms_translate_make(light.pos),
+                                  .color = light.color});
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
                      &scene->camera);
@@ -305,11 +296,30 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   (void)scene, (void)dt;
   mat4s model = glms_mat4_identity();
 
+  cm_shader_bind(&light_shader);
+  cm_shader_set_mat4(&light_shader, "u_vp", scene->camera.vp);
+  cm_shader_set_mat4(&light_shader, "u_model", model);
+
+  glBindBuffer(GL_ARRAY_BUFFER, cube_static_mesh->transforms.vbo.id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0,
+                  sizeof(Transform) * cube_static_mesh->transforms.count,
+                  cube_static_mesh->transforms.transforms);
+
+  glBindVertexArray(cube_static_mesh->buffer.vertex_attribute.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
+               cube_static_mesh->buffer.index_buffer.id);
+  glDrawElementsInstanced(
+      GL_TRIANGLES, cube_static_mesh->buffer.index_buffer.count,
+      GL_UNSIGNED_INT, NULL, cube_static_mesh->transforms.count);
+
+  cm_shader_unbind();
+
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
   cm_shader_set_mat4(&cube_shader, "u_model", model);
 
-  cm_shader_set_vec3(&cube_shader, "u_light_pos", (vec3s){0});
+  cm_shader_set_vec3(&cube_shader, "u_light_pos", light.pos);
+  cm_shader_set_vec4(&cube_shader, "u_light_color", light.color);
   cm_shader_set_vec3(&cube_shader, "u_view_pos", scene->camera.position);
 
   static size_t grid_size = 3;
@@ -331,24 +341,24 @@ static void instancing_scene_update(CmScene *scene, float dt) {
         t.transform = glms_mat4_mul(t.transform, scale);
         t.color = (vec4s){{x / (float)grid_size, y / (float)grid_size,
                            z / (float)grid_size, 1}};
-        mesh_push_dynamic_transform(cube_mesh, t);
+        mesh_push_transform(cube_dynamic_mesh, t);
       }
     }
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, cube_mesh->transforms.vbo.id);
-  glBufferSubData(
-      GL_ARRAY_BUFFER, sizeof(Transform) * cube_mesh->transforms.static_count,
-      sizeof(Transform) *
-          (cube_mesh->transforms.count - cube_mesh->transforms.static_count),
-      &cube_mesh->transforms.transforms[cube_mesh->transforms.static_count]);
+  glBindBuffer(GL_ARRAY_BUFFER, cube_dynamic_mesh->transforms.vbo.id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0,
+                  sizeof(Transform) * cube_dynamic_mesh->transforms.count,
+                  cube_dynamic_mesh->transforms.transforms);
 
-  glBindVertexArray(cube_mesh->buffer.vertex_attribute.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_mesh->buffer.index_buffer.id);
-  glDrawElementsInstanced(GL_TRIANGLES, cube_mesh->buffer.index_buffer.count,
-                          GL_UNSIGNED_INT, NULL, cube_mesh->transforms.count);
+  glBindVertexArray(cube_dynamic_mesh->buffer.vertex_attribute.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
+               cube_dynamic_mesh->buffer.index_buffer.id);
+  glDrawElementsInstanced(
+      GL_TRIANGLES, cube_dynamic_mesh->buffer.index_buffer.count,
+      GL_UNSIGNED_INT, NULL, cube_dynamic_mesh->transforms.count);
 
-  cube_mesh->transforms.count = cube_mesh->transforms.static_count;
+  cube_dynamic_mesh->transforms.count = 0;
   cm_shader_unbind();
 
 #define LABEL_SIZE 128

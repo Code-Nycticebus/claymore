@@ -7,12 +7,13 @@ in vec3 v_normal;
 in vec3 v_frag_pos;
 
 uniform vec3 u_light_pos;
+uniform vec3 u_light_color = vec3(1);
 uniform vec3 u_view_pos;
 
 void main() {
   vec3 norm = normalize(v_normal);
   vec3 light_dir = normalize(u_light_pos - v_frag_pos);
-  vec3 light_color = vec3(1.0);
+  vec3 light_color = u_light_color;
 
   float specular_strenght = 0.5;
   vec3 view_dir = normalize(u_view_pos - v_frag_pos);
