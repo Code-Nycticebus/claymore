@@ -40,6 +40,7 @@ static void transforms_delete(Transforms *transforms) { free(transforms); }
 CmMesh *cm_mesh_create(CmRenderBuffer *buffer, bool static_mesh,
                        size_t transforms_count) {
   CmMesh *mesh = malloc(sizeof(CmMesh));
+  assert(mesh);
   mesh->buffer = buffer;
   mesh->static_mesh = static_mesh;
 
