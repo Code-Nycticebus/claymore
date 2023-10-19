@@ -1,8 +1,8 @@
 #version 330 core
 
 layout (location = 0) in vec3 a_pos;
-layout (location = 1) in vec3 a_normal;
-layout (location = 2) in vec4 i_color;
+layout (location = 1) in vec4 a_color;
+layout (location = 2) in vec3 a_normal;
 layout (location = 3) in mat4 transform;
 
 uniform mat4 u_vp;
@@ -20,7 +20,7 @@ void main() {
   mat4 model_transform = u_model * transform;
   vec4 model_space = model_transform * vec4(a_pos, 1.0);
   gl_Position = u_vp * model_space;
-  v_color = i_color;
+  v_color = a_color;
   v_frag_pos = model_space.xyz;
 
   mat3 normal_mat = extractRotationMatrix(model_transform);
