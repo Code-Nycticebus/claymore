@@ -199,9 +199,10 @@ static bool instancing_scene_init(CmScene *scene) {
   };
   const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
 
-  cube_mesh = cm_mesh_create(cube_indices, indices_count);
-  cm_mesh_push_positions(&cube_mesh, vertex_positions, vertices_count);
-  cm_mesh_push_colors(&cube_mesh, vertex_colors, vertices_count);
+  cube_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
+                             indices_count);
+  cm_mesh_attach_colors(&cube_mesh, vertex_colors, vertices_count);
+
   mat4s *transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
   size_t transform_count = 0;
   static float r = 0;
@@ -221,7 +222,8 @@ static bool instancing_scene_init(CmScene *scene) {
       }
     }
   }
-  cm_mesh_push_transforms(&cube_mesh, transforms, transform_count);
+  cm_mesh_attach_transforms(&cube_mesh, transforms, transform_count);
+
   free(transforms);
 
   light.pos = (vec3s){{-4, 4, 4}};

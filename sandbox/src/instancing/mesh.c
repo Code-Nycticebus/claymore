@@ -1,11 +1,24 @@
 #include "mesh.h"
 #include <assert.h>
 
-CmMesh cm_mesh_create(const uint32_t *indices, size_t indices_count) {
-  CmMesh mesh;
+CmMesh cm_mesh_create(vec3s *vertices, size_t count, const uint32_t *indices,
+                      size_t indices_count) {
+  CmMesh mesh = {0};
   mesh.instance_count = 1;
+  mesh.vertices_count = count;
+
   glGenVertexArrays(1, &mesh.vertex_array);
+
+  glGenBuffers(1, &mesh.vbo.positions);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo.positions);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3s) * count, vertices,
+               GL_STATIC_DRAW);
+
   glBindVertexArray(mesh.vertex_array);
+  glEnableVertexAttribArray(mesh.attrib_index);
+  glVertexAttribPointer(mesh.attrib_index, 3, GL_FLOAT, GL_FALSE, sizeof(vec3s),
+                        (void *)0);
+  mesh.attrib_index++;
 
   mesh.index_count = indices_count;
   glGenBuffers(1, &mesh.index_buffer);
@@ -16,21 +29,8 @@ CmMesh cm_mesh_create(const uint32_t *indices, size_t indices_count) {
   return mesh;
 }
 
-void cm_mesh_push_positions(CmMesh *mesh, vec3s *vertices, size_t count) {
-
-  glGenBuffers(1, &mesh->vbo.positions);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.positions);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3s) * count, vertices,
-               GL_STATIC_DRAW);
-
-  glBindVertexArray(mesh->vertex_array);
-  glEnableVertexAttribArray(mesh->attrib_index);
-  glVertexAttribPointer(mesh->attrib_index, 3, GL_FLOAT, GL_FALSE,
-                        sizeof(vec3s), (void *)0);
-
-  mesh->attrib_index++;
-}
-void cm_mesh_push_colors(CmMesh *mesh, vec4s *colors, size_t count) {
+void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
+  assert(!mesh->vbo.color && "Color vector is already initialized!");
   glGenBuffers(1, &mesh->vbo.color);
   glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.color);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vec4s) * count, colors, GL_STATIC_DRAW);
@@ -43,7 +43,8 @@ void cm_mesh_push_colors(CmMesh *mesh, vec4s *colors, size_t count) {
   mesh->attrib_index++;
 }
 
-void cm_mesh_push_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
+void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
+  assert(!mesh->vbo.transforms && "Transform vector is already initialized!");
   glGenBuffers(1, &mesh->vbo.transforms);
   glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.transforms);
   glBufferData(GL_ARRAY_BUFFER, sizeof(mat4s) * count, transforms,

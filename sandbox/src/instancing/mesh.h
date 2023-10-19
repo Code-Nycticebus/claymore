@@ -6,6 +6,7 @@
 #define MESH_MAX_VBO 5
 
 typedef struct {
+  size_t vertices_count;
   struct {
     GLuint positions;
     GLuint color;
@@ -21,11 +22,11 @@ typedef struct {
   size_t index_count;
 } CmMesh;
 
-CmMesh cm_mesh_create(const uint32_t *indices, size_t indices_count);
+CmMesh cm_mesh_create(vec3s *vertices, size_t count, const uint32_t *indices,
+                      size_t indices_count);
 
-void cm_mesh_push_positions(CmMesh *mesh, vec3s *vertices, size_t count);
-void cm_mesh_push_colors(CmMesh *mesh, vec4s *colors, size_t count);
-void cm_mesh_push_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
+void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count);
+void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
 
 void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
 
