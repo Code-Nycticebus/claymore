@@ -1,24 +1,32 @@
-#ifndef __CM_MESH_H__
-#define __CM_MESH_H__
+#pragma once
 
-#include "claymore/renderer/render_buffer.h"
+#include <GL/glew.h>
+#include <cglm/struct.h>
 
-typedef struct Transforms Transforms;
+#define MESH_MAX_VBO 5
 
 typedef struct {
-  size_t id;
-  bool static_mesh;
-  CmRenderBuffer *buffer;
-  Transforms *transforms;
+  struct {
+    GLuint positions;
+    GLuint color;
+    GLuint transforms;
+  } vbo;
+
+  size_t instance_count;
+
+  size_t attrib_index;
+  GLuint vertex_array;
+
+  GLuint index_buffer;
+  size_t index_count;
 } CmMesh;
 
-CmMesh *cm_mesh_create(CmRenderBuffer *buffer, bool static_mesh,
-                       size_t transforms_count);
-void cm_mesh_delete(CmMesh *mesh);
+CmMesh cm_mesh_create(const uint32_t *indices, size_t indices_count);
 
-void cm_mesh_transform_push(CmMesh *mesh, mat4s transform);
-void cm_mesh_transform_clear(CmMesh *mesh);
+void cm_mesh_push_positions(CmMesh *mesh, vec3s *vertices, size_t count);
+void cm_mesh_push_colors(CmMesh *mesh, vec4s *colors, size_t count);
+void cm_mesh_push_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
+
+void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
 
 void cm_mesh_draw(CmMesh *mesh);
-
-#endif // __CM_MESH_H__

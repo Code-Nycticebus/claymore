@@ -3,12 +3,6 @@
 
 #include "mesh.h"
 
-typedef struct {
-  vec3 pos;
-  vec4s color;
-  vec3 normal;
-} Vertex;
-
 CmLayerInterface sandbox_fps(void);
 
 static CmFont *font;
@@ -16,26 +10,16 @@ static const float font_size = 24.F;
 
 static const float fov = 90.F;
 
-size_t transform_count;
-typedef struct Transform {
-  vec4s color;
-  mat4s transform;
-} Transform;
-
-CmRenderBuffer buffer;
-CmRenderBuffer buffer2;
-
-#define INSTANCED_DYNAMIC_CUBES 100000
+#define GRID_SIZE 60
 
 static CmShader cube_shader;
-CmMesh *cube_dynamic_mesh;
 
 struct {
   vec3s pos;
   vec4s color;
 } light;
-static CmShader light_shader;
-CmMesh *cube_static_mesh;
+
+CmMesh cube_mesh;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -124,49 +108,86 @@ static bool instancing_scene_init(CmScene *scene) {
   scene->camera = cm_camera_init_perspective(
       (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
+
   cube_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
                                          "res/shader/cube.fs.glsl");
-  light_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
-                                          "res/shader/basic_instance.fs.glsl");
-  Vertex cube_vertices[] = {
+  vec3s vertex_positions[] = {
       // Front
-      {{0.F, 0.F, 0.F}, {{1, 1, 1, 1}}, {0, 0, 1}},
-      {{0.F, 1.F, 0.F}, {{1, 1, 1, 1}}, {0, 0, 1}},
-      {{1.F, 1.F, 0.F}, {{1, 1, 1, 1}}, {0, 0, 1}},
-      {{1.F, 0.F, 0.F}, {{1, 1, 1, 1}}, {0, 0, 1}},
+      {{0.F, 0.F, 0.F}},
+      {{0.F, 1.F, 0.F}},
+      {{1.F, 1.F, 0.F}},
+      {{1.F, 0.F, 0.F}},
 
       // Right
-      {{1.F, 0.F, 0.F}, {{1, 1, 1, 1}}, {1, 0, 0}},
-      {{1.F, 1.F, 0.F}, {{1, 1, 1, 1}}, {1, 0, 0}},
-      {{1.F, 1.F, -1.F}, {{1, 1, 1, 1}}, {1, 0, 0}},
-      {{1.F, 0.F, -1.F}, {{1, 1, 1, 1}}, {1, 0, 0}},
+      {{1.F, 0.F, 0.F}},
+      {{1.F, 1.F, 0.F}},
+      {{1.F, 1.F, -1.F}},
+      {{1.F, 0.F, -1.F}},
 
       // Left
-      {{0.F, 0.F, 0.F}, {{1, 1, 1, 1}}, {-1, 0, 0}},
-      {{0.F, 0.F, -1.F}, {{1, 1, 1, 1}}, {-1, 0, 0}},
-      {{0.F, 1.F, -1.F}, {{1, 1, 1, 1}}, {-1, 0, 0}},
-      {{0.F, 1.F, 0.F}, {{1, 1, 1, 1}}, {-1, 0, 0}},
+      {{0.F, 0.F, 0.F}},
+      {{0.F, 0.F, -1.F}},
+      {{0.F, 1.F, -1.F}},
+      {{0.F, 1.F, 0.F}},
 
       // Back
-      {{0.F, 0.F, -1.F}, {{1, 1, 1, 1}}, {0, 0, -1}},
-      {{1.F, 0.F, -1.F}, {{1, 1, 1, 1}}, {0, 0, -1}},
-      {{1.F, 1.F, -1.F}, {{1, 1, 1, 1}}, {0, 0, -1}},
-      {{0.F, 1.F, -1.F}, {{1, 1, 1, 1}}, {0, 0, -1}},
+      {{0.F, 0.F, -1.F}},
+      {{1.F, 0.F, -1.F}},
+      {{1.F, 1.F, -1.F}},
+      {{0.F, 1.F, -1.F}},
 
       // Top
-      {{1.F, 1.F, 0.F}, {{1, 1, 1, 1}}, {0, 1, 0}},
-      {{0.F, 1.F, 0.F}, {{1, 1, 1, 1}}, {0, 1, 0}},
-      {{0.F, 1.F, -1.F}, {{1, 1, 1, 1}}, {0, 1, 0}},
-      {{1.F, 1.F, -1.F}, {{1, 1, 1, 1}}, {0, 1, 0}},
+      {{1.F, 1.F, 0.F}},
+      {{0.F, 1.F, 0.F}},
+      {{0.F, 1.F, -1.F}},
+      {{1.F, 1.F, -1.F}},
 
       // Bottom
-      {{1.F, 0.F, 0.F}, {{1, 1, 1, 1}}, {0, -1, 0}},
-      {{1.F, 0.F, -1.F}, {{1, 1, 1, 1}}, {0, -1, 0}},
-      {{0.F, 0.F, -1.F}, {{1, 1, 1, 1}}, {0, -1, 0}},
-      {{0.F, 0.F, 0.F}, {{1, 1, 1, 1}}, {0, -1, 0}},
+      {{1.F, 0.F, 0.F}},
+      {{1.F, 0.F, -1.F}},
+      {{0.F, 0.F, -1.F}},
+      {{0.F, 0.F, 0.F}},
   };
+  vec4s vertex_colors[] = {
+      // Front
+      {{1, 0, 0, 1}},
+      {{1, 0, 0, 1}},
+      {{1, 0, 0, 1}},
+      {{1, 0, 0, 1}},
+
+      // Right
+      {{1, 1, 0, 1}},
+      {{1, 1, 0, 1}},
+      {{1, 1, 0, 1}},
+      {{1, 1, 0, 1}},
+
+      // Left
+      {{0, 1, 1, 1}},
+      {{0, 1, 1, 1}},
+      {{0, 1, 1, 1}},
+      {{0, 1, 1, 1}},
+
+      // Back
+      {{0, 0, 1, 1}},
+      {{0, 0, 1, 1}},
+      {{0, 0, 1, 1}},
+      {{0, 0, 1, 1}},
+
+      // Top
+      {{1, 0, 1, 1}},
+      {{1, 0, 1, 1}},
+      {{1, 0, 1, 1}},
+      {{1, 0, 1, 1}},
+
+      // Bottom
+      {{0, 1, 0, 1}},
+      {{0, 1, 0, 1}},
+      {{0, 1, 0, 1}},
+      {{0, 1, 0, 1}},
+  };
+
   const size_t vertices_count =
-      sizeof(cube_vertices) / sizeof(cube_vertices[0]);
+      sizeof(vertex_positions) / sizeof(vertex_positions[0]);
 
   const uint32_t cube_indices[] = {
       0,  1,  2,  0,  2,  3,  // Front
@@ -178,44 +199,38 @@ static bool instancing_scene_init(CmScene *scene) {
   };
   const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
 
-  buffer.vertex_buffer = cm_vertex_buffer_create(
-      vertices_count, sizeof(cube_vertices[0]), cube_vertices, GL_DYNAMIC_DRAW);
-  buffer.vertex_attribute = cm_vertex_attribute_create(&buffer.vertex_buffer);
-  cm_vertex_attribute_push(&buffer.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(Vertex, pos));
-  cm_vertex_attribute_push(&buffer.vertex_attribute, 4, GL_FLOAT,
-                           offsetof(Vertex, color));
-  cm_vertex_attribute_push(&buffer.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(Vertex, normal));
-  buffer.index_buffer = cm_index_buffer_create(
-      &buffer.vertex_attribute, indices_count, cube_indices, GL_DYNAMIC_DRAW);
-
-  buffer2.vertex_buffer = cm_vertex_buffer_create(
-      vertices_count, sizeof(cube_vertices[0]), cube_vertices, GL_DYNAMIC_DRAW);
-  buffer2.vertex_attribute = cm_vertex_attribute_create(&buffer2.vertex_buffer);
-  cm_vertex_attribute_push(&buffer2.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(Vertex, pos));
-  cm_vertex_attribute_push(&buffer2.vertex_attribute, 4, GL_FLOAT,
-                           offsetof(Vertex, color));
-  cm_vertex_attribute_push(&buffer2.vertex_attribute, 3, GL_FLOAT,
-                           offsetof(Vertex, normal));
-
-  buffer2.index_buffer = cm_index_buffer_create(
-      &buffer2.vertex_attribute, indices_count, cube_indices, GL_DYNAMIC_DRAW);
-
-  cube_dynamic_mesh = cm_mesh_create(&buffer, false, INSTANCED_DYNAMIC_CUBES);
-  cube_static_mesh = cm_mesh_create(&buffer2, true, 1);
+  cube_mesh = cm_mesh_create(cube_indices, indices_count);
+  cm_mesh_push_positions(&cube_mesh, vertex_positions, vertices_count);
+  cm_mesh_push_colors(&cube_mesh, vertex_colors, vertices_count);
+  mat4s *transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  size_t transform_count = 0;
+  static float r = 0;
+  const vec3s axis = {{1, 1, 1}};
+  const vec3s scale = {{.5F, .5F, .5F}};
+  for (size_t x = 0; x < GRID_SIZE; x++) {
+    for (size_t y = 0; y < GRID_SIZE; y++) {
+      for (size_t z = 0; z < GRID_SIZE; z++) {
+        r += 1;
+        mat4s trans_mat = glms_translate_make((vec3s){{x, y, z}});
+        mat4s rot_mat = glms_rotate_make(glm_rad(r), axis);
+        mat4s scale_mat = glms_scale_make(scale);
+        transforms[transform_count] = glms_mat4_mul(trans_mat, rot_mat);
+        transforms[transform_count] =
+            glms_mat4_mul(transforms[transform_count], scale_mat);
+        transform_count++;
+      }
+    }
+  }
+  cm_mesh_push_transforms(&cube_mesh, transforms, transform_count);
+  free(transforms);
 
   light.pos = (vec3s){{-4, 4, 4}};
   light.color = (vec4s){{1, 1, 1, 1}};
-  cm_mesh_transform_push(cube_static_mesh, glms_translate_make(light.pos));
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
                      &scene->camera);
-
   cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)cube_key_callback,
                      scene);
-
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)camera_controll,
                      &scene->camera);
   cm_event_subscribe(CM_EVENT_SCROLL, (cm_event_callback)camera_scroll,
@@ -225,67 +240,23 @@ static bool instancing_scene_init(CmScene *scene) {
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
   glfwSwapInterval(0);
+
   return true;
 }
 
 static void instancing_scene_update(CmScene *scene, float dt) {
   (void)scene, (void)dt;
-  mat4s model = glms_mat4_identity();
-
-  cm_shader_bind(&light_shader);
-  cm_shader_set_mat4(&light_shader, "u_vp", scene->camera.vp);
-  cm_shader_set_mat4(&light_shader, "u_model", model);
-
-  cm_mesh_draw(cube_static_mesh);
-
-  cm_shader_unbind();
 
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
-  cm_shader_set_mat4(&cube_shader, "u_model", model);
 
-  cm_shader_set_vec3(&cube_shader, "u_light_pos", light.pos);
-  cm_shader_set_vec4(&cube_shader, "u_light_color", light.color);
-  cm_shader_set_vec3(&cube_shader, "u_view_pos", scene->camera.position);
-
-  static size_t grid_size = 3;
-  assert(grid_size < 1000 && "grid to big");
-  const float dt_max = 1 / 65.F;
-  static float rotation = 0;
-  const vec3s size = (vec3s){{.5F, .5F, .5F}};
-  rotation += 4 * dt;
-  grid_size += dt < dt_max ? +1 : 0;
-  for (size_t x = 0; x < grid_size; x++) {
-    for (size_t y = 0; y < grid_size; y++) {
-      for (size_t z = 0; z < grid_size; z++) {
-        mat4s trans = glms_translate_make((vec3s){{x, y, z}});
-        mat4s rot = glms_rotate_make(glm_rad(rotation), (vec3s){{1, 1, 1}});
-        mat4s scale = glms_scale_make(size);
-        trans = glms_mat4_mul(trans, rot);
-        trans = glms_mat4_mul(trans, scale);
-        cm_mesh_transform_push(cube_dynamic_mesh, trans);
-      }
-    }
-  }
-  cm_mesh_draw(cube_dynamic_mesh);
-  cm_mesh_transform_clear(cube_dynamic_mesh);
+  // RENDER HERE
+  cm_mesh_draw(&cube_mesh);
 
   cm_shader_unbind();
-
-#define LABEL_SIZE 128
-  char label_buffer[LABEL_SIZE];
-  const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%lu cubes",
-                              grid_size * grid_size * (uint64_t)grid_size);
-  mat4s mvp = glms_mat4_mul(model, scene->camera.vp);
-  cm_font_draw(font, mvp, 0.F, -font_size, -100.F, len, label_buffer);
 }
 
-static void instancing_scene_free(CmScene *scene) {
-  (void)scene;
-  cm_mesh_delete(cube_static_mesh);
-  cm_mesh_delete(cube_dynamic_mesh);
-  cm_render_buffer_delete(&buffer);
-}
+static void instancing_scene_free(CmScene *scene) { (void)scene; }
 
 CmSceneInterface scene_instancing(void) {
   return (CmSceneInterface){

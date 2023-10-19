@@ -1,78 +1,75 @@
 #include "mesh.h"
-#include <stdint.h>
+#include <assert.h>
 
-struct Transforms {
-  CmVertexBuffer vbo;
-  size_t cap;
-  size_t count;
-  mat4s matrices[];
-};
+CmMesh cm_mesh_create(const uint32_t *indices, size_t indices_count) {
+  CmMesh mesh;
+  mesh.instance_count = 1;
+  glGenVertexArrays(1, &mesh.vertex_array);
+  glBindVertexArray(mesh.vertex_array);
 
-static Transforms *transforms_create(CmVertexAttribute *vertex_attribute,
-                                     size_t size) {
-  Transforms *transforms =
-      malloc(sizeof(Transforms) + sizeof(transforms->matrices[0]) * size);
-  assert(transforms);
-  transforms->cap = size;
-  transforms->count = 0;
+  mesh.index_count = indices_count;
+  glGenBuffers(1, &mesh.index_buffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices_count,
+               indices, GL_STATIC_DRAW);
 
-  transforms->vbo = cm_vertex_buffer_create(
-      1, sizeof(transforms->matrices[0]) * size, NULL, GL_DYNAMIC_DRAW);
-
-  glBindBuffer(GL_ARRAY_BUFFER, transforms->vbo.id);
-  glBindVertexArray(vertex_attribute->id);
-
-  for (size_t i = 0; i < 4; i++) {
-    glEnableVertexAttribArray(vertex_attribute->index);
-    glVertexAttribPointer(vertex_attribute->index, 4, GL_FLOAT, GL_TRUE,
-                          sizeof(transforms->matrices[0]),
-                          (void *)(sizeof(vec4s) * i)); // NOLINT
-    glVertexAttribDivisor(vertex_attribute->index, 1);
-    vertex_attribute->index++;
-  }
-  glBindVertexArray(0);
-
-  return transforms;
-}
-
-static void transforms_delete(Transforms *transforms) { free(transforms); }
-
-CmMesh *cm_mesh_create(CmRenderBuffer *buffer, bool static_mesh,
-                       size_t transforms_count) {
-  CmMesh *mesh = malloc(sizeof(CmMesh));
-  assert(mesh);
-  mesh->buffer = buffer;
-  mesh->static_mesh = static_mesh;
-
-  mesh->transforms = NULL;
-  if (transforms_count) {
-    mesh->transforms =
-        transforms_create(&mesh->buffer->vertex_attribute, transforms_count);
-  }
   return mesh;
 }
 
-void cm_mesh_delete(CmMesh *mesh) {
-  transforms_delete(mesh->transforms);
-  free(mesh);
+void cm_mesh_push_positions(CmMesh *mesh, vec3s *vertices, size_t count) {
+
+  glGenBuffers(1, &mesh->vbo.positions);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.positions);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3s) * count, vertices,
+               GL_STATIC_DRAW);
+
+  glBindVertexArray(mesh->vertex_array);
+  glEnableVertexAttribArray(mesh->attrib_index);
+  glVertexAttribPointer(mesh->attrib_index, 3, GL_FLOAT, GL_FALSE,
+                        sizeof(vec3s), (void *)0);
+
+  mesh->attrib_index++;
+}
+void cm_mesh_push_colors(CmMesh *mesh, vec4s *colors, size_t count) {
+  glGenBuffers(1, &mesh->vbo.color);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.color);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec4s) * count, colors, GL_STATIC_DRAW);
+
+  glBindVertexArray(mesh->vertex_array);
+  glEnableVertexAttribArray(mesh->attrib_index);
+  glVertexAttribPointer(mesh->attrib_index, 4, GL_FLOAT, GL_FALSE,
+                        sizeof(vec4s), (void *)0);
+
+  mesh->attrib_index++;
 }
 
-void cm_mesh_transform_push(CmMesh *mesh, mat4s transform) {
-  assert(mesh->transforms->count < mesh->transforms->cap);
-  mesh->transforms->matrices[mesh->transforms->count] = transform;
-  mesh->transforms->count++;
+void cm_mesh_push_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
+  glGenBuffers(1, &mesh->vbo.transforms);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.transforms);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(mat4s) * count, transforms,
+               GL_DYNAMIC_DRAW);
+
+  mesh->instance_count = count;
+
+  glBindVertexArray(mesh->vertex_array);
+  for (size_t i = 0; i < 4; i++) {
+    glEnableVertexAttribArray(mesh->attrib_index);
+    glVertexAttribPointer(mesh->attrib_index, 4, GL_FLOAT, GL_FALSE,
+                          sizeof(mat4s), (void *)(sizeof(vec4s) * i)); // NOLINT
+    glVertexAttribDivisor(mesh->attrib_index, 1);
+    mesh->attrib_index++;
+  }
 }
 
-void cm_mesh_transform_clear(CmMesh *mesh) { mesh->transforms->count = 0; }
+void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.transforms);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(mat4s) * count, transforms);
+  mesh->instance_count = count;
+}
 
 void cm_mesh_draw(CmMesh *mesh) {
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->transforms->vbo.id);
-  glBufferSubData(GL_ARRAY_BUFFER, 0,
-                  sizeof(mesh->transforms->matrices[0]) *
-                      mesh->transforms->count,
-                  mesh->transforms->matrices);
-  glBindVertexArray(mesh->buffer->vertex_attribute.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->buffer->index_buffer.id);
-  glDrawElementsInstanced(GL_TRIANGLES, mesh->buffer->index_buffer.count,
-                          GL_UNSIGNED_INT, NULL, mesh->transforms->count);
+  glBindVertexArray(mesh->vertex_array);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->index_buffer);
+  glDrawElementsInstanced(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT,
+                          NULL, mesh->instance_count);
 }
