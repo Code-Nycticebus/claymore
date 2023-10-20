@@ -29,7 +29,36 @@ CmMesh cm_mesh_create(vec3s *vertices, size_t count, const uint32_t *indices,
   return mesh;
 }
 
-void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
+void cm_mesh_attach_normals(CmMesh *mesh, vec3s *normals, size_t count) {
+  assert(!mesh->vbo.normal && "Normal vector is already initialized!");
+  glGenBuffers(1, &mesh->vbo.normal);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.normal);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3s) * count, normals, GL_STATIC_DRAW);
+
+  glBindVertexArray(mesh->vertex_array);
+  glEnableVertexAttribArray(mesh->attrib_index);
+  glVertexAttribPointer(mesh->attrib_index, 3, GL_FLOAT, GL_FALSE,
+                        sizeof(vec4s), (void *)0);
+
+  mesh->attrib_index++;
+}
+
+void cm_mesh_attach_uv(CmMesh *mesh, vec2s *uv, size_t count) {
+  assert(!mesh->vbo.uv && "UV vector is already initialized!");
+  glGenBuffers(1, &mesh->vbo.uv);
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.uv);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec2s) * count, uv, GL_STATIC_DRAW);
+
+  glBindVertexArray(mesh->vertex_array);
+  glEnableVertexAttribArray(mesh->attrib_index);
+  glVertexAttribPointer(mesh->attrib_index, 2, GL_FLOAT, GL_FALSE,
+                        sizeof(vec4s), (void *)0);
+
+  mesh->attrib_index++;
+}
+
+void cm_mesh_attach_colors(CmMesh *mesh, bool instanced, vec4s *colors,
+                           size_t count) {
   assert(!mesh->vbo.color && "Color vector is already initialized!");
   glGenBuffers(1, &mesh->vbo.color);
   glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.color);
@@ -39,7 +68,9 @@ void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
   glEnableVertexAttribArray(mesh->attrib_index);
   glVertexAttribPointer(mesh->attrib_index, 4, GL_FLOAT, GL_FALSE,
                         sizeof(vec4s), (void *)0);
-
+  if (instanced) {
+    glVertexAttribDivisor(mesh->attrib_index, 1);
+  }
   mesh->attrib_index++;
 }
 
@@ -49,7 +80,6 @@ void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
   glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.transforms);
   glBufferData(GL_ARRAY_BUFFER, sizeof(mat4s) * count, transforms,
                GL_DYNAMIC_DRAW);
-
   mesh->instance_count = count;
 
   glBindVertexArray(mesh->vertex_array);

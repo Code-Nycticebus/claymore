@@ -10,7 +10,7 @@ static const float font_size = 24.F;
 
 static const float fov = 90.F;
 
-#define GRID_SIZE 60
+#define GRID_SIZE 100
 
 static CmShader cube_shader;
 
@@ -20,6 +20,8 @@ struct {
 } light;
 
 CmMesh cube_mesh;
+
+mat4s *transforms;
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {
@@ -148,44 +150,6 @@ static bool instancing_scene_init(CmScene *scene) {
       {{0.F, 0.F, -1.F}},
       {{0.F, 0.F, 0.F}},
   };
-  vec4s vertex_colors[] = {
-      // Front
-      {{1, 0, 0, 1}},
-      {{1, 0, 0, 1}},
-      {{1, 0, 0, 1}},
-      {{1, 0, 0, 1}},
-
-      // Right
-      {{1, 1, 0, 1}},
-      {{1, 1, 0, 1}},
-      {{1, 1, 0, 1}},
-      {{1, 1, 0, 1}},
-
-      // Left
-      {{0, 1, 1, 1}},
-      {{0, 1, 1, 1}},
-      {{0, 1, 1, 1}},
-      {{0, 1, 1, 1}},
-
-      // Back
-      {{0, 0, 1, 1}},
-      {{0, 0, 1, 1}},
-      {{0, 0, 1, 1}},
-      {{0, 0, 1, 1}},
-
-      // Top
-      {{1, 0, 1, 1}},
-      {{1, 0, 1, 1}},
-      {{1, 0, 1, 1}},
-      {{1, 0, 1, 1}},
-
-      // Bottom
-      {{0, 1, 0, 1}},
-      {{0, 1, 0, 1}},
-      {{0, 1, 0, 1}},
-      {{0, 1, 0, 1}},
-  };
-
   const size_t vertices_count =
       sizeof(vertex_positions) / sizeof(vertex_positions[0]);
 
@@ -201,30 +165,63 @@ static bool instancing_scene_init(CmScene *scene) {
 
   cube_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
                              indices_count);
-  cm_mesh_attach_colors(&cube_mesh, vertex_colors, vertices_count);
 
-  mat4s *transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
-  size_t transform_count = 0;
-  static float r = 0;
-  const vec3s axis = {{1, 1, 1}};
-  const vec3s scale = {{.5F, .5F, .5F}};
-  for (size_t x = 0; x < GRID_SIZE; x++) {
-    for (size_t y = 0; y < GRID_SIZE; y++) {
-      for (size_t z = 0; z < GRID_SIZE; z++) {
-        r += 1;
-        mat4s trans_mat = glms_translate_make((vec3s){{x, y, z}});
-        mat4s rot_mat = glms_rotate_make(glm_rad(r), axis);
-        mat4s scale_mat = glms_scale_make(scale);
-        transforms[transform_count] = glms_mat4_mul(trans_mat, rot_mat);
-        transforms[transform_count] =
-            glms_mat4_mul(transforms[transform_count], scale_mat);
-        transform_count++;
-      }
-    }
+  // vec4s vertex_colors[] = {
+  //     // Front
+  //     {{1, 0, 0, 1}},
+  //     {{1, 0, 0, 1}},
+  //     {{1, 0, 0, 1}},
+  //     {{1, 0, 0, 1}},
+
+  //     // Right
+  //     {{1, 1, 0, 1}},
+  //     {{1, 1, 0, 1}},
+  //     {{1, 1, 0, 1}},
+  //     {{1, 1, 0, 1}},
+
+  //     // Left
+  //     {{0, 1, 1, 1}},
+  //     {{0, 1, 1, 1}},
+  //     {{0, 1, 1, 1}},
+  //     {{0, 1, 1, 1}},
+
+  //     // Back
+  //     {{0, 0, 1, 1}},
+  //     {{0, 0, 1, 1}},
+  //     {{0, 0, 1, 1}},
+  //     {{0, 0, 1, 1}},
+
+  //     // Top
+  //     {{1, 0, 1, 1}},
+  //     {{1, 0, 1, 1}},
+  //     {{1, 0, 1, 1}},
+  //     {{1, 0, 1, 1}},
+
+  //     // Bottom
+  //     {{0, 1, 0, 1}},
+  //     {{0, 1, 0, 1}},
+  //     {{0, 1, 0, 1}},
+  //     {{0, 1, 0, 1}},
+  // };
+
+  vec4s *vertex_colors =
+      malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
+  for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
+
+    vertex_colors[x] = (vec4s){{
+        rand() / (float)RAND_MAX,
+        rand() / (float)RAND_MAX,
+        rand() / (float)RAND_MAX,
+        1,
+    }};
   }
-  cm_mesh_attach_transforms(&cube_mesh, transforms, transform_count);
+  cm_mesh_attach_colors(&cube_mesh, true, vertex_colors,
+                        GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  free(vertex_colors);
 
-  free(transforms);
+  transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  cm_mesh_attach_transforms(&cube_mesh, NULL,
+                            GRID_SIZE * GRID_SIZE * GRID_SIZE);
 
   light.pos = (vec3s){{-4, 4, 4}};
   light.color = (vec4s){{1, 1, 1, 1}};
@@ -251,14 +248,46 @@ static void instancing_scene_update(CmScene *scene, float dt) {
 
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
-
+  size_t transform_count = 0;
+  static float r = 0;
+  r += 1;
+  const vec3s axis = {{1, 0, 1}};
+  const vec3s scale = {{.5F, .5F, .5F}};
+  static size_t grid_size = 3;
+  const float dt_max = 1 / 65.F;
+  grid_size += dt < dt_max ? +1 : 0;
+  for (size_t x = 0; x < grid_size; x++) {
+    for (size_t y = 0; y < grid_size; y++) {
+      for (size_t z = 0; z < grid_size; z++) {
+        const mat4s trans_mat = glms_translate_make((vec3s){{x, y, z}});
+        const mat4s rot_mat = glms_rotate_make(glm_rad(r), axis);
+        const mat4s scale_mat = glms_scale_make(scale);
+        transforms[transform_count] = glms_mat4_mul(trans_mat, rot_mat);
+        transforms[transform_count] =
+            glms_mat4_mul(transforms[transform_count], scale_mat);
+        transform_count++;
+      }
+    }
+  }
+  cm_mesh_update_transforms(&cube_mesh, transforms, transform_count);
+  transform_count = 0;
   // RENDER HERE
   cm_mesh_draw(&cube_mesh);
 
   cm_shader_unbind();
+
+#define LABEL_SIZE 128
+  char label_buffer[LABEL_SIZE];
+  const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%lu cubes",
+                              grid_size * grid_size * (uint64_t)grid_size);
+  cm_font_draw(font, scene->camera.vp, 0.F, -font_size, -100.F, len,
+               label_buffer);
 }
 
-static void instancing_scene_free(CmScene *scene) { (void)scene; }
+static void instancing_scene_free(CmScene *scene) {
+  (void)scene;
+  free(transforms);
+}
 
 CmSceneInterface scene_instancing(void) {
   return (CmSceneInterface){

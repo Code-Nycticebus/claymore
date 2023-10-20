@@ -10,6 +10,8 @@ typedef struct {
   struct {
     GLuint positions;
     GLuint color;
+    GLuint uv;
+    GLuint normal;
     GLuint transforms;
   } vbo;
 
@@ -25,7 +27,8 @@ typedef struct {
 CmMesh cm_mesh_create(vec3s *vertices, size_t count, const uint32_t *indices,
                       size_t indices_count);
 
-void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count);
+void cm_mesh_attach_colors(CmMesh *mesh, bool instanced, vec4s *colors,
+                           size_t count);
 void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
 
 void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
