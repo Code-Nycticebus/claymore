@@ -6,6 +6,10 @@ CmVertexArray cm_vertex_array_create(void) {
   glGenVertexArrays(1, &va.id);
   return va;
 }
+void cm_vertex_array_delete(CmVertexArray *vao) {
+  glDeleteVertexArrays(1, &vao->id);
+  *vao = (CmVertexArray){0};
+}
 
 void cm_vertex_array_push_attrib(CmVertexArray *array, size_t count,
                                  size_t stride, size_t offset) {
@@ -32,7 +36,13 @@ CmIndexBuffer cm_index_buffer_create(const uint32_t *indices, size_t count) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib.id);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, indices,
                GL_STATIC_DRAW);
+  ib.count = count;
   return ib;
+}
+
+void cm_index_buffer_delete(CmIndexBuffer *ibo) {
+  glDeleteBuffers(1, &ibo->id);
+  *ibo = (CmIndexBuffer){0};
 }
 
 CmVertexBuffer cm_vertex_buffer_create(const void *data, size_t bytes,
@@ -41,23 +51,29 @@ CmVertexBuffer cm_vertex_buffer_create(const void *data, size_t bytes,
   glGenBuffers(1, &vb.id);
   glBindBuffer(GL_ARRAY_BUFFER, vb.id);
   glBufferData(GL_ARRAY_BUFFER, bytes, data, buffer_usage);
+  vb.size = bytes;
+  vb.usage = buffer_usage;
   return vb;
+}
+
+void cm_vertex_buffer_delete(CmVertexBuffer *vbo) {
+  glDeleteBuffers(1, &vbo->id);
+  *vbo = (CmVertexBuffer){0};
 }
 
 CmVertexBuffer *cm_buffer_attach_vec2(CmRenderBuffer *buffer, const vec2s *data,
                                       size_t count,
                                       CmBufferUsage buffer_usage) {
-  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
-  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  assert(buffer->vbo_count < CM_RENDER_BUFFER_MAX);
+  CmVertexBuffer *vb = &buffer->vbo[buffer->vbo_count];
   *vb = cm_vertex_buffer_create(data, sizeof(vec2s) * count, buffer_usage);
   if (buffer_usage == CM_BUFFER_INSTANCED) {
-    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 3,
-                                          sizeof(vec2s), 0);
+    cm_vertex_array_push_attrib_instanced(&buffer->vao, 3, sizeof(vec2s), 0);
     buffer->instance_count = count;
   } else {
-    cm_vertex_array_push_attrib(&buffer->vertex_array, 2, sizeof(vec2s), 0);
+    cm_vertex_array_push_attrib(&buffer->vao, 2, sizeof(vec2s), 0);
   }
-  buffer->buffer_count++;
+  buffer->vbo_count++;
   return vb;
 }
 
@@ -71,17 +87,16 @@ void cm_buffer_update_vec2(CmRenderBuffer *buffer, CmVertexBuffer *vb,
 CmVertexBuffer *cm_buffer_attach_vec3(CmRenderBuffer *buffer, const vec3s *data,
                                       size_t count,
                                       CmBufferUsage buffer_usage) {
-  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
-  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  assert(buffer->vbo_count < CM_RENDER_BUFFER_MAX);
+  CmVertexBuffer *vb = &buffer->vbo[buffer->vbo_count];
   *vb = cm_vertex_buffer_create(data, sizeof(vec3s) * count, buffer_usage);
   if (buffer_usage == CM_BUFFER_INSTANCED) {
-    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 3,
-                                          sizeof(vec3s), 0);
+    cm_vertex_array_push_attrib_instanced(&buffer->vao, 3, sizeof(vec3s), 0);
     buffer->instance_count = count;
   } else {
-    cm_vertex_array_push_attrib(&buffer->vertex_array, 3, sizeof(vec3s), 0);
+    cm_vertex_array_push_attrib(&buffer->vao, 3, sizeof(vec3s), 0);
   }
-  buffer->buffer_count++;
+  buffer->vbo_count++;
   return vb;
 }
 
@@ -95,17 +110,16 @@ void cm_buffer_update_vec3(CmRenderBuffer *buffer, CmVertexBuffer *vb,
 CmVertexBuffer *cm_buffer_attach_vec4(CmRenderBuffer *buffer, const vec2s *data,
                                       size_t count,
                                       CmBufferUsage buffer_usage) {
-  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
-  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  assert(buffer->vbo_count < CM_RENDER_BUFFER_MAX);
+  CmVertexBuffer *vb = &buffer->vbo[buffer->vbo_count];
   *vb = cm_vertex_buffer_create(data, sizeof(vec4s) * count, buffer_usage);
   if (buffer_usage == CM_BUFFER_INSTANCED) {
-    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 3,
-                                          sizeof(vec4s), 0);
+    cm_vertex_array_push_attrib_instanced(&buffer->vao, 3, sizeof(vec4s), 0);
     buffer->instance_count = count;
   } else {
-    cm_vertex_array_push_attrib(&buffer->vertex_array, 4, sizeof(vec4s), 0);
+    cm_vertex_array_push_attrib(&buffer->vao, 4, sizeof(vec4s), 0);
   }
-  buffer->buffer_count++;
+  buffer->vbo_count++;
   return vb;
 }
 
@@ -118,16 +132,16 @@ void cm_buffer_update_vec4(CmRenderBuffer *buffer, CmVertexBuffer *vb,
 
 CmVertexBuffer *cm_buffer_attach_mat4(CmRenderBuffer *buffer, const mat4s *data,
                                       size_t count) {
-  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
+  assert(buffer->vbo_count < CM_RENDER_BUFFER_MAX);
   buffer->instance_count = count;
-  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  CmVertexBuffer *vb = &buffer->vbo[buffer->vbo_count];
   *vb = cm_vertex_buffer_create(data, sizeof(mat4s) * count, CM_BUFFER_DYNAMIC);
   for (size_t i = 0; i < 4; i++) {
-    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 4,
-                                          sizeof(mat4s), sizeof(vec4s) * i);
+    cm_vertex_array_push_attrib_instanced(&buffer->vao, 4, sizeof(mat4s),
+                                          sizeof(vec4s) * i);
   }
 
-  buffer->buffer_count++;
+  buffer->vbo_count++;
   return vb;
 }
 
@@ -144,15 +158,23 @@ CmRenderBuffer cm_render_buffer_create(const vec3s *positions, size_t count,
   CmRenderBuffer buffer = {0};
   buffer.instance_count = 1;
   cm_buffer_attach_vec3(&buffer, positions, count, CM_BUFFER_STATIC);
-  buffer.indices = cm_index_buffer_create(indices, indices_count);
+  buffer.ibo = cm_index_buffer_create(indices, indices_count);
   return buffer;
 }
 
+void cm_render_buffer_delete(CmRenderBuffer *buffer) {
+  cm_vertex_array_delete(&buffer->vao);
+  for (size_t i = 0; i < buffer->vbo_count; i++) {
+    cm_vertex_buffer_delete(&buffer->vbo[i]);
+  }
+  cm_index_buffer_delete(&buffer->ibo);
+}
+
 void cm_buffer_draw(CmRenderBuffer *buffer) {
-  glBindVertexArray(buffer->vertex_array.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->indices.id);
-  glDrawElementsInstanced(GL_TRIANGLES, buffer->indices.indices_count,
-                          GL_UNSIGNED_INT, NULL, buffer->instance_count);
+  glBindVertexArray(buffer->vao.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->ibo.id);
+  glDrawElementsInstanced(GL_TRIANGLES, buffer->ibo.count, GL_UNSIGNED_INT,
+                          NULL, buffer->instance_count);
 }
 
 CmFrameBuffer cm_framebuffer_create(uint32_t width, uint32_t height) {

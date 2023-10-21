@@ -11,13 +11,13 @@ typedef enum {
 
 typedef struct {
   GLuint id;
-  size_t element_size;
-  size_t element_count;
+  size_t size;
+  CmBufferUsage usage;
 } CmVertexBuffer;
 
 typedef struct {
   GLuint id;
-  size_t indices_count;
+  size_t count;
 } CmIndexBuffer;
 
 typedef struct {
@@ -29,11 +29,11 @@ typedef struct {
 
 typedef struct {
   size_t instance_count;
-  size_t buffer_count;
-  CmVertexBuffer buffers[CM_RENDER_BUFFER_MAX];
+  size_t vbo_count;
+  CmVertexBuffer vbo[CM_RENDER_BUFFER_MAX];
 
-  CmVertexArray vertex_array;
-  CmIndexBuffer indices;
+  CmVertexArray vao;
+  CmIndexBuffer ibo;
 } CmRenderBuffer;
 
 #endif /* !__CM_RENDERER_DEFINES_H__ */
