@@ -11,6 +11,7 @@ static const float fov = 90.F;
 #define GRID_SIZE 100
 
 static CmShader cube_shader;
+static CmShader light_shader;
 
 struct {
   vec3s pos;
@@ -18,6 +19,7 @@ struct {
 } light;
 
 CmMesh cube_mesh;
+CmMesh light_mesh;
 
 mat4s *transforms;
 
@@ -111,6 +113,9 @@ static bool instancing_scene_init(CmScene *scene) {
 
   cube_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
                                          "res/shader/cube.fs.glsl");
+
+  light_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
+                                          "res/shader/basic.fs.glsl");
   vec3s vertex_positions[] = {
       // Front
       {{0.F, 0.F, 0.F}},
@@ -164,44 +169,6 @@ static bool instancing_scene_init(CmScene *scene) {
   cube_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
                              indices_count);
 
-  // vec4s vertex_colors[] = {
-  //     // Front
-  //     {{1, 0, 0, 1}},
-  //     {{1, 0, 0, 1}},
-  //     {{1, 0, 0, 1}},
-  //     {{1, 0, 0, 1}},
-
-  //     // Right
-  //     {{1, 1, 0, 1}},
-  //     {{1, 1, 0, 1}},
-  //     {{1, 1, 0, 1}},
-  //     {{1, 1, 0, 1}},
-
-  //     // Left
-  //     {{0, 1, 1, 1}},
-  //     {{0, 1, 1, 1}},
-  //     {{0, 1, 1, 1}},
-  //     {{0, 1, 1, 1}},
-
-  //     // Back
-  //     {{0, 0, 1, 1}},
-  //     {{0, 0, 1, 1}},
-  //     {{0, 0, 1, 1}},
-  //     {{0, 0, 1, 1}},
-
-  //     // Top
-  //     {{1, 0, 1, 1}},
-  //     {{1, 0, 1, 1}},
-  //     {{1, 0, 1, 1}},
-  //     {{1, 0, 1, 1}},
-
-  //     // Bottom
-  //     {{0, 1, 0, 1}},
-  //     {{0, 1, 0, 1}},
-  //     {{0, 1, 0, 1}},
-  //     {{0, 1, 0, 1}},
-  // };
-  // cm_mesh_attach_colors(&cube_mesh, vertex_colors, vertices_count);
   vec4s *vertex_colors =
       malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
   for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
@@ -216,12 +183,57 @@ static bool instancing_scene_init(CmScene *scene) {
                                   GRID_SIZE * GRID_SIZE * GRID_SIZE);
   free(vertex_colors);
 
+  vec3s normals[] = {
+      // Front
+      {{0, 0, 1}},
+      {{0, 0, 1}},
+      {{0, 0, 1}},
+      {{0, 0, 1}},
+
+      // Right
+      {{1, 0, 0}},
+      {{1, 0, 0}},
+      {{1, 0, 0}},
+      {{1, 0, 0}},
+
+      // Left
+      {{-1, 0, 0}},
+      {{-1, 0, 0}},
+      {{-1, 0, 0}},
+      {{-1, 0, 0}},
+
+      // Back
+      {{0, 0, -1}},
+      {{0, 0, -1}},
+      {{0, 0, -1}},
+      {{0, 0, -1}},
+
+      // Top
+      {{0, 1, 0}},
+      {{0, 1, 0}},
+      {{0, 1, 0}},
+      {{0, 1, 0}},
+
+      // Bottom
+      {{0, -1, 0}},
+      {{0, -1, 0}},
+      {{0, -1, 0}},
+      {{0, -1, 0}},
+  };
+  cm_mesh_attach_normals(&cube_mesh, normals, vertices_count);
+
   transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
   cm_mesh_attach_transforms(&cube_mesh, NULL,
                             GRID_SIZE * GRID_SIZE * GRID_SIZE);
 
   light.pos = (vec3s){{-4, 4, 4}};
-  light.color = (vec4s){{1, 1, 1, 1}};
+  light.color = (vec4s){{0.8, 0.2, 0.2, 1}};
+  light_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
+                              indices_count);
+  cm_mesh_attach_colors_instanced(&light_mesh, &light.color, 1);
+  cm_mesh_attach_normals(&light_mesh, NULL, 0);
+  mat4s transform = glms_translate_make(light.pos);
+  cm_mesh_attach_transforms(&light_mesh, &transform, 1);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE, (cm_event_callback)camera_resize,
                      &scene->camera);
@@ -242,9 +254,19 @@ static bool instancing_scene_init(CmScene *scene) {
 
 static void instancing_scene_update(CmScene *scene, float dt) {
   (void)scene, (void)dt;
+  cm_shader_bind(&light_shader);
+  cm_shader_set_mat4(&light_shader, "u_vp", scene->camera.vp);
+
+  cm_mesh_draw(&light_mesh);
+
+  cm_shader_unbind();
 
   cm_shader_bind(&cube_shader);
   cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
+  cm_shader_set_vec3(&cube_shader, "u_view_pos", scene->camera.position);
+  cm_shader_set_vec3(&cube_shader, "u_light_pos", light.pos);
+  cm_shader_set_vec4(&cube_shader, "u_light_color", light.color);
+
   size_t transform_count = 0;
   static float r = 0;
   r += 1;
