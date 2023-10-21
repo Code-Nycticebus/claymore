@@ -45,7 +45,7 @@ struct CmFont {
   CmShader shader;
   GLuint texture_id;
   CmVertexBuffer vertex_buffer;
-  CmVertexAttribute vertex_attrib;
+  CmVertexArray vertex_array;
 
   stbtt_bakedchar cdata[FONT_CHAR_MAX];
 
@@ -101,15 +101,18 @@ CmFont *cm_font_init(const char *filename, float font_height) {
   fclose(ttf_file);
 
   font_renderer->vertex_buffer = cm_vertex_buffer_create(
-      FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX,
-      sizeof(struct Vertex), 0, GL_DYNAMIC_DRAW);
+      NULL,
+      sizeof(struct Vertex) * FONT_RENDERER_VERTECIES_PER_CHAR *
+          FONT_RENDERER_CHAR_MAX,
+      CM_BUFFER_DYNAMIC);
 
-  font_renderer->vertex_attrib =
-      cm_vertex_attribute_create(&font_renderer->vertex_buffer);
-  cm_vertex_attribute_push(&font_renderer->vertex_attrib, 3, GL_FLOAT,
-                           offsetof(struct Vertex, pos));
-  cm_vertex_attribute_push(&font_renderer->vertex_attrib, 2, GL_FLOAT,
-                           offsetof(struct Vertex, uv));
+  font_renderer->vertex_array = cm_vertex_array_create();
+  cm_vertex_array_push_attrib(&font_renderer->vertex_array, 3,
+                              sizeof(struct Vertex),
+                              offsetof(struct Vertex, pos));
+  cm_vertex_array_push_attrib(&font_renderer->vertex_array, 2,
+                              sizeof(struct Vertex),
+                              offsetof(struct Vertex, uv));
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
@@ -140,7 +143,7 @@ void cm_font_draw(CmFont *font, const mat4s mvp, float x, float y, float z,
   cm_shader_set_i32(&font->shader, "u_texture", 0);
 
   glBindBuffer(GL_ARRAY_BUFFER, font->vertex_buffer.id);
-  glBindVertexArray(font->vertex_attrib.id);
+  glBindVertexArray(font->vertex_array.id);
 
   float text_y = -y;
   float text_x = x;
@@ -199,7 +202,7 @@ void cm_font_draw_cstr(CmFont *font, const mat4s mvp, float x, float y, float z,
 void cm_font_free(CmFont *font) {
   glDeleteTextures(1, &font->texture_id);
   glDeleteBuffers(1, &font->vertex_buffer.id);
-  glDeleteVertexArrays(1, &font->vertex_attrib.id);
+  glDeleteVertexArrays(1, &font->vertex_array.id);
   cm_shader_delete(&font->shader);
   free(font);
 }

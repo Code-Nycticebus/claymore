@@ -1,94 +1,158 @@
 #include "render_buffer.h"
 #include "render_command.h"
 
-CmVertexBuffer cm_vertex_buffer_create(size_t count, size_t element_size,
-                                       const void *data, GLenum draw_mode) {
-  CmVertexBuffer vertex_buffer = {
-      .id = 0,
-      .element_count = count,
-      .element_size = element_size,
-  };
-  glGenBuffers(1, &vertex_buffer.id);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer.id);
-  glBufferData(GL_ARRAY_BUFFER, count * element_size, data, draw_mode);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  return vertex_buffer;
+CmVertexArray cm_vertex_array_create(void) {
+  CmVertexArray va = {0};
+  glGenVertexArrays(1, &va.id);
+  return va;
 }
 
-void cm_vertex_buffer_delete(CmVertexBuffer *vertex_buffer) {
-  glDeleteBuffers(1, &vertex_buffer->id);
-
-  vertex_buffer->id = 0;
-  vertex_buffer->element_count = 0;
-  vertex_buffer->element_size = 0;
+void cm_vertex_array_push_attrib(CmVertexArray *array, size_t count,
+                                 size_t stride, size_t offset) {
+  glBindVertexArray(array->id);
+  glEnableVertexAttribArray(array->index);
+  glVertexAttribPointer(array->index, count, GL_FLOAT, GL_FALSE, stride,
+                        (void *)offset); // NOLINT
+  array->index++;
 }
 
-CmVertexAttribute cm_vertex_attribute_create(CmVertexBuffer *vertex_buffer) {
-  CmVertexAttribute vertex_attribute = {
-      .id = 0,
-      .index = 0,
-      .buffer = vertex_buffer,
-  };
-  glGenVertexArrays(1, &vertex_attribute.id);
-  return vertex_attribute;
+void cm_vertex_array_push_attrib_instanced(CmVertexArray *array, size_t count,
+                                           size_t stride, size_t offset) {
+  glBindVertexArray(array->id);
+  glEnableVertexAttribArray(array->index);
+  glVertexAttribPointer(array->index, count, GL_FLOAT, GL_FALSE, stride,
+                        (void *)offset); // NOLINT
+  glVertexAttribDivisor(array->index, 1);
+  array->index++;
 }
 
-void cm_vertex_attribute_delete(CmVertexAttribute *vertex_attrib) {
-  glDeleteVertexArrays(1, &vertex_attrib->id);
-
-  vertex_attrib->id = 0;
-  vertex_attrib->buffer = NULL;
-  vertex_attrib->index = 0;
+CmIndexBuffer cm_index_buffer_create(const uint32_t *indices, size_t count) {
+  CmIndexBuffer ib = {0};
+  glGenBuffers(1, &ib.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib.id);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, indices,
+               GL_STATIC_DRAW);
+  return ib;
 }
 
-void cm_vertex_attribute_push(CmVertexAttribute *attr, size_t count,
-                              GLenum type, size_t offset) {
-  // Bind vertex_buffer to associate vertex_attribute with it.
-  assert(attr->buffer->id);
-  glBindBuffer(GL_ARRAY_BUFFER, attr->buffer->id);
-
-  assert(attr->id);
-  glBindVertexArray(attr->id);
-
-  glEnableVertexAttribArray(attr->index);
-  glVertexAttribPointer(attr->index, count, type, GL_FALSE,
-                        attr->buffer->element_size,
-                        (const void *)offset); // NOLINT
-
-  glBindVertexArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  attr->index++;
+CmVertexBuffer cm_vertex_buffer_create(const void *data, size_t bytes,
+                                       CmBufferUsage buffer_usage) {
+  CmVertexBuffer vb = {0};
+  glGenBuffers(1, &vb.id);
+  glBindBuffer(GL_ARRAY_BUFFER, vb.id);
+  glBufferData(GL_ARRAY_BUFFER, bytes, data, buffer_usage);
+  return vb;
 }
 
-CmIndexBuffer cm_index_buffer_create(CmVertexAttribute *attrib, size_t count,
-                                     const uint32_t *indices, GLenum mode) {
-  CmIndexBuffer index_buffer = {.id = 0, .count = count, .attrib = attrib};
-  // Bind vertex_attrib to associate index buffer with it
-  glBindVertexArray(attrib->id);
-
-  glGenBuffers(1, &index_buffer.id);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer.id);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices,
-               mode);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-
-  return index_buffer;
+CmVertexBuffer *cm_buffer_attach_vec2(CmRenderBuffer *buffer, const vec2s *data,
+                                      size_t count,
+                                      CmBufferUsage buffer_usage) {
+  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
+  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  *vb = cm_vertex_buffer_create(data, sizeof(vec2s) * count, buffer_usage);
+  if (buffer_usage == CM_BUFFER_INSTANCED) {
+    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 3,
+                                          sizeof(vec2s), 0);
+    buffer->instance_count = count;
+  } else {
+    cm_vertex_array_push_attrib(&buffer->vertex_array, 2, sizeof(vec2s), 0);
+  }
+  buffer->buffer_count++;
+  return vb;
 }
 
-void cm_index_buffer_delete(CmIndexBuffer *index_buffer) {
-  glDeleteBuffers(1, &index_buffer->id);
-  index_buffer->id = 0;
-  index_buffer->count = 0;
-  index_buffer->attrib = NULL;
+void cm_buffer_update_vec2(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const vec2s *data, size_t count) {
+  glBindBuffer(GL_ARRAY_BUFFER, vb->id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec2s) * count, data);
+  buffer->instance_count = count;
 }
 
-void cm_render_buffer_delete(CmRenderBuffer *render_buffer) {
-  cm_vertex_buffer_delete(&render_buffer->vertex_buffer);
-  cm_vertex_attribute_delete(&render_buffer->vertex_attribute);
-  cm_index_buffer_delete(&render_buffer->index_buffer);
+CmVertexBuffer *cm_buffer_attach_vec3(CmRenderBuffer *buffer, const vec3s *data,
+                                      size_t count,
+                                      CmBufferUsage buffer_usage) {
+  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
+  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  *vb = cm_vertex_buffer_create(data, sizeof(vec3s) * count, buffer_usage);
+  if (buffer_usage == CM_BUFFER_INSTANCED) {
+    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 3,
+                                          sizeof(vec3s), 0);
+    buffer->instance_count = count;
+  } else {
+    cm_vertex_array_push_attrib(&buffer->vertex_array, 3, sizeof(vec3s), 0);
+  }
+  buffer->buffer_count++;
+  return vb;
+}
+
+void cm_buffer_update_vec3(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const vec3s *data, size_t count) {
+  glBindBuffer(GL_ARRAY_BUFFER, vb->id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3s) * count, data);
+  buffer->instance_count = count;
+}
+
+CmVertexBuffer *cm_buffer_attach_vec4(CmRenderBuffer *buffer, const vec2s *data,
+                                      size_t count,
+                                      CmBufferUsage buffer_usage) {
+  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
+  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  *vb = cm_vertex_buffer_create(data, sizeof(vec4s) * count, buffer_usage);
+  if (buffer_usage == CM_BUFFER_INSTANCED) {
+    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 3,
+                                          sizeof(vec4s), 0);
+    buffer->instance_count = count;
+  } else {
+    cm_vertex_array_push_attrib(&buffer->vertex_array, 4, sizeof(vec4s), 0);
+  }
+  buffer->buffer_count++;
+  return vb;
+}
+
+void cm_buffer_update_vec4(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const vec4s *data, size_t count) {
+  glBindBuffer(GL_ARRAY_BUFFER, vb->id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec4s) * count, data);
+  buffer->instance_count = count;
+}
+
+CmVertexBuffer *cm_buffer_attach_mat4(CmRenderBuffer *buffer, const mat4s *data,
+                                      size_t count) {
+  assert(buffer->buffer_count < CM_RENDER_BUFFER_MAX);
+  buffer->instance_count = count;
+  CmVertexBuffer *vb = &buffer->buffers[buffer->buffer_count];
+  *vb = cm_vertex_buffer_create(data, sizeof(mat4s) * count, CM_BUFFER_DYNAMIC);
+  for (size_t i = 0; i < 4; i++) {
+    cm_vertex_array_push_attrib_instanced(&buffer->vertex_array, 4,
+                                          sizeof(mat4s), sizeof(vec4s) * i);
+  }
+
+  buffer->buffer_count++;
+  return vb;
+}
+
+void cm_buffer_update_mat4(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const mat4s *data, size_t count) {
+  glBindBuffer(GL_ARRAY_BUFFER, vb->id);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(mat4s) * count, data);
+  buffer->instance_count = count;
+}
+
+CmRenderBuffer cm_render_buffer_create(const vec3s *positions, size_t count,
+                                       const uint32_t *indices,
+                                       size_t indices_count) {
+  CmRenderBuffer buffer = {0};
+  buffer.instance_count = 1;
+  cm_buffer_attach_vec3(&buffer, positions, count, CM_BUFFER_STATIC);
+  buffer.indices = cm_index_buffer_create(indices, indices_count);
+  return buffer;
+}
+
+void cm_buffer_draw(CmRenderBuffer *buffer) {
+  glBindVertexArray(buffer->vertex_array.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->indices.id);
+  glDrawElementsInstanced(GL_TRIANGLES, buffer->indices.indices_count,
+                          GL_UNSIGNED_INT, NULL, buffer->instance_count);
 }
 
 CmFrameBuffer cm_framebuffer_create(uint32_t width, uint32_t height) {
@@ -144,10 +208,9 @@ void cm_framebuffer_unbind(void) { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
 void cm_framebuffer_draw(CmFrameBuffer *framebuffer, CmRenderBuffer *rb) {
   glDisable(GL_DEPTH_TEST);
-
   glBindTexture(GL_TEXTURE_2D, framebuffer->texture);
 
-  cm_renderer_draw_indexed(rb, rb->index_buffer.count);
+  cm_buffer_draw(rb);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glEnable(GL_DEPTH_TEST);

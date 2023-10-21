@@ -96,8 +96,8 @@ static void background_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_renderer2d_begin();
   cm_renderer2d_push_quad_textured(
       (vec2s){{-background_size / 2, -background_size / 2}}, background_layer,
-      (vec2s){{background_size, background_size}}, (vec2s){{0.F, 0.F}},
-      (vec2s){{background_size, background_size}});
+      (vec2s){{background_size, background_size}},
+      (vec2s){{0, background_size}});
   cm_renderer2d_end();
   cm_shader_unbind();
   cm_texture_unbind(0);

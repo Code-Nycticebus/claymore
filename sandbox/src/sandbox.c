@@ -4,9 +4,6 @@
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 720
 
-#include "cube/cube.h"
-#include "cube_bench/cube_bench.h"
-#include "framebuffer/framebuffer.h"
 #include "instancing/instancing.h"
 #include "menu/menu.h"
 #include "ortho/ortho.h"
@@ -46,9 +43,6 @@ ClaymoreConfig claymore_config(void) {
           {
               scene_menu,
               scene_ortho,
-              scene_cube_bench,
-              scene_cube,
-              scene_framebuffer,
               scene_texture,
               scene_particle,
               scene_instancing,

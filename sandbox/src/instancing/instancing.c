@@ -252,7 +252,7 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   static float r = 0;
   r += 1;
   const vec3s axis = {{1, 0, 1}};
-  const vec3s scale = {{.5F, .5F, .5F}};
+  const vec3s scale = {{.65F, .65F, .65F}};
   static size_t grid_size = 3;
   const float dt_max = 1 / 65.F;
   grid_size += dt < dt_max ? +1 : 0;
@@ -270,7 +270,6 @@ static void instancing_scene_update(CmScene *scene, float dt) {
     }
   }
   cm_mesh_update_transforms(&cube_mesh, transforms, transform_count);
-  transform_count = 0;
   // RENDER HERE
   cm_mesh_draw(&cube_mesh);
 

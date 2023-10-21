@@ -3,46 +3,41 @@
 
 #include "renderer_defines.h"
 #include "shader.h"
+CmVertexBuffer cm_vertex_buffer_create(const void *data, size_t bytes,
+                                       CmBufferUsage buffer_usage);
 
-typedef struct {
-  uint32_t id;
-  size_t element_size;
-  size_t element_count;
-} CmVertexBuffer;
+CmVertexArray cm_vertex_array_create(void);
+void cm_vertex_array_push_attrib(CmVertexArray *array, size_t count,
+                                 size_t stride, size_t offset);
+void cm_vertex_array_push_attrib_instanced(CmVertexArray *array, size_t count,
+                                           size_t stride, size_t offset);
+CmIndexBuffer cm_index_buffer_create(const uint32_t *indices, size_t count);
 
-CmVertexBuffer cm_vertex_buffer_create(size_t count, size_t element_size,
-                                       const void *data, GLenum draw_mode);
-void cm_vertex_buffer_delete(CmVertexBuffer *vertex_buffer);
+CmRenderBuffer cm_render_buffer_create(const vec3s *positions, size_t count,
+                                       const uint32_t *indices,
+                                       size_t indices_count);
 
-typedef struct {
-  uint32_t id;
-  size_t index;
-  CmVertexBuffer *buffer;
-} CmVertexAttribute;
+CmVertexBuffer *cm_buffer_attach_vec2(CmRenderBuffer *buffer, const vec2s *data,
+                                      size_t count, CmBufferUsage buffer_usage);
+void cm_buffer_update_vec2(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const vec2s *data, size_t count);
 
-CmVertexAttribute cm_vertex_attribute_create(CmVertexBuffer *vertex_buffer);
-void cm_vertex_attribute_push(CmVertexAttribute *attr, size_t count,
-                              GLenum type, size_t offset);
-void cm_vertex_attribute_delete(CmVertexAttribute *vertex_attrib);
+CmVertexBuffer *cm_buffer_attach_vec3(CmRenderBuffer *buffer, const vec3s *data,
+                                      size_t count, CmBufferUsage buffer_usage);
+void cm_buffer_update_vec3(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const vec3s *data, size_t count);
 
-typedef struct {
-  uint32_t id;
-  size_t count;
+CmVertexBuffer *cm_buffer_attach_vec4(CmRenderBuffer *buffer, const vec2s *data,
+                                      size_t count, CmBufferUsage buffer_usage);
+void cm_buffer_update_vec4(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const vec4s *data, size_t count);
 
-  CmVertexAttribute *attrib;
-} CmIndexBuffer;
+CmVertexBuffer *cm_buffer_attach_mat4(CmRenderBuffer *buffer, const mat4s *data,
+                                      size_t count);
+void cm_buffer_update_mat4(CmRenderBuffer *buffer, CmVertexBuffer *vb,
+                           const mat4s *data, size_t count);
 
-CmIndexBuffer cm_index_buffer_create(CmVertexAttribute *attrib, size_t count,
-                                     const uint32_t *indices, GLenum mode);
-void cm_index_buffer_delete(CmIndexBuffer *index_buffer);
-
-typedef struct {
-  CmVertexBuffer vertex_buffer;
-  CmVertexAttribute vertex_attribute;
-  CmIndexBuffer index_buffer;
-} CmRenderBuffer;
-
-void cm_render_buffer_delete(CmRenderBuffer *render_buffer);
+void cm_buffer_draw(CmRenderBuffer *buffer);
 
 typedef struct {
   uint32_t fbo;
