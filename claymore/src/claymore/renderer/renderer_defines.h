@@ -25,15 +25,4 @@ typedef struct {
   size_t index;
 } CmVertexArray;
 
-#define CM_RENDER_BUFFER_MAX 5
-
-typedef struct {
-  size_t instance_count;
-  size_t vbo_count;
-  CmVertexBuffer vbo[CM_RENDER_BUFFER_MAX];
-
-  CmVertexArray vao;
-  CmIndexBuffer ibo;
-} CmRenderBuffer;
-
 #endif /* !__CM_RENDERER_DEFINES_H__ */

@@ -1,8 +1,6 @@
 #include "instancing.h"
 #include <stdlib.h>
 
-#include "mesh.h"
-
 CmLayerInterface sandbox_fps(void);
 
 static CmFont *font;
@@ -203,11 +201,10 @@ static bool instancing_scene_init(CmScene *scene) {
   //     {{0, 1, 0, 1}},
   //     {{0, 1, 0, 1}},
   // };
-
+  // cm_mesh_attach_colors(&cube_mesh, vertex_colors, vertices_count);
   vec4s *vertex_colors =
       malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
   for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
-
     vertex_colors[x] = (vec4s){{
         rand() / (float)RAND_MAX,
         rand() / (float)RAND_MAX,
@@ -215,8 +212,8 @@ static bool instancing_scene_init(CmScene *scene) {
         1,
     }};
   }
-  cm_mesh_attach_colors(&cube_mesh, true, vertex_colors,
-                        GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  cm_mesh_attach_colors_instanced(&cube_mesh, vertex_colors,
+                                  GRID_SIZE * GRID_SIZE * GRID_SIZE);
   free(vertex_colors);
 
   transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
@@ -270,6 +267,7 @@ static void instancing_scene_update(CmScene *scene, float dt) {
     }
   }
   cm_mesh_update_transforms(&cube_mesh, transforms, transform_count);
+
   // RENDER HERE
   cm_mesh_draw(&cube_mesh);
 
