@@ -69,7 +69,12 @@ void cm_renderer2d_init(void) {
               (uint32_t)sizeof(struct Render2dData) / bytes_in_kilboytes);
 }
 
-void cm_renderer2d_shutdown(void) { free(render_data); }
+void cm_renderer2d_shutdown(void) {
+  cm_vertex_buffer_delete(&render_data->vbo);
+  cm_vertex_array_delete(&render_data->vao);
+  cm_index_buffer_delete(&render_data->ibo);
+  free(render_data);
+}
 
 static void cm_renderer2d_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, render_data->vbo.id);

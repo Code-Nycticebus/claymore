@@ -1,8 +1,8 @@
 #include "mesh.h"
 #include <assert.h>
 
-CmMesh cm_mesh_create(vec3s *vertices, size_t count, const uint32_t *indices,
-                      size_t indices_count) {
+CmMesh cm_mesh_create(const vec3s *vertices, size_t count,
+                      const uint32_t *indices, size_t indices_count) {
   CmMesh mesh = {0};
   mesh.instance_count = 1;
   mesh.vertices_count = count;
@@ -41,6 +41,7 @@ void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
                         sizeof(vec4s), (void *)0);
   mesh->attrib_index++;
 }
+
 void cm_mesh_attach_colors_instanced(CmMesh *mesh, vec4s *colors,
                                      size_t count) {
   assert(!mesh->vbo.color && "Color vector is already initialized!");

@@ -10,6 +10,7 @@ void cm_vertex_buffer_update(CmVertexBuffer *vbo, const void *data,
 void cm_vertex_buffer_delete(CmVertexBuffer *vbo);
 
 CmVertexArray cm_vertex_array_create(void);
+void cm_vertex_array_delete(CmVertexArray *vao);
 void cm_vertex_array_push_attrib(CmVertexArray *array, size_t count,
                                  size_t stride, size_t offset);
 void cm_vertex_array_push_attrib_instanced(CmVertexArray *array, size_t count,

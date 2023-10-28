@@ -227,7 +227,7 @@ static bool instancing_scene_init(CmScene *scene) {
                             GRID_SIZE * GRID_SIZE * GRID_SIZE);
 
   light.pos = (vec3s){{-4, 4, 4}};
-  light.color = (vec4s){{0.8, 0.2, 0.2, 1}};
+  light.color = (vec4s){{1.0, 1.0, 1.0, 1}};
   light_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
                               indices_count);
   cm_mesh_attach_colors_instanced(&light_mesh, &light.color, 1);

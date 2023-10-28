@@ -1,10 +1,5 @@
 #include "claymore.h"
 
-struct Vertex {
-  vec3 pos;
-  vec2 uv;
-};
-
 static CmShader grid_shader;
 static CmFont *font;
 static const float font_size = 64.F;
@@ -81,6 +76,7 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
   cm_renderer_set_clear_color((vec4s){.r = 0.F, .g = 0.F, .b = 0.F, .a = 1.F});
 
   glfwSwapInterval(0);
+
   return true;
 }
 
