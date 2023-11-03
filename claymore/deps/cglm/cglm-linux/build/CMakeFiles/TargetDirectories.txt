@@ -1,9 +1,0 @@
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/cglm.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/package.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/package_source.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/edit_cache.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/rebuild_cache.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/list_install_components.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/install.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/install/local.dir
-/home/nycticebus/Code/c/claymore/deps/cglm/cglm-linux/build/CMakeFiles/install/strip.dir
