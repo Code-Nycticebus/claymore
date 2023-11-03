@@ -6,6 +6,15 @@ typedef struct {
   vec4s color;
 } Quad;
 
+bool quad_collide_pos(const Quad *q1, const vec2s pos) {
+  // Check if the input position is within the boundaries of the Quad
+  if (pos.x >= q1->pos.x && pos.x <= q1->pos.x + q1->size.x &&
+      pos.y >= q1->pos.y && pos.y <= q1->pos.y + q1->size.y) {
+    return true; // Collision occurred
+  }
+  return false; // No collision
+}
+
 void quad_push(const Quad *quad) {
   cm_renderer2d_push_quad_color(quad->pos, 0, quad->size, quad->color);
 }
@@ -61,34 +70,89 @@ typedef struct {
   Quad button;
   Quad bg;
   Quad rail;
+  float min;
+  float max;
   float *value;
 } Slider;
 
 const vec4s slider_bg_color = {{.2F, .2F, .2F, 1.F}};
+const vec4s slider_rail_color = {{.3F, .3F, .3F, 1.F}};
+const vec4s slider_button_color = {{.4F, .4F, .4F, 1.F}};
 
-Slider slider(vec2s pos, vec2s size) {
+Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
   Slider slider;
   slider.bg.pos = pos;
   slider.bg.size = size;
   slider.bg.color = slider_bg_color;
+
+  const vec2s rail_size = (vec2s){{5, size.y * 0.9F}};
+  slider.rail.size = rail_size;
+  const vec2s rail_pos = (vec2s){{(pos.x + size.x / 2.F) - rail_size.x / 2.F,
+                                  (pos.y + size.y / 2.F) - rail_size.y / 2.F}};
+  slider.rail.pos = rail_pos;
+  slider.rail.color = slider_rail_color;
+
+  slider.button.color = slider_button_color;
+  const vec2s button_size = (vec2s){{20, 10}};
+  slider.button.size = button_size;
+  const vec2s button_pos =
+      (vec2s){{(rail_pos.x + rail_size.x / 2.F) - button_size.x / 2.F,
+               rail_pos.y - button_size.y / 2.F}};
+  slider.button.pos = button_pos;
+
+  slider.max = max;
+  slider.min = min;
+  slider.value = value;
+
   return slider;
 }
 
-void slider_render(Slider *slider) { quad_push(&slider->bg); }
+void slider_render(Slider *sliders) {
+  for (size_t i = 0; i < 3; i++) {
+    Slider *slider = &sliders[i];
+    quad_push(&slider->bg);
+    quad_push(&slider->rail);
+    quad_push(&slider->button);
+  }
+}
 
 typedef struct {
   CmShader shader;
-  Slider slider;
+  Slider slider[3];
 } OverlayData;
+
+static void slider_callback(CmMouseEvent *event, Slider *sliders) {
+  if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+    for (size_t i = 0; i < 3; i++) {
+      Slider *slider = &sliders[i];
+      if (quad_collide_pos(&slider->bg, event->info.pos)) {
+        float height = event->info.pos.y - slider->bg.pos.y;
+        float progress = height / slider->bg.size.y;
+        *slider->value = glm_lerp(slider->min, slider->max, progress);
+        slider->button.pos.y =
+            glm_lerp(slider->rail.pos.y,
+                     slider->rail.pos.y + slider->rail.size.y, progress);
+      }
+    }
+  }
+}
 
 static bool overlay_init(CmScene *scene, CmLayer *layer) {
   (void)scene;
   OverlayData *data = malloc(sizeof(OverlayData));
+  vec4s *scene_color = scene->state;
 
   data->shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
 
-  data->slider = slider((vec2s){{10.F, 10.F}}, (vec2s){{100.F, 200.F}});
+  data->slider[0] = slider((vec2s){{10.F, 10.F}}, (vec2s){{50.F, 200.F}}, 0, 1,
+                           &scene_color->r);
+  data->slider[1] = slider((vec2s){{10.F, 220.F}}, (vec2s){{50.F, 200.F}}, 0, 1,
+                           &scene_color->g);
+  data->slider[2] = slider((vec2s){{10.F, 430.F}}, (vec2s){{50.F, 200.F}}, 0, 1,
+                           &scene_color->b);
+  cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)slider_callback,
+                     data->slider);
 
   layer->state = data;
   return true;
@@ -102,7 +166,7 @@ void overlay_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_set_mat4(&data->shader, "u_mvp", scene->camera.vp);
 
   cm_renderer2d_begin();
-  slider_render(&data->slider);
+  slider_render(data->slider);
   cm_renderer2d_end();
 
   cm_shader_unbind();
