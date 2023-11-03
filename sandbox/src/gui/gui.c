@@ -104,6 +104,11 @@ Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
   slider.min = min;
   slider.value = value;
 
+  if (*value > 0) {
+    float progress = max / *value;
+    slider.button.pos.y = glm_lerp(
+        slider.rail.pos.y, slider.rail.pos.y + slider.rail.size.y, progress);
+  }
   return slider;
 }
 
@@ -144,13 +149,18 @@ static bool overlay_init(CmScene *scene, CmLayer *layer) {
 
   data->shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
+  const vec2s slider_size = {{50, 200}};
+  const float margin = 10.F;
 
-  data->slider[0] = slider((vec2s){{10.F, 10.F}}, (vec2s){{50.F, 200.F}}, 0, 1,
-                           &scene_color->r);
-  data->slider[1] = slider((vec2s){{10.F, 220.F}}, (vec2s){{50.F, 200.F}}, 0, 1,
-                           &scene_color->g);
-  data->slider[2] = slider((vec2s){{10.F, 430.F}}, (vec2s){{50.F, 200.F}}, 0, 1,
-                           &scene_color->b);
+  data->slider[0] =
+      slider((vec2s){{margin, (slider_size.y * 0) + (margin * 1)}}, slider_size,
+             0, 1, &scene_color->r);
+  data->slider[1] =
+      slider((vec2s){{margin, (slider_size.y * 1) + (margin * 2)}}, slider_size,
+             0, 1, &scene_color->g);
+  data->slider[2] =
+      slider((vec2s){{margin, (slider_size.y * 2) + (margin * 3)}}, slider_size,
+             0, 1, &scene_color->b);
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)slider_callback,
                      data->slider);
 
