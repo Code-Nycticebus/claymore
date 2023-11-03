@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/heightmap.dir/heightmap.c.o -o heightmap  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

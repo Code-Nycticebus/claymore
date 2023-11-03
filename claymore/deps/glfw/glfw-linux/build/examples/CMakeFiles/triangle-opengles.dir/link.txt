@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/triangle-opengles.dir/triangle-opengles.c.o -o triangle-opengles  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

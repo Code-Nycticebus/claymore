@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/empty.dir/empty.c.o CMakeFiles/empty.dir/__/deps/tinycthread.c.o -o empty  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -ldl 

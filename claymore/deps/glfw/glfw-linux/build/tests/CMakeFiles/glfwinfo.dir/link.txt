@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/glfwinfo.dir/glfwinfo.c.o CMakeFiles/glfwinfo.dir/__/deps/getopt.c.o -o glfwinfo  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/events.dir/events.c.o CMakeFiles/events.dir/__/deps/getopt.c.o -o events  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

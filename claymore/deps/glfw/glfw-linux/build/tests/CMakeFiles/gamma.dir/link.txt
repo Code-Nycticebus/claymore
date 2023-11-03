@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/gamma.dir/gamma.c.o -o gamma  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

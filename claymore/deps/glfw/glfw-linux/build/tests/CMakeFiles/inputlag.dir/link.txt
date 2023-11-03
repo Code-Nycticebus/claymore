@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/inputlag.dir/inputlag.c.o CMakeFiles/inputlag.dir/__/deps/getopt.c.o -o inputlag  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

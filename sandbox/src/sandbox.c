@@ -4,6 +4,7 @@
 #define WINDOW_WIDTH 1080
 #define WINDOW_HEIGHT 720
 
+#include "gui/gui.h"
 #include "instancing/instancing.h"
 #include "menu/menu.h"
 #include "ortho/ortho.h"
@@ -46,6 +47,7 @@ ClaymoreConfig claymore_config(void) {
               scene_texture,
               scene_particle,
               scene_instancing,
+              gui_scene,
           },
   };
 }

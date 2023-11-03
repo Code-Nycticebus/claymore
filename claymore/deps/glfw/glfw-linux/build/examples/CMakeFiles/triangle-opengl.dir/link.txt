@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/triangle-opengl.dir/triangle-opengl.c.o -o triangle-opengl  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

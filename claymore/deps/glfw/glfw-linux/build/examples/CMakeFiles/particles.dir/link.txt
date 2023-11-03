@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/particles.dir/particles.c.o CMakeFiles/particles.dir/__/deps/tinycthread.c.o CMakeFiles/particles.dir/__/deps/getopt.c.o -o particles  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -ldl 

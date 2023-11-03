@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/timeout.dir/timeout.c.o -o timeout  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 

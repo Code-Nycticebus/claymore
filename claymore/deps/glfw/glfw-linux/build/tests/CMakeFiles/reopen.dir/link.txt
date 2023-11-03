@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/reopen.dir/reopen.c.o -o reopen  ../src/libglfw3.a -lm /usr/lib/x86_64-linux-gnu/librt.a -lm -ldl 
