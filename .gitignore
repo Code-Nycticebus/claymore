@@ -1,4 +1,4 @@
 .build/
-deps/*/*-linux/
-deps/*/*-win/
+claymore/deps/*/*-linux/
+claymore/deps/*/*-win/
 
