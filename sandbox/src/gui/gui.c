@@ -87,7 +87,7 @@ Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
   slider.bg.size = size;
   slider.bg.color = slider_bg_color;
 
-  const vec2s rail_size = (vec2s){{5, size.y * 0.9F}};
+  const vec2s rail_size = (vec2s){{size.x * 0.85F, 5}};
   slider.rail.size = rail_size;
   const vec2s rail_pos = (vec2s){{(pos.x + size.x / 2.F) - rail_size.x / 2.F,
                                   (pos.y + size.y / 2.F) - rail_size.y / 2.F}};
@@ -95,11 +95,11 @@ Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
   slider.rail.color = slider_rail_color;
 
   slider.button.color = slider_button_color;
-  const vec2s button_size = (vec2s){{20, 10}};
+  const vec2s button_size = (vec2s){{10, 20}};
   slider.button.size = button_size;
   const vec2s button_pos =
       (vec2s){{(rail_pos.x + rail_size.x / 2.F) - button_size.x / 2.F,
-               rail_pos.y - button_size.y / 2.F}};
+               (rail_pos.y + rail_size.y / 2.F) - button_size.y / 2.F}};
   slider.button.pos = button_pos;
 
   slider.max = max;
@@ -108,10 +108,10 @@ Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
 
   if (*value > 0) {
     float progress = max / *value;
-    slider.button.pos.y =
-        glm_lerp(slider.rail.pos.y, slider.rail.pos.y + slider.rail.size.y,
+    slider.button.pos.x =
+        glm_lerp(slider.rail.pos.x, slider.rail.pos.x + slider.rail.size.x,
                  progress) -
-        (slider.button.size.y / 2);
+        (slider.button.size.x / 2);
   }
   return slider;
 }
@@ -145,15 +145,15 @@ static void slider_callback(CmMouseEvent *event, Slider *sliders) {
     for (size_t i = 0; i < 3; i++) {
       Slider *slider = &sliders[i];
       if (slider->active) {
-        float height = event->info.pos.y - slider->rail.pos.y;
-        float progress = height / slider->rail.size.y;
+        float height = event->info.pos.x - slider->rail.pos.x;
+        float progress = height / slider->rail.size.x;
         *slider->value = glm_lerp(slider->min, slider->max, progress);
-        slider->button.pos.y =
+        slider->button.pos.x =
             glm_clamp(
-                glm_lerp(slider->rail.pos.y,
-                         slider->rail.pos.y + slider->rail.size.y, progress),
-                slider->rail.pos.y, slider->rail.pos.y + slider->rail.size.y) -
-            (slider->button.size.y / 2);
+                glm_lerp(slider->rail.pos.x,
+                         slider->rail.pos.x + slider->rail.size.x, progress),
+                slider->rail.pos.x, slider->rail.pos.x + slider->rail.size.x) -
+            (slider->button.size.x / 2);
       }
     }
   }
@@ -173,19 +173,19 @@ static void slider_key_callback(CmKeyEvent *event, Slider *sliders) {
   if (event->action == CM_KEY_PRESS || event->action == CM_KEY_REPEAT) {
     const float step = 0.1F;
     float progress = *slider->value / slider->max;
-    if (event->code == CM_KEY_UP) {
+    if (event->code == CM_KEY_RIGHT) {
       progress += step;
-    } else if (event->code == CM_KEY_DOWN) {
+    } else if (event->code == CM_KEY_LEFT) {
       progress -= step;
     }
     *slider->value = glm_clamp(glm_lerp(slider->min, slider->max, progress),
                                slider->min, slider->max);
-    slider->button.pos.y =
-        glm_clamp(glm_lerp(slider->rail.pos.y,
-                           slider->rail.pos.y + slider->rail.size.y, progress),
-                  slider->rail.pos.y,
-                  slider->rail.pos.y + slider->rail.size.y) -
-        (slider->button.size.y / 2);
+    slider->button.pos.x =
+        glm_clamp(glm_lerp(slider->rail.pos.x,
+                           slider->rail.pos.x + slider->rail.size.x, progress),
+                  slider->rail.pos.x,
+                  slider->rail.pos.x + slider->rail.size.x) -
+        (slider->button.size.x / 2);
   }
 }
 
@@ -196,17 +196,17 @@ static bool overlay_init(CmScene *scene, CmLayer *layer) {
 
   data->shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
-  const vec2s slider_size = {{50, 200}};
-  const float margin = 10.F;
+  const vec2s slider_size = {{150, 30}};
+  const float margin = 5.F;
 
   data->slider[0] =
-      slider((vec2s){{(slider_size.x * 0) + (margin * 1), margin}}, slider_size,
+      slider((vec2s){{margin, (slider_size.y * 0) + (margin * 1)}}, slider_size,
              0, 1, &scene_color->r);
   data->slider[1] =
-      slider((vec2s){{(slider_size.x * 1) + (margin * 2), margin}}, slider_size,
+      slider((vec2s){{margin, (slider_size.y * 1) + (margin * 2)}}, slider_size,
              0, 1, &scene_color->g);
   data->slider[2] =
-      slider((vec2s){{(slider_size.x * 2) + (margin * 3), margin}}, slider_size,
+      slider((vec2s){{margin, (slider_size.y * 2) + (margin * 3)}}, slider_size,
              0, 1, &scene_color->b);
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)slider_callback,
                      data->slider);
