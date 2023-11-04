@@ -67,6 +67,7 @@ static CmLayerInterface bg_layer(void) {
 }
 
 typedef struct {
+  bool active;
   Quad button;
   Quad bg;
   Quad rail;
@@ -81,6 +82,7 @@ const vec4s slider_button_color = {{.4F, .4F, .4F, 1.F}};
 
 Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
   Slider slider;
+  slider.active = false;
   slider.bg.pos = pos;
   slider.bg.size = size;
   slider.bg.color = slider_bg_color;
@@ -129,10 +131,20 @@ typedef struct {
 } OverlayData;
 
 static void slider_callback(CmMouseEvent *event, Slider *sliders) {
-  if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+  if (event->action == CM_MOUSE_CLICK) {
     for (size_t i = 0; i < 3; i++) {
       Slider *slider = &sliders[i];
       if (quad_collide_pos(&slider->bg, event->info.pos)) {
+        slider->active = true;
+      } else {
+        slider->active = false;
+      }
+    }
+  }
+  if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
+    for (size_t i = 0; i < 3; i++) {
+      Slider *slider = &sliders[i];
+      if (slider->active) {
         float height = event->info.pos.y - slider->rail.pos.y;
         float progress = height / slider->rail.size.y;
         *slider->value = glm_lerp(slider->min, slider->max, progress);
@@ -144,6 +156,36 @@ static void slider_callback(CmMouseEvent *event, Slider *sliders) {
             (slider->button.size.y / 2);
       }
     }
+  }
+}
+
+static void slider_key_callback(CmKeyEvent *event, Slider *sliders) {
+  Slider *slider = NULL;
+  for (size_t i = 0; i < 3; i++) {
+    if (sliders[i].active) {
+      slider = &sliders[i];
+    }
+  }
+  if (slider == NULL) {
+    return;
+  }
+
+  if (event->action == CM_KEY_PRESS || event->action == CM_KEY_REPEAT) {
+    const float step = 0.1F;
+    float progress = *slider->value / slider->max;
+    if (event->code == CM_KEY_UP) {
+      progress += step;
+    } else if (event->code == CM_KEY_DOWN) {
+      progress -= step;
+    }
+    *slider->value = glm_clamp(glm_lerp(slider->min, slider->max, progress),
+                               slider->min, slider->max);
+    slider->button.pos.y =
+        glm_clamp(glm_lerp(slider->rail.pos.y,
+                           slider->rail.pos.y + slider->rail.size.y, progress),
+                  slider->rail.pos.y,
+                  slider->rail.pos.y + slider->rail.size.y) -
+        (slider->button.size.y / 2);
   }
 }
 
@@ -167,6 +209,8 @@ static bool overlay_init(CmScene *scene, CmLayer *layer) {
       slider((vec2s){{(slider_size.x * 2) + (margin * 3), margin}}, slider_size,
              0, 1, &scene_color->b);
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)slider_callback,
+                     data->slider);
+  cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)slider_key_callback,
                      data->slider);
 
   layer->state = data;
