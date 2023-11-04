@@ -106,8 +106,10 @@ Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
 
   if (*value > 0) {
     float progress = max / *value;
-    slider.button.pos.y = glm_lerp(
-        slider.rail.pos.y, slider.rail.pos.y + slider.rail.size.y, progress);
+    slider.button.pos.y =
+        glm_lerp(slider.rail.pos.y, slider.rail.pos.y + slider.rail.size.y,
+                 progress) -
+        (slider.button.size.y / 2);
   }
   return slider;
 }
@@ -131,12 +133,15 @@ static void slider_callback(CmMouseEvent *event, Slider *sliders) {
     for (size_t i = 0; i < 3; i++) {
       Slider *slider = &sliders[i];
       if (quad_collide_pos(&slider->bg, event->info.pos)) {
-        float height = event->info.pos.y - slider->bg.pos.y;
-        float progress = height / slider->bg.size.y;
+        float height = event->info.pos.y - slider->rail.pos.y;
+        float progress = height / slider->rail.size.y;
         *slider->value = glm_lerp(slider->min, slider->max, progress);
         slider->button.pos.y =
-            glm_lerp(slider->rail.pos.y,
-                     slider->rail.pos.y + slider->rail.size.y, progress);
+            glm_clamp(
+                glm_lerp(slider->rail.pos.y,
+                         slider->rail.pos.y + slider->rail.size.y, progress),
+                slider->rail.pos.y, slider->rail.pos.y + slider->rail.size.y) -
+            (slider->button.size.y / 2);
       }
     }
   }
@@ -153,13 +158,13 @@ static bool overlay_init(CmScene *scene, CmLayer *layer) {
   const float margin = 10.F;
 
   data->slider[0] =
-      slider((vec2s){{margin, (slider_size.y * 0) + (margin * 1)}}, slider_size,
+      slider((vec2s){{(slider_size.x * 0) + (margin * 1), margin}}, slider_size,
              0, 1, &scene_color->r);
   data->slider[1] =
-      slider((vec2s){{margin, (slider_size.y * 1) + (margin * 2)}}, slider_size,
+      slider((vec2s){{(slider_size.x * 1) + (margin * 2), margin}}, slider_size,
              0, 1, &scene_color->g);
   data->slider[2] =
-      slider((vec2s){{margin, (slider_size.y * 2) + (margin * 3)}}, slider_size,
+      slider((vec2s){{(slider_size.x * 2) + (margin * 3), margin}}, slider_size,
              0, 1, &scene_color->b);
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)slider_callback,
                      data->slider);
