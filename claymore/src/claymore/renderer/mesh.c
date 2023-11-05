@@ -1,8 +1,7 @@
 #include "mesh.h"
 #include <assert.h>
 
-CmMesh cm_mesh_create(const vec3s *vertices, size_t count,
-                      const uint32_t *indices, size_t indices_count) {
+CmMesh cm_mesh_create(const vec3s *vertices, size_t count) {
   CmMesh mesh = {0};
   mesh.instance_count = 1;
   mesh.vertices_count = count;
@@ -20,13 +19,17 @@ CmMesh cm_mesh_create(const vec3s *vertices, size_t count,
                         (void *)0);
   mesh.attrib_index++;
 
-  mesh.index_count = indices_count;
-  glGenBuffers(1, &mesh.index_buffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * indices_count,
-               indices, GL_STATIC_DRAW);
-
   return mesh;
+}
+
+void cm_mesh_attach_index_buffer(CmMesh *mesh, const uint32_t *indices,
+                                 size_t count) {
+  glBindVertexArray(mesh->vertex_array);
+  mesh->index_count = count;
+  glGenBuffers(1, &mesh->index_buffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->index_buffer);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, indices,
+               GL_STATIC_DRAW);
 }
 
 void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
@@ -115,9 +118,15 @@ void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
   mesh->instance_count = count;
 }
 
-void cm_mesh_draw(CmMesh *mesh) {
+void cm_mesh_draw_indexed(CmMesh *mesh) {
   glBindVertexArray(mesh->vertex_array);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->index_buffer);
   glDrawElementsInstanced(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT,
                           NULL, mesh->instance_count);
+}
+
+void cm_mesh_draw(CmMesh *mesh) {
+  glBindVertexArray(mesh->vertex_array);
+  glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertices_count,
+                        mesh->instance_count);
 }

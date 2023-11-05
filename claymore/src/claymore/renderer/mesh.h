@@ -21,9 +21,10 @@ typedef struct {
   size_t index_count;
 } CmMesh;
 
-CmMesh cm_mesh_create(const vec3s *vertices, size_t count,
-                      const uint32_t *indices, size_t indices_count);
+CmMesh cm_mesh_create(const vec3s *vertices, size_t count);
 
+void cm_mesh_attach_index_buffer(CmMesh *mesh, const uint32_t *indices,
+                                 size_t count);
 void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count);
 void cm_mesh_attach_colors_instanced(CmMesh *mesh, vec4s *colors, size_t count);
 void cm_mesh_update_colors(CmMesh *mesh, vec4s *colors, size_t count);
@@ -35,4 +36,5 @@ void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
 
 void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
 
+void cm_mesh_draw_indexed(CmMesh *mesh);
 void cm_mesh_draw(CmMesh *mesh);

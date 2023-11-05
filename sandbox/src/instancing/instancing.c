@@ -111,10 +111,8 @@ static bool instancing_scene_init(CmScene *scene) {
       (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 
-  // cube_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
-  //                                        "res/shader/cube.fs.glsl");
-  cube_shader = cm_shader_load_from_file("res/shader/uniform.vs.glsl",
-                                         "res/shader/uniform.fs.glsl");
+  cube_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
+                                         "res/shader/cube.fs.glsl");
 
   light_shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
                                           "res/shader/basic.fs.glsl");
@@ -158,6 +156,7 @@ static bool instancing_scene_init(CmScene *scene) {
   const size_t vertices_count =
       sizeof(vertex_positions) / sizeof(vertex_positions[0]);
 
+  cube_mesh = cm_mesh_create(vertex_positions, vertices_count);
   const uint32_t cube_indices[] = {
       0,  1,  2,  0,  2,  3,  // Front
       4,  5,  6,  4,  6,  7,  // Right
@@ -167,71 +166,69 @@ static bool instancing_scene_init(CmScene *scene) {
       20, 21, 22, 20, 22, 23, // Bottom
   };
   const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
+  cm_mesh_attach_index_buffer(&cube_mesh, cube_indices, indices_count);
 
-  cube_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
-                             indices_count);
+  vec4s *vertex_colors =
+      malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
+  for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
+    vertex_colors[x] = (vec4s){{
+        rand() / (float)RAND_MAX,
+        rand() / (float)RAND_MAX,
+        rand() / (float)RAND_MAX,
+        1,
+    }};
+  }
+  cm_mesh_attach_colors_instanced(&cube_mesh, vertex_colors,
+                                  GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  free(vertex_colors);
 
-  // vec4s *vertex_colors =
-  //     malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
-  // for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
-  //   vertex_colors[x] = (vec4s){{
-  //       rand() / (float)RAND_MAX,
-  //       rand() / (float)RAND_MAX,
-  //       rand() / (float)RAND_MAX,
-  //       1,
-  //   }};
-  // }
-  // cm_mesh_attach_colors_instanced(&cube_mesh, vertex_colors,
-  //                                 GRID_SIZE * GRID_SIZE * GRID_SIZE);
-  // free(vertex_colors);
+  vec3s normals[] = {
+      // Front
+      {{0, 0, 1}},
+      {{0, 0, 1}},
+      {{0, 0, 1}},
+      {{0, 0, 1}},
 
-  // vec3s normals[] = {
-  //     // Front
-  //     {{0, 0, 1}},
-  //     {{0, 0, 1}},
-  //     {{0, 0, 1}},
-  //     {{0, 0, 1}},
+      // Right
+      {{1, 0, 0}},
+      {{1, 0, 0}},
+      {{1, 0, 0}},
+      {{1, 0, 0}},
 
-  //     // Right
-  //     {{1, 0, 0}},
-  //     {{1, 0, 0}},
-  //     {{1, 0, 0}},
-  //     {{1, 0, 0}},
+      // Left
+      {{-1, 0, 0}},
+      {{-1, 0, 0}},
+      {{-1, 0, 0}},
+      {{-1, 0, 0}},
 
-  //     // Left
-  //     {{-1, 0, 0}},
-  //     {{-1, 0, 0}},
-  //     {{-1, 0, 0}},
-  //     {{-1, 0, 0}},
+      // Back
+      {{0, 0, -1}},
+      {{0, 0, -1}},
+      {{0, 0, -1}},
+      {{0, 0, -1}},
 
-  //     // Back
-  //     {{0, 0, -1}},
-  //     {{0, 0, -1}},
-  //     {{0, 0, -1}},
-  //     {{0, 0, -1}},
+      // Top
+      {{0, 1, 0}},
+      {{0, 1, 0}},
+      {{0, 1, 0}},
+      {{0, 1, 0}},
 
-  //     // Top
-  //     {{0, 1, 0}},
-  //     {{0, 1, 0}},
-  //     {{0, 1, 0}},
-  //     {{0, 1, 0}},
+      // Bottom
+      {{0, -1, 0}},
+      {{0, -1, 0}},
+      {{0, -1, 0}},
+      {{0, -1, 0}},
+  };
+  cm_mesh_attach_normals(&cube_mesh, normals, vertices_count);
 
-  //     // Bottom
-  //     {{0, -1, 0}},
-  //     {{0, -1, 0}},
-  //     {{0, -1, 0}},
-  //     {{0, -1, 0}},
-  // };
-  // cm_mesh_attach_normals(&cube_mesh, normals, vertices_count);
-
-  // transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
-  // cm_mesh_attach_transforms(&cube_mesh, NULL,
-  //                           GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  cm_mesh_attach_transforms(&cube_mesh, NULL,
+                            GRID_SIZE * GRID_SIZE * GRID_SIZE);
 
   light.pos = (vec3s){{-4, 4, 4}};
   light.color = (vec4s){{1.0, 1.0, 1.0, 1}};
-  light_mesh = cm_mesh_create(vertex_positions, vertices_count, cube_indices,
-                              indices_count);
+  light_mesh = cm_mesh_create(vertex_positions, vertices_count);
+  cm_mesh_attach_index_buffer(&light_mesh, cube_indices, indices_count);
   cm_mesh_attach_colors_instanced(&light_mesh, &light.color, 1);
   cm_mesh_attach_normals(&light_mesh, NULL, 0);
   mat4s transform = glms_translate_make(light.pos);
@@ -259,52 +256,50 @@ static void instancing_scene_update(CmScene *scene, float dt) {
   cm_shader_bind(&light_shader);
   cm_shader_set_mat4(&light_shader, "u_vp", scene->camera.vp);
 
-  cm_mesh_draw(&light_mesh);
+  cm_mesh_draw_indexed(&light_mesh);
 
   cm_shader_unbind();
 
   cm_shader_bind(&cube_shader);
-  cm_shader_set_mat4(&cube_shader, "u_mvp", scene->camera.vp);
-  cm_shader_set_vec4(&cube_shader, "u_color", (vec4s){{1, 0, 0, 1}});
-  // cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
-  // cm_shader_set_vec3(&cube_shader, "u_view_pos", scene->camera.position);
-  // cm_shader_set_vec3(&cube_shader, "u_light_pos", light.pos);
-  // cm_shader_set_vec4(&cube_shader, "u_light_color", light.color);
+  cm_shader_set_mat4(&cube_shader, "u_vp", scene->camera.vp);
+  cm_shader_set_vec3(&cube_shader, "u_view_pos", scene->camera.position);
+  cm_shader_set_vec3(&cube_shader, "u_light_pos", light.pos);
+  cm_shader_set_vec4(&cube_shader, "u_light_color", light.color);
 
-  // size_t transform_count = 0;
-  // static float r = 0;
-  // r += 1;
-  // const vec3s axis = {{1, 0, 1}};
-  // const vec3s scale = {{.65F, .65F, .65F}};
-  // static size_t grid_size = 3;
-  // const float dt_max = 1 / 65.F;
-  // grid_size += dt < dt_max ? +1 : 0;
-  // for (size_t x = 0; x < grid_size; x++) {
-  //   for (size_t y = 0; y < grid_size; y++) {
-  //     for (size_t z = 0; z < grid_size; z++) {
-  //       const mat4s trans_mat = glms_translate_make((vec3s){{x, y, z}});
-  //       const mat4s rot_mat = glms_rotate_make(glm_rad(r), axis);
-  //       const mat4s scale_mat = glms_scale_make(scale);
-  //       transforms[transform_count] = glms_mat4_mul(trans_mat, rot_mat);
-  //       transforms[transform_count] =
-  //           glms_mat4_mul(transforms[transform_count], scale_mat);
-  //       transform_count++;
-  //     }
-  //   }
-  // }
-  // cm_mesh_update_transforms(&cube_mesh, transforms, transform_count);
+  size_t transform_count = 0;
+  static float r = 0;
+  r += 1;
+  const vec3s axis = {{1, 0, 1}};
+  const vec3s scale = {{.65F, .65F, .65F}};
+  static size_t grid_size = 3;
+  const float dt_max = 1 / 65.F;
+  grid_size += dt < dt_max ? +1 : 0;
+  for (size_t x = 0; x < grid_size; x++) {
+    for (size_t y = 0; y < grid_size; y++) {
+      for (size_t z = 0; z < grid_size; z++) {
+        const mat4s trans_mat = glms_translate_make((vec3s){{x, y, z}});
+        const mat4s rot_mat = glms_rotate_make(glm_rad(r), axis);
+        const mat4s scale_mat = glms_scale_make(scale);
+        transforms[transform_count] = glms_mat4_mul(trans_mat, rot_mat);
+        transforms[transform_count] =
+            glms_mat4_mul(transforms[transform_count], scale_mat);
+        transform_count++;
+      }
+    }
+  }
+  cm_mesh_update_transforms(&cube_mesh, transforms, transform_count);
 
   // RENDER HERE
-  cm_mesh_draw(&cube_mesh);
+  cm_mesh_draw_indexed(&cube_mesh);
 
   cm_shader_unbind();
 
-  // #define LABEL_SIZE 128
-  //   char label_buffer[LABEL_SIZE];
-  //   const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%lu cubes",
-  //                               grid_size * grid_size * (uint64_t)grid_size);
-  //   cm_font_draw(font, scene->camera.vp, 0.F, -font_size, -100.F, len,
-  //                label_buffer);
+#define LABEL_SIZE 128
+  char label_buffer[LABEL_SIZE];
+  const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%lu cubes",
+                              grid_size * grid_size * (uint64_t)grid_size);
+  cm_font_draw(font, scene->camera.vp, 0.F, -font_size, -100.F, len,
+               label_buffer);
 }
 
 static void instancing_scene_free(CmScene *scene) {
