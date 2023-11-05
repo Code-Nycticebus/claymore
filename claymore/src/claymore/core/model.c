@@ -23,6 +23,13 @@ static FloatStack float_stack_create(size_t capacity) {
   return stack;
 }
 
+static void float_stack_free(FloatStack *stack) {
+  free(stack->data);
+  stack->data = NULL;
+  stack->len = 0;
+  stack->cap = 1;
+}
+
 static void float_stack_push(FloatStack *stack, float value) {
   if (!(stack->len < stack->cap)) {
     stack->cap *= 2;
@@ -37,9 +44,8 @@ static void float_stack_push(FloatStack *stack, float value) {
 }
 
 static void float_stack_dump(FloatStack *stack) {
-  for (size_t i = 0; i < stack->len; i += 3) {
-    printf("%f %f %f\n", stack->data[i + 0], stack->data[i + 1],
-           stack->data[i + 2]);
+  for (size_t i = 0; i < stack->len; i += 2) {
+    printf("{{%f, %f}}\n", stack->data[i + 0], stack->data[i + 1]);
   }
 }
 
@@ -59,6 +65,8 @@ CmMesh cm_model_load(const char *filename) {
   FloatStack vertex_index_stack = float_stack_create(1);
   FloatStack normal_stack = float_stack_create(1);
   FloatStack normal_index_stack = float_stack_create(1);
+  FloatStack texture_stack = float_stack_create(1);
+  FloatStack texture_index_stack = float_stack_create(1);
 
   char buffer[MAX_LINE_LEN] = {0};
   for (int line = 0; fgets(buffer, MAX_LINE_LEN, file) != NULL; line++) {
@@ -68,8 +76,8 @@ CmMesh cm_model_load(const char *filename) {
       case ' ': {
         float f[3];
         if (sscanf(buffer, "v %f %f %f", &f[0], &f[1], &f[2]) != 3) {
-          fprintf(stderr, "%s:%d: Not enough arguments: %s\n", filename, line,
-                  buffer);
+          cm_log_error("%s:%d: Not enough arguments: %s\n", filename, line,
+                       buffer);
           goto DEFER;
         }
         for (size_t i = 0; i < 3; i++) {
@@ -80,8 +88,8 @@ CmMesh cm_model_load(const char *filename) {
       case 'n': {
         float f[3];
         if (sscanf(buffer, "vn %f %f %f", &f[0], &f[1], &f[2]) != 3) {
-          fprintf(stderr, "%s:%d: Not enough arguments: %s\n", filename, line,
-                  buffer);
+          cm_log_error("%s:%d: Not enough arguments: %s", filename, line,
+                       buffer);
           goto DEFER;
         }
         for (size_t i = 0; i < 3; i++) {
@@ -89,15 +97,41 @@ CmMesh cm_model_load(const char *filename) {
         }
         break;
       }
+      case 't': {
+        float f[2];
+        if (sscanf(buffer, "vt %f %f", &f[0], &f[1]) != 2) {
+          cm_log_error("%s:%d: Not enough arguments: %s", filename, line,
+                       buffer);
+          goto DEFER;
+        }
+        for (size_t i = 0; i < 2; i++) {
+          float_stack_push(&texture_stack, f[i]);
+        }
+        break;
+      }
       default:
-        fprintf(stderr, "%s:%d: Unkown option: %s\n", filename, line, buffer);
+        cm_log_error("%s:%d: Unkown format: %s", filename, line, buffer);
         goto DEFER;
       }
     } else if (buffer[0] == 'f') {
       float vi[3];
       float ni[3];
-      if (sscanf(buffer, "f %f//%f %f//%f %f//%f", &vi[0], &ni[0], &vi[1],
-                 &ni[1], &vi[2], &ni[2]) == 6) {
+      float ti[3];
+      if (sscanf(buffer, "f %f/%f/%f %f/%f/%f %f/%f/%f", &vi[0], &ti[0], &ni[0],
+                 &vi[1], &ti[1], &ni[1], &vi[2], &ti[2], &ni[2]) == 9) {
+        for (size_t i = 0; i < 3; i++) {
+          float_stack_push(&vertex_index_stack, vi[i]);
+          float_stack_push(&normal_index_stack, ni[i]);
+          float_stack_push(&texture_index_stack, ti[i]);
+        }
+      } else if (sscanf(buffer, "f %f/%f %f/%f %f/%f", &vi[0], &ti[0], &vi[1],
+                        &ti[1], &vi[2], &ti[2]) == 6) {
+        for (size_t i = 0; i < 3; i++) {
+          float_stack_push(&vertex_index_stack, vi[i]);
+          float_stack_push(&texture_index_stack, ti[i]);
+        }
+      } else if (sscanf(buffer, "f %f//%f %f//%f %f//%f", &vi[0], &ni[0],
+                        &vi[1], &ni[1], &vi[2], &ni[2]) == 6) {
         for (size_t i = 0; i < 3; i++) {
           float_stack_push(&vertex_index_stack, vi[i]);
           float_stack_push(&normal_index_stack, ni[i]);
@@ -107,26 +141,60 @@ CmMesh cm_model_load(const char *filename) {
           float_stack_push(&vertex_index_stack, vi[i]);
         }
       } else {
-        fprintf(stderr, "%s:%d: Unkown format: %s\n", filename, line, buffer);
+        cm_log_error("%s:%d: Unkown format: %s", filename, line, buffer);
         goto DEFER;
       }
     }
   }
 
-  float_stack_dump(&vertex_stack);
-  float_stack_dump(&vertex_index_stack);
-  float_stack_dump(&normal_stack);
-  float_stack_dump(&normal_index_stack);
-
-  uint32_t *indices = malloc(sizeof(uint32_t) * vertex_index_stack.len);
+  FloatStack real_vertices = float_stack_create(1);
   for (size_t i = 0; i < vertex_index_stack.len; i++) {
-    indices[i] = (uint32_t)vertex_index_stack.data[i] - 1;
+    uint32_t index = (uint32_t)vertex_index_stack.data[i] - 1;
+    vec3s *vec = (void *)vertex_stack.data;
+    for (size_t j = 0; j < 3; j++) {
+      float_stack_push(&real_vertices, vec[index].raw[j]);
+    }
   }
-  mesh = cm_mesh_create((vec3s *)vertex_stack.data, vertex_stack.len / 3,
-                        indices, vertex_index_stack.len);
-  free(indices);
+  mesh = cm_mesh_create((vec3s *)real_vertices.data, real_vertices.len / 3);
+  float_stack_free(&real_vertices);
+
+  if (0 < normal_index_stack.len) {
+    FloatStack real_normals = float_stack_create(1);
+    for (size_t i = 0; i < normal_index_stack.len; i++) {
+      uint32_t index = (uint32_t)normal_index_stack.data[i] - 1;
+      vec3s *vec = (void *)normal_stack.data;
+      for (size_t j = 0; j < 3; j++) {
+        float_stack_push(&real_normals, vec[index].raw[j]);
+      }
+    }
+    cm_mesh_attach_normals(&mesh, (vec3s *)real_normals.data,
+                           real_normals.len / 3);
+    float_stack_free(&real_normals);
+  }
+
+  if (0 < texture_index_stack.len) {
+    float_stack_dump(&texture_stack);
+    FloatStack real_textures = float_stack_create(1);
+    for (size_t i = 0; i < texture_index_stack.len; i++) {
+      uint32_t index = (uint32_t)texture_index_stack.data[i] - 1;
+      vec2s *vec = (void *)texture_stack.data;
+      for (size_t j = 0; j < 2; j++) {
+        float_stack_push(&real_textures, vec[index].raw[j]);
+      }
+    }
+    cm_mesh_attach_uv(&mesh, (vec2s *)real_textures.data,
+                      real_textures.len / 2);
+    // float_stack_dump(&real_textures);
+    float_stack_free(&real_textures);
+  }
 
 DEFER:
   fclose(file);
+  float_stack_free(&vertex_stack);
+  float_stack_free(&vertex_index_stack);
+  float_stack_free(&normal_stack);
+  float_stack_free(&normal_index_stack);
+  float_stack_free(&texture_stack);
+  float_stack_free(&texture_index_stack);
   return mesh;
 }
