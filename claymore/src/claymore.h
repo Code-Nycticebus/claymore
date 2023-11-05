@@ -2,6 +2,7 @@
 #define __CM_CLAYMORE_H__
 
 #include "claymore/core/app.h"
+#include "claymore/core/model.h"
 #include "claymore/core/scene.h"
 #include "claymore/core/window.h"
 #include "claymore/events/event.h"

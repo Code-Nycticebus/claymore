@@ -7,6 +7,7 @@
 #include "gui/gui.h"
 #include "instancing/instancing.h"
 #include "menu/menu.h"
+#include "models/models.h"
 #include "ortho/ortho.h"
 #include "particles/particle.h"
 #include "texture/texture.h"
@@ -48,6 +49,7 @@ ClaymoreConfig claymore_config(void) {
               scene_particle,
               scene_instancing,
               gui_scene,
+              scene_models,
           },
   };
 }
