@@ -89,7 +89,7 @@ void cm_mesh_attach_uv(CmMesh *mesh, vec2s *uv, size_t count) {
   glBindVertexArray(mesh->vertex_array);
   glEnableVertexAttribArray(mesh->attrib_index);
   glVertexAttribPointer(mesh->attrib_index, 2, GL_FLOAT, GL_FALSE,
-                        sizeof(vec4s), (void *)0);
+                        sizeof(vec2s), (void *)0);
 
   mesh->attrib_index++;
 }
