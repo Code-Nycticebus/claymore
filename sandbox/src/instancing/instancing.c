@@ -119,39 +119,39 @@ static bool instancing_scene_init(CmScene *scene) {
   vec3s vertex_positions[] = {
       // Front
       {{0.F, 0.F, 0.F}},
-      {{0.F, 1.F, 0.F}},
-      {{1.F, 1.F, 0.F}},
       {{1.F, 0.F, 0.F}},
+      {{1.F, 1.F, 0.F}},
+      {{0.F, 1.F, 0.F}},
 
       // Right
       {{1.F, 0.F, 0.F}},
-      {{1.F, 1.F, 0.F}},
-      {{1.F, 1.F, -1.F}},
       {{1.F, 0.F, -1.F}},
+      {{1.F, 1.F, -1.F}},
+      {{1.F, 1.F, 0.F}},
 
       // Left
       {{0.F, 0.F, 0.F}},
-      {{0.F, 0.F, -1.F}},
-      {{0.F, 1.F, -1.F}},
       {{0.F, 1.F, 0.F}},
+      {{0.F, 1.F, -1.F}},
+      {{0.F, 0.F, -1.F}},
 
       // Back
       {{0.F, 0.F, -1.F}},
-      {{1.F, 0.F, -1.F}},
-      {{1.F, 1.F, -1.F}},
       {{0.F, 1.F, -1.F}},
+      {{1.F, 1.F, -1.F}},
+      {{1.F, 0.F, -1.F}},
 
       // Top
       {{1.F, 1.F, 0.F}},
-      {{0.F, 1.F, 0.F}},
-      {{0.F, 1.F, -1.F}},
       {{1.F, 1.F, -1.F}},
+      {{0.F, 1.F, -1.F}},
+      {{0.F, 1.F, 0.F}},
 
       // Bottom
       {{1.F, 0.F, 0.F}},
-      {{1.F, 0.F, -1.F}},
-      {{0.F, 0.F, -1.F}},
       {{0.F, 0.F, 0.F}},
+      {{0.F, 0.F, -1.F}},
+      {{1.F, 0.F, -1.F}},
   };
   const size_t vertices_count =
       sizeof(vertex_positions) / sizeof(vertex_positions[0]);

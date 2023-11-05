@@ -124,10 +124,12 @@ CmFont *cm_font_init(const char *filename, float font_height) {
 }
 
 void _cm_font_renderer_flush(CmFont *font) {
+  glDisable(GL_CULL_FACE);
   glBufferSubData(GL_ARRAY_BUFFER, 0,
                   sizeof(struct Vertex) * font->vertex_count, font->buffer);
   glDrawArrays(GL_TRIANGLES, 0, font->vertex_count);
   font->vertex_count = 0;
+  glEnable(GL_CULL_FACE);
 }
 
 void cm_font_draw(CmFont *font, const mat4s mvp, float x, float y, float z,
