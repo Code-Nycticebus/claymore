@@ -22,6 +22,12 @@ CmMesh cm_mesh_create(const vec3s *vertices, size_t count) {
   return mesh;
 }
 
+void cm_mesh_delete(CmMesh *mesh) {
+  glDeleteVertexArrays(1, &mesh->vertex_array);
+  glDeleteBuffers(1, &mesh->index_buffer);
+  glDeleteBuffers(CM_MESH_VBO_MAX, (uint32_t *)&mesh->vbo.positions);
+}
+
 void cm_mesh_attach_index_buffer(CmMesh *mesh, const uint32_t *indices,
                                  size_t count) {
   glBindVertexArray(mesh->vertex_array);

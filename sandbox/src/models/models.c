@@ -18,23 +18,8 @@ static bool models_init(CmScene *scene) {
 
   data->model = cm_model_load("res/models/cube.obj");
 
-  const size_t transform_count = 30;
-  const float margin = 30.F;
-  mat4s *transforms = malloc(sizeof(mat4s) * transform_count * transform_count *
-                             transform_count);
-  size_t index = 0;
-  for (size_t x = 0; x < transform_count; x++) {
-    for (size_t y = 0; y < transform_count; y++) {
-      for (size_t z = 0; z < transform_count; z++) {
-        transforms[index++] =
-            glms_translate_make((vec3s){{x * margin, y * margin, z * margin}});
-      }
-    }
-  }
-
-  cm_mesh_attach_transforms(&data->model, transforms,
-                            transform_count * transform_count *
-                                transform_count);
+  mat4s transforms = glms_translate_make((vec3s){0});
+  cm_mesh_attach_transforms(&data->model, &transforms, 1);
 
   camera_register_callbacks(&scene->camera);
 
@@ -43,7 +28,13 @@ static bool models_init(CmScene *scene) {
   return true;
 }
 
-static void models_free(CmScene *scene) { free(scene->state); }
+static void models_free(CmScene *scene) {
+  SceneData *data = scene->state;
+  cm_mesh_delete(&data->model);
+  cm_shader_delete(&data->shader);
+
+  free(scene->state);
+}
 
 static void models_update(CmScene *scene, float dt) {
   (void)dt;
