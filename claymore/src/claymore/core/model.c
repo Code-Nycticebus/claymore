@@ -43,12 +43,6 @@ static void float_stack_push(FloatStack *stack, float value) {
   stack->len++;
 }
 
-static void float_stack_dump(FloatStack *stack) {
-  for (size_t i = 0; i < stack->len; i += 2) {
-    printf("{{%f, %f}}\n", stack->data[i + 0], stack->data[i + 1]);
-  }
-}
-
 #define MAX_LINE_LEN 200
 // TODO return cm_mesh
 CmMesh cm_model_load(const char *filename) {
@@ -173,7 +167,6 @@ CmMesh cm_model_load(const char *filename) {
   }
 
   if (0 < texture_index_stack.len) {
-    float_stack_dump(&texture_stack);
     FloatStack real_textures = float_stack_create(1);
     for (size_t i = 0; i < texture_index_stack.len; i++) {
       uint32_t index = (uint32_t)texture_index_stack.data[i] - 1;
