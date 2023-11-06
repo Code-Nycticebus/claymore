@@ -24,7 +24,7 @@ const float particle_lifetime = 1.5F;
 struct {
   size_t index;
   Particle pool[PARTICLES_MAX];
-} particle_pool = {.index = PARTICLES_MAX};
+} particle_pool = {.index = PARTICLES_MAX - 1};
 
 float rand_float(void) { return rand() / (float)RAND_MAX; }
 
