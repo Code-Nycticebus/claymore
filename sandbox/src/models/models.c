@@ -16,7 +16,9 @@ static bool models_init(CmScene *scene) {
   data->shader = cm_shader_load_from_file("res/shader/cube.vs.glsl",
                                           "res/shader/cube.fs.glsl");
 
-  data->model = cm_model_load("res/models/cube.obj");
+  data->model = cm_model_load("res/models/monkey.obj");
+  const vec4s color = {{0.8, 0.2, 0.2, 1}};
+  cm_mesh_attach_colors_instanced(&data->model, &color, 1);
 
   mat4s transforms = glms_translate_make((vec3s){0});
   cm_mesh_attach_transforms(&data->model, &transforms, 1);

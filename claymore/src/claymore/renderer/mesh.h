@@ -29,7 +29,8 @@ void cm_mesh_delete(CmMesh *mesh);
 void cm_mesh_attach_index_buffer(CmMesh *mesh, const uint32_t *indices,
                                  size_t count);
 void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count);
-void cm_mesh_attach_colors_instanced(CmMesh *mesh, vec4s *colors, size_t count);
+void cm_mesh_attach_colors_instanced(CmMesh *mesh, const vec4s *colors,
+                                     size_t count);
 void cm_mesh_update_colors(CmMesh *mesh, vec4s *colors, size_t count);
 
 void cm_mesh_attach_normals(CmMesh *mesh, vec3s *normals, size_t count);

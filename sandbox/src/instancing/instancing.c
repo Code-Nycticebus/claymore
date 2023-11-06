@@ -168,20 +168,6 @@ static bool instancing_scene_init(CmScene *scene) {
   const size_t indices_count = sizeof(cube_indices) / sizeof(cube_indices[0]);
   cm_mesh_attach_index_buffer(&cube_mesh, cube_indices, indices_count);
 
-  vec4s *vertex_colors =
-      malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
-  for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
-    vertex_colors[x] = (vec4s){{
-        rand() / (float)RAND_MAX,
-        rand() / (float)RAND_MAX,
-        rand() / (float)RAND_MAX,
-        1,
-    }};
-  }
-  cm_mesh_attach_colors_instanced(&cube_mesh, vertex_colors,
-                                  GRID_SIZE * GRID_SIZE * GRID_SIZE);
-  free(vertex_colors);
-
   vec3s normals[] = {
       // Front
       {{0, 0, 1}},
@@ -221,6 +207,20 @@ static bool instancing_scene_init(CmScene *scene) {
   };
   cm_mesh_attach_normals(&cube_mesh, normals, vertices_count);
 
+  vec4s *vertex_colors =
+      malloc(GRID_SIZE * GRID_SIZE * GRID_SIZE * sizeof(vec4s));
+  for (size_t x = 0; x < GRID_SIZE * GRID_SIZE * GRID_SIZE; x++) {
+    vertex_colors[x] = (vec4s){{
+        rand() / (float)RAND_MAX,
+        rand() / (float)RAND_MAX,
+        rand() / (float)RAND_MAX,
+        1,
+    }};
+  }
+  cm_mesh_attach_colors_instanced(&cube_mesh, vertex_colors,
+                                  GRID_SIZE * GRID_SIZE * GRID_SIZE);
+  free(vertex_colors);
+
   transforms = malloc(sizeof(mat4s) * GRID_SIZE * GRID_SIZE * GRID_SIZE);
   cm_mesh_attach_transforms(&cube_mesh, NULL,
                             GRID_SIZE * GRID_SIZE * GRID_SIZE);
@@ -229,8 +229,8 @@ static bool instancing_scene_init(CmScene *scene) {
   light.color = (vec4s){{1.0, 1.0, 1.0, 1}};
   light_mesh = cm_mesh_create(vertex_positions, vertices_count);
   cm_mesh_attach_index_buffer(&light_mesh, cube_indices, indices_count);
-  cm_mesh_attach_colors_instanced(&light_mesh, &light.color, 1);
   cm_mesh_attach_normals(&light_mesh, NULL, 0);
+  cm_mesh_attach_colors_instanced(&light_mesh, &light.color, 1);
   mat4s transform = glms_translate_make(light.pos);
   cm_mesh_attach_transforms(&light_mesh, &transform, 1);
 
@@ -247,7 +247,6 @@ static bool instancing_scene_init(CmScene *scene) {
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
   glfwSwapInterval(0);
-
   return true;
 }
 

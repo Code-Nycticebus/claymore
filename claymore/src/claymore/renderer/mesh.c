@@ -51,7 +51,7 @@ void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
   mesh->attrib_index++;
 }
 
-void cm_mesh_attach_colors_instanced(CmMesh *mesh, vec4s *colors,
+void cm_mesh_attach_colors_instanced(CmMesh *mesh, const vec4s *colors,
                                      size_t count) {
   assert(!mesh->vbo.color && "Color vector is already initialized!");
   glGenBuffers(1, &mesh->vbo.color);
