@@ -4,6 +4,10 @@ extern CmLayerInterface sandbox_ortho(void);
 extern CmLayerInterface sandbox_background(void);
 extern CmLayerInterface sandbox_fps(void);
 
+// bool ortho_scene_init(CmScene* scene) {
+//   cm_layer_push(sandbox_background);
+// }
+
 CmSceneInterface scene_ortho(void) {
   return (CmSceneInterface){
       .init = NULL,

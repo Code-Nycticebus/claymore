@@ -24,6 +24,15 @@ static void app_key_event(CmKeyEvent *event, void *data) {
 static bool app_init(CmApp *app) {
   (void)app;
   cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)app_key_event, NULL);
+
+  // cm_scene_push(scene_menu);
+  // cm_scene_push(scene_ortho);
+  // cm_scene_push(scene_texture);
+  // cm_scene_push(scene_particle);
+  // cm_scene_push(scene_instancing);
+  // cm_scene_push(gui_scene);
+  // cm_scene_push(scene_models);
+
   return true;
 }
 
