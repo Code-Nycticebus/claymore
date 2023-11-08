@@ -55,7 +55,7 @@ static void texture_scene_update(CmScene *scene, float dt) {
     cm_renderer2d_push_quad_textured(
         (vec2s){{0, 0}}, 0,
         (vec2s){{scene->app->window->width, scene->app->window->height}},
-        (vec2s){{0, 1}});
+        (vec2s){{0, 0}}, (vec2s){{1, 1}});
     cm_renderer2d_end();
     cm_shader_unbind();
     cm_texture_unbind(0);

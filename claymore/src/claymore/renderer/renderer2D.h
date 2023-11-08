@@ -10,9 +10,10 @@ void cm_renderer2d_push_quad(vec2s position, float z, vec2s size);
 void cm_renderer2d_push_quad_rotated(vec2s position, float z, vec2s size,
                                      float rad);
 void cm_renderer2d_push_quad_textured(vec2s position, float z, vec2s size,
-                                      vec2s uv);
+                                      vec2s uv_pos, vec2s uv_size);
 void cm_renderer2d_push_quad_textured_rotated(vec2s position, float z,
-                                              vec2s size, vec2s uv, float rad);
+                                              vec2s size, vec2s uv_pos,
+                                              vec2s uv_size, float rad);
 void cm_renderer2d_push_quad_color(vec2s position, float z, vec2s size,
                                    vec4s color);
 void cm_renderer2d_push_quad_color_rotated(vec2s position, float z, vec2s size,
