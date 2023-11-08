@@ -3,7 +3,7 @@
 
 #include "cm.h"
 
-#define CM_SHADER_UNIFORM_MAX 5
+#define CM_SHADER_UNIFORM_MAX 10
 
 typedef struct {
   GLint id;
