@@ -4,7 +4,7 @@ static CmShader texture_shader;
 static CmFont *text_font;
 static const float font_size = 32.F;
 
-static CmTexture2D *texture = NULL;
+static CmTexture *texture = NULL;
 
 static void resize_callback(CmWindowEvent *event, CmCamera *camera) {
   cm_camera_set_screen(camera, event->window->width, event->window->height);
@@ -17,9 +17,9 @@ static void drop_callback(CmDropEvent *event, CmScene *scene) {
   }
 
   if (!texture) {
-    texture = malloc(sizeof(CmTexture2D));
+    texture = malloc(sizeof(CmTexture));
   }
-  *texture = cm_texture2d_create(event->files[0]);
+  *texture = cm_texture_create(event->files[0]);
 
   cm_window_set_size(scene->app->window, texture->width, texture->height);
 

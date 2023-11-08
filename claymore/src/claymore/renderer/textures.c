@@ -1,8 +1,8 @@
 #include "textures.h"
 #include <stb_image.h>
 
-CmTexture2D cm_texture2d_create(const char *filename) {
-  CmTexture2D texture = {0};
+CmTexture cm_texture_create(const char *filename) {
+  CmTexture texture = {0};
   stbi_set_flip_vertically_on_load(true);
   unsigned char *texture_buffer =
       stbi_load(filename, &texture.width, &texture.height, &texture.bpp, 4);
@@ -10,7 +10,7 @@ CmTexture2D cm_texture2d_create(const char *filename) {
   if (!texture_buffer || fail) {
     cm_log_error("Failed to load texture: %s\n", filename);
     cm_log_error("%s\n", fail);
-    return (CmTexture2D){0};
+    return (CmTexture){0};
   }
 
   glGenTextures(1, &texture.id);
@@ -32,11 +32,11 @@ CmTexture2D cm_texture2d_create(const char *filename) {
   return texture;
 }
 
-void cm_texture_delete(CmTexture2D *texture) {
+void cm_texture_delete(CmTexture *texture) {
   glDeleteTextures(1, &texture->id);
 }
 
-void cm_texture_bind(CmTexture2D *texture, uint32_t slot) {
+void cm_texture_bind(CmTexture *texture, uint32_t slot) {
   glBindTextureUnit(slot, texture->id);
 }
 

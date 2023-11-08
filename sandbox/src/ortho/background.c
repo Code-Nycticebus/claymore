@@ -15,7 +15,7 @@ struct ShaderData {
 };
 
 static CmShader background_shader;
-static CmTexture2D background_texture;
+static CmTexture background_texture;
 
 static mat4s model = GLMS_MAT4_IDENTITY_INIT;
 
@@ -60,7 +60,7 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
   background_shader = cm_shader_load_from_file("res/shader/texture.vs.glsl",
                                                "res/shader/texture.fs.glsl");
 
-  background_texture = cm_texture2d_create("res/textures/claymore-sword.png");
+  background_texture = cm_texture_create("res/textures/claymore-sword.png");
 
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
   layer->camera = cm_camera_init_ortho((vec3s){0}, aspect, 100.F);
