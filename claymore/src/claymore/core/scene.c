@@ -34,15 +34,17 @@ static bool _cm_scene_init(size_t scene) {
   }
 
   for (size_t i = 0; i < CM_LAYER_MAX; i++) {
-    if (scene_manager.interface.layers[i] == NULL) {
+    if (scene_manager.interface.layers[i].layer == NULL) {
       break;
     }
-    layer_stack.stack[i].interface = scene_manager.interface.layers[i]();
+    layer_stack.stack[i].interface = scene_manager.interface.layers[i].layer();
     assert(layer_stack.stack[i].interface.init);
     if (!layer_stack.stack[i].interface.init(&scene_manager.scene,
                                              &layer_stack.stack[i].layer)) {
       return false;
     }
+    layer_stack.stack[i].layer.active =
+        scene_manager.interface.layers[i].active;
     layer_stack.count++;
   }
   return true;
@@ -71,9 +73,11 @@ void cm_scene_update(float dt) {
     scene_manager.interface.update(&scene_manager.scene, dt);
   }
   for (size_t i = 0; i < layer_stack.count; ++i) {
-    cm_camera_update(&layer_stack.stack[i].layer.camera);
-    layer_stack.stack[i].interface.update(&scene_manager.scene,
-                                          &layer_stack.stack[i].layer, dt);
+    if (layer_stack.stack[i].layer.active) {
+      cm_camera_update(&layer_stack.stack[i].layer.camera);
+      layer_stack.stack[i].interface.update(&scene_manager.scene,
+                                            &layer_stack.stack[i].layer, dt);
+    }
   }
 }
 

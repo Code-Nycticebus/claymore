@@ -267,9 +267,9 @@ CmSceneInterface gui_scene(void) {
       .update = NULL,
       .layers =
           {
-              bg_layer,
-              overlay_layer,
-              NULL,
+              {bg_layer, true},
+              {overlay_layer, true},
+              {0},
           },
   };
 }

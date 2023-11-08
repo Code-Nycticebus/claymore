@@ -59,8 +59,8 @@ CmSceneInterface scene_models(void) {
       .update = models_update,
       .layers =
           {
-              sandbox_fps,
-              NULL,
+              {sandbox_fps, true},
+              {0},
           },
   };
 }

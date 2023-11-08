@@ -18,6 +18,7 @@ typedef struct {
 typedef struct {
   CmCamera camera;
   void *state;
+  bool active;
 } CmLayer;
 
 typedef struct {
@@ -38,7 +39,10 @@ typedef struct {
   bool (*init)(CmScene *);
   void (*update)(CmScene *, float);
   void (*free)(CmScene *);
-  CmLayerCreateFn layers[CM_LAYER_MAX];
+  struct {
+    CmLayerCreateFn layer;
+    bool active;
+  } layers[CM_LAYER_MAX];
 } CmSceneInterface;
 
 typedef CmSceneInterface (*CmSceneCreateFn)(void);

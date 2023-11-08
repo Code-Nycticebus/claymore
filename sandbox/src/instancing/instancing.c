@@ -311,6 +311,10 @@ CmSceneInterface scene_instancing(void) {
       .init = instancing_scene_init,
       .update = instancing_scene_update,
       .free = instancing_scene_free,
-      .layers = {sandbox_fps, NULL},
+      .layers =
+          {
+              {sandbox_fps, true},
+              {0},
+          },
   };
 }

@@ -15,10 +15,10 @@ CmSceneInterface scene_ortho(void) {
       .update = NULL,
       .layers =
           {
-              sandbox_background,
-              sandbox_ortho,
-              sandbox_fps,
-              NULL,
+              {sandbox_background, true},
+              {sandbox_ortho, true},
+              {sandbox_fps, true},
+              {0},
           },
   };
 }

@@ -132,8 +132,8 @@ CmSceneInterface scene_particle(void) {
       .init = particle_scene_init,
       .layers =
           {
-              sandbox_fps,
-              NULL,
+              {sandbox_fps, true},
+              {0},
           },
   };
 }
