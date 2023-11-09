@@ -1,5 +1,7 @@
 #include "models.h"
 
+#include "camera.h"
+
 typedef struct {
   CmMesh model;
   CmShader shader;

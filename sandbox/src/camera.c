@@ -1,4 +1,4 @@
-#include "models.h"
+#include "camera.h"
 
 static void camera_controll(CmMouseEvent *event, CmCamera *camera) {
   if (event->action == CM_MOUSE_MOVE) {

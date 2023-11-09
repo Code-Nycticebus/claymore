@@ -7,6 +7,4 @@ CmSceneInterface scene_models(void);
 
 CmLayerInterface sandbox_fps(void);
 
-void camera_register_callbacks(CmCamera *camera);
-
 #endif /* !__SANDBOX_MODELS_H__ */
