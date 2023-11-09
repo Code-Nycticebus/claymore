@@ -1,4 +1,5 @@
 #include "gui.h"
+#include "claymore/renderer/font.h"
 
 typedef struct {
   vec2s pos;
@@ -20,15 +21,16 @@ void quad_push(const Quad *quad) {
 }
 
 typedef struct {
-  CmShader shader;
   Quad quad;
+} SceneData;
+
+typedef struct {
+  CmShader shader;
 } BgData;
 
 static bool bg_layer_init(CmScene *scene, CmLayer *layer) {
+  (void)scene;
   BgData *data = malloc(sizeof(BgData));
-  data->quad.pos = (vec2s){0};
-  data->quad.size =
-      (vec2s){{scene->app->window->width, scene->app->window->height}};
 
   data->shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
@@ -40,14 +42,13 @@ static bool bg_layer_init(CmScene *scene, CmLayer *layer) {
 static void bg_layer_update(CmScene *scene, CmLayer *layer, float dt) {
   (void)dt;
   BgData *data = layer->state;
-  vec4s *scene_color = scene->state;
+  SceneData *scene_data = scene->state;
 
   cm_shader_bind(&data->shader);
   cm_shader_set_mat4(&data->shader, "u_mvp", scene->camera.vp);
 
-  data->quad.color = *scene_color;
   cm_renderer2d_begin();
-  quad_push(&data->quad);
+  quad_push(&scene_data->quad);
   cm_renderer2d_end();
 
   cm_shader_unbind();
@@ -106,34 +107,63 @@ Slider slider(vec2s pos, vec2s size, float min, float max, float *value) {
   slider.min = min;
   slider.value = value;
 
-  if (*value > 0) {
-    float progress = max / *value;
-    slider.button.pos.x =
-        glm_lerp(slider.rail.pos.x, slider.rail.pos.x + slider.rail.size.x,
-                 progress) -
-        (slider.button.size.x / 2);
-  }
+  float progress = *value > 0 ? max / *value : 0;
+  slider.button.pos.x =
+      glm_lerp(slider.rail.pos.x, slider.rail.pos.x + slider.rail.size.x,
+               progress) -
+      (slider.button.size.x / 2);
   return slider;
 }
 
-void slider_render(Slider *sliders) {
-  for (size_t i = 0; i < 3; i++) {
-    Slider *slider = &sliders[i];
+typedef struct {
+  size_t cap;
+  size_t len;
+  Slider *data;
+} SliderStack;
+
+SliderStack slider_stack_allocate(size_t cap) {
+  SliderStack stack = {0};
+  stack.cap = cap;
+  stack.data = malloc(cap * sizeof(stack.data[0]));
+  assert(stack.data);
+  return stack;
+}
+
+void slider_stack_push(SliderStack *stack, Slider slider) {
+  if (!(stack->len < stack->cap)) {
+    stack->cap = (stack->cap + 1) * 2;
+    stack->data = realloc(stack->data, stack->cap * sizeof(stack->data[0]));
+  }
+  stack->data[stack->len++] = slider;
+}
+
+void slider_stack_free(SliderStack *stack) {
+  free(stack->data);
+  stack->data = NULL;
+  stack->cap = 0;
+  stack->len = 0;
+}
+
+void slider_render(SliderStack *sliders) {
+  cm_renderer2d_begin();
+  for (size_t i = 0; i < sliders->len; i++) {
+    Slider *slider = &sliders->data[i];
     quad_push(&slider->bg);
     quad_push(&slider->rail);
     quad_push(&slider->button);
   }
+  cm_renderer2d_end();
 }
 
 typedef struct {
   CmShader shader;
-  Slider slider[3];
+  SliderStack slider_stack;
 } OverlayData;
 
-static void slider_callback(CmMouseEvent *event, Slider *sliders) {
+static void slider_callback(CmMouseEvent *event, SliderStack *sliders) {
   if (event->action == CM_MOUSE_CLICK) {
-    for (size_t i = 0; i < 3; i++) {
-      Slider *slider = &sliders[i];
+    for (size_t i = 0; i < sliders->len; i++) {
+      Slider *slider = &sliders->data[i];
       if (quad_collide_pos(&slider->bg, event->info.pos)) {
         slider->active = true;
       } else {
@@ -142,12 +172,13 @@ static void slider_callback(CmMouseEvent *event, Slider *sliders) {
     }
   }
   if (cm_mouseinfo_button(CM_MOUSE_BUTTON_LEFT)) {
-    for (size_t i = 0; i < 3; i++) {
-      Slider *slider = &sliders[i];
+    for (size_t i = 0; i < sliders->len; i++) {
+      Slider *slider = &sliders->data[i];
       if (slider->active) {
         float height = event->info.pos.x - slider->rail.pos.x;
         float progress = height / slider->rail.size.x;
-        *slider->value = glm_lerp(slider->min, slider->max, progress);
+        *slider->value = glm_clamp(glm_lerp(slider->min, slider->max, progress),
+                                   slider->min, slider->max);
         slider->button.pos.x =
             glm_clamp(
                 glm_lerp(slider->rail.pos.x,
@@ -159,11 +190,11 @@ static void slider_callback(CmMouseEvent *event, Slider *sliders) {
   }
 }
 
-static void slider_key_callback(CmKeyEvent *event, Slider *sliders) {
+static void slider_key_callback(CmKeyEvent *event, SliderStack *sliders) {
   Slider *slider = NULL;
-  for (size_t i = 0; i < 3; i++) {
-    if (sliders[i].active) {
-      slider = &sliders[i];
+  for (size_t i = 0; i < sliders->len; i++) {
+    if (sliders->data[i].active) {
+      slider = &sliders->data[i];
     }
   }
   if (slider == NULL) {
@@ -190,28 +221,44 @@ static void slider_key_callback(CmKeyEvent *event, Slider *sliders) {
 }
 
 static bool overlay_init(CmScene *scene, CmLayer *layer) {
-  (void)scene;
   OverlayData *data = malloc(sizeof(OverlayData));
-  vec4s *scene_color = scene->state;
+  SceneData *scene_data = scene->state;
 
   data->shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
   const vec2s slider_size = {{150, 30}};
   const float margin = 5.F;
+  data->slider_stack = slider_stack_allocate(3);
 
-  data->slider[0] =
+  slider_stack_push(
+      &data->slider_stack,
       slider((vec2s){{margin, (slider_size.y * 0) + (margin * 1)}}, slider_size,
-             0, 1, &scene_color->r);
-  data->slider[1] =
+             0, 1, &scene_data->quad.color.r));
+  slider_stack_push(
+      &data->slider_stack,
       slider((vec2s){{margin, (slider_size.y * 1) + (margin * 2)}}, slider_size,
-             0, 1, &scene_color->g);
-  data->slider[2] =
+             0, 1, &scene_data->quad.color.g));
+  slider_stack_push(
+      &data->slider_stack,
       slider((vec2s){{margin, (slider_size.y * 2) + (margin * 3)}}, slider_size,
-             0, 1, &scene_color->b);
+             0, 1, &scene_data->quad.color.b));
+
+  slider_stack_push(
+      &data->slider_stack,
+      slider((vec2s){{margin, (slider_size.y * 3) + (margin * 4)}}, slider_size,
+             0, scene->app->window->width - scene_data->quad.size.x,
+             &scene_data->quad.pos.x));
+  slider_stack_push(
+      &data->slider_stack,
+      slider((vec2s){{margin, (slider_size.y * 4) + (margin * (4 + 1))}},
+             slider_size, 0,
+             scene->app->window->height - scene_data->quad.size.y,
+             &scene_data->quad.pos.y));
+
   cm_event_subscribe(CM_EVENT_MOUSE, (cm_event_callback)slider_callback,
-                     data->slider);
+                     &data->slider_stack);
   cm_event_subscribe(CM_EVENT_KEYBOARD, (cm_event_callback)slider_key_callback,
-                     data->slider);
+                     &data->slider_stack);
 
   layer->state = data;
   return true;
@@ -224,9 +271,7 @@ void overlay_update(CmScene *scene, CmLayer *layer, float dt) {
   cm_shader_bind(&data->shader);
   cm_shader_set_mat4(&data->shader, "u_mvp", scene->camera.vp);
 
-  cm_renderer2d_begin();
-  slider_render(data->slider);
-  cm_renderer2d_end();
+  slider_render(&data->slider_stack);
 
   cm_shader_unbind();
 }
@@ -245,9 +290,14 @@ static CmLayerInterface overlay_layer(void) {
 }
 
 bool gui_init(CmScene *scene) {
-  vec4s *color = malloc(sizeof(vec4s));
-  *color = (vec4s){{1, 0, 0, 1}};
-  scene->state = color;
+  SceneData *data = malloc(sizeof(SceneData));
+  data->quad = (Quad){
+      .size = {{100.F * 3, 100.F * 3}},
+      .pos = {{0, 0}},
+      .color = {{1, 0, 0, 1}},
+
+  };
+  scene->state = data;
 
   scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
