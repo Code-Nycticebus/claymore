@@ -48,8 +48,8 @@ static void float_stack_push(FloatStack *stack, float value) {
 CmMesh cm_model_load(const char *filename) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    fprintf(stderr, "Could not open model file '%s': %s\n", filename,
-            strerror(errno));
+    cm_log_error("Could not open model file '%s': %s\n", filename,
+                 strerror(errno));
     return (CmMesh){0};
   }
 
