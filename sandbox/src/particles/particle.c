@@ -26,7 +26,7 @@ struct {
   Particle pool[PARTICLES_MAX];
 } particle_pool = {.index = PARTICLES_MAX - 1};
 
-float rand_float(void) { return rand() / (float)RAND_MAX; }
+static float rand_float(void) { return rand() / (float)RAND_MAX; }
 
 void particle_emit(vec2s pos) {
   const float size = rand_float() * 2.F + 1.F;
