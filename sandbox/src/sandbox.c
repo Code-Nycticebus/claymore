@@ -6,6 +6,7 @@
 #include "light/light.h"
 #include "menu/menu.h"
 #include "models/models.h"
+#include "noise/noise.h"
 #include "ortho/ortho.h"
 #include "particles/particle.h"
 #include "texture/texture.h"
@@ -52,6 +53,7 @@ ClaymoreConfig claymore_config(void) {
               gui_scene,
               scene_models,
               scene_light,
+              scene_noise,
           },
   };
 }
