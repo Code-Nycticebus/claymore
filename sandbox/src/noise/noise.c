@@ -1,8 +1,8 @@
 #include "noise/noise.h"
 #include <stdlib.h>
 
-#define TEXT_HEIGHT 500
-#define TEXT_WIDTH 500
+#define TEXT_HEIGHT 1000
+#define TEXT_WIDTH 1000
 
 #define GRID_SIZE 50
 
@@ -89,6 +89,12 @@ static void key_event(CmKeyEvent *event, SceneData *data) {
       const float max = 1.5F;
       data->scale += event->code == CM_KEY_UP ? offset : -offset;
       data->scale = glm_clamp(data->scale, min, max);
+      noise_map_update(&data->texture, data->sample_map, data->scale,
+                       data->octave);
+    }
+
+    else if (CM_KEY_1 <= event->code && event->code <= CM_KEY_8) {
+      data->octave = (event->code - CM_KEY_1) + 1;
       noise_map_update(&data->texture, data->sample_map, data->scale,
                        data->octave);
     }
