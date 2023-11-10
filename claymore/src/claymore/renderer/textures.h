@@ -3,19 +3,23 @@
 
 #include "cm.h"
 
+typedef enum {
+  CM_TEX_R,
+  CM_TEX_RGBA,
+} CmTextureFormat;
+
 typedef struct {
   uint32_t id;
   uint32_t width;
   uint32_t height;
   uint32_t bpp;
-  GLenum internal;
-  GLenum format;
-  GLenum type;
+  CmTextureFormat format;
 } CmTexture;
 
 CmTexture cm_texture_create(const char *filename);
 CmTexture cm_texture_create_from_memory(uint32_t width, uint32_t height,
-                                        const void *data, int32_t bpp);
+                                        const void *data,
+                                        CmTextureFormat format);
 void cm_texture_update(CmTexture *texture, const void *data);
 
 void cm_texture_delete(CmTexture *texture);
