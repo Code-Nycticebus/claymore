@@ -9,6 +9,7 @@
 #include "noise/noise.h"
 #include "ortho/ortho.h"
 #include "particles/particle.h"
+#include "tests/tests.h"
 #include "texture/texture.h"
 
 #define WINDOW_WIDTH 1080
@@ -54,6 +55,7 @@ ClaymoreConfig claymore_config(void) {
               scene_models,
               scene_light,
               scene_noise,
+              scene_test,
           },
   };
 }
