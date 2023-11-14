@@ -1,8 +1,8 @@
 #include "noise/noise.h"
 #include <stdlib.h>
 
-#define TEXT_HEIGHT 1000
-#define TEXT_WIDTH 1000
+#define TEXT_HEIGHT 500
+#define TEXT_WIDTH 500
 
 #define GRID_SIZE 50
 
@@ -111,7 +111,7 @@ static bool noise_init(CmScene *scene) {
   data->texture =
       cm_texture_create_from_memory(TEXT_WIDTH, TEXT_HEIGHT, NULL, CM_TEX_R);
   data->shader = cm_shader_load_from_file("res/shader/noise.vs.glsl",
-                                          "res/shader/noise.fs.glsl");
+                                          "res/shader/gradient_noise.fs.glsl");
 
   scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
@@ -132,7 +132,9 @@ static void noise_update(CmScene *scene, float dt) {
 
   cm_shader_bind(&data->shader);
   cm_shader_set_mat4(&data->shader, "u_vp", scene->camera.vp);
-  cm_shader_set_i32(&data->shader, "u_texture", 0);
+  static float timer = 0.0;
+  timer += dt;
+  cm_shader_set_f32(&data->shader, "u_time", timer);
 
   cm_texture_bind(&data->texture, 0);
 
