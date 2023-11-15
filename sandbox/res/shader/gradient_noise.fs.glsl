@@ -7,13 +7,12 @@ in vec2 v_uv;
 uniform float u_time;
 
 vec2 random_gradient(vec2 p) {
-  p = p+0.01;
-  float x = dot(p, vec2(123.4, 234.5));
-  float y = dot(p, vec2(234.5, 345.6));
+  p = p + 0.01;
+  float x = dot(p, vec2(223.4, 434.5));
+  float y = dot(p, vec2(434.5, 645.6));
 
   vec2 gradient = vec2(x,y);
   gradient = gradient * 43758.5453;
-
 
   gradient = sin(gradient + u_time);
   return gradient;
@@ -25,24 +24,20 @@ float perlin_noise(vec2 uv) {
   vec2 grid_id = floor(uv);
   vec2 grid_uv = fract(uv);
 
-
   vec2 bl = grid_id + vec2(0.0, 0.0);
   vec2 br = grid_id + vec2(1.0, 0.0);
   vec2 tl = grid_id + vec2(0.0, 1.0);
   vec2 tr = grid_id + vec2(1.0, 1.0);
-
 
   vec2 grad_bl = random_gradient(bl);
   vec2 grad_br = random_gradient(br);
   vec2 grad_tl = random_gradient(tl);
   vec2 grad_tr = random_gradient(tr);
 
-
   vec2 distance_px_to_bl = grid_uv - vec2(0.0, 0.0);
   vec2 distance_px_to_br = grid_uv - vec2(1.0, 0.0);
   vec2 distance_px_to_tl = grid_uv - vec2(0.0, 1.0);
   vec2 distance_px_to_tr = grid_uv - vec2(1.0, 1.0);
-
 
   float dot_bl = dot(grad_bl, distance_px_to_bl);
   float dot_br = dot(grad_br, distance_px_to_br);
@@ -68,7 +63,6 @@ float fbm_perlin_noise(vec2 uv) {
     amplitude * amplitude * 0.5;
     uv = uv * 2.0;
   }
-
   return fbm_noise;
 }
 
