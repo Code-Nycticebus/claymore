@@ -152,7 +152,7 @@ static bool noise_init(CmScene *scene) {
   data->shader = cm_shader_load_from_file("res/shader/noise.vs.glsl",
                                           "res/shader/noise.fs.glsl");
 
-  scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+  scene->camera = cm_camera_screen_init((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
 
   data->grid_size = 1;

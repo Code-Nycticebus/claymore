@@ -25,7 +25,7 @@ static bool models_init(CmScene *scene) {
   SceneData *data = malloc(sizeof(SceneData));
 
   const float fov = 90.F;
-  scene->camera = cm_camera_init_perspective(
+  scene->camera = cm_camera_perspective_init(
       (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 

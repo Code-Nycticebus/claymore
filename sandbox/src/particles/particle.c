@@ -88,7 +88,7 @@ bool particle_scene_init(CmScene *scene) {
                                     "res/shader/basic.fs.glsl");
   float aspect =
       (float)scene->app->window->width / (float)scene->app->window->height;
-  scene->camera = cm_camera_init_ortho((vec3s){0}, aspect, 100.F);
+  scene->camera = cm_camera_ortho_init((vec3s){0}, aspect, 100.F);
 
   glfwSwapInterval(0);
   return true;

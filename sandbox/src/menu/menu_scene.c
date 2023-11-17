@@ -130,7 +130,7 @@ static bool menu_init(CmScene *scene) {
                        window_init_height);
   }
 
-  scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+  scene->camera = cm_camera_screen_init((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,

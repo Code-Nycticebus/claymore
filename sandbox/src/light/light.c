@@ -55,7 +55,7 @@ bool light_init(CmScene *scene) {
   const float aspect =
       (float)scene->app->window->width / (float)scene->app->window->height;
   const float fov = 90;
-  scene->camera = cm_camera_init_perspective((vec3s){{0, 0, min_spread * 2}},
+  scene->camera = cm_camera_perspective_init((vec3s){{0, 0, min_spread * 2}},
                                              (vec3s){0}, fov, aspect);
   camera_register_callbacks(&scene->camera);
 

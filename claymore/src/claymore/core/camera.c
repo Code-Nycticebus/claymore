@@ -1,6 +1,6 @@
 #include "camera.h"
 
-CmCamera cm_camera_init_perspective(vec3s position, vec3s lookat, float fov,
+CmCamera cm_camera_perspective_init(vec3s position, vec3s lookat, float fov,
                                     float aspect_ratio) {
   CmCamera camera = (CmCamera){
       .update = true,
@@ -17,7 +17,7 @@ CmCamera cm_camera_init_perspective(vec3s position, vec3s lookat, float fov,
   return camera;
 }
 
-CmCamera cm_camera_init_ortho(vec3s position, float aspect, float zoom) {
+CmCamera cm_camera_ortho_init(vec3s position, float aspect, float zoom) {
   CmCamera camera = {0};
   camera.projection =
       glms_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F);
@@ -31,7 +31,7 @@ CmCamera cm_camera_init_ortho(vec3s position, float aspect, float zoom) {
   return camera;
 }
 
-CmCamera cm_camera_init_screen(vec3s position, float right, float top) {
+CmCamera cm_camera_screen_init(vec3s position, float right, float top) {
   CmCamera camera = {0};
   camera.projection = glms_ortho(0.F, right, 0.F, top, -1.F, 100.F);
   camera.position = position;
@@ -57,13 +57,22 @@ void cm_camera_zoom(CmCamera *camera, float zoom) {
   camera->update = true;
 }
 
-void cm_camera_aspect(CmCamera *camera, float aspect) {
+void cm_camera_ortho_aspect(CmCamera *camera, float aspect) {
   assert(camera->aspect && 0 < camera->zoom);
   camera->aspect = aspect;
   camera->projection = glms_ortho(-aspect * camera->zoom, aspect * camera->zoom,
                                   -camera->zoom, camera->zoom, -1.F, 1.F);
   camera->update = true;
 }
+
+void cm_camera_perspective_aspect(CmCamera *camera, float aspect) {
+  const float far = 1000.F;
+  camera->aspect = aspect;
+  camera->projection =
+      glms_perspective(glm_rad(camera->fov), aspect, 1 / 100.F, far);
+  camera->update = true;
+}
+
 void cm_camera_set_screen(CmCamera *camera, float right, float top) {
   camera->projection = glms_ortho(0.F, right, 0.F, top, -1.F, 100.F);
   camera->update = true;

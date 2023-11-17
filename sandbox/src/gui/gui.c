@@ -299,7 +299,7 @@ bool gui_init(CmScene *scene) {
   };
   scene->state = data;
 
-  scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+  scene->camera = cm_camera_screen_init((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
   glDisable(GL_DEPTH_TEST);
   return true;

@@ -10,9 +10,8 @@ static void window_resize_callback(CmWindowEvent *event, CmCamera *camera) {
 static bool fps_init(CmScene *scene, CmLayer *layer) {
   (void)layer;
   font = cm_font_init("res/fonts/Silkscreen.ttf", font_size);
-
   layer->camera =
-      cm_camera_init_screen((vec3s){0}, (float)scene->app->window->width,
+      cm_camera_screen_init((vec3s){0}, (float)scene->app->window->width,
                             (float)scene->app->window->height);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,

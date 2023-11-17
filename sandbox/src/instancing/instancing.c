@@ -107,7 +107,7 @@ static void cube_key_callback(CmKeyEvent *event, CmLayer *layer) {
 
 static bool instancing_scene_init(CmScene *scene) {
   (void)scene;
-  scene->camera = cm_camera_init_perspective(
+  scene->camera = cm_camera_perspective_init(
       (vec3s){{0, 0, 4}}, (vec3s){0}, fov,
       (float)scene->app->window->width / (float)scene->app->window->height);
 

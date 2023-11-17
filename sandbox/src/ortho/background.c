@@ -32,7 +32,7 @@ static void background_scroll_callback(CmScrollEvent *event, CmLayer *layer) {
 static void background_window_resize_callback(CmWindowEvent *event,
                                               CmCamera *camera) {
   aspect = (float)event->window->width / (float)event->window->height;
-  cm_camera_aspect(camera, aspect);
+  cm_camera_ortho_aspect(camera, aspect);
 }
 
 static void background_mouse_callback(CmMouseEvent *event, CmLayer *layer) {
@@ -63,7 +63,7 @@ static bool background_init(CmScene *scene, CmLayer *layer) {
   background_texture = cm_texture_create("res/textures/claymore-sword.png");
 
   aspect = (float)scene->app->window->width / (float)scene->app->window->height;
-  layer->camera = cm_camera_init_ortho((vec3s){0}, aspect, 100.F);
+  layer->camera = cm_camera_ortho_init((vec3s){0}, aspect, 100.F);
 
   cm_event_subscribe(CM_EVENT_WINDOW_RESIZE,
                      (cm_event_callback)background_window_resize_callback,

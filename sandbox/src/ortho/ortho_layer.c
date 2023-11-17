@@ -18,7 +18,7 @@ static void ortho_scroll_callback(CmScrollEvent *event, CmCamera *camera) {
 static void ortho_window_resize_callback(CmWindowEvent *event,
                                          CmCamera *camera) {
   float aspect = (float)event->window->width / (float)event->window->height;
-  cm_camera_aspect(camera, aspect);
+  cm_camera_ortho_aspect(camera, aspect);
 }
 
 static void ortho_mouse_callback(CmMouseEvent *event, CmCamera *camera) {
@@ -58,7 +58,7 @@ static bool ortho_init(CmScene *scene, CmLayer *layer) {
 
   float zoom = ORTHO_INITIAL_ZOOM;
   float aspect = scene->app->window->width / (float)scene->app->window->height;
-  layer->camera = cm_camera_init_ortho(camera_initial_position, aspect, zoom);
+  layer->camera = cm_camera_ortho_init(camera_initial_position, aspect, zoom);
 
   font = cm_font_init("res/fonts/Ubuntu.ttf", font_size);
 

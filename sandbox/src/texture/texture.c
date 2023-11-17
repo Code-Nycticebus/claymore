@@ -28,7 +28,7 @@ static void drop_callback(CmDropEvent *event, CmScene *scene) {
 
 static bool texture_scene_init(CmScene *scene) {
   (void)scene;
-  scene->camera = cm_camera_init_screen((vec3s){0}, scene->app->window->width,
+  scene->camera = cm_camera_screen_init((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
 
   texture_shader = cm_shader_load_from_file("res/shader/texture.vs.glsl",

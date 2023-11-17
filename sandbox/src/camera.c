@@ -53,12 +53,9 @@ static void camera_scroll(CmScrollEvent *event, CmCamera *camera) {
 }
 
 static void camera_resize(CmWindowEvent *event, CmCamera *camera) {
-  const float far = 1000.F;
   const float aspect =
       (float)event->window->width / (float)event->window->height;
-  camera->projection =
-      glms_perspective(glm_rad(camera->fov), aspect, 1 / 100.F, far);
-  camera->update = true;
+  cm_camera_perspective_aspect(camera, aspect);
 }
 
 void camera_register_callbacks(CmCamera *camera) {
