@@ -85,7 +85,6 @@ float perlin(float x, float y) {
 void gradient_perlin_noise(uint32_t width, uint32_t height,
                            uint8_t output[static width * height],
                            size_t octaves, size_t grid_size) {
-  printf("Generating\n");
   for (size_t x = 0; x < width; x++) {
     for (size_t y = 0; y < height; y++) {
       float val = 0;
@@ -114,7 +113,6 @@ void gradient_perlin_noise(uint32_t width, uint32_t height,
       output[x + y * width] = (uint8_t)(((val + 1.0F) * 0.5F) * UINT8_MAX);
     }
   }
-  printf("done\n");
 }
 
 static void noise_map_update(CmTexture *texture, size_t grid_size,
