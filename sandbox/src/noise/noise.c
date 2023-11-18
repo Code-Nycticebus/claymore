@@ -130,8 +130,8 @@ static void key_event(CmKeyEvent *event, SceneData *data) {
   if (event->action == CM_KEY_PRESS || event->action == CM_KEY_REPEAT) {
     if (event->code == CM_KEY_UP || event->code == CM_KEY_DOWN) {
       data->grid_size += event->code == CM_KEY_UP ? 1 : -1;
-      if (data->grid_size < 1) {
-        data->grid_size = 1;
+      if (data->grid_size < 2) {
+        data->grid_size = 2;
       }
       noise_map_update(&data->texture, data->grid_size, data->octave);
     } else if (CM_KEY_1 <= event->code && event->code <= CM_KEY_9) {
@@ -153,7 +153,7 @@ static bool noise_init(CmScene *scene) {
   scene->camera = cm_camera_screen_init((vec3s){0}, scene->app->window->width,
                                         scene->app->window->height);
 
-  data->grid_size = 1;
+  data->grid_size = 2;
   data->octave = 1;
   noise_map_update(&data->texture, data->grid_size, data->octave);
 

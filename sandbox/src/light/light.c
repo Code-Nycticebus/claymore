@@ -24,7 +24,7 @@ bool light_init(CmScene *scene) {
                                                "res/shader/cube.fs.glsl");
 
   const float min_spread = 50.F;
-  const float max_spread = 500.F;
+  const float max_spread = 250.F;
 
   data->cube.model = cm_model_load("res/models/cube.obj");
   const uint32_t cube_count = 40000;
@@ -38,7 +38,11 @@ bool light_init(CmScene *scene) {
                                           (rand_float() - 0.5F),
                                       }}),
                                       spread);
-    transforms[i] = glms_translate_make(pos);
+    mat4s transform = glms_translate_make(pos);
+    mat4s rotation =
+        glms_rotate_make(glm_rad(rand_float() * 360),
+                         (vec3s){{rand_float(), rand_float(), rand_float()}});
+    transforms[i] = glms_mul(transform, rotation);
     const vec4s color = {{
         rand_float(),
         rand_float(),

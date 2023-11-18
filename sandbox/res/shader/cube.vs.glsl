@@ -11,7 +11,7 @@ out vec4 v_color;
 out vec3 v_normal;
 out vec3 v_frag_pos;
 
-mat3 extractRotationMatrix(mat4 modelMatrix) {
+mat3 extract_rotation_matrix(mat4 modelMatrix) {
     return mat3(modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz);
 }
 
@@ -22,6 +22,6 @@ void main() {
     
   v_frag_pos = model_space.xyz;
 
-  mat3 normal_mat = extractRotationMatrix(transforms);
+  mat3 normal_mat = extract_rotation_matrix(transforms);
   v_normal = vec3(normal_mat * a_normals);
 }
