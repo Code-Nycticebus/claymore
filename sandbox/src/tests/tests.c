@@ -23,10 +23,10 @@ static void test_update(CmScene *scene, float dt) {
   const size_t points_count = sizeof(points) / sizeof(points[0]);
   cm_renderer_lines_begin();
   for (size_t i = 0; i < points_count; i++) {
+    glLineWidth(20.F);
     cm_renderer_lines_push(points[i], (vec4s){{1, 1, 1, 1}});
   }
   cm_renderer_lines_end();
-
   cm_shader_unbind();
 }
 
