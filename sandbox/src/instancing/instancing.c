@@ -295,8 +295,8 @@ static void instancing_scene_update(CmScene *scene, float dt) {
 
 #define LABEL_SIZE 128
   char label_buffer[LABEL_SIZE];
-  const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%lu cubes",
-                              grid_size * grid_size * (uint64_t)grid_size);
+  const size_t len = snprintf(label_buffer, LABEL_SIZE - 1, "%zu cubes",
+                              grid_size * grid_size * grid_size);
   cm_font_draw(font, scene->camera.vp, 0.F, -font_size, -100.F, len,
                label_buffer);
 }
