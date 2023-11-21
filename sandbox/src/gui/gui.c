@@ -223,7 +223,6 @@ static void slider_key_callback(CmKeyEvent *event, SliderStack *sliders) {
 static bool overlay_init(CmScene *scene, CmLayer *layer) {
   OverlayData *data = malloc(sizeof(OverlayData));
   SceneData *scene_data = scene->state;
-
   data->shader = cm_shader_load_from_file("res/shader/basic.vs.glsl",
                                           "res/shader/basic.fs.glsl");
   const vec2s slider_size = {{150, 30}};
@@ -291,12 +290,13 @@ static CmLayerInterface overlay_layer(void) {
 
 bool gui_init(CmScene *scene) {
   SceneData *data = malloc(sizeof(SceneData));
-  data->quad = (Quad){
-      .size = {{100.F * 3, 100.F * 3}},
-      .pos = {{0, 0}},
-      .color = {{1, 0, 0, 1}},
+  data->quad.size = (vec2s){{100.F * 3, 100.F * 3}};
+  data->quad.pos = (vec2s){{0, 0}};
+  data->quad.color.r = 1.F;
+  data->quad.color.g = 0.F;
+  data->quad.color.b = 0.F;
+  data->quad.color.a = 1.F;
 
-  };
   scene->state = data;
 
   scene->camera = cm_camera_screen_init((vec3s){0}, scene->app->window->width,
