@@ -73,8 +73,10 @@ static void texture_scene_free(CmScene *scene) {
   (void)scene;
   cm_shader_delete(&texture_shader);
   cm_font_free(text_font);
-  cm_texture_delete(texture);
-  free(texture);
+  if (texture) {
+    cm_texture_delete(texture);
+    free(texture);
+  }
   texture = NULL;
 }
 
