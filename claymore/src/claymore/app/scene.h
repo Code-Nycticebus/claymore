@@ -6,12 +6,13 @@
 typedef struct CmScene CmScene;
 typedef struct CmSceneInterface CmSceneInterface;
 typedef struct CmSceneInternal CmSceneInternal;
-typedef DA(CmSceneInterface *) CmSceneChildren;
+typedef CmSceneInterface *(*CmSceneInit)(void);
+typedef DA(CmSceneInit) CmSceneChildren;
 
-typedef struct CmScene {
+struct CmScene {
   Arena arena;
   void *data;
-} CmScene;
+};
 
 struct CmSceneInterface {
   const char *name;

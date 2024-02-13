@@ -27,16 +27,19 @@ static void sandbox_free(CmScene *scene) {
   clib_log_info("sandbox free");
 }
 
-static CmSceneInterface sandbox = {
-    .name = "sandbox",
-    .init = sandbox_init,
-    .update = sandbox_update,
-    .free = sandbox_free,
-};
+static CmSceneInterface *sandbox_scene_init(void) {
+  static CmSceneInterface sandbox = {
+      .name = "sandbox",
+      .init = sandbox_init,
+      .update = sandbox_update,
+      .free = sandbox_free,
+  };
+  return &sandbox;
+}
 
 ClaymoreConfig claymore_init(void) {
   return (ClaymoreConfig){
       .window = {.width = 720, .height = 420, .title = "sandbox"},
-      .scene = &sandbox,
+      .scene = sandbox_scene_init,
   };
 }

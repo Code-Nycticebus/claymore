@@ -25,7 +25,7 @@ static CmSceneInternal cm_scene_init(const CmSceneInterface *interface) {
   if (0 < children.len) {
     da_init(&scene.children, &scene.data.arena);
     for (usize i = 0; i < children.len; ++i) {
-      da_push(&scene.children, cm_scene_init(children.items[i]));
+      da_push(&scene.children, cm_scene_init(children.items[i]()));
     }
   }
 
@@ -61,8 +61,7 @@ bool app_init(const ClaymoreConfig *config) {
 
   glClearColor(1, 0, 0, 1);
 
-  app.scene = config->scene;
-
+  app.scene = config->scene();
   main_scene = cm_scene_init(app.scene);
 
   return true;

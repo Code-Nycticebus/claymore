@@ -10,7 +10,7 @@ typedef struct {
     usize width;
     usize height;
   } window;
-  CmSceneInterface *scene;
+  CmSceneInit scene;
 } ClaymoreConfig;
 
 bool app_init(const ClaymoreConfig *config);
