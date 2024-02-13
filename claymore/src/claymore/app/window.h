@@ -7,6 +7,14 @@ typedef struct {
   void *context;
 } CmWindow;
 
-CmWindow cm_window_create(usize width, usize heigth, const char *title);
+bool cm_window_create(usize width, usize heigth, const char *title);
+void cm_window_close(void);
+
+void *cm_window_context(void);
+
+bool cm_window_should_close(void);
+
+void cm_window_swap_buffers(void);
+void cm_window_poll_events(void);
 
 #endif /* !__CLAYMORE_WINDOW_H__ */
