@@ -2,8 +2,6 @@
 name="sandbox"
 cc="clang"
 
-cflags = []
-
 [exe]
 sandbox="src/sandbox.c"
 

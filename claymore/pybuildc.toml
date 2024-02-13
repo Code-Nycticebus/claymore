@@ -4,19 +4,17 @@ version="0.1.0"
 cc="clang"
 bin="static"
 
-cflags = ["-D_CRT_SECURE_NO_WARNINGS"]
-
 [deps]
 stb_image = { dir="deps/stb_image/", type="pybuildc" }
 stb_truetype = { dir="deps/stb_truetype/", type="pybuildc" }
 miniaudio = { dir="deps/miniaudio/", type="pybuildc" }
 clib = { dir = "../../clib", type="pybuildc" }
+cglm    = { I=["deps/cglm/cglm-win/cglm/include"] }
 
 [deps.linux]
 gl   = { l="GL" }
 glew = { l="GLEW", dir="deps/glew/glew-linux", L="lib", I=["glew/include"] }
 glfw = { l="glfw3", dir="deps/glfw/glfw-linux", L="build/src", I=["glfw/include"] }
-cglm = { I=["deps/cglm/cglm-linux/cglm/include/"]}
 math = { l="m" }
 
 [deps.windows]
@@ -26,4 +24,3 @@ Gdi32   = { l="Gdi32" }
 gl      = { l="opengl32" }
 glew    = { l="glew32s", dir="deps/glew/glew-win/lib/Release/Win32", I=["deps/glew/glew-win/include/"] }
 glfw    = { l="glfw3_mt", dir="deps/glfw/glfw-win/lib-vc2022/", I=["deps/glfw/glfw-win/include/"] }
-cglm    = { l="cglm", dir="deps/cglm/cglm-win/build/Release", I=["deps/cglm/cglm-win/cglm/include"] }

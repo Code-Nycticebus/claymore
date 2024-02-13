@@ -2,6 +2,5 @@
 name="stb_truetype"
 cc="clang"
 
-
 [deps.linux]
 m = { l="m" }
