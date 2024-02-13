@@ -21,7 +21,7 @@ struct CmSceneInterface {
 };
 
 struct CmSceneInternal {
-  CmScene data;
+  CmScene data; // has to be first!
   const CmSceneInterface *interface;
   DA(CmSceneInternal) children;
 };
