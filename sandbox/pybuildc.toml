@@ -2,6 +2,8 @@
 name="sandbox"
 cc="clang"
 
+cflags=["-fsanitize=address"]
+
 [exe]
 sandbox="src/sandbox.c"
 
