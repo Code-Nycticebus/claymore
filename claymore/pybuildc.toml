@@ -9,7 +9,7 @@ stb_image = { dir="deps/stb_image/", type="pybuildc" }
 stb_truetype = { dir="deps/stb_truetype/", type="pybuildc" }
 miniaudio = { dir="deps/miniaudio/", type="pybuildc" }
 clib = { dir = "../../clib", type="pybuildc" }
-cglm    = { I=["deps/cglm/cglm-win/cglm/include"] }
+cglm    = { dir="deps/cglm/cglm", I=["include"] }
 
 [deps.linux]
 gl   = { l="GL" }

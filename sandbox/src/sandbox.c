@@ -1,5 +1,7 @@
-#include "claymore.h"
+#include "claymore/app/entrypoint.h"
 
-#include "core/logging.h"
-
-int main(void) { clib_log_info("%d", a); }
+ClaymoreConfig claymore_init(void) {
+  return (ClaymoreConfig){
+      .window = {.width = 720, .height = 420, .title = "sandbox"},
+  };
+}
