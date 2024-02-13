@@ -9,6 +9,10 @@ bool cm_window_create(usize width, usize height, const char *title) {
     return false;
   }
 
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
   window.context = glfwCreateWindow((u32)width, (u32)height, title, NULL, NULL);
   if (window.context == NULL) {
     return false;
