@@ -1,8 +1,7 @@
 #include "scene.h"
 
 void cm_scene_push(CmScene *scene, CmSceneInit init) {
-  CmSceneInternal *scene_internal = (CmSceneInternal *)scene;
-  da_push(&scene_internal->children, cm_scene_internal_init(init));
+  da_push(&((CmSceneInternal *)scene)->children, cm_scene_internal_init(init));
 }
 
 CmSceneInternal cm_scene_internal_init(const CmSceneInit init) {
