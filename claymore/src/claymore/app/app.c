@@ -34,15 +34,13 @@ static CmSceneInternal cm_scene_init(const CmSceneInterface *interface) {
 static void cm_scene_update(CmSceneInternal *scene) {
   scene->interface->update(&scene->data);
   for (usize i = 0; i < scene->children.len; i++) {
-    CmSceneInternal *child = &scene->children.items[i];
-    cm_scene_update(child);
+    cm_scene_update(&scene->children.items[i]);
   }
 }
 
 static void cm_scene_free(CmSceneInternal *scene) {
   for (usize i = 0; i < scene->children.len; i++) {
-    CmSceneInternal *child = &scene->children.items[i];
-    cm_scene_free(child);
+    cm_scene_free(&scene->children.items[i]);
   }
   scene->interface->free(&scene->data);
   arena_free(&scene->data.arena);
