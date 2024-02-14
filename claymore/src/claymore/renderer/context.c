@@ -1,7 +1,8 @@
 #include "context.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#define GLEW_STATIC
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
 
 static void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
                                       GLenum severity, GLsizei length,

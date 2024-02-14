@@ -1,6 +1,6 @@
 #include "app.h"
 
-#include "renderer/context.h"
+#include "claymore/renderer/context.h"
 #include "window.h"
 
 #include "GL/glew.h"
