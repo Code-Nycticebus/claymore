@@ -15,7 +15,6 @@ struct CmScene {
 };
 
 struct CmSceneInterface {
-  const char *name;
   void (*init)(CmScene *scene, CmSceneChildren *children);
   void (*update)(CmScene *scene);
   void (*free)(CmScene *scene);

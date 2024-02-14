@@ -30,7 +30,6 @@ static void sandbox_free(CmScene *scene) {
 
 static CmSceneInterface *sandbox_scene_init(void) {
   static CmSceneInterface sandbox = {
-      .name = "sandbox",
       .init = sandbox_init,
       .update = sandbox_update,
       .free = sandbox_free,
