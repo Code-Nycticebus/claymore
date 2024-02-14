@@ -22,11 +22,9 @@ static CmSceneInternal cm_scene_init(const CmSceneInterface *interface) {
   da_init(&children, &temp);
   scene.interface->init(&scene.data, &children);
 
-  if (0 < children.len) {
-    da_init(&scene.children, &scene.data.arena);
-    for (usize i = 0; i < children.len; ++i) {
-      da_push(&scene.children, cm_scene_init(children.items[i]()));
-    }
+  da_init(&scene.children, &scene.data.arena);
+  for (usize i = 0; i < children.len; ++i) {
+    da_push(&scene.children, cm_scene_init(children.items[i]()));
   }
 
   arena_free(&temp);
