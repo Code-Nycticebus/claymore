@@ -18,8 +18,9 @@ static void sandbox_update(CmScene *scene) {
     *printed = true;
   }
 
-  if (glfwGetKey(cm_window_context(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  if (glfwGetKey(cm_window_context(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(cm_window_context(), true);
+  }
 }
 
 static void sandbox_free(CmScene *scene) {
@@ -39,7 +40,7 @@ static CmSceneInterface *sandbox_scene_init(void) {
 
 ClaymoreConfig claymore_init(void) {
   return (ClaymoreConfig){
-      .window = {.width = 720, .height = 420, .title = "sandbox"},
+      .window = {.width = 720, .height = 420, .title = "sandbox"}, // NOLINT
       .scene = sandbox_scene_init,
   };
 }
