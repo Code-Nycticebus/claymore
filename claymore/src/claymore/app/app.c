@@ -14,13 +14,13 @@ static double dt_get(double *last_frame) {
   return dt;
 }
 
-typedef struct {
+static struct {
   double last_frame;
   CmSceneInternal main_scene;
   Arena arena;
-} CmApp;
+} app;
 
-static CmApp app;
+CmScene *app_root(void) { return &app.main_scene.data; }
 
 bool app_internal_init(const ClaymoreConfig *config) {
   if (!cm_window_create(config->window.width, config->window.height,
@@ -45,7 +45,6 @@ bool app_internal_update(void) {
 
   double deltatime = dt_get(&app.last_frame);
 
-  // RENDER HERE
   cm_scene_internal_update(&app.main_scene, deltatime);
 
   cm_window_swap_buffers();

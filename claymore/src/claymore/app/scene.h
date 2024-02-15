@@ -21,10 +21,14 @@ typedef CmSceneInterface *(*CmSceneInit)(void);
 typedef struct CmSceneInternal {
   CmScene data; // has to be first!
   const CmSceneInterface *interface;
+  struct CmSceneInternal *parent;
   DA(struct CmSceneInternal) children;
 } CmSceneInternal;
 
 void cm_scene_push(CmScene *scene, CmSceneInit init);
+
+CmScene *cm_scene_parent(CmScene *scene);
+void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
 
 // INTERNAL
 

@@ -15,6 +15,8 @@ typedef struct {
   CmSceneInit scene;
 } ClaymoreConfig;
 
+CmScene *app_root(void);
+
 // INTERNAL
 
 bool app_internal_init(const ClaymoreConfig *config);
