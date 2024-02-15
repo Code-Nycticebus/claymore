@@ -3,27 +3,24 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-typedef struct CmScene CmScene;
-typedef struct CmSceneInterface CmSceneInterface;
-typedef struct CmSceneInternal CmSceneInternal;
-typedef CmSceneInterface *(*CmSceneInit)(void);
-
-struct CmScene {
+typedef struct {
   Arena arena;
   void *data;
-};
+} CmScene;
 
-struct CmSceneInterface {
+typedef struct {
   void (*init)(CmScene *scene);
   void (*update)(CmScene *scene, double deltatime);
   void (*free)(CmScene *scene);
-};
+} CmSceneInterface;
 
-struct CmSceneInternal {
+typedef CmSceneInterface *(*CmSceneInit)(void);
+
+typedef struct CmSceneInternal {
   CmScene data; // has to be first!
   const CmSceneInterface *interface;
-  DA(CmSceneInternal) children;
-};
+  DA(struct CmSceneInternal) children;
+} CmSceneInternal;
 
 void cm_scene_push(CmScene *scene, CmSceneInit init);
 
