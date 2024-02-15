@@ -3,9 +3,6 @@
 #include "claymore.h"
 
 #include "GL/glew.h"
-#include "GLFW/glfw3.h"
-#include "claymore/event/event.h"
-#include "clib/core/logging.h"
 
 typedef struct {
   u32 VAO, VBO, EBO;
@@ -60,7 +57,7 @@ static void sandbox_init(CmScene *scene) {
           "}\n"),
       ErrPanic);
 
-  cm_window_set_bg_color((vec3){0.15f, 0.15f, 0.15f});
+  cm_window_bg_color((vec3){0.15f, 0.15f, 0.15f});
 
   scene->data = sandbox;
 }
@@ -90,7 +87,7 @@ static void sandbox_on_event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     clib_log_info("Key Event: ");
     if (key->code == CM_KEY_ESCAPE) {
-      glfwSetWindowShouldClose(cm_window_context(), true);
+      cm_window_close(true);
     }
   });
 

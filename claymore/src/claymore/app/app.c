@@ -23,8 +23,8 @@ static struct {
 CmScene *app_root(void) { return &app.main_scene.data; }
 
 bool app_internal_init(const ClaymoreConfig *config) {
-  if (!cm_window_create(config->window.width, config->window.height,
-                        config->window.title)) {
+  if (!cm_window_internal_create(config->window.width, config->window.height,
+                                 config->window.title)) {
     clib_log_error("Could not open window");
     return false;
   }
@@ -38,7 +38,7 @@ bool app_internal_init(const ClaymoreConfig *config) {
 }
 
 bool app_internal_update(void) {
-  if (cm_window_should_close()) {
+  if (cm_window_internal_should_close()) {
     return false;
   }
   glClear(GL_COLOR_BUFFER_BIT);
@@ -47,15 +47,15 @@ bool app_internal_update(void) {
 
   cm_scene_internal_update(&app.main_scene, deltatime);
 
-  cm_window_swap_buffers();
-  cm_window_poll_events();
+  cm_window_internal_swap_buffers();
+  cm_window_internal_poll_events();
   return true;
 }
 
 void app_internal_terminate(void) {
   cm_scene_internal_free(&app.main_scene);
 
-  cm_window_close();
+  cm_window_internal_close();
   arena_free(&app.arena);
 }
 
