@@ -1,4 +1,8 @@
+#define CLAYMORE_APP_INTERNAL
 #include "app.h"
+
+#define CLAYMORE_SCENE_INTERNAL
+#include "scene.h"
 
 #include "claymore/renderer/context.h"
 #include "window.h"
@@ -20,7 +24,7 @@ typedef struct {
 
 static CmApp app;
 
-bool app_init(const ClaymoreConfig *config) {
+bool app_internal_init(const ClaymoreConfig *config) {
   if (!cm_window_create(config->window.width, config->window.height,
                         config->window.title)) {
     clib_log_error("Could not open window");
@@ -35,7 +39,7 @@ bool app_init(const ClaymoreConfig *config) {
   return true;
 }
 
-bool app_update(void) {
+bool app_internal_update(void) {
   if (cm_window_should_close()) {
     return false;
   }
@@ -51,9 +55,13 @@ bool app_update(void) {
   return true;
 }
 
-void app_terminate(void) {
+void app_internal_terminate(void) {
   cm_scene_internal_free(&app.main_scene);
 
   cm_window_close();
   arena_free(&app.arena);
+}
+
+void app_internal_on_event(CmEvent *event) {
+  cm_scene_internal_on_event(&app.main_scene, event);
 }

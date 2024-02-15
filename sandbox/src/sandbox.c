@@ -4,6 +4,8 @@
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include "claymore/event/event.h"
+#include "clib/core/logging.h"
 
 typedef struct {
   u32 VAO, VBO, EBO;
@@ -59,6 +61,7 @@ static void sandbox_init(CmScene *scene) {
       ErrPanic);
 
   cm_window_set_bg_color((vec3){0.15f, 0.15f, 0.15f});
+
   scene->data = sandbox;
 }
 
@@ -76,8 +79,8 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   glBindVertexArray(sandbox->VAO);
   glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
 
-  if (glfwGetKey(cm_window_context(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(cm_window_context(), true);
+  if (cm_event_key_pressed(CM_KEY_0) == CM_KEY_PRESS) {
+    clib_log_info("PRESS");
   }
 }
 
@@ -86,11 +89,30 @@ static void sandbox_free(CmScene *scene) {
   clib_log_info("sandbox free");
 }
 
+static void sandbox_on_event(CmScene *scene, CmEvent *event) {
+  (void)scene;
+  cm_event_key(event, key, {
+    clib_log_info("Key Event");
+    if (key->code == CM_KEY_ESCAPE) {
+      glfwSetWindowShouldClose(cm_window_context(), true);
+    }
+  });
+
+  cm_event_cursor(event, cursor, {
+    clib_log_info("Cursor Event " VEC2_FMT, VEC2_ARG(cursor->pos));
+  });
+
+  cm_event_mouse(event, mouse, {
+    clib_log_info("Mouse Event " VEC2_FMT, VEC2_ARG(mouse->pos));
+  });
+}
+
 static CmSceneInterface *sandbox_scene_init(void) {
   static CmSceneInterface sandbox = {
       .init = sandbox_init,
       .update = sandbox_update,
       .free = sandbox_free,
+      .on_event = sandbox_on_event,
   };
   return &sandbox;
 }

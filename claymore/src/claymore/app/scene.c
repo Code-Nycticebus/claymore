@@ -1,3 +1,4 @@
+#define CLAYMORE_SCENE_INTERNAL
 #include "scene.h"
 
 void cm_scene_push(CmScene *scene, CmSceneInit init) {
@@ -25,4 +26,16 @@ void cm_scene_internal_free(CmSceneInternal *scene) {
   }
   scene->interface->free(&scene->data);
   arena_free(&scene->data.arena);
+}
+
+void cm_scene_internal_on_event(CmSceneInternal *scene, CmEvent *event) {
+  if (scene->interface->on_event) {
+    scene->interface->on_event(&scene->data, event);
+  }
+  for (usize i = 0; i < scene->children.len; i++) {
+    if (event->handled) {
+      return;
+    }
+    cm_scene_internal_on_event(&scene->children.items[i], event);
+  }
 }

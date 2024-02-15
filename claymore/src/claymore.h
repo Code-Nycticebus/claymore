@@ -9,6 +9,8 @@
 #include "claymore/app/scene.h"
 #include "claymore/app/window.h"
 
+#include "claymore/event/event.h"
+
 #include "claymore/renderer/shaders.h"
 //
 // IWYU pragma: end_exports
