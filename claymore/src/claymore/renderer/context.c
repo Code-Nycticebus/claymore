@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
 
+#ifdef _CM_DEBUG
 static void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
                                       GLenum severity, GLsizei length,
                                       const GLchar *message,
@@ -85,6 +86,7 @@ static void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
     clib_log_error("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
   }
 }
+#endif
 
 bool cm_platform_context_init(void *window_context) {
   glfwMakeContextCurrent(window_context);
