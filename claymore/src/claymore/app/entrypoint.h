@@ -3,12 +3,12 @@
 
 #include "app.h"
 
-ClaymoreConfig claymore_init(void);
+const ClaymoreConfig *claymore_init(void);
 
 int main(void) {
-  const ClaymoreConfig config = claymore_init();
+  const ClaymoreConfig *config = claymore_init();
 
-  app_init(&config);
+  app_init(config);
 
   while (app_update()) {
     // App running!

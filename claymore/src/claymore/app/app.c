@@ -5,7 +5,15 @@
 
 #include "GL/glew.h"
 
+static double dt_get(double *last_frame) {
+  double current_time = cm_window_time();
+  double dt = current_time - *last_frame;
+  *last_frame = current_time;
+  return dt;
+}
+
 typedef struct {
+  double last_frame;
   CmSceneInternal main_scene;
 } CmApp;
 
@@ -24,6 +32,8 @@ bool app_init(const ClaymoreConfig *config) {
 
   app.main_scene = cm_scene_internal_init(config->scene);
 
+  app.last_frame = cm_window_time();
+
   return true;
 }
 
@@ -33,8 +43,10 @@ bool app_update(void) {
   }
   glClear(GL_COLOR_BUFFER_BIT);
 
+  double deltatime = dt_get(&app.last_frame);
+
   // RENDER HERE
-  cm_scene_internal_update(&app.main_scene);
+  cm_scene_internal_update(&app.main_scene, deltatime);
 
   cm_window_swap_buffers();
   cm_window_poll_events();

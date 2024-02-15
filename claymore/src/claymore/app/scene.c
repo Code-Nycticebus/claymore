@@ -12,10 +12,10 @@ CmSceneInternal cm_scene_internal_init(const CmSceneInit init) {
   return scene;
 }
 
-void cm_scene_internal_update(CmSceneInternal *scene) {
-  scene->interface->update(&scene->data);
+void cm_scene_internal_update(CmSceneInternal *scene, double deltatime) {
+  scene->interface->update(&scene->data, deltatime);
   for (usize i = 0; i < scene->children.len; i++) {
-    cm_scene_internal_update(&scene->children.items[i]);
+    cm_scene_internal_update(&scene->children.items[i], deltatime);
   }
 }
 

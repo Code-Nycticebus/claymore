@@ -22,6 +22,7 @@ bool cm_window_create(usize width, usize height, const char *title) {
 }
 
 void *cm_window_context(void) { return window.context; }
+double cm_window_time(void) { return glfwGetTime(); }
 
 void cm_window_close(void) {
   glfwDestroyWindow(window.context);

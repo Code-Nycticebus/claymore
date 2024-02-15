@@ -58,7 +58,9 @@ static void sandbox_init(CmScene *scene) {
   scene->data = sandbox;
 }
 
-static void sandbox_update(CmScene *scene) {
+static void sandbox_update(CmScene *scene, double deltatime) {
+  (void)deltatime;
+
   Sandbox *sandbox = scene->data;
 
   glUseProgram(sandbox->shader.id);
@@ -85,9 +87,10 @@ static CmSceneInterface *sandbox_scene_init(void) {
   return &sandbox;
 }
 
-ClaymoreConfig claymore_init(void) {
-  return (ClaymoreConfig){
+const ClaymoreConfig *claymore_init(void) {
+  static const ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "sandbox"}, // NOLINT
       .scene = sandbox_scene_init,
   };
+  return &config;
 }

@@ -11,6 +11,7 @@ bool cm_window_create(usize width, usize heigth, const char *title);
 void cm_window_close(void);
 
 void *cm_window_context(void);
+double cm_window_time(void);
 
 bool cm_window_should_close(void);
 

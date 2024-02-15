@@ -15,7 +15,7 @@ struct CmScene {
 
 struct CmSceneInterface {
   void (*init)(CmScene *scene);
-  void (*update)(CmScene *scene);
+  void (*update)(CmScene *scene, double deltatime);
   void (*free)(CmScene *scene);
 };
 
@@ -28,7 +28,7 @@ struct CmSceneInternal {
 void cm_scene_push(CmScene *scene, CmSceneInit init);
 
 CmSceneInternal cm_scene_internal_init(const CmSceneInit init);
-void cm_scene_internal_update(CmSceneInternal *scene);
+void cm_scene_internal_update(CmSceneInternal *scene, double deltatime);
 void cm_scene_internal_free(CmSceneInternal *scene);
 
 #endif /* !__CLAYMORE_SCENE_H__ */
