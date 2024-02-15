@@ -7,7 +7,7 @@
 #include "GLFW/glfw3.h"
 
 typedef struct {
-  u32 VAO, VBO;
+  u32 VAO, VBO, EBO;
   CmShader shader;
 } Sandbox;
 
@@ -15,15 +15,19 @@ static void sandbox_init(CmScene *scene) {
   clib_log_info("sandbox init");
   Sandbox *sandbox = arena_alloc(&scene->arena, sizeof(Sandbox));
 
-  vec3 triangle[3] = {
-      {-.5f, -.5f, .5f},
-      {0.5f, -.5f, .5f},
-      {0.0f, 0.5f, .5f},
+  vec3 vertices[4] = {
+      {-.5f, 0.5f, .0f},
+      {-.5f, -.5f, .0f},
+      {0.5f, -.5f, .0f},
+      {0.5f, 0.5f, .0f},
+  };
+  u32 indices[6] = {
+      0, 1, 3, 1, 2, 3,
   };
 
   glGenBuffers(1, &sandbox->VBO);
   glBindBuffer(GL_ARRAY_BUFFER, sandbox->VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   glGenVertexArrays(1, &sandbox->VAO);
   glBindVertexArray(sandbox->VAO);
@@ -32,6 +36,11 @@ static void sandbox_init(CmScene *scene) {
   glVertexAttribPointer(idx, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), NULL);
   glEnableVertexAttribArray(idx);
   idx++;
+
+  glGenBuffers(1, &sandbox->EBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sandbox->EBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+               GL_STATIC_DRAW);
 
   sandbox->shader = cm_shader_load_from_memory(
       STR("#version 330 core\n"
@@ -53,8 +62,9 @@ static void sandbox_update(CmScene *scene) {
   Sandbox *sandbox = scene->data;
 
   glUseProgram(sandbox->shader.id);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sandbox->EBO);
   glBindVertexArray(sandbox->VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
 
   if (glfwGetKey(cm_window_context(), GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(cm_window_context(), true);
