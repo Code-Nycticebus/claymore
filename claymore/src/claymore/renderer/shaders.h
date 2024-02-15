@@ -30,4 +30,4 @@ void cm_shader_set_vec4(CmShader *shader, Str uniform_name, const vec4 vec);
 void cm_shader_set_f32(CmShader *shader, Str uniform_name, float value);
 void cm_shader_set_i32(CmShader *shader, Str uniform_name, int32_t value);
 
-#endif // !__CLAYMORE_SHADERS_H__
+#endif /* !__CLAYMORE_SHADERS_H__ */
