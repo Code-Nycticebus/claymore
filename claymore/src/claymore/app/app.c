@@ -15,6 +15,7 @@ static double dt_get(double *last_frame) {
 typedef struct {
   double last_frame;
   CmSceneInternal main_scene;
+  Arena arena;
 } CmApp;
 
 static CmApp app;
@@ -54,4 +55,5 @@ void app_terminate(void) {
   cm_scene_internal_free(&app.main_scene);
 
   cm_window_close();
+  arena_free(&app.arena);
 }
