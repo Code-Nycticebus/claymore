@@ -54,8 +54,9 @@ static void sandbox_init(CmScene *scene) {
           "}\n"),
       STR("#version 330 core\n"
           "out vec4 f_color;\n"
+          "uniform vec4 u_color = vec4(1,0,0,1);\n"
           "void main() {\n"
-          "  f_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+          "  f_color = u_color;\n"
           "}\n"),
       ErrPanic);
 

@@ -138,17 +138,17 @@ static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
 
 void cm_shader_set_mat4(CmShader *shader, Str uniform_name, const mat4 mat) {
   i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
-  glUniformMatrix4fv(location, 1, GL_FALSE, (float *)&mat);
+  glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
 void cm_shader_set_vec3(CmShader *shader, Str uniform_name, const vec3 vec) {
   i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
-  glUniform3fv(location, 1, (float *)&vec);
+  glUniform3fv(location, 1, vec);
 }
 
 void cm_shader_set_vec4(CmShader *shader, Str uniform_name, const vec4 vec) {
   i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
-  glUniform4fv(location, 1, (float *)&vec);
+  glUniform4fv(location, 1, vec);
 }
 
 void cm_shader_set_f32(CmShader *shader, Str uniform_name, float value) {
