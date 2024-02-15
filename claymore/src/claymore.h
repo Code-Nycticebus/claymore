@@ -3,9 +3,9 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-#include "claymore/app/app.h"    // IWYU pragma: export
-#include "claymore/app/scene.h"  // IWYU pragma: export
-#include "claymore/app/window.h" // IWYU pragma: export
+#include "claymore/core/app.h"    // IWYU pragma: export
+#include "claymore/core/scene.h"  // IWYU pragma: export
+#include "claymore/core/window.h" // IWYU pragma: export
 
 #include "claymore/renderer/shaders.h" // IWYU pragma: export
 

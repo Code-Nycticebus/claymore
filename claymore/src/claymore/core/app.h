@@ -1,8 +1,9 @@
 #ifndef __CLAYMORE_APP_H__
 #define __CLAYMORE_APP_H__
 
-#include "claymore/app/scene.h"
 #include "claymore/defines.h" // IWYU pragma: export
+
+#include "scene.h"
 
 typedef struct {
   struct {
