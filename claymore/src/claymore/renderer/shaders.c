@@ -2,6 +2,8 @@
 
 #include "GL/glew.h"
 
+#include <stdio.h>
+
 #define _cm_check_shader(error, shader_id, gl_check, gl_get_iv, gl_get_log)    \
   {                                                                            \
     GLint result = GL_FALSE;                                                   \
