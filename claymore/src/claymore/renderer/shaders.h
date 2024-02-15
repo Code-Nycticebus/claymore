@@ -23,7 +23,7 @@ void cm_shader_delete(CmShader *shader);
 
 void cm_shader_bind(const CmShader *shader);
 void cm_shader_unbind(void);
-i32 cm_shader_get_uniform_location(CmShader *shader, Str uniform_name);
+
 void cm_shader_set_mat4(CmShader *shader, Str uniform_name, const mat4 mat);
 void cm_shader_set_vec3(CmShader *shader, Str uniform_name, const vec3 vec);
 void cm_shader_set_vec4(CmShader *shader, Str uniform_name, const vec4 vec);

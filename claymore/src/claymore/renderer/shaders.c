@@ -107,7 +107,7 @@ void cm_shader_delete(CmShader *shader) { glDeleteProgram(shader->id); }
 void cm_shader_bind(const CmShader *shader) { glUseProgram(shader->id); }
 void cm_shader_unbind(void) { glUseProgram(0); }
 
-GLint cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
+static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   u64 hash = str_hash(uniform_name);
   glUseProgram(shader->id);
   for (size_t i = 0; i < shader->uniform_count; i++) {
@@ -137,26 +137,26 @@ GLint cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
 }
 
 void cm_shader_set_mat4(CmShader *shader, Str uniform_name, const mat4 mat) {
-  GLint location = cm_shader_get_uniform_location(shader, uniform_name);
+  i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
   glUniformMatrix4fv(location, 1, GL_FALSE, (float *)&mat);
 }
 
 void cm_shader_set_vec3(CmShader *shader, Str uniform_name, const vec3 vec) {
-  GLint location = cm_shader_get_uniform_location(shader, uniform_name);
+  i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
   glUniform3fv(location, 1, (float *)&vec);
 }
 
 void cm_shader_set_vec4(CmShader *shader, Str uniform_name, const vec4 vec) {
-  GLint location = cm_shader_get_uniform_location(shader, uniform_name);
+  i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
   glUniform4fv(location, 1, (float *)&vec);
 }
 
 void cm_shader_set_f32(CmShader *shader, Str uniform_name, float value) {
-  GLint location = cm_shader_get_uniform_location(shader, uniform_name);
+  i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
   glUniform1f(location, value);
 }
 
 void cm_shader_set_i32(CmShader *shader, Str uniform_name, int32_t value) {
-  GLint location = cm_shader_get_uniform_location(shader, uniform_name);
+  i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
   glUniform1i(location, value);
 }
