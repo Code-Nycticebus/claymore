@@ -1,7 +1,6 @@
 #include "claymore/app/entrypoint.h"
 
-#include "claymore/app/window.h"
-#include "claymore/renderer/shaders.h"
+#include "claymore.h"
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
