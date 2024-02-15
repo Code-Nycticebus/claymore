@@ -1,4 +1,3 @@
-#define CLAYMORE_SCENE_INTERNAL
 #include "scene.h"
 
 void cm_scene_push(CmScene *scene, CmSceneInit init) {

@@ -1,7 +1,5 @@
-#define CLAYMORE_APP_INTERNAL
 #include "app.h"
 
-#define CLAYMORE_SCENE_INTERNAL
 #include "scene.h"
 
 #include "claymore/renderer/context.h"
