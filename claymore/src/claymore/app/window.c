@@ -8,6 +8,11 @@ static struct {
   void *context;
 } window;
 
+void *cm_window_context(void) { return window.context; }
+double cm_window_time(void) { return glfwGetTime(); }
+void cm_window_bg_color(vec3 color) { glClearColor(VEC3_ARG(color), 1); }
+void cm_window_close(bool c) { glfwSetWindowShouldClose(window.context, c); }
+
 static void keyboard_callback(GLFWwindow *context, int key, int scancode,
                               int action, int mods) {
   (void)context, (void)scancode, (void)mods;
@@ -68,11 +73,6 @@ static void drop_callback(GLFWwindow *context, int count, const char **paths) {
           },
   });
 }
-
-void *cm_window_context(void) { return window.context; }
-double cm_window_time(void) { return glfwGetTime(); }
-void cm_window_bg_color(vec3 color) { glClearColor(VEC3_ARG(color), 1); }
-void cm_window_close(bool c) { glfwSetWindowShouldClose(window.context, c); }
 
 bool cm_window_internal_create(usize width, usize height, const char *title) {
   if (!glfwInit()) {
