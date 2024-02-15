@@ -1,8 +1,10 @@
 #ifndef __CLAYMORE_DEFINES_H__
 #define __CLAYMORE_DEFINES_H__
 
-#include "clib/clib.h" // IWYU pragma: export
-#include <cglm/cglm.h> // IWYU pragma: export
+// IWYU pragma: begin_exports
+#include "clib/clib.h"
+#include <cglm/cglm.h>
+// IWYU pragma: end_exports
 
 #define VEC2_FMT "%f, %f"
 #define VEC2_ARG(v) v[0], v[1]
