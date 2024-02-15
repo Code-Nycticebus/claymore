@@ -1,7 +1,7 @@
 #ifndef __CLAYMORE_ENTRYPOINT__
 #define __CLAYMORE_ENTRYPOINT__
 
-#include "app.h"
+#include "claymore/app/app.h"
 
 const ClaymoreConfig *claymore_init(void);
 

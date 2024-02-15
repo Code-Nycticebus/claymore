@@ -1,4 +1,4 @@
-#include "claymore/core/entrypoint.h"
+#include "claymore/entrypoint.h"
 
 #include "claymore.h"
 
