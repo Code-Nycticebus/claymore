@@ -6,9 +6,9 @@
 #include "glfw_keymap.h" // IWYU pragma: export
 
 typedef enum {
+  CM_EVENT_KEY,
   CM_EVENT_MOUSE,
   CM_EVENT_CURSOR,
-  CM_EVENT_KEY,
   CM_EVENT_SCROLL,
   CM_EVENT_RESIZE,
   CM_EVENT_DROP,

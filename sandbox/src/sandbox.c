@@ -78,10 +78,6 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sandbox->EBO);
   glBindVertexArray(sandbox->VAO);
   glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
-
-  if (cm_event_key_pressed(CM_KEY_0) == CM_KEY_PRESS) {
-    clib_log_info("PRESS");
-  }
 }
 
 static void sandbox_free(CmScene *scene) {
@@ -91,19 +87,34 @@ static void sandbox_free(CmScene *scene) {
 
 static void sandbox_on_event(CmScene *scene, CmEvent *event) {
   (void)scene;
-  cm_event_key(event, key, {
-    clib_log_info("Key Event");
+  cm_event_key(event, {
+    clib_log_info("Key Event: ");
     if (key->code == CM_KEY_ESCAPE) {
       glfwSetWindowShouldClose(cm_window_context(), true);
     }
   });
 
-  cm_event_cursor(event, cursor, {
-    clib_log_info("Cursor Event " VEC2_FMT, VEC2_ARG(cursor->pos));
+  cm_event_cursor(event, {
+    clib_log_info("Cursor Event: " VEC2_FMT, VEC2_ARG(cursor->pos));
   });
 
-  cm_event_mouse(event, mouse, {
-    clib_log_info("Mouse Event " VEC2_FMT, VEC2_ARG(mouse->pos));
+  cm_event_mouse(event, {
+    clib_log_info("Mouse Event: " VEC2_FMT, VEC2_ARG(mouse->pos));
+  });
+
+  cm_event_scroll(event, {
+    clib_log_info("Scroll Event " VEC2_FMT, VEC2_ARG(scroll->offset));
+  });
+
+  cm_event_resize(event, {
+    clib_log_info("Resize Event " VEC2_FMT, VEC2_ARG(resize->size));
+  });
+
+  cm_event_drop(event, {
+    clib_log_info("Drop event: ");
+    for (usize i = 0; i < drop->count; i++) {
+      clib_log_info("- %s", drop->files[i]);
+    }
   });
 }
 
