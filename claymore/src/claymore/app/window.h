@@ -13,6 +13,8 @@ void cm_window_close(void);
 void *cm_window_context(void);
 double cm_window_time(void);
 
+void cm_window_set_bg_color(vec3 color);
+
 bool cm_window_should_close(void);
 
 void cm_window_swap_buffers(void);

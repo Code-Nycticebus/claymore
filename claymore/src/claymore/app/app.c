@@ -28,10 +28,7 @@ bool app_init(const ClaymoreConfig *config) {
 
   cm_platform_context_init(cm_window_context());
 
-  glClearColor(1, 0, 1, 1);
-
   app.main_scene = cm_scene_internal_init(config->scene);
-
   app.last_frame = cm_window_time();
 
   return true;

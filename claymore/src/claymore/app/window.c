@@ -24,6 +24,8 @@ bool cm_window_create(usize width, usize height, const char *title) {
 void *cm_window_context(void) { return window.context; }
 double cm_window_time(void) { return glfwGetTime(); }
 
+void cm_window_set_bg_color(vec3 color) { glClearColor(VEC3_ARG(color), 1); }
+
 void cm_window_close(void) {
   glfwDestroyWindow(window.context);
   glfwTerminate();

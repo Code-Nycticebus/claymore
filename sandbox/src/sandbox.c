@@ -60,6 +60,7 @@ static void sandbox_init(CmScene *scene) {
           "}\n"),
       ErrPanic);
 
+  cm_window_set_bg_color((vec3){0.15f, 0.15f, 0.15f});
   scene->data = sandbox;
 }
 
@@ -98,7 +99,12 @@ static CmSceneInterface *sandbox_scene_init(void) {
 
 const ClaymoreConfig *claymore_init(void) {
   static const ClaymoreConfig config = {
-      .window = {.width = 720, .height = 420, .title = "sandbox"}, // NOLINT
+      .window =
+          {
+              .width = 720,
+              .height = 420,
+              .title = "sandbox",
+          },
       .scene = sandbox_scene_init,
   };
   return &config;
