@@ -3,6 +3,8 @@ name="claymore"
 version="0.1.0"
 cc="clang"
 
+cflags = ["-std=c99"]
+
 [deps]
 stb_image = { dir="deps/stb_image/", type="pybuildc" }
 stb_truetype = { dir="deps/stb_truetype/", type="pybuildc" }
