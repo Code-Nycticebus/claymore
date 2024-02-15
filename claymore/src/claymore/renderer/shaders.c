@@ -1,11 +1,6 @@
 #include "shaders.h"
 
 #include "GL/glew.h"
-#include "clib/core/error.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define _cm_check_shader(error, shader_id, gl_check, gl_get_iv, gl_get_log)    \
   {                                                                            \

@@ -45,7 +45,6 @@ static void sandbox_init(CmScene *scene) {
           "  f_color = vec4(1.0, 0.0, 0.0, 1.0);\n"
           "}\n"),
       ErrPanic);
-  cm_shader_bind(&sandbox->shader);
 
   scene->data = sandbox;
 }
