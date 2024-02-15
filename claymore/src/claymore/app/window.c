@@ -8,34 +8,62 @@ static CmWindow window;
 
 static void keyboard_callback(GLFWwindow *context, int key, int scancode,
                               int action, int mods) {
-  (void)context, (void)key, (void)scancode, (void)action, (void)mods;
+  (void)context, (void)scancode, (void)mods;
   cm_event_emit((CmEvent){
       .type = CM_EVENT_KEY,
-      .data.key = {.code = key, .action = action},
+      .event.key = {.code = key, .action = action},
   });
 }
 
-static void mouse_callback(GLFWwindow *context, int button, int action,
-                           int mods) {
+static void mouse_callback(GLFWwindow *context, int btn, int action, int mods) {
   (void)mods;
   double pos[2];
   glfwGetCursorPos(context, &pos[0], &pos[1]);
   cm_event_emit((CmEvent){
       .type = CM_EVENT_MOUSE,
-      .data.mouse =
+      .event.mouse =
           {
-              .button = button,
+              .button = btn,
               .action = action,
               .pos = {pos[0], pos[1]},
           },
   });
 }
 
-static void cursor_callback(GLFWwindow *context, double xpos, double ypos) {
+static void cursor_callback(GLFWwindow *context, double x, double y) {
   (void)context;
   cm_event_emit((CmEvent){
       .type = CM_EVENT_CURSOR,
-      .data.cursor = {.pos = {xpos, ypos}},
+      .event.cursor = {.pos = {x, y}},
+  });
+}
+
+static void scroll_callback(GLFWwindow *context, double x, double y) {
+  (void)context;
+  cm_event_emit((CmEvent){
+      .type = CM_EVENT_SCROLL,
+      .event.scroll = {.offset = {x, y}},
+  });
+}
+
+static void resize_callback(GLFWwindow *context, i32 width, i32 height) {
+  (void)context;
+  glViewport(0, 0, width, height);
+  cm_event_emit((CmEvent){
+      .type = CM_EVENT_RESIZE,
+      .event.resize = {.size = {width, height}},
+  });
+}
+
+static void drop_callback(GLFWwindow *context, int count, const char **paths) {
+  (void)context;
+  cm_event_emit((CmEvent){
+      .type = CM_EVENT_DROP,
+      .event.drop =
+          {
+              .count = count,
+              .files = paths,
+          },
   });
 }
 
@@ -56,6 +84,9 @@ bool cm_window_create(usize width, usize height, const char *title) {
   glfwSetKeyCallback(window.context, keyboard_callback);
   glfwSetMouseButtonCallback(window.context, mouse_callback);
   glfwSetCursorPosCallback(window.context, cursor_callback);
+  glfwSetScrollCallback(window.context, scroll_callback);
+  glfwSetFramebufferSizeCallback(window.context, resize_callback);
+  glfwSetDropCallback(window.context, drop_callback);
 
   return true;
 }
