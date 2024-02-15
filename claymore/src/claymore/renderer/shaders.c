@@ -121,11 +121,9 @@ GLint cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   Str name = str_copy(uniform_name, &temp);
   GLint location = glGetUniformLocation(shader->id, name.data);
   if (location == -1) {
-    clib_log_error("Uniform location '" STR_FMT "' not found in shader %u\n",
+    clib_log_error("Uniform location '" STR_FMT "' not found in shader %u",
                    STR_ARG(uniform_name), shader->id);
-    return -1;
   }
-  arena_free(&temp);
 
   clib_assert(shader->uniform_count < CM_SHADER_UNIFORM_MAX,
               "shader has to many cached uniforms");
@@ -134,6 +132,7 @@ GLint cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   shader->uniforms[shader->uniform_count].hash = hash;
   shader->uniform_count++;
 
+  arena_free(&temp);
   return location;
 }
 

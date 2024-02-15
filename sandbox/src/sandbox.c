@@ -5,11 +5,15 @@
 
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include <math.h>
 
 typedef struct {
   u32 VAO, VBO, EBO;
   CmShader shader;
 } Sandbox;
+
+vec4 color1 = {1, 0, 0, 1};
+vec4 color2 = {0, 0, 1, 1};
 
 static void sandbox_init(CmScene *scene) {
   clib_log_info("sandbox init");
@@ -63,7 +67,11 @@ static void sandbox_update(CmScene *scene, double deltatime) {
 
   Sandbox *sandbox = scene->data;
 
-  glUseProgram(sandbox->shader.id);
+  cm_shader_bind(&sandbox->shader);
+  vec4 color;
+  glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
+  cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
+
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sandbox->EBO);
   glBindVertexArray(sandbox->VAO);
   glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
