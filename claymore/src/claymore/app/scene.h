@@ -3,9 +3,11 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 #include "claymore/event/types.h"
+#include "claymore/renderer/buffer.h"
 
 typedef struct {
   Arena arena;
+  CmBuffers buffer;
   void *data;
 } CmScene;
 
