@@ -7,27 +7,26 @@
 typedef struct {
   usize vertices_count;
   u32 vertices;
-
   CmBuffers *buffer;
-
   usize instance_count;
 
-  usize idx;
   u32 vao;
-
+  usize idx;
   u32 ebo;
   usize index_count;
 } CmMesh;
 
 CmMesh cm_mesh_create(CmBuffers *b, usize count, const vec3 *vertices);
 
-void cm_mesh_attach_index_buffer(CmMesh *mesh, usize count, const u32 *indices);
+u32 cm_mesh_attach_index_buffer(CmMesh *mesh, usize count, const u32 *indices);
 
-void cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v);
-void cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v);
+u32 cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v);
+u32 cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v);
+void cm_mesh_update_vec3(u32 buffer, usize count, const vec3 *v);
 
-void cm_mesh_attach_vec4(CmMesh *mesh, usize count, const vec4 *v);
-void cm_mesh_attach_vec4_instanced(CmMesh *mesh, usize count, const vec4 *v);
+u32 cm_mesh_attach_vec4(CmMesh *mesh, usize count, const vec4 *v);
+u32 cm_mesh_attach_vec4_instanced(CmMesh *mesh, usize count, const vec4 *v);
+void cm_mesh_update_vec4(u32 buffer, usize count, const vec4 *v);
 
 void cm_mesh_draw_indexed(CmMesh *mesh);
 void cm_mesh_draw(CmMesh *mesh);

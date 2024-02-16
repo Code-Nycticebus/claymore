@@ -2,13 +2,22 @@
 
 #include "claymore.h"
 
+#include <GL/glew.h>
+
 typedef struct {
   CmMesh mesh;
+  u32 pos;
   CmShader shader;
 } Sandbox;
 
 vec4 color1 = {0, 0, 0, 1};
 vec4 color2 = {1, 1, 1, 1};
+
+vec3 positions[] = {
+    {0.0f, 0.00f, 0.0f},
+    {.75f, 0.00f, 0.0f},
+    {1.5f, 0.00f, 0.0f},
+};
 
 static void sandbox_init(CmScene *scene) {
   clib_log_info("sandbox init");
@@ -27,17 +36,14 @@ static void sandbox_init(CmScene *scene) {
   sandbox->mesh = cm_mesh_create(&scene->buffer, 4, vertices);
   cm_mesh_attach_index_buffer(&sandbox->mesh, 6, indices);
 
-  vec3 positions[] = {
-      {0.0f, 0.00f, 0.0f}, {.75f, 0.00f, 0.0f}, {1.5f, 0.00f, 0.0f},
-      {0.0f, -.75f, 0.0f}, {.75f, -.75f, 0.0f}, {1.5f, -.75f, 0.0f},
-  };
-  cm_mesh_attach_vec3_instanced(&sandbox->mesh, 6, positions);
+  sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh, 3, positions);
 
   vec4 colors[] = {
-      {0.f, 0.f, 1.f, 1.f}, {0.f, 1.f, 0.f, 1.f}, {1.f, 0.f, 0.f, 1.f},
-      {1.f, 0.f, 1.f, 1.f}, {0.f, 1.f, 1.f, 1.f}, {1.f, 1.f, 0.f, 1.f},
+      {0.f, 0.f, 1.f, 1.f},
+      {0.f, 1.f, 0.f, 1.f},
+      {1.f, 0.f, 0.f, 1.f},
   };
-  cm_mesh_attach_vec4_instanced(&sandbox->mesh, 6, colors);
+  cm_mesh_attach_vec4_instanced(&sandbox->mesh, 3, colors);
 
   sandbox->shader = cm_shader_load_from_memory(
       STR("#version 330 core\n"
@@ -71,7 +77,9 @@ static void sandbox_update(CmScene *scene, double deltatime) {
 
   cm_shader_bind(&sandbox->shader);
   vec4 color;
-  glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
+
+  float val = sinf(cm_window_time()) * 0.5 + 0.5;
+  glm_vec4_lerp(color1, color2, val, color);
   cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
 
   cm_mesh_draw_indexed(&sandbox->mesh);
@@ -83,7 +91,8 @@ static void sandbox_free(CmScene *scene) {
 }
 
 static void sandbox_on_event(CmScene *scene, CmEvent *event) {
-  (void)scene;
+  Sandbox *sandbox = scene->data;
+
   cm_event_key(event, {
     clib_log_info("Key Event: ");
     if (key->code == CM_KEY_ESCAPE) {
@@ -100,7 +109,11 @@ static void sandbox_on_event(CmScene *scene, CmEvent *event) {
   });
 
   cm_event_scroll(event, {
-    clib_log_info("Scroll Event " VEC2_FMT, VEC2_ARG(scroll->offset));
+    glm_vec2_scale(scroll->offset, 0.25f, scroll->offset);
+    for (usize i = 0; i < 3; ++i) {
+      glm_vec2_add(positions[i], scroll->offset, positions[i]);
+    }
+    cm_mesh_update_vec3(sandbox->pos, 3, positions);
   });
 
   cm_event_resize(event, {
