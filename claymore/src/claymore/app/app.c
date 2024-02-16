@@ -35,7 +35,10 @@ bool app_internal_init(const ClaymoreConfig *config) {
     return false;
   }
 
-  cm_platform_context_init(cm_window_context());
+  if (cm_platform_context_init(cm_window_context())) {
+    clib_log_error("Could not initialize context");
+    return false;
+  }
 
   app.main_scene = cm_scene_internal_init(config->scene);
   app.last_frame = cm_window_time();
