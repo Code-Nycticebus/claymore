@@ -11,6 +11,7 @@
 
 #include "claymore/event/event.h"
 
+#include "claymore/renderer/mesh.h"
 #include "claymore/renderer/shaders.h"
 //
 // IWYU pragma: end_exports

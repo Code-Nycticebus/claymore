@@ -2,10 +2,8 @@
 
 #include "claymore.h"
 
-#include "GL/glew.h"
-
 typedef struct {
-  u32 VAO, VBO, EBO;
+  CmMesh mesh;
   CmShader shader;
 } Sandbox;
 
@@ -17,37 +15,32 @@ static void sandbox_init(CmScene *scene) {
   Sandbox *sandbox = arena_alloc(&scene->arena, sizeof(Sandbox));
 
   vec3 vertices[4] = {
-      {-.5f, 0.5f, .0f},
-      {-.5f, -.5f, .0f},
-      {0.5f, -.5f, .0f},
-      {0.5f, 0.5f, .0f},
+      {-1.f, 1.f, .0f},
+      {-1.f, .8f, .0f},
+      {-.8f, .8f, .0f},
+      {-.8f, 1.f, .0f},
   };
   u32 indices[6] = {
       0, 1, 3, 1, 2, 3,
   };
 
-  glGenBuffers(1, &sandbox->VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, sandbox->VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  sandbox->mesh = cm_mesh_create(&scene->arena, vertices, 4);
+  cm_mesh_attach_index_buffer(&sandbox->mesh, indices, 6);
 
-  glGenVertexArrays(1, &sandbox->VAO);
-  glBindVertexArray(sandbox->VAO);
-
-  usize idx = 0;
-  glVertexAttribPointer(idx, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), NULL);
-  glEnableVertexAttribArray(idx);
-  idx++;
-
-  glGenBuffers(1, &sandbox->EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sandbox->EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-               GL_STATIC_DRAW);
+  vec3 positions[3] = {
+      {.0f, 0, 0},
+      {.3f, 0, 0},
+      {.6f, 0, 0},
+  };
+  cm_mesh_attach_vec3_instanced(&sandbox->mesh, positions, 3);
 
   sandbox->shader = cm_shader_load_from_memory(
       STR("#version 330 core\n"
           "layout (location = 0) in vec3 a_pos;\n"
+          "layout (location = 1) in vec3 a_translations;\n"
           "void main() {\n"
-          "  gl_Position = vec4(a_pos.x, a_pos.y, a_pos.z, 1.0);\n"
+          "  vec3 pos = a_pos + a_translations;"
+          "  gl_Position = vec4(pos.xyz, 1.0);\n"
           "}\n"),
       STR("#version 330 core\n"
           "out vec4 f_color;\n"
@@ -72,13 +65,12 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
   cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sandbox->EBO);
-  glBindVertexArray(sandbox->VAO);
-  glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 1);
+  cm_mesh_draw_indexed(&sandbox->mesh);
 }
 
 static void sandbox_free(CmScene *scene) {
-  (void)scene;
+  Sandbox *sandbox = scene->data;
+  cm_mesh_delete(&sandbox->mesh);
   clib_log_info("sandbox free");
 }
 
