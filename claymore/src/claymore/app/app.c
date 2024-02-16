@@ -3,6 +3,7 @@
 #include "scene.h"
 
 #include "claymore/renderer/context.h"
+#include "sound.h"
 #include "window.h"
 
 #include "GL/glew.h"
@@ -26,6 +27,11 @@ bool app_internal_init(const ClaymoreConfig *config) {
   if (!cm_window_internal_create(config->window.width, config->window.height,
                                  config->window.title)) {
     clib_log_error("Could not open window");
+    return false;
+  }
+
+  if (cm_sound_internal_init()) {
+    clib_log_error("Could not initialize sound engine");
     return false;
   }
 
@@ -54,6 +60,8 @@ bool app_internal_update(void) {
 
 void app_internal_terminate(void) {
   cm_scene_internal_free(&app.main_scene);
+
+  cm_sound_interal_shutdown();
 
   cm_window_internal_close();
   arena_free(&app.arena);
