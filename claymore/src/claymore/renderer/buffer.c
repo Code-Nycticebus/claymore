@@ -1,6 +1,6 @@
 #include "buffer.h"
 
-#include "GL/glew.h"
+#include <GL/glew.h>
 
 static GLenum get_type(CmBufferType type) {
   switch (type) {

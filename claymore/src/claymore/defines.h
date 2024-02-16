@@ -2,8 +2,8 @@
 #define __CLAYMORE_DEFINES_H__
 
 // IWYU pragma: begin_exports
-#include "clib/clib.h"
 #include <cglm/cglm.h>
+#include <clib/clib.h>
 // IWYU pragma: end_exports
 
 #define VEC2_FMT "%f, %f"

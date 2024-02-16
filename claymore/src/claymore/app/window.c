@@ -2,7 +2,7 @@
 
 #include "claymore/event/event.h"
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 
 static struct {
   void *context;

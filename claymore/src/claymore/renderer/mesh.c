@@ -1,7 +1,8 @@
 #include "mesh.h"
 
-#include "GL/glew.h"
 #include "claymore/renderer/buffer.h"
+
+#include <GL/glew.h>
 
 CmMesh cm_mesh_create(CmBuffers *b, usize count, const vec3 *vertices) {
   CmMesh mesh = {0};
