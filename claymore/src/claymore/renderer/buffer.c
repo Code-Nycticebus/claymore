@@ -26,7 +26,7 @@ void cm_buffer_free(CmBuffers *b) {
   glDeleteBuffers(b->vbo.len, b->vbo.items);
 }
 
-u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, const float *v, usize size) {
+u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, usize size, const float *v) {
   u32 vbo;
 
   glGenBuffers(1, &vbo);
@@ -37,7 +37,7 @@ u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, const float *v, usize size) {
   return vbo;
 }
 
-u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, const u32 *i, usize count) {
+u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, usize count, const u32 *i) {
   u32 ebo;
 
   glGenBuffers(1, &ebo);

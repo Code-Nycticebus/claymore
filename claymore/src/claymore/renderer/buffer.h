@@ -14,8 +14,8 @@ typedef struct {
   DA(u32) vao;
 } CmBuffers;
 
-u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, const float *v, usize size);
-u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, const u32 *i, usize count);
+u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, usize size, const float *v);
+u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, usize count, const u32 *i);
 u32 cm_buffer_vao(CmBuffers *b);
 
 CmBuffers cm_buffer_init(Arena *arena);
