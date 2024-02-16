@@ -30,12 +30,12 @@ bool app_internal_init(const ClaymoreConfig *config) {
     return false;
   }
 
-  if (cm_sound_internal_init()) {
+  if (!cm_sound_internal_init()) {
     clib_log_error("Could not initialize sound engine");
     return false;
   }
 
-  if (cm_platform_context_init(cm_window_context())) {
+  if (!cm_platform_context_init(cm_window_context())) {
     clib_log_error("Could not initialize context");
     return false;
   }
