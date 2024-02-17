@@ -7,7 +7,7 @@
 typedef struct {
   CmMesh mesh;
   u32 pos;
-  CmShader *shader;
+  CmShader shader;
 } Sandbox;
 
 vec4 color1 = {1, 1, 1, 1};
@@ -33,7 +33,7 @@ static void sandbox_init(CmScene *scene) {
       0, 1, 3, 1, 2, 3,
   };
 
-  sandbox->mesh = cm_mesh_create(&scene->buffer, 4, vertices);
+  sandbox->mesh = cm_mesh_create(&scene->gpu, 4, vertices);
   cm_mesh_attach_index_buffer(&sandbox->mesh, 6, indices);
 
   sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh, 3, positions);
@@ -45,26 +45,9 @@ static void sandbox_init(CmScene *scene) {
   };
   cm_mesh_attach_vec4_instanced(&sandbox->mesh, 3, colors);
 
-  sandbox->shader = cm_shader_load_from_memory(
-      &scene->arena,
-      STR("#version 330 core\n"
-          "layout (location = 0) in vec3 a_pos;\n"
-          "layout (location = 1) in vec3 a_translation;\n"
-          "layout (location = 2) in vec4 a_color;\n"
-          "out vec4 v_color;\n"
-          "void main() {\n"
-          "  vec3 pos = a_pos + a_translation;\n"
-          "  gl_Position = vec4(pos.xyz, 1.0);\n"
-          "  v_color = a_color;\n"
-          "}\n"),
-      STR("#version 330 core\n"
-          "in vec4 v_color;\n"
-          "out vec4 f_color;\n"
-          "uniform vec4 u_color = vec4(1,0,0,1);\n"
-          "void main() {\n"
-          "  f_color = v_color * u_color;\n"
-          "}\n"),
-      ErrPanic);
+  sandbox->shader =
+      cm_shader_from_file(STR("sandbox/res/shader/basic.vs.glsl"),
+                          STR("sandbox/res/shader/basic.fs.glsl"), ErrPanic);
 
   cm_window_bg_color((vec3){0.15f, 0.15f, 0.15f});
 
@@ -76,17 +59,17 @@ static void sandbox_update(CmScene *scene, double deltatime) {
 
   Sandbox *sandbox = scene->data;
 
-  cm_shader_bind(sandbox->shader);
+  cm_shader_bind(&sandbox->shader);
   vec4 color;
 
   glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
-  cm_shader_set_vec4(sandbox->shader, STR("u_color"), color);
+  cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
 
   for (usize i = 0; i < 3; ++i) {
     float val = sinf(cm_window_time() * (i + 1)) * 0.5 + 0.5;
     positions[i][1] = -val;
   }
-  cm_buffer_update_vbo(sandbox->pos, sizeof(positions), &positions[0][0]);
+  cm_gpu_update_vbo(sandbox->pos, sizeof(positions), &positions[0][0]);
 
   cm_mesh_draw_indexed(&sandbox->mesh);
 }

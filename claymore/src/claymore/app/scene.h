@@ -3,14 +3,12 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-#include "claymore/app/ressource.h"
 #include "claymore/event/types.h"
-#include "claymore/renderer/buffer.h"
+#include "claymore/renderer/gpu.h"
 
 typedef struct {
   Arena arena;
-  CmRessource ressource;
-  CmBuffers buffer;
+  CmGpu gpu;
   void *data;
 } CmScene;
 

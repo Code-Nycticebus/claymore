@@ -1,8 +1,8 @@
-#include "buffer.h"
+#include "gpu.h"
 
 #include <GL/glew.h>
 
-static GLenum get_type(CmBufferType type) {
+static GLenum get_type(CmGpuType type) {
   switch (type) {
   case CM_STATIC_DRAW:
     return GL_STATIC_DRAW;
@@ -13,20 +13,20 @@ static GLenum get_type(CmBufferType type) {
   return 0;
 }
 
-CmBuffers cm_buffer_internal_init(Arena *arena) {
-  CmBuffers buffers = {0};
-  da_init(&buffers.vbo, arena);
-  da_init(&buffers.vao, arena);
-  da_init(&buffers.ebo, arena);
-  return buffers;
+CmGpu cm_gpu_internal_init(Arena *arena) {
+  CmGpu gpu = {0};
+  da_init(&gpu.vbo, arena);
+  da_init(&gpu.vao, arena);
+  da_init(&gpu.ebo, arena);
+  return gpu;
 }
-void cm_buffer_internal_free(CmBuffers *b) {
+void cm_gpu_internal_free(CmGpu *b) {
   glDeleteVertexArrays(b->vao.len, b->vao.items);
   glDeleteBuffers(b->ebo.len, b->ebo.items);
   glDeleteBuffers(b->vbo.len, b->vbo.items);
 }
 
-u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, usize size, const float *v) {
+u32 cm_gpu_vbo(CmGpu *b, CmGpuType type, usize size, const float *v) {
   u32 vbo;
 
   glGenBuffers(1, &vbo);
@@ -37,12 +37,12 @@ u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, usize size, const float *v) {
   return vbo;
 }
 
-void cm_buffer_update_vbo(u32 buffer, usize size, const float *v) {
+void cm_gpu_update_vbo(u32 buffer, usize size, const float *v) {
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glBufferSubData(GL_ARRAY_BUFFER, 0, size, v);
 }
 
-u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, usize count, const u32 *i) {
+u32 cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
   u32 ebo;
 
   glGenBuffers(1, &ebo);
@@ -53,7 +53,7 @@ u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, usize count, const u32 *i) {
   return ebo;
 }
 
-u32 cm_buffer_vao(CmBuffers *b) {
+u32 cm_gpu_vao(CmGpu *b) {
   u32 vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);

@@ -1,7 +1,5 @@
 #include "app.h"
 
-#include "scene.h"
-
 #include "claymore/renderer/context.h"
 #include "sound.h"
 #include "window.h"

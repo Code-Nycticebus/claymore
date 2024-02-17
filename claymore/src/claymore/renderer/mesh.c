@@ -1,19 +1,19 @@
 #include "mesh.h"
 
-#include "claymore/renderer/buffer.h"
+#include "claymore/renderer/gpu.h"
 
 #include <GL/glew.h>
 
-CmMesh cm_mesh_create(CmBuffers *b, usize count, const vec3 *vertices) {
+CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices) {
   CmMesh mesh = {0};
   mesh.instance_count = 1;
   mesh.buffer = b;
 
   mesh.vertices_count = count;
 
-  cm_buffer_vbo(b, CM_STATIC_DRAW, sizeof(vec3) * count, &vertices[0][0]);
+  cm_gpu_vbo(b, CM_STATIC_DRAW, sizeof(vec3) * count, &vertices[0][0]);
 
-  mesh.vao = cm_buffer_vao(b);
+  mesh.vao = cm_gpu_vao(b);
 
   glEnableVertexAttribArray(mesh.idx);
   glVertexAttribPointer(mesh.idx, 3, GL_FLOAT, GL_FALSE, sizeof(vec3),
@@ -26,13 +26,13 @@ CmMesh cm_mesh_create(CmBuffers *b, usize count, const vec3 *vertices) {
 u32 cm_mesh_attach_index_buffer(CmMesh *mesh, usize count, const u32 *indices) {
   glBindVertexArray(mesh->vao);
   mesh->index_count = count;
-  mesh->ebo = cm_buffer_ebo(mesh->buffer, CM_STATIC_DRAW, count, indices);
+  mesh->ebo = cm_gpu_ebo(mesh->buffer, CM_STATIC_DRAW, count, indices);
   return mesh->ebo;
 }
 
 u32 cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
-  u32 vbo = cm_buffer_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count,
-                          &v[0][0]);
+  u32 vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count, &v[0][0]);
 
   glBindVertexArray(mesh->vao);
   glEnableVertexAttribArray(mesh->idx);
@@ -44,8 +44,8 @@ u32 cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
 }
 
 u32 cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
-  u32 vbo = cm_buffer_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count,
-                          &v[0][0]);
+  u32 vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count, &v[0][0]);
 
   clib_assert(mesh->instance_count == 1 || mesh->instance_count == count,
               "This would result in a crash");
@@ -62,8 +62,8 @@ u32 cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
 }
 
 u32 cm_mesh_attach_vec4(CmMesh *mesh, usize count, const vec4 *v) {
-  u32 vbo = cm_buffer_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4) * count,
-                          &v[0][0]);
+  u32 vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4) * count, &v[0][0]);
 
   glBindVertexArray(mesh->vao);
   glEnableVertexAttribArray(mesh->idx);
@@ -75,8 +75,8 @@ u32 cm_mesh_attach_vec4(CmMesh *mesh, usize count, const vec4 *v) {
 }
 
 u32 cm_mesh_attach_vec4_instanced(CmMesh *mesh, usize count, const vec4 *v) {
-  u32 vbo = cm_buffer_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4) * count,
-                          &v[0][0]);
+  u32 vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4) * count, &v[0][0]);
 
   clib_assert(mesh->instance_count == 1 || mesh->instance_count == count,
               "This would result in a crash");

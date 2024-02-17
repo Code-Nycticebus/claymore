@@ -22,7 +22,7 @@ CmSceneInternal cm_scene_internal_init(const CmSceneInit init) {
   CmSceneInternal scene = {0};
   scene.interface = init();
   da_init(&scene.children, &scene.data.arena);
-  scene.data.buffer = cm_buffer_internal_init(&scene.data.arena);
+  scene.data.gpu = cm_gpu_internal_init(&scene.data.arena);
   scene.interface->init(&scene.data);
   return scene;
 }
@@ -39,7 +39,7 @@ void cm_scene_internal_free(CmSceneInternal *scene) {
     cm_scene_internal_free(&scene->children.items[i]);
   }
   scene->interface->free(&scene->data);
-  cm_buffer_internal_free(&scene->data.buffer);
+  cm_gpu_internal_free(&scene->data.gpu);
   arena_free(&scene->data.arena);
 }
 

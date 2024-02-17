@@ -54,8 +54,8 @@ static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
   return shader_id;
 }
 
-CmShader *cm_shader_load_from_file(Arena *arena, Str vs, Str fs, Error *e) {
-  CmShader *program = NULL;
+CmShader cm_shader_from_file(Str vs, Str fs, Error *e) {
+  CmShader program = {0};
   Arena temp = {0};
 
   Str vs_content = file_read_str(vs, &temp, e);
@@ -64,7 +64,7 @@ CmShader *cm_shader_load_from_file(Arena *arena, Str vs, Str fs, Error *e) {
   Str fs_content = file_read_str(fs, &temp, e);
   error_propagate(e, { goto defer; });
 
-  program = cm_shader_load_from_memory(arena, vs_content, fs_content, e);
+  program = cm_shader_from_memory(vs_content, fs_content, e);
   error_propagate(e, { goto defer; });
 
 defer:
@@ -72,8 +72,8 @@ defer:
   return program;
 }
 
-CmShader *cm_shader_load_from_memory(Arena *arena, Str vs, Str fs, Error *e) {
-  CmShader *program = NULL;
+CmShader cm_shader_from_memory(Str vs, Str fs, Error *e) {
+  CmShader program = {0};
   GLuint vs_id = 0;
   GLuint fs_id = 0;
 
@@ -83,18 +83,14 @@ CmShader *cm_shader_load_from_memory(Arena *arena, Str vs, Str fs, Error *e) {
   fs_id = _cm_compile_shader(fs, GL_FRAGMENT_SHADER, e);
   error_propagate(e, { goto defer; });
 
-  CmShader p = {0};
-  p.id = glCreateProgram();
+  program.id = glCreateProgram();
+  glAttachShader(program.id, vs_id);
+  glAttachShader(program.id, fs_id);
+  glLinkProgram(program.id);
 
-  glAttachShader(p.id, vs_id);
-  glAttachShader(p.id, fs_id);
-  glLinkProgram(p.id);
-
-  _cm_shader_check_error(p.id, GL_LINK_STATUS, e);
+  _cm_shader_check_error(program.id, GL_LINK_STATUS, e);
   error_propagate(e, { goto defer; });
 
-  program = arena_calloc(arena, sizeof(CmShader));
-  *program = p;
 defer:
   if (vs_id) {
     glDeleteShader(vs_id);

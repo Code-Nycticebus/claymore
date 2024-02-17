@@ -2,12 +2,12 @@
 #define __CLAYMORE_MESH_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
-#include "claymore/renderer/buffer.h"
+#include "claymore/renderer/gpu.h"
 
 typedef struct {
   usize vertices_count;
   u32 vertices;
-  CmBuffers *buffer;
+  CmGpu *buffer;
   usize instance_count;
 
   u32 vao;
@@ -16,7 +16,7 @@ typedef struct {
   usize index_count;
 } CmMesh;
 
-CmMesh cm_mesh_create(CmBuffers *b, usize count, const vec3 *vertices);
+CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices);
 
 u32 cm_mesh_attach_index_buffer(CmMesh *mesh, usize count, const u32 *indices);
 

@@ -2,6 +2,7 @@
 #define __CLAYMORE_APP_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
+
 #include "claymore/event/types.h"
 
 #include "scene.h"
