@@ -20,7 +20,7 @@ void cm_buffer_update_vbo(u32 buffer, usize size, const float *v);
 u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, usize count, const u32 *i);
 u32 cm_buffer_vao(CmBuffers *b);
 
-CmBuffers cm_buffer_init(Arena *arena);
-void cm_buffer_free(CmBuffers *bm);
+CmBuffers cm_buffer_internal_init(Arena *arena);
+void cm_buffer_internal_free(CmBuffers *bm);
 
 #endif /* !__CLAYMORE_BUFFER_H__ */

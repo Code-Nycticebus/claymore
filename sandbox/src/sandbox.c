@@ -7,7 +7,7 @@
 typedef struct {
   CmMesh mesh;
   u32 pos;
-  CmShader shader;
+  CmShader *shader;
 } Sandbox;
 
 vec4 color1 = {1, 1, 1, 1};
@@ -46,6 +46,7 @@ static void sandbox_init(CmScene *scene) {
   cm_mesh_attach_vec4_instanced(&sandbox->mesh, 3, colors);
 
   sandbox->shader = cm_shader_load_from_memory(
+      &scene->arena,
       STR("#version 330 core\n"
           "layout (location = 0) in vec3 a_pos;\n"
           "layout (location = 1) in vec3 a_translation;\n"
@@ -75,11 +76,11 @@ static void sandbox_update(CmScene *scene, double deltatime) {
 
   Sandbox *sandbox = scene->data;
 
-  cm_shader_bind(&sandbox->shader);
+  cm_shader_bind(sandbox->shader);
   vec4 color;
 
   glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
-  cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
+  cm_shader_set_vec4(sandbox->shader, STR("u_color"), color);
 
   for (usize i = 0; i < 3; ++i) {
     float val = sinf(cm_window_time() * (i + 1)) * 0.5 + 0.5;

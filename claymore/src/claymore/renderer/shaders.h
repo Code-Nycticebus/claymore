@@ -16,8 +16,8 @@ typedef struct {
   } uniforms[CM_SHADER_UNIFORM_MAX];
 } CmShader;
 
-CmShader cm_shader_load_from_file(Str vs_path, Str fs_path, Error *error);
-CmShader cm_shader_load_from_memory(Str vs, Str fs, Error *error);
+CmShader *cm_shader_load_from_file(Arena *arena, Str vs, Str fs, Error *e);
+CmShader *cm_shader_load_from_memory(Arena *arena, Str vs, Str fs, Error *e);
 
 void cm_shader_delete(CmShader *shader);
 

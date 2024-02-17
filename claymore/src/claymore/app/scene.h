@@ -2,11 +2,14 @@
 #define __CLAYMORE_SCENE_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
+
+#include "claymore/app/ressource.h"
 #include "claymore/event/types.h"
 #include "claymore/renderer/buffer.h"
 
 typedef struct {
   Arena arena;
+  CmRessource ressource;
   CmBuffers buffer;
   void *data;
 } CmScene;
@@ -34,7 +37,7 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
 
 // INTERNAL
 
-CmSceneInternal cm_scene_internal_init(const CmSceneInit init);
+CmSceneInternal cm_scene_internal_init(CmSceneInit init);
 void cm_scene_internal_update(CmSceneInternal *scene, double deltatime);
 void cm_scene_internal_free(CmSceneInternal *scene);
 void cm_scene_internal_on_event(CmSceneInternal *scene, CmEvent *event);

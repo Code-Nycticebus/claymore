@@ -54,44 +54,47 @@ static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
   return shader_id;
 }
 
-CmShader cm_shader_load_from_file(Str vs_path, Str fs_path, Error *error) {
-  CmShader program = {0};
+CmShader *cm_shader_load_from_file(Arena *arena, Str vs, Str fs, Error *e) {
+  CmShader *program = NULL;
   Arena temp = {0};
 
-  Str vs_content = file_read_str(vs_path, &temp, error);
-  error_propagate(error, { goto defer; });
+  Str vs_content = file_read_str(vs, &temp, e);
+  error_propagate(e, { goto defer; });
 
-  Str fs_content = file_read_str(fs_path, &temp, error);
-  error_propagate(error, { goto defer; });
+  Str fs_content = file_read_str(fs, &temp, e);
+  error_propagate(e, { goto defer; });
 
-  program = cm_shader_load_from_memory(vs_content, fs_content, error);
-  error_propagate(error, { goto defer; });
+  program = cm_shader_load_from_memory(arena, vs_content, fs_content, e);
+  error_propagate(e, { goto defer; });
 
 defer:
   arena_free(&temp);
   return program;
 }
 
-CmShader cm_shader_load_from_memory(Str vs, Str fs, Error *error) {
-  CmShader program = {0};
+CmShader *cm_shader_load_from_memory(Arena *arena, Str vs, Str fs, Error *e) {
+  CmShader *program = NULL;
   GLuint vs_id = 0;
   GLuint fs_id = 0;
 
-  vs_id = _cm_compile_shader(vs, GL_VERTEX_SHADER, error);
-  error_propagate(error, { goto defer; });
+  vs_id = _cm_compile_shader(vs, GL_VERTEX_SHADER, e);
+  error_propagate(e, { goto defer; });
 
-  fs_id = _cm_compile_shader(fs, GL_FRAGMENT_SHADER, error);
-  error_propagate(error, { goto defer; });
+  fs_id = _cm_compile_shader(fs, GL_FRAGMENT_SHADER, e);
+  error_propagate(e, { goto defer; });
 
-  program.id = glCreateProgram();
+  CmShader p = {0};
+  p.id = glCreateProgram();
 
-  glAttachShader(program.id, vs_id);
-  glAttachShader(program.id, fs_id);
-  glLinkProgram(program.id);
+  glAttachShader(p.id, vs_id);
+  glAttachShader(p.id, fs_id);
+  glLinkProgram(p.id);
 
-  _cm_shader_check_error(program.id, GL_LINK_STATUS, error);
-  error_propagate(error, { goto defer; });
+  _cm_shader_check_error(p.id, GL_LINK_STATUS, e);
+  error_propagate(e, { goto defer; });
 
+  program = arena_calloc(arena, sizeof(CmShader));
+  *program = p;
 defer:
   if (vs_id) {
     glDeleteShader(vs_id);

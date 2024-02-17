@@ -13,14 +13,14 @@ static GLenum get_type(CmBufferType type) {
   return 0;
 }
 
-CmBuffers cm_buffer_init(Arena *arena) {
+CmBuffers cm_buffer_internal_init(Arena *arena) {
   CmBuffers buffers = {0};
   da_init(&buffers.vbo, arena);
   da_init(&buffers.vao, arena);
   da_init(&buffers.ebo, arena);
   return buffers;
 }
-void cm_buffer_free(CmBuffers *b) {
+void cm_buffer_internal_free(CmBuffers *b) {
   glDeleteVertexArrays(b->vao.len, b->vao.items);
   glDeleteBuffers(b->ebo.len, b->ebo.items);
   glDeleteBuffers(b->vbo.len, b->vbo.items);
