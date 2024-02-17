@@ -47,6 +47,10 @@ u32 cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
   u32 vbo = cm_buffer_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count,
                           &v[0][0]);
 
+  clib_assert(mesh->instance_count == 1 || mesh->instance_count == count,
+              "This would result in a crash");
+  mesh->instance_count = count;
+
   glBindVertexArray(mesh->vao);
   glEnableVertexAttribArray(mesh->idx);
   glVertexAttribPointer(mesh->idx, 3, GL_FLOAT, GL_FALSE, sizeof(vec3),
@@ -54,16 +58,7 @@ u32 cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
   glVertexAttribDivisor(mesh->idx, 1);
   mesh->idx++;
 
-  clib_assert(mesh->instance_count == 1 || mesh->instance_count == count,
-              "This would result in a crash");
-  mesh->instance_count = count;
-
   return vbo;
-}
-
-void cm_mesh_update_vec3(u32 buffer, usize count, const vec3 *v) {
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec3) * count, v);
 }
 
 u32 cm_mesh_attach_vec4(CmMesh *mesh, usize count, const vec4 *v) {
@@ -95,11 +90,6 @@ u32 cm_mesh_attach_vec4_instanced(CmMesh *mesh, usize count, const vec4 *v) {
   mesh->idx++;
 
   return vbo;
-}
-
-void cm_mesh_update_vec4(u32 buffer, usize count, const vec4 *v) {
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec4) * count, v);
 }
 
 void cm_mesh_draw_indexed(CmMesh *mesh) {

@@ -10,8 +10,8 @@ typedef struct {
   CmShader shader;
 } Sandbox;
 
-vec4 color1 = {0, 0, 0, 1};
-vec4 color2 = {1, 1, 1, 1};
+vec4 color1 = {1, 1, 1, 1};
+vec4 color2 = {1, 1, 1, .5f};
 
 vec3 positions[] = {
     {0.0f, 0.00f, 0.0f},
@@ -78,9 +78,14 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   cm_shader_bind(&sandbox->shader);
   vec4 color;
 
-  float val = sinf(cm_window_time()) * 0.5 + 0.5;
-  glm_vec4_lerp(color1, color2, val, color);
+  glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
   cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
+
+  for (usize i = 0; i < 3; ++i) {
+    float val = sinf(cm_window_time() * (i + 1)) * 0.5 + 0.5;
+    positions[i][1] = -val;
+  }
+  cm_buffer_update_vbo(sandbox->pos, sizeof(positions), &positions[0][0]);
 
   cm_mesh_draw_indexed(&sandbox->mesh);
 }
@@ -92,6 +97,7 @@ static void sandbox_free(CmScene *scene) {
 
 static void sandbox_on_event(CmScene *scene, CmEvent *event) {
   Sandbox *sandbox = scene->data;
+  (void)sandbox;
 
   cm_event_key(event, {
     clib_log_info("Key Event: ");
@@ -109,11 +115,7 @@ static void sandbox_on_event(CmScene *scene, CmEvent *event) {
   });
 
   cm_event_scroll(event, {
-    glm_vec2_scale(scroll->offset, 0.25f, scroll->offset);
-    for (usize i = 0; i < 3; ++i) {
-      glm_vec2_add(positions[i], scroll->offset, positions[i]);
-    }
-    cm_mesh_update_vec3(sandbox->pos, 3, positions);
+    clib_log_info("Scroll Event: " VEC2_FMT, VEC2_ARG(scroll->offset));
   });
 
   cm_event_resize(event, {

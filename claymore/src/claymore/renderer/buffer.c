@@ -37,6 +37,11 @@ u32 cm_buffer_vbo(CmBuffers *b, CmBufferType type, usize size, const float *v) {
   return vbo;
 }
 
+void cm_buffer_update_vbo(u32 buffer, usize size, const float *v) {
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glBufferSubData(GL_ARRAY_BUFFER, 0, size, v);
+}
+
 u32 cm_buffer_ebo(CmBuffers *b, CmBufferType type, usize count, const u32 *i) {
   u32 ebo;
 
