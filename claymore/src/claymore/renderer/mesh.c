@@ -10,7 +10,7 @@ CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices) {
   mesh.buffer = b;
 
   mesh.vbo =
-      cm_gpu_vbo(b, CM_STATIC_DRAW, count * sizeof(vec3), &vertices[0][0]);
+      cm_gpu_vbo(b, CM_STATIC_DRAW, sizeof(vec3), count, &vertices[0][0]);
 
   mesh.vao = cm_gpu_vao(b);
   cm_gpu_vao_push(&mesh.vao, 3, sizeof(vec3), 0);
@@ -25,18 +25,19 @@ void cm_mesh_attach_ebo(CmMesh *mesh, usize count, const u32 *indices) {
 
 CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
   CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count, &v[0][0]);
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
   cm_gpu_vao_push(&mesh->vao, 3, sizeof(vec3), 0);
   return vbo;
 }
 
 CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
   CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3) * count, &v[0][0]);
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
 
   clib_assert(mesh->count == 1 || mesh->count == count,
               "This would result in a crash");
   mesh->count = count;
+
   cm_gpu_vao_instanced(&mesh->vao, 1, 3, sizeof(vec3), 0);
   return vbo;
 }

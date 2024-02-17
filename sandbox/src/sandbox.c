@@ -33,7 +33,6 @@ static void sandbox_init(CmScene *scene) {
 
   sandbox->mesh = cm_mesh_create(&scene->gpu, 4, vertices);
   cm_mesh_attach_ebo(&sandbox->mesh, 6, indices);
-
   sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh, 3, positions);
 
   // vec4 colors[] = {
@@ -67,7 +66,7 @@ static void sandbox_update(CmScene *scene, double deltatime) {
     float val = sinf(cm_window_time() * (i + 1)) * 0.5 + 0.5;
     positions[i][1] = -val;
   }
-  cm_gpu_vbo_update(&sandbox->pos, sizeof(positions), &positions[0][0]);
+  cm_gpu_vbo_update(&sandbox->pos, 3, sizeof(vec3), &positions[0][0]);
 
   cm_mesh_draw_indexed(&sandbox->mesh, CM_DRAW_TRIANGLES);
 }

@@ -15,7 +15,7 @@ typedef enum {
 
 typedef struct {
   u32 id;
-  usize size;
+  usize len;
 } CmVbo;
 
 typedef struct {
@@ -34,8 +34,8 @@ typedef struct {
   DA(CmVao) vao;
 } CmGpu;
 
-CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize size, const f32 *v);
-void cm_gpu_vbo_update(CmVbo *vbo, usize size, const float *v);
+CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
+void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v);
 void cm_gpu_vbo_draw(CmVbo *vbo, usize count, CmGpuDrawMode mode);
 
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i);

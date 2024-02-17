@@ -24,26 +24,26 @@ static GLenum get_mode(CmGpuDrawMode mode) {
   return 0;
 }
 
-CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize size, const float *v) {
-  CmVbo vbo = {.size = size};
+CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v) {
+  CmVbo vbo = {.len = len};
 
   glGenBuffers(1, &vbo.id);
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  glBufferData(GL_ARRAY_BUFFER, size, v, get_type(type));
+  glBufferData(GL_ARRAY_BUFFER, len * s, v, get_type(type));
 
   da_push(&b->vbo, vbo);
   return vbo;
 }
 
-void cm_gpu_vbo_update(CmVbo *vbo, usize size, const float *v) {
+void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, size, v);
-  vbo->size = size;
+  glBufferSubData(GL_ARRAY_BUFFER, 0, len * s, v);
+  vbo->len = len;
 }
 
 void cm_gpu_vbo_draw(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
-  glDrawArraysInstanced(mode, 0, vbo->size, count);
+  glDrawArraysInstanced(get_mode(mode), 0, vbo->len, count);
 }
 
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
