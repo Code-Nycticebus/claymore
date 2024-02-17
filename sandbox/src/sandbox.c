@@ -2,11 +2,9 @@
 
 #include "claymore.h"
 
-#include <GL/glew.h>
-
 typedef struct {
   CmMesh mesh;
-  u32 pos;
+  CmVbo pos;
   CmShader shader;
 } Sandbox;
 
@@ -34,16 +32,16 @@ static void sandbox_init(CmScene *scene) {
   };
 
   sandbox->mesh = cm_mesh_create(&scene->gpu, 4, vertices);
-  cm_mesh_attach_index_buffer(&sandbox->mesh, 6, indices);
+  cm_mesh_attach_ebo(&sandbox->mesh, 6, indices);
 
   sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh, 3, positions);
 
-  vec4 colors[] = {
-      {0.f, 0.f, 1.f, 1.f},
-      {0.f, 1.f, 0.f, 1.f},
-      {1.f, 0.f, 0.f, 1.f},
-  };
-  cm_mesh_attach_vec4_instanced(&sandbox->mesh, 3, colors);
+  // vec4 colors[] = {
+  //     {0.f, 0.f, 1.f, 1.f},
+  //     {0.f, 1.f, 0.f, 1.f},
+  //     {1.f, 0.f, 0.f, 1.f},
+  // };
+  // cm_mesh_attach_vec4_instanced(&sandbox->mesh, 3, colors);
 
   sandbox->shader =
       cm_shader_from_file(STR("sandbox/res/shader/basic.vs.glsl"),
@@ -69,9 +67,9 @@ static void sandbox_update(CmScene *scene, double deltatime) {
     float val = sinf(cm_window_time() * (i + 1)) * 0.5 + 0.5;
     positions[i][1] = -val;
   }
-  cm_gpu_update_vbo(sandbox->pos, sizeof(positions), &positions[0][0]);
+  cm_gpu_vbo_update(&sandbox->pos, sizeof(positions), &positions[0][0]);
 
-  cm_mesh_draw_indexed(&sandbox->mesh);
+  cm_mesh_draw_indexed(&sandbox->mesh, CM_DRAW_TRIANGLES);
 }
 
 static void sandbox_free(CmScene *scene) {

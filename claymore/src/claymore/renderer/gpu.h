@@ -8,17 +8,44 @@ typedef enum {
   CM_DYNAMIC_DRAW,
 } CmGpuType;
 
+typedef enum {
+  CM_DRAW_TRIANGLES,
+  CM_DRAW_LINES,
+} CmGpuDrawMode;
+
 typedef struct {
-  DA(u32) vbo;
-  DA(u32) ebo;
-  DA(u32) vao;
+  u32 id;
+  usize size;
+} CmVbo;
+
+typedef struct {
+  u32 id;
+  usize count;
+} CmEbo;
+
+typedef struct {
+  u32 id;
+  usize idx;
+} CmVao;
+
+typedef struct {
+  DA(CmVbo) vbo;
+  DA(CmEbo) ebo;
+  DA(CmVao) vao;
 } CmGpu;
 
-u32 cm_gpu_vbo(CmGpu *b, CmGpuType type, usize size, const float *v);
-void cm_gpu_update_vbo(u32 buffer, usize size, const float *v);
+CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize size, const f32 *v);
+void cm_gpu_vbo_update(CmVbo *vbo, usize size, const float *v);
+void cm_gpu_vbo_draw(CmVbo *vbo, usize count, CmGpuDrawMode mode);
 
-u32 cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i);
-u32 cm_gpu_vao(CmGpu *b);
+CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i);
+void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode);
+
+CmVao cm_gpu_vao(CmGpu *b);
+void cm_gpu_vao_bind(CmVao *vao);
+void cm_gpu_vao_push(CmVao *vao, usize count, usize stride, usize offset);
+void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
+                          usize offset);
 
 CmGpu cm_gpu_internal_init(Arena *arena);
 void cm_gpu_internal_free(CmGpu *bm);
