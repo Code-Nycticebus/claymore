@@ -1,15 +1,14 @@
-[project]
+[pybuildc]
 name="sandbox"
-version="0.1.0"
 cc="clang"
-bin="exe"
 
-cflags = ["-D_CRT_SECURE_NO_WARNINGS", "-std=c11", "-DCM_SCENES_MAX=10"]
+cflags=["-fsanitize=address"]
 
-[dependencies.claymore]
+[exe]
+sandbox="src/sandbox.c"
+
+[deps.claymore]
 dir="../claymore/" 
-dep_type="pybuildc"
+type="pybuildc"
 target="debug"
-cflags=["-DCM_SCENES_MAX=10"]
-build=true
 

@@ -1,138 +1,84 @@
 #include "mesh.h"
-#include <assert.h>
 
-CmMesh cm_mesh_create(const vec3s *vertices, size_t count) {
+#include "claymore/renderer/gpu.h"
+
+CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices) {
   CmMesh mesh = {0};
-  mesh.instance_count = 1;
-  mesh.vertices_count = count;
+  mesh.count = 1;
+  mesh.buffer = b;
 
-  glGenVertexArrays(1, &mesh.vertex_array);
+  mesh.vbo =
+      cm_gpu_vbo(b, CM_STATIC_DRAW, sizeof(vec3), count, &vertices[0][0]);
 
-  glGenBuffers(1, &mesh.vbo.positions);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh.vbo.positions);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3s) * count, vertices,
-               GL_STATIC_DRAW);
-
-  glBindVertexArray(mesh.vertex_array);
-  glEnableVertexAttribArray(mesh.attrib_index);
-  glVertexAttribPointer(mesh.attrib_index, 3, GL_FLOAT, GL_FALSE, sizeof(vec3s),
-                        (void *)0);
-  mesh.attrib_index++;
+  mesh.vao = cm_gpu_vao(b);
+  cm_gpu_vao_push(&mesh.vao, 3, sizeof(vec3), 0);
 
   return mesh;
 }
 
-void cm_mesh_delete(CmMesh *mesh) {
-  glDeleteVertexArrays(1, &mesh->vertex_array);
-  glDeleteBuffers(1, &mesh->index_buffer);
-  glDeleteBuffers(CM_MESH_VBO_MAX, (uint32_t *)&mesh->vbo.positions);
+void cm_mesh_attach_ebo(CmMesh *mesh, usize count, const u32 *indices) {
+  cm_gpu_vao_bind(&mesh->vao);
+  mesh->ebo = cm_gpu_ebo(mesh->buffer, CM_STATIC_DRAW, count, indices);
 }
 
-void cm_mesh_attach_index_buffer(CmMesh *mesh, const uint32_t *indices,
-                                 size_t count) {
-  glBindVertexArray(mesh->vertex_array);
-  mesh->index_count = count;
-  glGenBuffers(1, &mesh->index_buffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->index_buffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * count, indices,
-               GL_STATIC_DRAW);
+CmVbo cm_mesh_attach_f32(CmMesh *mesh, usize count, const f32 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
+  cm_gpu_vao_push(&mesh->vao, 1, sizeof(f32), 0);
+  return vbo;
 }
 
-void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count) {
-  assert(!mesh->vbo.color && "Color vector is already initialized!");
-  glGenBuffers(1, &mesh->vbo.color);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.color);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec4s) * count, colors, GL_STATIC_DRAW);
-
-  glBindVertexArray(mesh->vertex_array);
-  glEnableVertexAttribArray(mesh->attrib_index);
-  glVertexAttribPointer(mesh->attrib_index, 4, GL_FLOAT, GL_FALSE,
-                        sizeof(vec4s), (void *)0);
-  mesh->attrib_index++;
+CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
+  cm_gpu_vao_instanced(&mesh->vao, 1, 1, sizeof(f32), 0);
+  return vbo;
 }
 
-void cm_mesh_attach_colors_instanced(CmMesh *mesh, const vec4s *colors,
-                                     size_t count) {
-  assert(!mesh->vbo.color && "Color vector is already initialized!");
-  glGenBuffers(1, &mesh->vbo.color);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.color);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec4s) * count, colors, GL_STATIC_DRAW);
-
-  glBindVertexArray(mesh->vertex_array);
-  glEnableVertexAttribArray(mesh->attrib_index);
-  glVertexAttribPointer(mesh->attrib_index, 4, GL_FLOAT, GL_FALSE,
-                        sizeof(vec4s), (void *)0);
-  glVertexAttribDivisor(mesh->attrib_index, 1);
-  mesh->attrib_index++;
+CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
+  cm_gpu_vao_push(&mesh->vao, 2, sizeof(vec2), 0);
+  return vbo;
 }
 
-void cm_mesh_update_colors(CmMesh *mesh, vec4s *colors, size_t count) {
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.color);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vec4s) * count, colors);
-  mesh->instance_count = count;
+CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
+
+  clib_assert(mesh->count == 1 || mesh->count == count,
+              "This would result in a crash");
+  mesh->count = count;
+
+  cm_gpu_vao_instanced(&mesh->vao, 1, 2, sizeof(vec2), 0);
+  return vbo;
 }
 
-void cm_mesh_attach_normals(CmMesh *mesh, vec3s *normals, size_t count) {
-  assert(!mesh->vbo.normal && "Normal vector is already initialized!");
-  glGenBuffers(1, &mesh->vbo.normal);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.normal);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3s) * count, normals, GL_STATIC_DRAW);
-
-  glBindVertexArray(mesh->vertex_array);
-  glEnableVertexAttribArray(mesh->attrib_index);
-  glVertexAttribPointer(mesh->attrib_index, 3, GL_FLOAT, GL_FALSE,
-                        sizeof(vec3s), (void *)0);
-
-  mesh->attrib_index++;
+CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
+  cm_gpu_vao_push(&mesh->vao, 3, sizeof(vec3), 0);
+  return vbo;
 }
 
-void cm_mesh_attach_uv(CmMesh *mesh, vec2s *uv, size_t count) {
-  assert(!mesh->vbo.uv && "UV vector is already initialized!");
-  glGenBuffers(1, &mesh->vbo.uv);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.uv);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec2s) * count, uv, GL_STATIC_DRAW);
+CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
 
-  glBindVertexArray(mesh->vertex_array);
-  glEnableVertexAttribArray(mesh->attrib_index);
-  glVertexAttribPointer(mesh->attrib_index, 2, GL_FLOAT, GL_FALSE,
-                        sizeof(vec2s), (void *)0);
+  clib_assert(mesh->count == 1 || mesh->count == count,
+              "This would result in a crash");
+  mesh->count = count;
 
-  mesh->attrib_index++;
+  cm_gpu_vao_instanced(&mesh->vao, 1, 3, sizeof(vec3), 0);
+  return vbo;
 }
 
-void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
-  assert(!mesh->vbo.transforms && "Transform vector is already initialized!");
-  glGenBuffers(1, &mesh->vbo.transforms);
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.transforms);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(mat4s) * count, transforms,
-               GL_DYNAMIC_DRAW);
-  mesh->instance_count = count;
-
-  glBindVertexArray(mesh->vertex_array);
-  for (size_t i = 0; i < 4; i++) {
-    glEnableVertexAttribArray(mesh->attrib_index);
-    glVertexAttribPointer(mesh->attrib_index, 4, GL_FLOAT, GL_FALSE,
-                          sizeof(mat4s), (void *)(sizeof(vec4s) * i)); // NOLINT
-    glVertexAttribDivisor(mesh->attrib_index, 1);
-    mesh->attrib_index++;
-  }
+void cm_mesh_draw_indexed(CmMesh *mesh, CmGpuDrawMode mode) {
+  cm_gpu_vao_bind(&mesh->vao);
+  cm_gpu_ebo_draw(&mesh->ebo, mesh->count, mode);
 }
 
-void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count) {
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo.transforms);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(mat4s) * count, transforms);
-  mesh->instance_count = count;
-}
-
-void cm_mesh_draw_indexed(CmMesh *mesh) {
-  glBindVertexArray(mesh->vertex_array);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->index_buffer);
-  glDrawElementsInstanced(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT,
-                          NULL, mesh->instance_count);
-}
-
-void cm_mesh_draw(CmMesh *mesh) {
-  glBindVertexArray(mesh->vertex_array);
-  glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertices_count,
-                        mesh->instance_count);
+void cm_mesh_draw(CmMesh *mesh, CmGpuDrawMode mode) {
+  cm_gpu_vao_bind(&mesh->vao);
+  cm_gpu_vbo_draw(&mesh->vbo, mesh->count, mode);
 }

@@ -1,9 +1,6 @@
-[project]
+[pybuildc]
 name="stb_truetype"
-version="1.0"
 cc="clang"
-bin="static"
 
-
-[dependencies.linux]
-math = { lib="m" }
+[deps.linux]
+m = { l="m" }

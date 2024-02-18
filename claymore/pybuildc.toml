@@ -1,28 +1,27 @@
-[project]
+[pybuildc]
 name="claymore"
 version="0.1.0"
 cc="clang"
-bin="static"
 
-cflags = ["-D_CRT_SECURE_NO_WARNINGS", "-std=c11"]
+cflags = ["-std=c99"]
 
-[dependencies]
-stb_image = { dir="deps/stb_image/", dep_type="pybuildc" }
-stb_truetype = { dir="deps/stb_truetype/", dep_type="pybuildc" }
-miniaudio = { dir="deps/miniaudio/", dep_type="pybuildc" }
+[deps]
+stb_image = { dir="deps/stb_image/", type="pybuildc" }
+stb_truetype = { dir="deps/stb_truetype/", type="pybuildc" }
+miniaudio = { dir="deps/miniaudio/", type="pybuildc" }
+clib = { dir = "../../clib", type="pybuildc" }
+cglm    = { dir="deps/cglm/cglm", I=["include"] }
 
-[dependencies.linux]
-gl   = { lib="GL" }
-glew = { lib="GLEW", dir="deps/glew/glew-linux/lib", include=["deps/glew/glew-linux/glew/include/"] }
-glfw = { lib="glfw3", dir="deps/glfw/glfw-linux/build/src/", include=["deps/glfw/glfw-linux/glfw/include/"] }
-cglm = { lib="cglm", dir="deps/cglm/cglm-linux/build", include=["deps/cglm/cglm-linux/cglm/include/"]}
-math = { lib="m" }
+[deps.linux]
+gl   = { l="GL" }
+glew = { l="GLEW", dir="deps/glew/glew-linux", L="lib", I=["glew/include"] }
+glfw = { l="glfw3", dir="deps/glfw/glfw-linux", L="build/src", I=["glfw/include"] }
+math = { l="m" }
 
-[dependencies.windows]
-Shell32 = { lib="Shell32" }
-User32  = { lib="User32" }
-Gdi32   = { lib="Gdi32" }
-gl      = { lib="opengl32" }
-glew    = { lib="glew32s", dir="deps/glew/glew-win/lib/Release/Win32", include=["deps/glew/glew-win/include/"] }
-glfw    = { lib="glfw3_mt", dir="deps/glfw/glfw-win/lib-vc2022/", include=["deps/glfw/glfw-win/include/"] }
-cglm    = { lib="cglm", dir="deps/cglm/cglm-win/build/Release", include=["deps/cglm/cglm-win/cglm/include"] }
+[deps.windows]
+Shell32 = { l="Shell32" }
+User32  = { l="User32" }
+Gdi32   = { l="Gdi32" }
+gl      = { l="opengl32" }
+glew    = { l="glew32s", dir="deps/glew/glew-win/lib/Release/Win32", I=["deps/glew/glew-win/include/"] }
+glfw    = { l="glfw3_mt", dir="deps/glfw/glfw-win/lib-vc2022/", I=["deps/glfw/glfw-win/include/"] }

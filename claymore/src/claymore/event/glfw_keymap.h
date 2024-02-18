@@ -1,0 +1,150 @@
+#ifndef __CLAYMORE_KEYMAP_H__
+#define __CLAYMORE_KEYMAP_H__
+
+typedef enum {
+  CM_KEY_RELEASE = 0,
+  CM_KEY_PRESS = 1,
+  CM_KEY_REPEAT = 2,
+} CmKeyAction;
+
+typedef enum {
+  /* Printable keys */
+  CM_KEY_SPACE = 32,
+  CM_KEY_APOSTROPHE = 39, /* ' */
+  CM_KEY_COMMA = 44,      /* , */
+  CM_KEY_MINUS = 45,      /* - */
+  CM_KEY_PERIOD = 46,     /* . */
+  CM_KEY_SLASH = 47,      /* / */
+  CM_KEY_0 = 48,
+  CM_KEY_1 = 49,
+  CM_KEY_2 = 50,
+  CM_KEY_3 = 51,
+  CM_KEY_4 = 52,
+  CM_KEY_5 = 53,
+  CM_KEY_6 = 54,
+  CM_KEY_7 = 55,
+  CM_KEY_8 = 56,
+  CM_KEY_9 = 57,
+  CM_KEY_SEMICOLON = 59, /* ; */
+  CM_KEY_EQUAL = 61,     /* = */
+  CM_KEY_A = 65,
+  CM_KEY_B = 66,
+  CM_KEY_C = 67,
+  CM_KEY_D = 68,
+  CM_KEY_E = 69,
+  CM_KEY_F = 70,
+  CM_KEY_G = 71,
+  CM_KEY_H = 72,
+  CM_KEY_I = 73,
+  CM_KEY_J = 74,
+  CM_KEY_K = 75,
+  CM_KEY_L = 76,
+  CM_KEY_M = 77,
+  CM_KEY_N = 78,
+  CM_KEY_O = 79,
+  CM_KEY_P = 80,
+  CM_KEY_Q = 81,
+  CM_KEY_R = 82,
+  CM_KEY_S = 83,
+  CM_KEY_T = 84,
+  CM_KEY_U = 85,
+  CM_KEY_V = 86,
+  CM_KEY_W = 87,
+  CM_KEY_X = 88,
+  CM_KEY_Y = 89,
+  CM_KEY_Z = 90,
+  CM_KEY_LEFT_BRACKET = 91,  /* [ */
+  CM_KEY_BACKSLASH = 92,     /* \ */
+  CM_KEY_RIGHT_BRACKET = 93, /* ] */
+  CM_KEY_GRAVE_ACCENT = 96,  /* ` */
+  CM_KEY_WORLD_1 = 161,      /* non-US #1 */
+  CM_KEY_WORLD_2 = 162,      /* non-US #2 */
+
+  /* Function keys */
+  CM_KEY_ESCAPE = 256,
+  CM_KEY_ENTER = 257,
+  CM_KEY_TAB = 258,
+  CM_KEY_BACKSPACE = 259,
+  CM_KEY_INSERT = 260,
+  CM_KEY_DELETE = 261,
+  CM_KEY_RIGHT = 262,
+  CM_KEY_LEFT = 263,
+  CM_KEY_DOWN = 264,
+  CM_KEY_UP = 265,
+  CM_KEY_PAGE_UP = 266,
+  CM_KEY_PAGE_DOWN = 267,
+  CM_KEY_HOME = 268,
+  CM_KEY_END = 269,
+  CM_KEY_CAPS_LOCK = 280,
+  CM_KEY_SCROLL_LOCK = 281,
+  CM_KEY_NUM_LOCK = 282,
+  CM_KEY_PRINT_SCREEN = 283,
+  CM_KEY_PAUSE = 284,
+  CM_KEY_F1 = 290,
+  CM_KEY_F2 = 291,
+  CM_KEY_F3 = 292,
+  CM_KEY_F4 = 293,
+  CM_KEY_F5 = 294,
+  CM_KEY_F6 = 295,
+  CM_KEY_F7 = 296,
+  CM_KEY_F8 = 297,
+  CM_KEY_F9 = 298,
+  CM_KEY_F10 = 299,
+  CM_KEY_F11 = 300,
+  CM_KEY_F12 = 301,
+  CM_KEY_F13 = 302,
+  CM_KEY_F14 = 303,
+  CM_KEY_F15 = 304,
+  CM_KEY_F16 = 305,
+  CM_KEY_F17 = 306,
+  CM_KEY_F18 = 307,
+  CM_KEY_F19 = 308,
+  CM_KEY_F20 = 309,
+  CM_KEY_F21 = 310,
+  CM_KEY_F22 = 311,
+  CM_KEY_F23 = 312,
+  CM_KEY_F24 = 313,
+  CM_KEY_F25 = 314,
+  CM_KEY_KP_0 = 320,
+  CM_KEY_KP_1 = 321,
+  CM_KEY_KP_2 = 322,
+  CM_KEY_KP_3 = 323,
+  CM_KEY_KP_4 = 324,
+  CM_KEY_KP_5 = 325,
+  CM_KEY_KP_6 = 326,
+  CM_KEY_KP_7 = 327,
+  CM_KEY_KP_8 = 328,
+  CM_KEY_KP_9 = 329,
+  CM_KEY_KP_DECIMAL = 330,
+  CM_KEY_KP_DIVIDE = 331,
+  CM_KEY_KP_MULTIPLY = 332,
+  CM_KEY_KP_SUBTRACT = 333,
+  CM_KEY_KP_ADD = 334,
+  CM_KEY_KP_ENTER = 335,
+  CM_KEY_KP_EQUAL = 336,
+  CM_KEY_LEFT_SHIFT = 340,
+  CM_KEY_LEFT_CONTROL = 341,
+  CM_KEY_LEFT_ALT = 342,
+  CM_KEY_LEFT_SUPER = 343,
+  CM_KEY_RIGHT_SHIFT = 344,
+  CM_KEY_RIGHT_CONTROL = 345,
+  CM_KEY_RIGHT_ALT = 346,
+  CM_KEY_RIGHT_SUPER = 347,
+  CM_KEY_MENU = 348,
+} CmKeyCodes;
+
+typedef enum {
+  CM_MOUSE_BUTTON_1 = 0,
+  CM_MOUSE_BUTTON_2 = 1,
+  CM_MOUSE_BUTTON_3 = 2,
+  CM_MOUSE_BUTTON_4 = 3,
+  CM_MOUSE_BUTTON_5 = 4,
+  CM_MOUSE_BUTTON_6 = 5,
+  CM_MOUSE_BUTTON_7 = 6,
+  CM_MOUSE_BUTTON_8 = 7,
+  CM_MOUSE_BUTTON_LEFT = CM_MOUSE_BUTTON_1,
+  CM_MOUSE_BUTTON_RIGHT = CM_MOUSE_BUTTON_2,
+  CM_MOUSE_BUTTON_MIDDLE = CM_MOUSE_BUTTON_3,
+} CmMouseButtons;
+
+#endif /* !__CLAYMORE_KEYMAP_H__ */

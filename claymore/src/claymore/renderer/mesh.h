@@ -1,43 +1,33 @@
-#pragma once
+#ifndef __CLAYMORE_MESH_H__
+#define __CLAYMORE_MESH_H__
 
-#include "renderer_defines.h"
-
-#define CM_MESH_VBO_MAX 5
+#include "claymore/defines.h" // IWYU pragma: export
+#include "claymore/renderer/gpu.h"
 
 typedef struct {
-  size_t vertices_count;
-  struct {
-    GLuint positions;
-    GLuint color;
-    GLuint uv;
-    GLuint normal;
-    GLuint transforms;
-  } vbo;
+  CmGpu *buffer;
 
-  size_t instance_count;
+  usize count;
 
-  size_t attrib_index;
-  GLuint vertex_array;
-
-  GLuint index_buffer;
-  size_t index_count;
+  CmVbo vbo;
+  CmVao vao;
+  CmEbo ebo;
 } CmMesh;
 
-CmMesh cm_mesh_create(const vec3s *vertices, size_t count);
-void cm_mesh_delete(CmMesh *mesh);
+CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices);
 
-void cm_mesh_attach_index_buffer(CmMesh *mesh, const uint32_t *indices,
-                                 size_t count);
-void cm_mesh_attach_colors(CmMesh *mesh, vec4s *colors, size_t count);
-void cm_mesh_attach_colors_instanced(CmMesh *mesh, const vec4s *colors,
-                                     size_t count);
-void cm_mesh_update_colors(CmMesh *mesh, vec4s *colors, size_t count);
+void cm_mesh_attach_ebo(CmMesh *mesh, usize count, const u32 *indices);
 
-void cm_mesh_attach_normals(CmMesh *mesh, vec3s *normals, size_t count);
-void cm_mesh_attach_uv(CmMesh *mesh, vec2s *uvs, size_t count);
+CmVbo cm_mesh_attach_f32(CmMesh *mesh, usize count, const f32 *v);
+CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v);
 
-void cm_mesh_attach_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
-void cm_mesh_update_transforms(CmMesh *mesh, mat4s *transforms, size_t count);
+CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v);
+CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v);
 
-void cm_mesh_draw_indexed(CmMesh *mesh);
-void cm_mesh_draw(CmMesh *mesh);
+CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v);
+CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v);
+
+void cm_mesh_draw_indexed(CmMesh *mesh, CmGpuDrawMode mode);
+void cm_mesh_draw(CmMesh *mesh, CmGpuDrawMode mode);
+
+#endif /* !__CLAYMORE_MESH_H__ */

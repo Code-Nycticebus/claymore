@@ -1,10 +1,8 @@
-#ifndef __CM_CONTEXT_H__
-#define __CM_CONTEXT_H__
+#ifndef __CLAYMORE_CONTEXT_H__
+#define __CLAYMORE_CONTEXT_H__
 
-#include "renderer_defines.h"
+#include "claymore/defines.h" // IWYU pragma: export
 
-typedef void WindowHandle;
+bool cm_platform_context_init(void *window_context);
 
-bool cm_context_init(WindowHandle *window_handle);
-
-#endif
+#endif /* !__CLAYMORE_CONTEXT_H__ */
