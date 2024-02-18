@@ -2,8 +2,6 @@
 
 #include "claymore/renderer/gpu.h"
 
-#include <GL/glew.h>
-
 CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices) {
   CmMesh mesh = {0};
   mesh.count = 1;
@@ -21,6 +19,39 @@ CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices) {
 void cm_mesh_attach_ebo(CmMesh *mesh, usize count, const u32 *indices) {
   cm_gpu_vao_bind(&mesh->vao);
   mesh->ebo = cm_gpu_ebo(mesh->buffer, CM_STATIC_DRAW, count, indices);
+}
+
+CmVbo cm_mesh_attach_f32(CmMesh *mesh, usize count, const f32 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
+  cm_gpu_vao_push(&mesh->vao, 1, sizeof(f32), 0);
+  return vbo;
+}
+
+CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
+  cm_gpu_vao_instanced(&mesh->vao, 1, 1, sizeof(f32), 0);
+  return vbo;
+}
+
+CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
+  cm_gpu_vao_push(&mesh->vao, 2, sizeof(vec2), 0);
+  return vbo;
+}
+
+CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v) {
+  CmVbo vbo =
+      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
+
+  clib_assert(mesh->count == 1 || mesh->count == count,
+              "This would result in a crash");
+  mesh->count = count;
+
+  cm_gpu_vao_instanced(&mesh->vao, 1, 2, sizeof(vec2), 0);
+  return vbo;
 }
 
 CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
