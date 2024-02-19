@@ -14,6 +14,7 @@
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/mesh.h"
 #include "claymore/renderer/shaders.h"
+#include "claymore/renderer/texture.h"
 //
 // IWYU pragma: end_exports
 

@@ -7,7 +7,7 @@
 
 #include "scene.h"
 
-typedef struct {
+typedef const struct {
   struct {
     const char *title;
     usize width;
