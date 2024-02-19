@@ -12,14 +12,14 @@ typedef struct {
   void *data;
 } CmScene;
 
-typedef struct {
+typedef const struct {
   void (*init)(CmScene *scene);
   void (*update)(CmScene *scene, double deltatime);
   void (*free)(CmScene *scene);
   void (*on_event)(CmScene *scene, CmEvent *event);
 } CmSceneInterface;
 
-typedef CmSceneInterface *(*CmSceneInit)(void);
+typedef const CmSceneInterface *(*CmSceneInit)(void);
 
 typedef struct CmSceneInternal {
   CmScene data; // has to be first!
