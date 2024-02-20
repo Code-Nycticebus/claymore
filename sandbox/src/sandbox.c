@@ -7,57 +7,66 @@ typedef struct {
   CmVbo pos;
   CmVbo rot;
   CmShader shader;
+  mat4 view;
+  mat4 projection;
 } Sandbox;
 
 vec3 vertices[4] = {
-    {-1.f, 1.f, .0f},
-    {-1.f, .0f, .0f},
-    {0.0f, .0f, .0f},
     {0.0f, 1.f, .0f},
+    {0.0f, 0.0f, .0f},
+    {1.0f, 0.0f, .0f},
+    {1.0f, 1.0f, .0f},
 };
 
 u32 indices[6] = {
     0, 1, 3, 1, 2, 3,
 };
 
-vec3 positions[] = {
-    {-0.5f, -0.5f, 0.0f},
-    {.5, 0.0f, 0.0f},
-    {0.75f, 0.25f, 0.0f},
-};
+#define SANDBOX_MAX_QUADS 20000
 
-vec2 scales[] = {
-    {1.00f, 1.00f},
-    {0.50f, 0.50f},
-    {0.25f, 0.25f},
-};
+vec3 positions[SANDBOX_MAX_QUADS] = {0};
+vec2 scales[SANDBOX_MAX_QUADS] = {0};
+vec3 colors[SANDBOX_MAX_QUADS] = {0};
+float rotations[SANDBOX_MAX_QUADS] = {0};
 
-vec3 colors[] = {
-    {0.f, 0.f, 1.f},
-    {0.f, 1.f, 0.f},
-    {1.f, 0.f, 0.f},
-};
-
-vec4 color1 = {1, 1, 1, 1};
-vec4 color2 = {1, 1, 1, .5f};
+static float rand_f32(void) { return (float)rand() / (float)RAND_MAX; }
 
 static void sandbox_init(CmScene *scene) {
   clib_log_info("sandbox init");
   Sandbox *sandbox = arena_alloc(&scene->arena, sizeof(Sandbox));
 
+  for (usize i = 0; i < 4; i++) {
+    glm_vec3_add(vertices[i], (vec3){-.5f, -.5f, 0}, vertices[i]);
+  }
   sandbox->mesh = cm_mesh_create(&scene->gpu, 4, vertices);
+
+  for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
+    positions[i][0] = rand_f32() * 720;
+  }
+  sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh,
+                                               SANDBOX_MAX_QUADS, positions);
+
+  for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
+    float scale = rand_f32() * 200;
+    scales[i][0] = scale;
+    scales[i][1] = scale;
+  }
+  cm_mesh_attach_vec2_instanced(&sandbox->mesh, SANDBOX_MAX_QUADS, scales);
+
+  for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
+    rotations[i] = rand_f32() * 3.141f;
+  }
+  sandbox->rot = cm_mesh_attach_f32_instanced(&sandbox->mesh, SANDBOX_MAX_QUADS,
+                                              rotations);
+
+  for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
+    colors[i][0] = rand_f32();
+    colors[i][1] = rand_f32();
+    colors[i][2] = rand_f32();
+  }
+  cm_mesh_attach_vec3_instanced(&sandbox->mesh, SANDBOX_MAX_QUADS, colors);
+
   cm_mesh_attach_ebo(&sandbox->mesh, 6, indices);
-  sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh, 3, positions);
-  cm_mesh_attach_vec2_instanced(&sandbox->mesh, 3, scales);
-
-  float rotations[] = {
-      glm_rad(0),
-      glm_rad(45),
-      glm_rad(30),
-  };
-  sandbox->rot = cm_mesh_attach_f32_instanced(&sandbox->mesh, 3, rotations);
-
-  cm_mesh_attach_vec3_instanced(&sandbox->mesh, 3, colors);
 
   sandbox->shader = cm_shader_from_memory( // Format like this you idiot
       STR("#version 330 core\n"
@@ -66,6 +75,8 @@ static void sandbox_init(CmScene *scene) {
           "layout (location = 2) in vec2 a_scale;\n"
           "layout (location = 3) in float a_rotation;\n"
           "layout (location = 4) in vec3 a_color;\n"
+
+          "uniform mat4 u_mvp;"
 
           "vec3 rotateZ(vec3 v, float angle) {\n"
           "  float s = sin(angle);\n"
@@ -80,45 +91,55 @@ static void sandbox_init(CmScene *scene) {
 
           "out vec4 v_color;\n"
           "void main() {\n"
-          "  vec3 pos = rotateZ(a_pos, a_rotation) * vec3(a_scale, 1.0) + "
-          "a_translation;\n"
-          "  gl_Position = vec4(pos.xyz, 1.0);\n"
+          "  vec3 pos = rotateZ(a_pos, a_rotation) * vec3(a_scale, 1.0);\n"
+          "  pos += a_translation;\n"
+          "  gl_Position = u_mvp * vec4(pos.xyz, 1.0);\n"
           "  v_color = vec4(a_color, 1.0);\n"
           "}\n"),
       STR("#version 330 core\n"
           "in vec4 v_color;\n"
           "out vec4 f_color;\n"
-          "uniform vec4 u_color = vec4(1,0,0,1);\n"
           "void main() {\n"
-          "  f_color = v_color * u_color;\n"
+          "  f_color = v_color;\n"
           "}\n"),
       ErrPanic);
 
   cm_window_bg_color((vec3){0.15f, 0.15f, 0.15f});
 
+  glm_ortho(0, 720, 0, 420, -1, 100.f, sandbox->view);
+  glm_mat4_identity(sandbox->projection);
+
+  mat4 vp;
+  glm_mat4_mul(sandbox->view, sandbox->projection, vp);
+  cm_shader_set_mat4(&sandbox->shader, STR("u_mvp"), vp);
+
   scene->data = sandbox;
 }
 
 static void sandbox_update(CmScene *scene, double deltatime) {
-  (void)deltatime;
+  clib_log_info("fps: %f", 1 / deltatime);
 
   Sandbox *sandbox = scene->data;
 
   cm_shader_bind(&sandbox->shader);
 
-  vec4 color;
-  glm_vec4_lerp(color1, color2, sinf(cm_window_time()) * 0.5 + 0.5, color);
-  cm_shader_set_vec4(&sandbox->shader, STR("u_color"), color);
+  // mat4 mvp = GLM_MAT4_IDENTITY_INIT;
+  // mat4 vp;
+  // glm_mat4_mul(sandbox->view, sandbox->projection, vp);
+  // cm_shader_set_mat4(&sandbox->shader, STR("u_mvp"), vp);
 
-  for (usize i = 0; i < 3; ++i) {
-    float val = sinf(cm_window_time() * (i + 1));
-    positions[i][1] = -val;
+  for (usize i = 0; i < SANDBOX_MAX_QUADS; ++i) {
+    float val = sinf(cm_window_time() * i / SANDBOX_MAX_QUADS) * 0.5f + 0.5f;
+    positions[i][1] = val * 420 / 2 + (420.f / 4);
   }
-  cm_gpu_vbo_update(&sandbox->pos, 3, sizeof(vec3), &positions[0][0]);
+  cm_gpu_vbo_update(&sandbox->pos, SANDBOX_MAX_QUADS, sizeof(vec3),
+                    &positions[0][0]);
 
-  static float r = 0;
-  r += (3.14 / 4) * deltatime;
-  cm_gpu_vbo_update(&sandbox->rot, 1, sizeof(float), &r);
+  for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
+    rotations[i] += (3.14 / 8) * deltatime;
+  }
+  cm_gpu_vbo_update(&sandbox->rot, SANDBOX_MAX_QUADS, sizeof(float),
+                    &rotations[0]);
 
   cm_mesh_draw_indexed(&sandbox->mesh, CM_DRAW_TRIANGLES);
 }

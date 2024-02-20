@@ -110,6 +110,8 @@ bool cm_platform_context_init(void *window_context) {
   glEnable(GL_CULL_FACE);
   glCullFace(GL_BACK);
 
+  glfwSwapInterval(0);
+
   int32_t width;
   int32_t height;
   glfwGetWindowSize(window_context, &width, &height);
