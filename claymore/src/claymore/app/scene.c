@@ -28,10 +28,10 @@ CmSceneInternal cm_scene_internal_init(const CmSceneInit init) {
 }
 
 void cm_scene_internal_update(CmSceneInternal *scene, double deltatime) {
-  scene->interface->update(&scene->data, deltatime);
   for (usize i = 0; i < scene->children.len; i++) {
     cm_scene_internal_update(&scene->children.items[i], deltatime);
   }
+  scene->interface->update(&scene->data, deltatime);
 }
 
 void cm_scene_internal_free(CmSceneInternal *scene) {
@@ -44,13 +44,13 @@ void cm_scene_internal_free(CmSceneInternal *scene) {
 }
 
 void cm_scene_internal_on_event(CmSceneInternal *scene, CmEvent *event) {
-  if (scene->interface->on_event) {
-    scene->interface->on_event(&scene->data, event);
-  }
   for (usize i = 0; i < scene->children.len; i++) {
     if (event->handled) {
       return;
     }
     cm_scene_internal_on_event(&scene->children.items[i], event);
+  }
+  if (scene->interface->on_event) {
+    scene->interface->on_event(&scene->data, event);
   }
 }
