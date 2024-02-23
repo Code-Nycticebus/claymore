@@ -35,9 +35,9 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   glm_mat4_mul(sandbox->view, sandbox->projection, vp);
 
   cm_quad_begin(vp);
-  const float size = 10;
+  const float size = 40;
   static float r = 0;
-  r += 3.141f * (float)deltatime;
+  r += (3.141f / 2) * deltatime;
   for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
     for (usize j = 0; j < SANDBOX_MAX_QUADS; j++) {
       cm_quad_push((vec2){(float)i * size, (float)j * size}, (vec2){size, size},

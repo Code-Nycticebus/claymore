@@ -3,20 +3,9 @@
 
 // IWYU pragma: begin_exports
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wconversion"
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wconversion"
-
 #include <cglm/cglm.h>
-
-#pragma GCC diagnostic pop
-#pragma clang diagnostic pop
-
 #include <clib/clib.h>
 
-//
 // IWYU pragma: end_exports
 
 #define VEC2_FMT "%f, %f"
