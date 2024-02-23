@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#define CM_QUADS_MAX 1000
+#define CM_QUADS_MAX 5000
 
 #define CM_QUADS_VERTICES 4
 #define CM_QUADS_VERTICES_MAX (CM_QUADS_MAX * CM_QUADS_VERTICES)
@@ -41,6 +41,7 @@ static void cm_quad_flush(void) {
                     (float *)renderer->data);
 
   cm_gpu_vao_bind(&renderer->vao);
+
   cm_gpu_ebo_draw(&renderer->ebo, renderer->indices_count, CM_DRAW_TRIANGLES);
 
   renderer->indices_count = 0;

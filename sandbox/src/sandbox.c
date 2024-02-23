@@ -7,9 +7,9 @@ typedef struct {
   mat4 projection;
 } Sandbox;
 
-#define SANDBOX_MAX_QUADS 10
+#define SANDBOX_MAX_QUADS 317
 
-// static float rand_f32(void) { return (float)rand() / (float)RAND_MAX; }
+static float rand_f32(void) { return (float)rand() / (float)RAND_MAX; }
 
 static void sandbox_init(CmScene *scene) {
   clib_log_info("sandbox init");
@@ -33,6 +33,7 @@ static void sandbox_update(CmScene *scene, double deltatime) {
 
   mat4 vp;
   glm_mat4_mul(sandbox->view, sandbox->projection, vp);
+
   cm_quad_begin(vp);
   const float size = 10;
   static float r = 0;
@@ -40,7 +41,7 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
     for (usize j = 0; j < SANDBOX_MAX_QUADS; j++) {
       cm_quad_push((vec2){i * size, j * size}, (vec2){size, size}, r,
-                   (vec4){1, 0, 0, 1});
+                   (vec4){rand_f32(), rand_f32(), rand_f32(), 1});
     }
   }
   cm_quad_end();

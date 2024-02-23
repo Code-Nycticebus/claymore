@@ -41,7 +41,7 @@ void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v) {
   vbo->len = len;
 }
 
-void cm_gpu_vbo_draw(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
+void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
   glDrawArraysInstanced(get_mode(mode), 0, vbo->len, count);
 }
@@ -57,10 +57,15 @@ CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
   return ebo;
 }
 
-void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode) {
+void cm_gpu_ebo_draw_instanced(CmEbo *ebo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo->id);
   glDrawElementsInstanced(get_mode(mode), ebo->count, GL_UNSIGNED_INT, NULL,
                           count);
+}
+
+void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode) {
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo->id);
+  glDrawElements(get_mode(mode), count, GL_UNSIGNED_INT, NULL);
 }
 
 CmVao cm_gpu_vao(CmGpu *b) {

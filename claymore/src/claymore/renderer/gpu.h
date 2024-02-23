@@ -36,10 +36,11 @@ typedef struct {
 
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
 void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v);
-void cm_gpu_vbo_draw(CmVbo *vbo, usize count, CmGpuDrawMode mode);
+void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode);
 
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i);
 void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode);
+void cm_gpu_ebo_draw_instanced(CmEbo *ebo, usize count, CmGpuDrawMode mode);
 
 CmVao cm_gpu_vao(CmGpu *b);
 void cm_gpu_vao_bind(CmVao *vao);

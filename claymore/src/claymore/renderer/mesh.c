@@ -85,10 +85,10 @@ CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
 
 void cm_mesh_draw_indexed(CmMesh *mesh, CmGpuDrawMode mode) {
   cm_gpu_vao_bind(&mesh->vao);
-  cm_gpu_ebo_draw(&mesh->ebo, mesh->count, mode);
+  cm_gpu_ebo_draw_instanced(&mesh->ebo, mesh->count, mode);
 }
 
 void cm_mesh_draw(CmMesh *mesh, CmGpuDrawMode mode) {
   cm_gpu_vao_bind(&mesh->vao);
-  cm_gpu_vbo_draw(&mesh->vbo, mesh->count, mode);
+  cm_gpu_vbo_draw_instanced(&mesh->vbo, mesh->count, mode);
 }
