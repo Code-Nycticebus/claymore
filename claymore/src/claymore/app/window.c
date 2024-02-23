@@ -10,7 +10,7 @@ static struct {
 
 void *cm_window_context(void) { return window.context; }
 double cm_window_time(void) { return glfwGetTime(); }
-void cm_window_bg_color(vec3 color) { glClearColor(VEC3_ARG(color), 1); }
+void cm_window_bg_color(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 void cm_window_close(bool c) { glfwSetWindowShouldClose(window.context, c); }
 
 static void keyboard_callback(GLFWwindow *context, int key, int scancode,
