@@ -8,9 +8,9 @@
 void cm_event_emit(CmEvent event) { app_internal_on_event(&event); }
 
 CmKeyAction cm_event_key_pressed(CmKeyCodes key) {
-  return glfwGetKey(cm_window_context(), key);
+  return (CmKeyAction)glfwGetKey(cm_window_context(), (int)key);
 }
 
 CmKeyAction cm_event_mouse_button_pressed(CmMouseButtons button) {
-  return glfwGetMouseButton(cm_window_context(), button);
+  return (CmKeyAction)glfwGetMouseButton(cm_window_context(), (int)button);
 }

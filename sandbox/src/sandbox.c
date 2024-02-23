@@ -24,7 +24,7 @@ static void sandbox_init(CmScene *scene) {
 }
 
 static void sandbox_update(CmScene *scene, double deltatime) {
-  static float timer = 0;
+  static double timer = 0;
   if ((timer += deltatime) >= 1) {
     clib_log_info("fps: %f", 1 / deltatime);
     timer = 0;
@@ -37,11 +37,11 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   cm_quad_begin(vp);
   const float size = 10;
   static float r = 0;
-  r += 3.141 * deltatime;
+  r += 3.141f * (float)deltatime;
   for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
     for (usize j = 0; j < SANDBOX_MAX_QUADS; j++) {
-      cm_quad_push((vec2){i * size, j * size}, (vec2){size, size}, r,
-                   (vec4){rand_f32(), rand_f32(), rand_f32(), 1});
+      cm_quad_push((vec2){(float)i * size, (float)j * size}, (vec2){size, size},
+                   r, (vec4){rand_f32(), rand_f32(), rand_f32(), 1});
     }
   }
   cm_quad_end();

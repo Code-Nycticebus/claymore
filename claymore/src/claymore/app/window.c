@@ -18,7 +18,7 @@ static void keyboard_callback(GLFWwindow *context, int key, int scancode,
   (void)context, (void)scancode, (void)mods;
   cm_event_emit((CmEvent){
       .type = CM_EVENT_KEY,
-      .event.key = {.code = key, .action = action},
+      .event.key = {.code = (CmKeyCodes)key, .action = (CmKeyAction)action},
   });
 }
 
@@ -30,9 +30,9 @@ static void mouse_callback(GLFWwindow *context, int btn, int action, int mods) {
       .type = CM_EVENT_MOUSE,
       .event.mouse =
           {
-              .button = btn,
-              .action = action,
-              .pos = {pos[0], pos[1]},
+              .button = (CmMouseButtons)btn,
+              .action = (CmKeyAction)action,
+              .pos = {(float)pos[0], (float)pos[1]},
           },
   });
 }
@@ -41,7 +41,7 @@ static void cursor_callback(GLFWwindow *context, double x, double y) {
   (void)context;
   cm_event_emit((CmEvent){
       .type = CM_EVENT_CURSOR,
-      .event.cursor = {.pos = {x, y}},
+      .event.cursor = {.pos = {(float)x, (float)y}},
   });
 }
 
@@ -49,7 +49,7 @@ static void scroll_callback(GLFWwindow *context, double x, double y) {
   (void)context;
   cm_event_emit((CmEvent){
       .type = CM_EVENT_SCROLL,
-      .event.scroll = {.offset = {x, y}},
+      .event.scroll = {.offset = {(float)x, (float)y}},
   });
 }
 
@@ -58,7 +58,7 @@ static void resize_callback(GLFWwindow *context, i32 width, i32 height) {
   glViewport(0, 0, width, height);
   cm_event_emit((CmEvent){
       .type = CM_EVENT_RESIZE,
-      .event.resize = {.size = {width, height}},
+      .event.resize = {.size = {(float)width, (float)height}},
   });
 }
 
@@ -68,7 +68,7 @@ static void drop_callback(GLFWwindow *context, int count, const char **paths) {
       .type = CM_EVENT_DROP,
       .event.drop =
           {
-              .count = count,
+              .count = (usize)count,
               .files = paths,
           },
   });
@@ -83,7 +83,7 @@ bool cm_window_internal_create(usize width, usize height, const char *title) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  window.context = glfwCreateWindow((u32)width, (u32)height, title, NULL, NULL);
+  window.context = glfwCreateWindow((i32)width, (i32)height, title, NULL, NULL);
   if (window.context == NULL) {
     return false;
   }

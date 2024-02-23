@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#define CM_QUADS_MAX 5000
+#define CM_QUADS_MAX 1000
 
 #define CM_QUADS_VERTICES 4
 #define CM_QUADS_VERTICES_MAX (CM_QUADS_MAX * CM_QUADS_VERTICES)
@@ -62,8 +62,8 @@ void cm_quad_push(const vec2 position, const vec2 size, float rotation,
   }
 
   // For safety i still assert
-  clib_assert(renderer->vertices_count < CM_QUADS_VERTICES_MAX, "");
-  clib_assert(renderer->indices_count < CM_QUADS_INDICES_MAX, "");
+  clib_assert_debug(renderer->vertices_count < CM_QUADS_VERTICES_MAX, "");
+  clib_assert_debug(renderer->indices_count < CM_QUADS_INDICES_MAX, "");
 
   float cos_theta;
   float sin_theta;
@@ -136,6 +136,9 @@ void cm_quad_internal_init(void) {
           "  f_color = v_color;\n"
           "}\n"),
       ErrPanic);
+
+  clib_log_info("Renderer: %" USIZE_FMT " kb",
+                sizeof(struct RenderQuadData) / 1000);
 }
 
 void cm_quad_internal_free(void) {

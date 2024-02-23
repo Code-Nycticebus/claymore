@@ -11,7 +11,7 @@
     gl_get_iv(shader_id, gl_check, &result);                                   \
     gl_get_iv(shader_id, GL_INFO_LOG_LENGTH, &lenght);                         \
     if (lenght > 0) {                                                          \
-      char *err_msg = calloc(sizeof(char), lenght);                            \
+      char *err_msg = calloc(sizeof(char), (usize)lenght);                     \
       gl_get_log(shader_id, lenght, NULL, err_msg);                            \
       error_emit(error, -1, "%s", err_msg);                                    \
       free(err_msg);                                                           \
@@ -44,7 +44,7 @@ static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
 
   GLuint shader_id = glCreateShader(type);
 
-  const GLint len = shader_src.len;
+  const GLint len = (GLint)shader_src.len;
   glShaderSource(shader_id, 1, &shader_src.data, &len);
   glCompileShader(shader_id);
 

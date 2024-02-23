@@ -25,7 +25,7 @@ typedef struct {
 
 typedef struct {
   u32 id;
-  usize idx;
+  u32 idx;
 } CmVao;
 
 typedef struct {
