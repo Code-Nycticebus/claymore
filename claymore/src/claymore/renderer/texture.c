@@ -43,8 +43,8 @@ CmTexture2D cm_texture_from_file(Str filename, Error *error) {
   }
   clib_assert(bpp == 4, "Pixel format not supported!");
 
-  texture = cm_texture_from_memory((usize)width, (usize)height, texture_buffer,
-                                   CM_TEXTURE_RGBA);
+  texture =
+      cm_texture_from_memory(width, height, texture_buffer, CM_TEXTURE_RGBA);
 
   stbi_image_free(texture_buffer);
 
@@ -70,9 +70,9 @@ CmTexture2D cm_texture_from_memory(usize width, usize height, const void *data,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, TextureFormat[format].internal,
-               (GLsizei)texture.width, (GLsizei)texture.height, 0,
-               TextureFormat[format].format, TextureFormat[format].type, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, TextureFormat[format].internal, texture.width,
+               texture.height, 0, TextureFormat[format].format,
+               TextureFormat[format].type, data);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   return texture;

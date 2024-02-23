@@ -15,7 +15,8 @@ static void sandbox_init(CmScene *scene) {
   clib_log_info("sandbox init");
   Sandbox *sandbox = arena_alloc(&scene->arena, sizeof(Sandbox));
 
-  cm_window_bg_color((vec3){0.15f, 0.15f, 0.15f});
+  const vec3 bg_color = {0.15f, 0.15f, 0.15f};
+  cm_window_bg_color(bg_color);
 
   glm_ortho(0, 720, 0, 420, -1, 100.f, sandbox->view);
   glm_mat4_identity(sandbox->projection);
@@ -37,11 +38,11 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   cm_quad_begin(vp);
   const float size = 40;
   static float r = 0;
-  r += (3.141f / 2) * deltatime;
+  r += (PI / 2) * deltatime;
   for (usize i = 0; i < SANDBOX_MAX_QUADS; i++) {
     for (usize j = 0; j < SANDBOX_MAX_QUADS; j++) {
-      cm_quad_push((vec2){(float)i * size, (float)j * size}, (vec2){size, size},
-                   r, (vec4){rand_f32(), rand_f32(), rand_f32(), 1});
+      cm_quad_push((vec2){i * size, j * size}, (vec2){size, size}, r,
+                   (vec4){rand_f32(), rand_f32(), rand_f32(), 1});
     }
   }
   cm_quad_end();
