@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include "claymore/renderer/2D/quads.h"
 #include "claymore/renderer/context.h"
 #include "sound.h"
 #include "window.h"
@@ -38,6 +39,8 @@ bool app_internal_init(const ClaymoreConfig *config) {
     return false;
   }
 
+  cm_quad_internal_init();
+
   app.main_scene = cm_scene_internal_init(config->scene);
   app.last_frame = cm_window_time();
 
@@ -64,6 +67,7 @@ void app_internal_terminate(void) {
 
   cm_sound_interal_shutdown();
 
+  cm_quad_internal_free();
   cm_window_internal_close();
   arena_free(&app.arena);
 }
