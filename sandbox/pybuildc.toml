@@ -6,7 +6,8 @@ cflags=["-fsanitize=address"]
 
 [exe]
 sandbox="src/sandbox.c"
-texture_sandbox="src/texture_sandbox.c"
+texture="src/texture_sandbox.c"
+benchmark-2d="src/benchmark-2d.c"
 
 [deps.claymore]
 dir="../claymore/" 
