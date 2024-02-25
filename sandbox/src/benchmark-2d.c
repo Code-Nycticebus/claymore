@@ -132,11 +132,11 @@ const ClaymoreConfig *claymore_init(void) {
   static const ClaymoreConfig config = {
       .window =
           {
-              .width = 720,
-              .height = 420,
+              .width = width,
+              .height = height,
               .title = "benchmark",
           },
-      .scene = scene_init,
+      .main = scene_init,
   };
   return &config;
 }

@@ -1,9 +1,5 @@
 #include "claymore/entrypoint.h"
 
-const usize height = 420;
-const usize width = 720;
-const float aspect = (float)width / (float)height;
-
 CmSceneInterface *fps_scene_init(void);
 
 typedef struct {
@@ -51,7 +47,7 @@ const ClaymoreConfig *claymore_init(void) {
               .height = 420,
               .title = "sandbox",
           },
-      .scene = scene_init,
+      .main = scene_init,
   };
   return &config;
 }

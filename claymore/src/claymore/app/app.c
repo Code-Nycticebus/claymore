@@ -41,9 +41,9 @@ bool app_internal_init(const ClaymoreConfig *config) {
 
   cm_quad_internal_init();
 
-  app.main_scene = cm_scene_internal_init(&app.arena, config->scene);
+  app.main_scene = cm_scene_internal_init(&app.arena, config->main);
   if (!app.main_scene->interface->init) {
-    clib_log_error("Main scene needs a init function");
+    clib_log_error("Main CmSceneInterface needs an init function");
     return false;
   }
   app.main_scene->interface->init(&app.main_scene->data);

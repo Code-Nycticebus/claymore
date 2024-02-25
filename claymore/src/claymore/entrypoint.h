@@ -17,7 +17,9 @@ const ClaymoreConfig *claymore_init(void);
 
 int main(void) {
   const ClaymoreConfig *config = claymore_init();
-  app_internal_init(config);
+  if (!app_internal_init(config)) {
+    return -1;
+  }
   while (app_internal_update()) {
     // App running!
   }
