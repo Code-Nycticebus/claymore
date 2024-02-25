@@ -73,11 +73,16 @@ static void update(CmScene *scene, double deltatime) {
   const float fps = 1 / deltatime;
   if ((timer += deltatime) >= 1) {
     clib_log_info("grid: %" USIZE_FMT, grid * grid);
+    static usize count = 0;
+    count++;
+    static usize max = 0;
+    max += grid * grid;
+    clib_log_info("avg: %" USIZE_FMT, max / count);
     timer = 0;
   }
   Benchmark *benchmark = scene->data;
 
-  const float fps_threshold = 30;
+  const float fps_threshold = 60;
   grid += fps > fps_threshold ? 1 : grid > 0 ? -1 : 0;
 
   vec3 dir = {0};
