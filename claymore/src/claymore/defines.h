@@ -4,6 +4,7 @@
 // IWYU pragma: begin_exports
 
 #include <cglm/cglm.h>
+
 #include <clib/clib.h>
 
 // IWYU pragma: end_exports
@@ -18,7 +19,7 @@
 #define VEC4_ARG(v) v[0], v[1], v[2], v[3]
 
 #ifndef NDEBUG
-#define _CM_DEBUG
+#define CLAYMORE_DEBUG
 #endif
 
 #endif /* !__CLAYMORE_DEFINES_H__ */

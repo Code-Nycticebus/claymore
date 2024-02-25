@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#ifdef _CM_DEBUG
+#ifdef CLAYMORE_DEBUG
 static void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
                                       GLenum severity, GLsizei length,
                                       const GLchar *message,
@@ -117,7 +117,8 @@ bool cm_platform_context_init(void *window_context) {
   glfwGetWindowSize(window_context, &width, &height);
   glViewport(0, 0, width, height);
 
-#ifdef _CM_DEBUG
+#ifdef CLAYMORE_DEBUG
+  clib_log_debug("CLAYMORE DEBUG");
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);
 #endif

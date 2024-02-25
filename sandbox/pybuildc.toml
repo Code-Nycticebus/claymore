@@ -11,5 +11,5 @@ benchmark-2d="src/benchmark-2d.c"
 [deps.claymore]
 dir="../claymore/" 
 type="pybuildc"
-target="debug"
+mode="debug"
 

@@ -23,8 +23,6 @@ typedef struct {
 
 #define MAX_QUADS 317
 
-static float rand_f32(void) { return (float)rand() / (float)RAND_MAX; }
-
 static void on_event(CmScene *scene, CmEvent *event) {
   Benchmark *benchmark = scene->data;
 
@@ -115,7 +113,7 @@ static void update(CmScene *scene, double deltatime) {
   for (usize i = 0; i < grid; i++) {
     for (usize j = 0; j < grid; j++) {
       cm_quad_push((vec2){i * size, j * size}, (vec2){size, size}, r,
-                   (vec4){rand_f32(), rand_f32(), rand_f32(), 1});
+                   (vec4){.2f, .2f, .8f, 1});
     }
   }
   cm_quad_end();
