@@ -1,7 +1,5 @@
 #include "claymore/entrypoint.h"
 
-#include "claymore.h"
-
 const usize height = 420;
 const usize width = 720;
 const float aspect = (float)width / (float)height;

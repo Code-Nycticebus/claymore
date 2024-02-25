@@ -3,9 +3,7 @@
 #else
 #define __CLAYMORE_ENTRYPOINT__
 
-#include "defines.h"
-
-#include "claymore/app/app.h"
+#include "claymore.h"
 
 #if defined(WINDOWS) && !defined(CLAYMORE_DEBUG)
 #pragma comment(linker, "/subsystem:windows")
