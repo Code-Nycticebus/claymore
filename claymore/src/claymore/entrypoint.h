@@ -1,8 +1,17 @@
 #ifndef __CLAYMORE_ENTRYPOINT__
 #define __CLAYMORE_ENTRYPOINT__
 
-#define CLAYMORE_APP_INTERNAL
+#include "defines.h"
+
 #include "claymore/app/app.h"
+
+#if defined(WINDOWS) && !defined(CLAYMORE_DEBUG)
+#pragma comment(linker, "/subsystem:windows")
+#include <windows.h>
+#define main(...)                                                              \
+  WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,                 \
+                 LPSTR lpCmdLine, int nCmdShow)
+#endif
 
 const ClaymoreConfig *claymore_init(void);
 
