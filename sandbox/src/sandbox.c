@@ -6,6 +6,8 @@ const usize height = 420;
 const usize width = 720;
 const float aspect = (float)width / (float)height;
 
+CmSceneInterface *fps_scene_init(void);
+
 typedef struct {
   float zoom;
   vec3 position;
@@ -20,6 +22,7 @@ typedef struct {
 static void event(CmScene *scene, CmEvent *event) {
   Sandbox *sandbox = scene->data;
   (void)sandbox, (void)event;
+  cm_scene_push(scene, fps_scene_init);
 }
 
 static void init(CmScene *scene) {
@@ -29,13 +32,8 @@ static void init(CmScene *scene) {
 }
 
 static void update(CmScene *scene, double deltatime) {
-  static double timer = 0;
-  if ((timer += deltatime) >= 1) {
-    clib_log_info("fps: %.0f", 1 / deltatime);
-    timer = 0;
-  }
   Sandbox *sandbox = scene->data;
-  (void)sandbox;
+  (void)sandbox, (void)deltatime;
 }
 
 static void final(CmScene *scene) {

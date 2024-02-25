@@ -8,6 +8,8 @@ const float aspect = (float)width / (float)height;
 
 const float speed = 1000.f;
 
+CmSceneInterface *fps_scene_init(void);
+
 typedef struct {
   float zoom;
   vec3 position;
@@ -59,6 +61,8 @@ static void init(CmScene *scene) {
   glm_mat4_identity(benchmark->camera.view);
   glm_translate(benchmark->camera.view, (vec3){0});
 
+  cm_scene_push(scene, fps_scene_init);
+
   scene->data = benchmark;
 }
 
@@ -68,7 +72,6 @@ static void update(CmScene *scene, double deltatime) {
   static double timer = 0;
   const float fps = 1 / deltatime;
   if ((timer += deltatime) >= 1) {
-    clib_log_info("fps: %.0f", fps);
     clib_log_info("grid: %" USIZE_FMT, grid * grid);
     timer = 0;
   }
