@@ -34,6 +34,7 @@ vec3 positions[] = {
 static void init(CmScene *scene) {
   clib_log_info("sandbox init");
   Sandbox *sandbox = arena_calloc(&scene->arena, sizeof(Sandbox));
+  scene->data = sandbox;
 
   sandbox->mesh = cm_mesh_create(&scene->gpu, 4, vertices);
   sandbox->pos = cm_mesh_attach_vec3_instanced(&sandbox->mesh, 1, positions);
@@ -64,8 +65,6 @@ static void init(CmScene *scene) {
       STR("sandbox/res/textures/claymore-sword.png"), ErrPanic);
 
   cm_window_bg_color((vec3){0.15f, 0.15f, 0.15f});
-
-  scene->data = sandbox;
 }
 
 static void update(CmScene *scene, double deltatime) {

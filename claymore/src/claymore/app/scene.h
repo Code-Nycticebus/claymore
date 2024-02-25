@@ -25,7 +25,7 @@ typedef struct CmSceneInternal {
   CmScene data; // has to be first!
   const CmSceneInterface *interface;
   struct CmSceneInternal *parent;
-  DA(struct CmSceneInternal) children;
+  DA(struct CmSceneInternal *) children;
 } CmSceneInternal;
 
 void cm_scene_push(CmScene *scene, CmSceneInit init);
@@ -35,7 +35,7 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
 
 // INTERNAL
 
-CmSceneInternal cm_scene_internal_init(CmSceneInit init);
+CmSceneInternal *cm_scene_internal_init(Arena *arena, CmSceneInit init);
 void cm_scene_internal_update(CmSceneInternal *scene, double deltatime);
 void cm_scene_internal_final(CmSceneInternal *scene);
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event);

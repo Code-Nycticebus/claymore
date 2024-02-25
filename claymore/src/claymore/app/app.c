@@ -16,11 +16,11 @@ static double dt_get(double *last_frame) {
 
 static struct {
   double last_frame;
-  CmSceneInternal main_scene;
+  CmSceneInternal *main_scene;
   Arena arena;
 } app;
 
-CmScene *app_root(void) { return &app.main_scene.data; }
+CmScene *app_root(void) { return &app.main_scene->data; }
 
 bool app_internal_init(const ClaymoreConfig *config) {
   if (!cm_window_internal_create(config->window.width, config->window.height,
@@ -41,7 +41,12 @@ bool app_internal_init(const ClaymoreConfig *config) {
 
   cm_quad_internal_init();
 
-  app.main_scene = cm_scene_internal_init(config->scene);
+  app.main_scene = cm_scene_internal_init(&app.arena, config->scene);
+  if (!app.main_scene->interface->init) {
+    clib_log_error("Main scene needs a init function");
+    return false;
+  }
+  app.main_scene->interface->init(&app.main_scene->data);
   app.last_frame = cm_window_time();
 
   return true;
@@ -55,7 +60,7 @@ bool app_internal_update(void) {
 
   double deltatime = dt_get(&app.last_frame);
 
-  cm_scene_internal_update(&app.main_scene, deltatime);
+  cm_scene_internal_update(app.main_scene, deltatime);
 
   cm_window_internal_swap_buffers();
   cm_window_internal_poll_events();
@@ -63,7 +68,7 @@ bool app_internal_update(void) {
 }
 
 void app_internal_final(void) {
-  cm_scene_internal_final(&app.main_scene);
+  cm_scene_internal_final(app.main_scene);
 
   cm_sound_interal_shutdown();
 
@@ -73,5 +78,5 @@ void app_internal_final(void) {
 }
 
 void app_internal_event(CmEvent *event) {
-  cm_scene_internal_event(&app.main_scene, event);
+  cm_scene_internal_event(app.main_scene, event);
 }
