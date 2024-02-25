@@ -1,4 +1,6 @@
-#ifndef __CLAYMORE_ENTRYPOINT__
+#ifdef __CLAYMORE_ENTRYPOINT__
+#error "claymore entrypoint included twice"
+#else
 #define __CLAYMORE_ENTRYPOINT__
 
 #include "defines.h"
@@ -17,16 +19,11 @@ const ClaymoreConfig *claymore_init(void);
 
 int main(void) {
   const ClaymoreConfig *config = claymore_init();
-
   app_internal_init(config);
-
   while (app_internal_update()) {
     // App running!
   }
-
   app_internal_final();
 }
 
-#else
-#error "claymore entrypoint included twice"
 #endif
