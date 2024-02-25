@@ -22,8 +22,8 @@ CmScene *app_root(void);
 
 bool app_internal_init(const ClaymoreConfig *config);
 bool app_internal_update(void);
-void app_internal_terminate(void);
+void app_internal_final(void);
 
-void app_internal_on_event(CmEvent *event);
+void app_internal_event(CmEvent *event);
 
 #endif /* !__CLAYMORE_APP_H__ */

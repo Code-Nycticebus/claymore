@@ -31,7 +31,7 @@ vec3 positions[] = {
     {-1.0f, -1.0f, 0.0f},
 };
 
-static void sandbox_init(CmScene *scene) {
+static void init(CmScene *scene) {
   clib_log_info("sandbox init");
   Sandbox *sandbox = arena_calloc(&scene->arena, sizeof(Sandbox));
 
@@ -68,7 +68,7 @@ static void sandbox_init(CmScene *scene) {
   scene->data = sandbox;
 }
 
-static void sandbox_update(CmScene *scene, double deltatime) {
+static void update(CmScene *scene, double deltatime) {
   (void)deltatime;
   Sandbox *sandbox = scene->data;
 
@@ -78,16 +78,17 @@ static void sandbox_update(CmScene *scene, double deltatime) {
   cm_mesh_draw_indexed(&sandbox->mesh, CM_DRAW_TRIANGLES);
 }
 
-static void sandbox_free(CmScene *scene) {
-  (void)scene;
-  clib_log_info("sandbox free");
+static void final(CmScene *scene) {
+  Sandbox *sandbox = scene->data;
+  cm_shader_delete(&sandbox->shader);
+  cm_texture_delete(&sandbox->texture);
 }
 
-static CmSceneInterface *sandbox_scene_init(void) {
+static CmSceneInterface *scene_init(void) {
   static CmSceneInterface sandbox = {
-      .init = sandbox_init,
-      .update = sandbox_update,
-      .free = sandbox_free,
+      .init = init,
+      .update = update,
+      .final = final,
   };
   return &sandbox;
 }
@@ -100,7 +101,7 @@ const ClaymoreConfig *claymore_init(void) {
               .height = 420,
               .title = "sandbox",
           },
-      .scene = sandbox_scene_init,
+      .scene = scene_init,
   };
   return &config;
 }

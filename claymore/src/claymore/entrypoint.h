@@ -15,7 +15,7 @@ int main(void) {
     // App running!
   }
 
-  app_internal_terminate();
+  app_internal_final();
 }
 
 #else

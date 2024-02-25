@@ -62,8 +62,8 @@ bool app_internal_update(void) {
   return true;
 }
 
-void app_internal_terminate(void) {
-  cm_scene_internal_free(&app.main_scene);
+void app_internal_final(void) {
+  cm_scene_internal_final(&app.main_scene);
 
   cm_sound_interal_shutdown();
 
@@ -72,6 +72,6 @@ void app_internal_terminate(void) {
   arena_free(&app.arena);
 }
 
-void app_internal_on_event(CmEvent *event) {
-  cm_scene_internal_on_event(&app.main_scene, event);
+void app_internal_event(CmEvent *event) {
+  cm_scene_internal_event(&app.main_scene, event);
 }

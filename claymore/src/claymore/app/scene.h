@@ -15,8 +15,8 @@ typedef struct {
 typedef const struct {
   void (*init)(CmScene *scene);
   void (*update)(CmScene *scene, double deltatime);
-  void (*free)(CmScene *scene);
-  void (*on_event)(CmScene *scene, CmEvent *event);
+  void (*final)(CmScene *scene);
+  void (*event)(CmScene *scene, CmEvent *event);
 } CmSceneInterface;
 
 typedef const CmSceneInterface *(*CmSceneInit)(void);
@@ -37,7 +37,7 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
 
 CmSceneInternal cm_scene_internal_init(CmSceneInit init);
 void cm_scene_internal_update(CmSceneInternal *scene, double deltatime);
-void cm_scene_internal_free(CmSceneInternal *scene);
-void cm_scene_internal_on_event(CmSceneInternal *scene, CmEvent *event);
+void cm_scene_internal_final(CmSceneInternal *scene);
+void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event);
 
 #endif /* !__CLAYMORE_SCENE_H__ */

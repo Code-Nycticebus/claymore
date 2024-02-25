@@ -1,4 +1,3 @@
-#include "cglm/vec3.h"
 #include "claymore/entrypoint.h"
 
 #include "claymore.h"
@@ -20,11 +19,31 @@ typedef struct {
   Camera camera;
 } Benchmark;
 
-#define benchmark_MAX_QUADS 317
+#define MAX_QUADS 317
 
 static float rand_f32(void) { return (float)rand() / (float)RAND_MAX; }
 
-static void benchmark_init(CmScene *scene) {
+static void on_event(CmScene *scene, CmEvent *event) {
+  Benchmark *benchmark = scene->data;
+
+  cm_event_key(event, {
+    if (key->code == CM_KEY_ESCAPE) {
+      cm_window_close(true);
+    }
+  });
+
+  cm_event_scroll(event, {
+    const float min_zoom = 1.F;
+    const float scroll_speed = 10.F;
+    float zoom = benchmark->camera.zoom;
+    zoom = glm_max(zoom - scroll->offset[1] * (zoom / scroll_speed), min_zoom);
+    glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
+              benchmark->camera.projection);
+    benchmark->camera.zoom = zoom;
+  });
+}
+
+static void init(CmScene *scene) {
   clib_log_info("benchmark init");
   Benchmark *benchmark = arena_alloc(&scene->arena, sizeof(Benchmark));
 
@@ -43,7 +62,7 @@ static void benchmark_init(CmScene *scene) {
   scene->data = benchmark;
 }
 
-static void benchmark_update(CmScene *scene, double deltatime) {
+static void update(CmScene *scene, double deltatime) {
   static usize grid = 1;
 
   static double timer = 0;
@@ -94,37 +113,11 @@ static void benchmark_update(CmScene *scene, double deltatime) {
   cm_quad_end();
 }
 
-static void benchmark_free(CmScene *scene) {
-  (void)scene;
-  clib_log_info("benchmark free");
-}
-
-static void benchmark_on_event(CmScene *scene, CmEvent *event) {
-  Benchmark *benchmark = scene->data;
-
-  cm_event_key(event, {
-    if (key->code == CM_KEY_ESCAPE) {
-      cm_window_close(true);
-    }
-  });
-
-  cm_event_scroll(event, {
-    const float min_zoom = 1.F;
-    const float scroll_speed = 10.F;
-    float zoom = benchmark->camera.zoom;
-    zoom = glm_max(zoom - scroll->offset[1] * (zoom / scroll_speed), min_zoom);
-    glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
-              benchmark->camera.projection);
-    benchmark->camera.zoom = zoom;
-  });
-}
-
-static CmSceneInterface *benchmark_scene_init(void) {
+static CmSceneInterface *scene_init(void) {
   static CmSceneInterface benchmark = {
-      .init = benchmark_init,
-      .update = benchmark_update,
-      .free = benchmark_free,
-      .on_event = benchmark_on_event,
+      .init = init,
+      .update = update,
+      .event = on_event,
   };
   return &benchmark;
 }
@@ -137,7 +130,7 @@ const ClaymoreConfig *claymore_init(void) {
               .height = 420,
               .title = "benchmark",
           },
-      .scene = benchmark_scene_init,
+      .scene = scene_init,
   };
   return &config;
 }
