@@ -23,7 +23,9 @@ CmSceneInternal cm_scene_internal_init(const CmSceneInit init) {
   scene.interface = init();
   da_init(&scene.children, &scene.data.arena);
   scene.data.gpu = cm_gpu_internal_init(&scene.data.arena);
-  scene.interface->init(&scene.data);
+  if (scene.interface->init) {
+    scene.interface->init(&scene.data);
+  }
   return scene;
 }
 
@@ -31,14 +33,18 @@ void cm_scene_internal_update(CmSceneInternal *scene, double deltatime) {
   for (usize i = 0; i < scene->children.len; i++) {
     cm_scene_internal_update(&scene->children.items[i], deltatime);
   }
-  scene->interface->update(&scene->data, deltatime);
+  if (scene->interface->update) {
+    scene->interface->update(&scene->data, deltatime);
+  }
 }
 
 void cm_scene_internal_final(CmSceneInternal *scene) {
   for (usize i = 0; i < scene->children.len; i++) {
     cm_scene_internal_final(&scene->children.items[i]);
   }
-  scene->interface->final(&scene->data);
+  if (scene->interface->final) {
+    scene->interface->final(&scene->data);
+  }
   cm_gpu_internal_free(&scene->data.gpu);
   arena_free(&scene->data.arena);
 }
