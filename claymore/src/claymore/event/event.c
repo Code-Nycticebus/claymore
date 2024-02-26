@@ -14,3 +14,10 @@ CmKeyAction cm_event_key_pressed(CmKeyCodes key) {
 CmKeyAction cm_event_mouse_button_pressed(CmMouseButtons button) {
   return (CmKeyAction)glfwGetMouseButton(cm_window_context(), (int)button);
 }
+
+void cm_event_cursor_position(vec2 out) {
+  double pos[2];
+  glfwGetCursorPos(cm_window_context(), &pos[0], &pos[1]);
+  out[0] = pos[0];
+  out[1] = pos[1];
+}
