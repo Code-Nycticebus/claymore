@@ -10,8 +10,8 @@ typedef struct {
 } Camera;
 
 typedef struct {
-  usize count;
   Camera camera;
+  CmTexture2D texture;
 } Sandbox;
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -27,13 +27,25 @@ static void event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   Sandbox *sandbox = arena_alloc(&scene->arena, sizeof(Sandbox));
   scene->data = sandbox;
-  sandbox->count = 0;
+  sandbox->texture = cm_texture_from_file(
+      STR("sandbox/res/textures/claymore-sword.png"), ErrPanic);
   cm_scene_push(scene, fps_scene_init);
+}
+
+static void update(CmScene *scene, double dt) {
+  (void)dt;
+  Sandbox *sandbox = scene->data;
+  mat4 vp = GLM_MAT4_IDENTITY_INIT;
+  cm_sprite_begin(vp, &sandbox->texture);
+  cm_sprite_push((vec2){-.5f, -.5f}, (vec2){1.f, 1.f}, 0, (vec2){0, 0},
+                 (vec2){1, 1});
+  cm_sprite_end();
 }
 
 static CmSceneInterface *scene_init(void) {
   static CmSceneInterface sandbox = {
       .init = init,
+      .update = update,
       .event = event,
   };
   return &sandbox;

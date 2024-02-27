@@ -34,7 +34,7 @@ struct RenderQuadData {
   uint32_t indices[CM_QUADS_INDICES_MAX];
 };
 
-struct RenderQuadData *renderer = NULL;
+static struct RenderQuadData *renderer = NULL;
 
 static void cm_quad_flush(void) {
   cm_gpu_vbo_update(&renderer->vbo, sizeof(Vertex), renderer->vertices_count,
