@@ -81,8 +81,10 @@ void cm_quad_push(const vec2 position, const vec2 size, float rotation,
   Vertex *vertices = &renderer->data[renderer->vertices_count];
   for (int i = 0; i < CM_QUADS_VERTICES; ++i) {
     if (rotation != 0.f) {
-      quad[i][0] = quad[i][0] * cos_theta - quad[i][1] * sin_theta;
-      quad[i][1] = quad[i][1] * cos_theta + quad[i][0] * sin_theta;
+      const float x = quad[i][0];
+      const float y = quad[i][1];
+      quad[i][0] = x * cos_theta - y * sin_theta;
+      quad[i][1] = x * sin_theta + y * cos_theta;
     }
 
     vertices[i].pos[0] = quad[i][0] + position[0];
