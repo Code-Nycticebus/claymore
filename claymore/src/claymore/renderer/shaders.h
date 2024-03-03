@@ -2,6 +2,7 @@
 #define __CLAYMORE_SHADERS_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
+#include "claymore/renderer/gpu.h"
 
 #ifndef CM_SHADER_UNIFORM_MAX
 #define CM_SHADER_UNIFORM_MAX 10
@@ -16,10 +17,8 @@ typedef struct {
   } uniforms[CM_SHADER_UNIFORM_MAX];
 } CmShader;
 
-CmShader cm_shader_from_file(Str vs, Str fs, Error *e);
-CmShader cm_shader_from_memory(Str vs, Str fs, Error *e);
-
-void cm_shader_delete(CmShader *shader);
+CmShader cm_shader_from_file(CmGpu *gpu, Str vs, Str fs, Error *e);
+CmShader cm_shader_from_memory(CmGpu *gpu, Str vs, Str fs, Error *e);
 
 void cm_shader_bind(const CmShader *shader);
 void cm_shader_unbind(void);

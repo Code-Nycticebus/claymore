@@ -54,7 +54,7 @@ static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
   return shader_id;
 }
 
-CmShader cm_shader_from_file(Str vs, Str fs, Error *e) {
+CmShader cm_shader_from_file(CmGpu *gpu, Str vs, Str fs, Error *e) {
   CmShader program = {0};
   Arena temp = {0};
 
@@ -64,7 +64,7 @@ CmShader cm_shader_from_file(Str vs, Str fs, Error *e) {
   Str fs_content = file_read_str(fs, &temp, e);
   error_propagate(e, { goto defer; });
 
-  program = cm_shader_from_memory(vs_content, fs_content, e);
+  program = cm_shader_from_memory(gpu, vs_content, fs_content, e);
   error_propagate(e, { goto defer; });
 
 defer:
@@ -72,7 +72,7 @@ defer:
   return program;
 }
 
-CmShader cm_shader_from_memory(Str vs, Str fs, Error *e) {
+CmShader cm_shader_from_memory(CmGpu *gpu, Str vs, Str fs, Error *e) {
   CmShader program = {0};
   GLuint vs_id = 0;
   GLuint fs_id = 0;
@@ -83,7 +83,7 @@ CmShader cm_shader_from_memory(Str vs, Str fs, Error *e) {
   fs_id = _cm_compile_shader(fs, GL_FRAGMENT_SHADER, e);
   error_propagate(e, { goto defer; });
 
-  program.id = glCreateProgram();
+  program.id = cm_gpu_program(gpu);
   glAttachShader(program.id, vs_id);
   glAttachShader(program.id, fs_id);
   glLinkProgram(program.id);
@@ -100,8 +100,6 @@ defer:
   }
   return program;
 }
-
-void cm_shader_delete(CmShader *shader) { glDeleteProgram(shader->id); }
 
 void cm_shader_bind(const CmShader *shader) { glUseProgram(shader->id); }
 void cm_shader_unbind(void) { glUseProgram(0); }

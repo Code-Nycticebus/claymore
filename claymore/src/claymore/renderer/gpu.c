@@ -98,6 +98,12 @@ void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
   vao->idx++;
 }
 
+CmGpuID cm_gpu_program(CmGpu *b) {
+  CmGpuID program = glCreateProgram();
+  da_push(&b->program, program);
+  return program;
+}
+
 CmGpu cm_gpu_internal_init(Arena *arena) {
   CmGpu gpu = {0};
   da_init(&gpu.vbo, arena);

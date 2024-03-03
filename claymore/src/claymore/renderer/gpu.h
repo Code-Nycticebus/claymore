@@ -48,6 +48,8 @@ void cm_gpu_vao_push(CmVao *vao, usize count, usize stride, usize offset);
 void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
                           usize offset);
 
+CmGpuID cm_gpu_program(CmGpu *b);
+
 CmGpu cm_gpu_internal_init(Arena *arena);
 void cm_gpu_internal_free(CmGpu *bm);
 

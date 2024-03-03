@@ -121,7 +121,8 @@ void cm_sprite_internal_init(void) {
   renderer->ebo = cm_gpu_ebo(&renderer->gpu, CM_STATIC_DRAW,
                              CM_SPRITES_INDICES_MAX, renderer->indices);
 
-  renderer->shader = cm_shader_from_memory( // Format like this pls
+  renderer->shader = cm_shader_from_memory(
+      &renderer->gpu,
       STR("#version 330 core\n"
           "layout (location = 0) in vec2 a_pos;\n"
           "layout (location = 1) in vec2 a_uv;\n"
@@ -146,7 +147,6 @@ void cm_sprite_internal_init(void) {
 }
 
 void cm_sprite_internal_free(void) {
-  cm_shader_delete(&renderer->shader);
   cm_gpu_internal_free(&renderer->gpu);
   arena_free(&renderer->arena);
   free(renderer);
