@@ -28,10 +28,13 @@ typedef struct {
   u32 idx;
 } CmVao;
 
+typedef u32 CmGpuID;
+
 typedef struct {
-  DA(CmVbo) vbo;
-  DA(CmEbo) ebo;
-  DA(CmVao) vao;
+  DA(CmGpuID) vbo;
+  DA(CmGpuID) ebo;
+  DA(CmGpuID) vao;
+  DA(CmGpuID) program;
 } CmGpu;
 
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);

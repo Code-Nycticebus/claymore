@@ -31,7 +31,7 @@ CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
   glBufferData(GL_ARRAY_BUFFER, len * s, v, get_type(type));
 
-  da_push(&b->vbo, vbo);
+  da_push(&b->vbo, vbo.id);
   return vbo;
 }
 
@@ -53,7 +53,7 @@ CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), i, get_type(type));
 
-  da_push(&b->ebo, ebo);
+  da_push(&b->ebo, ebo.id);
   return ebo;
 }
 
@@ -73,7 +73,7 @@ CmVao cm_gpu_vao(CmGpu *b) {
   glGenVertexArrays(1, &vao.id);
   glBindVertexArray(vao.id);
 
-  da_push(&b->vao, vao);
+  da_push(&b->vao, vao.id);
 
   return vao;
 }
@@ -109,17 +109,15 @@ CmGpu cm_gpu_internal_init(Arena *arena) {
   da_init(&gpu.vbo, arena);
   da_init(&gpu.vao, arena);
   da_init(&gpu.ebo, arena);
+  da_init(&gpu.program, arena);
   return gpu;
 }
 
 void cm_gpu_internal_free(CmGpu *b) {
-  for (usize i = 0; i < b->vao.len; ++i) {
-    glDeleteVertexArrays(1, &b->vao.items[i].id);
-  }
-  for (usize i = 0; i < b->ebo.len; ++i) {
-    glDeleteBuffers(1, &b->ebo.items[i].id);
-  }
-  for (usize i = 0; i < b->vbo.len; ++i) {
-    glDeleteBuffers(1, &b->vbo.items[i].id);
+  glDeleteVertexArrays(b->vao.len, b->vao.items);
+  glDeleteBuffers(b->ebo.len, b->ebo.items);
+  glDeleteBuffers(b->vbo.len, b->vbo.items);
+  for (usize i = 0; i < b->program.len; ++i) {
+    glDeleteProgram(b->program.items[i]);
   }
 }
