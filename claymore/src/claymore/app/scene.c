@@ -23,9 +23,8 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
 }
 
 void *cm_scene_alloc_data(CmScene *scene, usize size) {
-  void *data = arena_calloc(&scene->arena, size);
-  scene->data = data;
-  return data;
+  scene->data = arena_calloc(&scene->arena, size);
+  return scene->data;
 }
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
