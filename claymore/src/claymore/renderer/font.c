@@ -102,12 +102,10 @@ CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
 }
 
 static void _cm_font_renderer_flush(CmFont *font) {
-  glDisable(GL_CULL_FACE);
   cm_gpu_vbo_update(&font->vertex_buffer, sizeof(Vertex), font->vertex_count,
                     (float *)font->buffer);
   glDrawArrays(GL_TRIANGLES, 0, font->vertex_count);
   font->vertex_count = 0;
-  glEnable(GL_CULL_FACE);
 }
 
 void cm_font_draw(CmFont *font, const mat4 mvp, const vec3 pos, Str text) {

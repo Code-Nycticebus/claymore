@@ -31,6 +31,7 @@ typedef struct {
 typedef u32 CmGpuID;
 
 typedef struct {
+  Arena *arena;
   DA(CmGpuID) vbo;
   DA(CmGpuID) ebo;
   DA(CmGpuID) vao;

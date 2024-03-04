@@ -1,5 +1,7 @@
 #include "claymore/entrypoint.h"
 
+#include "claymore/renderer/font.h"
+
 CmSceneInterface *fps_scene_init(void);
 
 typedef struct {
@@ -11,6 +13,7 @@ typedef struct {
 
 typedef struct {
   Camera camera;
+  CmFont *font;
   CmTexture2D texture;
 } Sandbox;
 
@@ -22,11 +25,21 @@ static void event(CmScene *scene, CmEvent *event) {
       cm_window_close(true);
     }
   });
+
+  cm_event_cursor(event, { clib_log_info(VEC2_FMT, VEC2_ARG(cursor->pos)); });
 }
 
 static void init(CmScene *scene) {
   Sandbox *sandbox = cm_scene_alloc_data(scene, sizeof(Sandbox));
-  (void)sandbox;
+
+  glm_ortho(0, 720, 420, 0, -1.F, 100.F, sandbox->camera.projection);
+
+  glm_vec3_zero(sandbox->camera.position);
+  glm_mat4_identity(sandbox->camera.view);
+  glm_translate(sandbox->camera.view, (vec3){0});
+
+  sandbox->font = cm_font_init(&scene->gpu, STR("sandbox/res/fonts/Ubuntu.ttf"),
+                               32.f, ErrPanic);
 
   cm_scene_push(scene, fps_scene_init);
 }
@@ -34,8 +47,14 @@ static void init(CmScene *scene) {
 static void update(CmScene *scene, double dt) {
   (void)dt;
   Sandbox *sandbox = scene->data;
-  mat4 vp = GLM_MAT4_IDENTITY_INIT;
-  (void)sandbox, (void)vp;
+  mat4 vp;
+  glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
+
+  cm_font_draw(sandbox->font, vp, (vec3){0, -50, 0}, STR("Hello World!"));
+
+  cm_quad_begin(vp);
+  cm_quad_push((vec2){10, 50}, (vec2){100, 150}, 0, (vec4){1, 0, 0, 1});
+  cm_quad_end();
 }
 
 static CmSceneInterface *scene_init(void) {

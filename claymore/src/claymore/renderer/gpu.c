@@ -106,6 +106,7 @@ CmGpuID cm_gpu_program(CmGpu *b) {
 
 CmGpu cm_gpu_internal_init(Arena *arena) {
   CmGpu gpu = {0};
+  gpu.arena = arena;
   da_init(&gpu.vbo, arena);
   da_init(&gpu.vao, arena);
   da_init(&gpu.ebo, arena);
