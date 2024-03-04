@@ -13,6 +13,7 @@
 
 #include "claymore/renderer/2D/quads.h"
 #include "claymore/renderer/2D/sprites.h"
+#include "claymore/renderer/font.h"
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/mesh.h"
 #include "claymore/renderer/shaders.h"

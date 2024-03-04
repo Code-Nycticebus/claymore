@@ -119,7 +119,7 @@ void cm_font_draw(CmFont *font, const mat4 mvp, const vec3 pos, Str text) {
   glBindBuffer(GL_ARRAY_BUFFER, font->vertex_buffer.id);
   glBindVertexArray(font->vertex_array.id);
 
-  float text_y = -pos[1];
+  float text_y = pos[1];
   float text_x = pos[0];
   Vertex *current_vertex = font->buffer;
   for (size_t i = 0; i < text.len; i++) {

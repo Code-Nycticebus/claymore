@@ -36,11 +36,11 @@ CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
 }
 
 void cm_scene_internal_update(CmSceneInternal *scene, double deltatime) {
-  for (usize i = 0; i < scene->children.len; i++) {
-    cm_scene_internal_update(scene->children.items[i], deltatime);
-  }
   if (scene->interface->update) {
     scene->interface->update(&scene->data, deltatime);
+  }
+  for (usize i = 0; i < scene->children.len; i++) {
+    cm_scene_internal_update(scene->children.items[i], deltatime);
   }
 }
 
