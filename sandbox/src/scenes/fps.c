@@ -5,8 +5,7 @@ typedef struct {
 } Fps;
 
 static void init(CmScene *scene) {
-  Fps *fps = arena_calloc(&scene->arena, sizeof(Fps));
-  scene->data = fps;
+  Fps *fps = cm_scene_alloc_data(scene, sizeof(Fps));
   fps->timer = 0;
 }
 
