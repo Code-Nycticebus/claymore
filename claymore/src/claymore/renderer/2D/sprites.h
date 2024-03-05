@@ -2,7 +2,7 @@
 #define __CLAYMORE_SPRITES_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
-#include "claymore/renderer/texture.h"
+#include "claymore/renderer/2D/texture.h"
 
 void cm_sprite_begin(const mat4 mvp, CmTexture2D *texture);
 void cm_sprite_end(void);

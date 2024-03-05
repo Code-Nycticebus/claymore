@@ -1,7 +1,5 @@
 #include "claymore/entrypoint.h"
 
-#include "claymore/renderer/font.h"
-
 CmSceneInterface *fps_scene_init(void);
 
 typedef struct {

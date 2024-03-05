@@ -11,13 +11,13 @@
 
 #include "claymore/event/event.h"
 
+#include "claymore/renderer/2D/font.h"
 #include "claymore/renderer/2D/quads.h"
 #include "claymore/renderer/2D/sprites.h"
-#include "claymore/renderer/font.h"
+#include "claymore/renderer/2D/texture.h"
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/mesh.h"
 #include "claymore/renderer/shaders.h"
-#include "claymore/renderer/texture.h"
 
 // IWYU pragma: end_exports
 

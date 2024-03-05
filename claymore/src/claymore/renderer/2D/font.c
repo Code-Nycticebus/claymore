@@ -1,6 +1,6 @@
 #include "font.h"
 
-#include "shaders.h"
+#include "claymore/renderer/shaders.h"
 
 #include <GL/glew.h>
 #include <stb_truetype.h>
