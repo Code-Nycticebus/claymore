@@ -2,7 +2,7 @@
 #define __CLAYMORE_FONT_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
-#include "gpu.h"
+#include "claymore/renderer/gpu.h"
 
 typedef struct CmFont CmFont;
 

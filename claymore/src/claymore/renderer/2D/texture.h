@@ -21,6 +21,7 @@ CmTexture2D cm_texture_from_memory(usize width, usize height, const void *data,
 void cm_texture_bind(CmTexture2D *texture, uint32_t slot);
 void cm_texture_unbind(uint32_t slot);
 
+// TODO remove and move it to GPU
 void cm_texture_delete(CmTexture2D *texture);
 
 #endif /* !__CLAYMORE_TEXTURE2D_H__ */
