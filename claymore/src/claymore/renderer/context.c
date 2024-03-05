@@ -78,7 +78,7 @@ static void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
   }
 
   if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
-    clib_log_info("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
+    // clib_log_info("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
   } else if (severity == GL_DEBUG_SEVERITY_LOW) {
     clib_log_warning("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
   } else if (severity == GL_DEBUG_SEVERITY_MEDIUM ||

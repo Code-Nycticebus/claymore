@@ -48,7 +48,7 @@ static void init(CmScene *scene) {
   Benchmark *benchmark = arena_alloc(&scene->arena, sizeof(Benchmark));
 
   const vec3 bg_color = {0.15f, 0.15f, 0.15f};
-  cm_window_bg_color(bg_color);
+  cm_window_set_bg(bg_color);
 
   const float zoom = 100.f;
   benchmark->camera.zoom = zoom;

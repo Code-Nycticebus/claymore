@@ -139,7 +139,7 @@ void cm_quad_internal_init(void) {
       ErrPanic);
 
   const usize bytes = sizeof(struct RenderQuadData) / 1000;
-  clib_log_info("Renderer: %" USIZE_FMT " kb", bytes);
+  clib_log_info("Quad Renderer: %" USIZE_FMT " kb", bytes);
 }
 
 void cm_quad_internal_free(void) {

@@ -5,27 +5,8 @@
 #include <GL/glew.h>
 #include <stb_truetype.h>
 
-static Str font_vs = STR( //
-    "#version 120\n"
-    "attribute vec3 a_pos;\n"
-    "attribute vec2 a_uv;\n"
-    "varying vec2 v_uv;\n"
-    "uniform mat4 u_mvp;\n"
-    "void main() {\n"
-    "  gl_Position = u_mvp * vec4(a_pos.xyz, 1.0);\n"
-    "  v_uv = a_uv;\n"
-    "}\n");
-
-static Str font_fs = STR( //
-    "#version 120\n"
-    "varying vec2 v_uv;\n"
-    "uniform sampler2D u_texture;\n"
-    "void main() {\n"
-    " gl_FragColor = vec4(texture2D(u_texture, v_uv).r);\n"
-    "}\n");
-
 typedef struct {
-  vec3 pos;
+  vec2 pos;
   vec2 uv;
 } Vertex;
 
@@ -56,8 +37,24 @@ CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
                      Error *error) {
   CmFont *font_renderer = arena_calloc(gpu->arena, sizeof(CmFont));
 
-  font_renderer->shader =
-      cm_shader_from_memory(gpu, font_vs, font_fs, ErrDefault);
+  font_renderer->shader = cm_shader_from_memory(
+      gpu,
+      STR("#version 120\n"
+          "attribute vec2 a_pos;\n"
+          "attribute vec2 a_uv;\n"
+          "varying vec2 v_uv;\n"
+          "uniform mat4 u_mvp;\n"
+          "void main() {\n"
+          "  gl_Position = u_mvp * vec4(a_pos.xy, 0, 1.0);\n"
+          "  v_uv = a_uv;\n"
+          "}\n"),
+      STR("#version 120\n"
+          "varying vec2 v_uv;\n"
+          "uniform sampler2D u_texture;\n"
+          "void main() {\n"
+          " gl_FragColor = vec4(texture2D(u_texture, v_uv).r);\n"
+          "}\n"),
+      ErrDefault);
 
   GLint max_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
@@ -90,7 +87,7 @@ CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
       FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX, NULL);
 
   font_renderer->vertex_array = cm_gpu_vao(gpu);
-  cm_gpu_vao_push(&font_renderer->vertex_array, 3, sizeof(Vertex),
+  cm_gpu_vao_push(&font_renderer->vertex_array, 2, sizeof(Vertex),
                   offsetof(Vertex, pos));
   cm_gpu_vao_push(&font_renderer->vertex_array, 2, sizeof(Vertex),
                   offsetof(Vertex, uv));
@@ -108,7 +105,7 @@ static void _cm_font_renderer_flush(CmFont *font) {
   font->vertex_count = 0;
 }
 
-void cm_font_draw(CmFont *font, const mat4 mvp, const vec3 pos, Str text) {
+void cm_font_draw(CmFont *font, const mat4 mvp, const vec2 pos, Str text) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
@@ -136,23 +133,23 @@ void cm_font_draw(CmFont *font, const mat4 mvp, const vec3 pos, Str text) {
                          font->ttf_resoulution, text.data[i] - FONT_CHAR_MIN,
                          &text_x, &text_y, &q, 1);
 
-      glm_vec3_copy((vec3){q.x0, q.y0, pos[2]}, current_vertex[0].pos);
+      glm_vec2_copy((vec2){q.x0, q.y0}, current_vertex[0].pos);
       glm_vec2_copy((vec2){q.s0, q.t0}, current_vertex[0].uv);
 
-      glm_vec3_copy((vec3){q.x1, q.y0, pos[2]}, current_vertex[1].pos);
+      glm_vec2_copy((vec2){q.x1, q.y0}, current_vertex[1].pos);
       glm_vec2_copy((vec2){q.s1, q.t0}, current_vertex[1].uv);
 
-      glm_vec3_copy((vec3){q.x1, q.y1, pos[2]}, current_vertex[2].pos);
+      glm_vec2_copy((vec2){q.x1, q.y1}, current_vertex[2].pos);
       glm_vec2_copy((vec2){q.s1, q.t1}, current_vertex[2].uv);
 
-      glm_vec3_copy((vec3){q.x0, q.y1, pos[2]}, current_vertex[3].pos);
+      glm_vec2_copy((vec2){q.x0, q.y1}, current_vertex[3].pos);
       glm_vec2_copy((vec2){q.s0, q.t1}, current_vertex[3].uv);
 
-      glm_vec3_copy((vec3){q.x0, q.y0, pos[2]}, current_vertex[4].pos);
+      glm_vec2_copy((vec2){q.x0, q.y0}, current_vertex[4].pos);
       glm_vec2_copy((vec2){q.s0, q.t0}, current_vertex[4].uv);
 
-      glm_vec3_copy((vec3){q.x1, q.y1, pos[2]}, current_vertex[4 + 1].pos);
-      glm_vec2_copy((vec2){q.s1, q.t1}, current_vertex[4 + 1].uv);
+      glm_vec2_copy((vec2){q.x1, q.y1}, current_vertex[5].pos); // NOLINT
+      glm_vec2_copy((vec2){q.s1, q.t1}, current_vertex[5].uv);  // NOLINT
 
       font->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
       current_vertex += FONT_RENDERER_VERTECIES_PER_CHAR;

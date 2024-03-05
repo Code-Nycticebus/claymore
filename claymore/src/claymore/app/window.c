@@ -9,8 +9,18 @@ static struct {
 } window;
 
 void *cm_window_context(void) { return window.context; }
+
 double cm_window_time(void) { return glfwGetTime(); }
-void cm_window_bg_color(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
+
+void cm_window_set_bg(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
+
+void cm_window_get_size(vec2 out) {
+  int size[2];
+  glfwGetWindowSize(window.context, &size[0], &size[1]);
+  out[0] = size[0];
+  out[1] = size[1];
+}
+
 void cm_window_close(bool c) { glfwSetWindowShouldClose(window.context, c); }
 
 static void keyboard_callback(GLFWwindow *context, int key, int scancode,

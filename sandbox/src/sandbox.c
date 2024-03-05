@@ -50,11 +50,10 @@ static void update(CmScene *scene, double dt) {
   mat4 vp;
   glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
 
-  cm_font_draw(sandbox->font, vp, (vec3){0, 50, 0}, STR("Hello World!"));
-
   cm_quad_begin(vp);
   cm_quad_push((vec2){10, 50}, (vec2){100, 150}, 0, (vec4){1, 0, 0, 1});
   cm_quad_end();
+  cm_font_draw(sandbox->font, vp, (vec3){0, 50, 0}, STR("Hello World!"));
 }
 
 static CmSceneInterface *scene_init(void) {

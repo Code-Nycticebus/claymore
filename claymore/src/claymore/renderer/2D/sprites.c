@@ -143,7 +143,7 @@ void cm_sprite_internal_init(void) {
       ErrPanic);
 
   const usize bytes = sizeof(struct RenderSpriteData) / 1000;
-  clib_log_info("Renderer: %" USIZE_FMT " kb", bytes);
+  clib_log_info("Sprite Renderer: %" USIZE_FMT " kb", bytes);
 }
 
 void cm_sprite_internal_free(void) {
