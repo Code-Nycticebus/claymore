@@ -1,9 +1,7 @@
 # claymore
 A C Game Engine
 
-## Why claymore
-Just don't. There are way better opengl frameworks out there. 
-This is just a fun little project.
+> ⚠️ The Project as well as the Documentation is not yet finished.
 
 ## Setup
 First clone the repo:
