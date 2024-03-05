@@ -8,7 +8,7 @@ typedef struct {
 } Fps;
 
 const float font_heigth = 24.f;
-const vec2 offset = {10, font_heigth};
+const vec2 offset = {10, 0};
 
 static void init(CmScene *scene) {
   Fps *fps = cm_scene_alloc_data(scene, sizeof(Fps));

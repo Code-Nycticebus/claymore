@@ -30,14 +30,18 @@ static void event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   Sandbox *sandbox = cm_scene_alloc_data(scene, sizeof(Sandbox));
 
-  glm_ortho(0, 720, 420, 0, -1.F, 100.F, sandbox->camera.projection);
+  vec2 window_size;
+  cm_window_get_size(window_size);
+  glm_ortho(0, window_size[0], window_size[1], 0, -1.F, 100.F,
+            sandbox->camera.projection);
 
   glm_vec3_zero(sandbox->camera.position);
   glm_mat4_identity(sandbox->camera.view);
   glm_translate(sandbox->camera.view, (vec3){0});
 
+  const float font_size = 32.f;
   sandbox->font = cm_font_init(&scene->gpu, STR("sandbox/res/fonts/Ubuntu.ttf"),
-                               32.f, ErrPanic);
+                               font_size, ErrPanic);
 
   cm_scene_push(scene, fps_scene_init);
 }
@@ -48,10 +52,17 @@ static void update(CmScene *scene, double dt) {
   mat4 vp;
   glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
 
+  Str msg = STR("This is Claymore!");
+  const vec2 pos = {50, 100};
+  const float margin = 5;
+  const float font_size = 32;
+  const float char_width = 13;
   cm_quad_begin(vp);
-  cm_quad_push((vec2){10, 50}, (vec2){100, 150}, 0, (vec4){1, 0, 0, 1});
+  cm_quad_push((vec2){pos[0], pos[1]},
+               (vec2){msg.len * char_width, font_size + margin}, 0,
+               (vec4){1, 0, 0, 1});
   cm_quad_end();
-  cm_font_draw(sandbox->font, vp, (vec3){0, 50, 0}, STR("Hello World!"));
+  cm_font_draw(sandbox->font, vp, pos, msg);
 }
 
 static CmSceneInterface *scene_init(void) {
