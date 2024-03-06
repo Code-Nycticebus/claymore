@@ -2,7 +2,7 @@
 name="sandbox"
 cc="clang"
 
-cflags=["-fsanitize=address"]
+cflags=["-fsanitize=address", "-Wno-static-in-inline"]
 
 [exe]
 sandbox="src/sandbox.c"

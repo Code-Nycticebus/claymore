@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #ifdef CLAYMORE_DEBUG
-static void cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
+static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type, GLuint id,
                                       GLenum severity, GLsizei length,
                                       const GLchar *message,
                                       const void *userParam) {
