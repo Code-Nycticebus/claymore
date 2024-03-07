@@ -45,7 +45,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
 
 static void init(CmScene *scene) {
   clib_log_info("benchmark init");
-  Benchmark *benchmark = arena_alloc(&scene->arena, sizeof(Benchmark));
+  Benchmark *benchmark = cm_scene_alloc_data(scene, sizeof(Benchmark));
 
   const vec3 bg_color = {0.15f, 0.15f, 0.15f};
   cm_window_set_bg(bg_color);
@@ -60,8 +60,6 @@ static void init(CmScene *scene) {
   glm_translate(benchmark->camera.view, (vec3){0});
 
   cm_scene_push(scene, fps_scene_init);
-
-  scene->data = benchmark;
 }
 
 static void update(CmScene *scene, double deltatime) {
