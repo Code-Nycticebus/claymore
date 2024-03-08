@@ -107,11 +107,12 @@ static void update(CmScene *scene, double deltatime) {
   cm_quad_begin(vp);
   const float size = 100;
   static float r = 0;
+  const vec4 quad_color = {.2f, .2f, .8f, 1.f};
   r += (PI / 2) * deltatime;
   for (usize i = 0; i < grid; i++) {
     for (usize j = 0; j < grid; j++) {
-      cm_quad_push((vec2){i * size, j * size}, (vec2){size, size}, r,
-                   (vec4){.2f, .2f, .8f, 1});
+      const vec2 pos = {i * size, j * size};
+      cm_quad_push(pos, (vec2){size, size}, r, quad_color);
     }
   }
   cm_quad_end();
@@ -128,12 +129,7 @@ static CmSceneInterface *scene_init(void) {
 
 const ClaymoreConfig *claymore_init(void) {
   static const ClaymoreConfig config = {
-      .window =
-          {
-              .width = width,
-              .height = height,
-              .title = "benchmark",
-          },
+      .window = {.width = width, .height = height, .title = "benchmark"},
       .main = scene_init,
   };
   return &config;

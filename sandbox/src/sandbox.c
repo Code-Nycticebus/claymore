@@ -76,12 +76,7 @@ static CmSceneInterface *scene_init(void) {
 
 const ClaymoreConfig *claymore_init(void) {
   static const ClaymoreConfig config = {
-      .window =
-          {
-              .width = 720,
-              .height = 420,
-              .title = "sandbox",
-          },
+      .window = {.width = 720, .height = 420, .title = "sandbox"},
       .main = scene_init,
   };
   return &config;
