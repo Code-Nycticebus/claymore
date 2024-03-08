@@ -7,6 +7,7 @@ cflags=["-fsanitize=address", "-Wno-static-in-inline"]
 [exe]
 sandbox="src/sandbox.c"
 benchmark-2d="src/benchmark-2d.c"
+basic="src/basic.c"
 
 [deps.claymore]
 dir="../claymore/" 
