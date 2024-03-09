@@ -53,7 +53,8 @@ static void update(CmScene *scene, double dt) {
   glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
 
   Str msg = STR("This is Claymore!");
-  const vec2 pos = {50, 100};
+  vec2 pos;
+  cm_event_cursor_position(pos);
   const float margin = 5;
   const float font_size = 32;
   const float char_width = 13;
