@@ -43,6 +43,9 @@ static void init(CmScene *scene) {
   sandbox->font = cm_font_init(&scene->gpu, STR("sandbox/res/fonts/Ubuntu.ttf"),
                                font_size, ErrPanic);
 
+  sandbox->texture = cm_texture_from_file(
+      STR("sandbox/res/textures/claymore-sword.png"), ErrPanic);
+
   cm_scene_push(scene, fps_scene_init);
 }
 
@@ -51,6 +54,11 @@ static void update(CmScene *scene, double dt) {
   Sandbox *sandbox = scene->data;
   mat4 vp;
   glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
+
+  cm_sprite_begin(vp, &sandbox->texture);
+  cm_sprite_push((vec2){100, 100}, (vec2){100, 100}, 0, (vec2){0, 0},
+                 (vec2){1, 1});
+  cm_sprite_end();
 
   Str msg = STR("This is Claymore!");
   vec2 pos;

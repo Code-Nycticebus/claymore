@@ -51,6 +51,7 @@ static void cm_sprite_flush(void) {
 void cm_sprite_begin(const mat4 mvp, CmTexture2D *texture) {
   cm_shader_bind(&renderer->shader);
   cm_shader_set_mat4(&renderer->shader, STR("u_mvp"), mvp);
+  cm_shader_set_i32(&renderer->shader, STR("u_sampler"), 0);
   cm_texture_bind(texture, 0);
 }
 void cm_sprite_end(void) { cm_sprite_flush(); }
@@ -134,11 +135,10 @@ void cm_sprite_internal_init(void) {
           "}\n"),
       STR("#version 330 core\n"
           "in vec2 v_uv;\n"
-          "in float v_texture;\n"
           "out vec4 f_color;\n"
-          "uniform sampler2D sampler;\n"
+          "uniform sampler2D u_sampler;\n"
           "void main() {\n"
-          "  f_color = texture(sampler, v_uv);\n"
+          "  f_color = texture(u_sampler, v_uv);\n"
           "}\n"),
       ErrPanic);
 
