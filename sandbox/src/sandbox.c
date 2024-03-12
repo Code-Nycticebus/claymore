@@ -56,10 +56,11 @@ static void update(CmScene *scene, double dt) {
   glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
 
   cm_sprite_begin(vp, &sandbox->texture);
-  for (usize i = 0; i< 3;++i) {
-    cm_sprite_push((vec2){100*i, 100*i}, (vec2){100, 100}, 0, (vec2){0, 0},
-                 (vec2){1, 1});
-}
+  const float size = 100;
+  for (usize i = 0; i < 3; ++i) {
+    cm_sprite_push((vec2){size * i, size * i}, (vec2){size, size}, 0,
+                   (vec2){0, 0}, (vec2){1, 1});
+  }
   cm_sprite_end();
 
   Str msg = STR("This is Claymore!");
