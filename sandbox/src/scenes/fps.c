@@ -1,6 +1,6 @@
 #include "claymore.h"
 
-#define BUFFER_MAX 20
+#define BUFFER_MAX 40
 
 typedef struct {
   CmFont *font;
@@ -26,7 +26,9 @@ static void init(CmScene *scene) {
 static void update(CmScene *scene, double deltatime) {
   Fps *fps = scene->data;
   char buffer[BUFFER_MAX] = {0};
-  usize len = snprintf(buffer, BUFFER_MAX, "FPS: % 5.0f", 1 / deltatime);
+  const float ms = deltatime * 1000;
+  usize len = snprintf(buffer, BUFFER_MAX, "FRAME: % 3.2f ms\nFPS: %.0f", ms,
+                       1 / deltatime);
   cm_font_draw(fps->font, fps->projection, offset, str_from_parts(len, buffer));
 }
 
