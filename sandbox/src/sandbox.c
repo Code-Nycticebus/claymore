@@ -56,10 +56,13 @@ static void update(CmScene *scene, double dt) {
   glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
 
   cm_sprite_begin(vp, &sandbox->texture);
-  const float size = 100;
+  const vec2 size = {100, 100};
   for (usize i = 0; i < 3; ++i) {
-    cm_sprite_push((vec2){size * i, size * i}, (vec2){size, size}, 0,
-                   (vec2){0, 0}, (vec2){1, 1});
+    float y =  (size[1] * i);
+    for (usize j = 0; j < 3; ++j) {
+      float x =  (size[0] * j);
+      cm_sprite_push((vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+    }
   }
   cm_sprite_end();
 
