@@ -34,7 +34,7 @@ Claymore uses my own build system [pybuildc](https://github.com/Code-Nycticebus/
 pybuildc new test-project
 ```
 
-and add claymore as a dependency:
+and add claymore as a dependency to the `pybuildc.toml`:
 
 ```toml
 [deps.claymore]
