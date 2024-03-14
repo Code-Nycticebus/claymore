@@ -4,9 +4,10 @@ A C Game Engine
 > ⚠️ The Project as well as the Documentation is not yet finished.
 
 ## Setup
-First clone the repo:
+First clone the repo and the [clib](https://github.com/Code-Nycticebus/clib) library:
 
 ```terminal
+git clone https://github.com/Code-Nycticebus/clib
 git clone https://github.com/Code-Nycticebus/claymore
 cd claymore
 ```
@@ -54,6 +55,9 @@ static void init(CmScene *scene) {
 static CmSceneInterface *scene_init(void) {
   static CmSceneInterface scene = {
       .init = init,
+      .update=NULL,
+      .event=NULL,
+      .final=NULL,
   };
   return &scene;
 }
