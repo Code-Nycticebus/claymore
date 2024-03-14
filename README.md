@@ -55,9 +55,9 @@ static void init(CmScene *scene) {
 static CmSceneInterface *scene_init(void) {
   static CmSceneInterface scene = {
       .init = init,
-      .update=NULL,
-      .event=NULL,
-      .final=NULL,
+      .update = NULL,
+      .event = NULL,
+      .final = NULL,
   };
   return &scene;
 }
