@@ -40,11 +40,11 @@ static void init(CmScene *scene) {
   glm_translate(sandbox->camera.view, (vec3){0});
 
   const float font_size = 32.f;
-  sandbox->font = cm_font_init(&scene->gpu, STR("sandbox/res/fonts/Ubuntu.ttf"),
+  sandbox->font = cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"),
                                font_size, ErrPanic);
 
-  sandbox->texture = cm_texture_from_file(
-      STR("sandbox/res/textures/claymore-sword.png"), ErrPanic);
+  sandbox->texture =
+      cm_texture_from_file(STR("res/textures/claymore-sword.png"), ErrPanic);
 
   cm_scene_push(scene, fps_scene_init);
 }
@@ -58,9 +58,9 @@ static void update(CmScene *scene, double dt) {
   cm_sprite_begin(vp, &sandbox->texture);
   const vec2 size = {100, 100};
   for (usize i = 0; i < 3; ++i) {
-    float y =  (size[1] * i);
+    float y = (size[1] * i);
     for (usize j = 0; j < 3; ++j) {
-      float x =  (size[0] * j);
+      float x = (size[0] * j);
       cm_sprite_push((vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
     }
   }
