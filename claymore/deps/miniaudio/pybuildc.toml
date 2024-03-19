@@ -1,6 +1,5 @@
 [pybuildc]
 name="miniaudio"
-cc="clang"
 
 [deps.linux]
 dl = { l="dl" }

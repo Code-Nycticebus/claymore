@@ -1,7 +1,6 @@
 [pybuildc]
 name="claymore"
 version="0.1.0"
-cc="clang"
 
 cflags = ["-std=c99", "-DGLEW_STATIC", "-Wno-static-in-inline"]
 

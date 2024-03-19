@@ -1,6 +1,5 @@
 [pybuildc]
 name="sandbox"
-cc="clang"
 
 cflags=["-fsanitize=address", "-Wno-static-in-inline"]
 

@@ -1,6 +1,5 @@
 [pybuildc]
 name="stb_image"
-cc="clang"
 
 [deps.linux]
 m = { l="m" }

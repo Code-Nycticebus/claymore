@@ -108,7 +108,7 @@ static void update(CmScene *scene, double deltatime) {
   const float size = 100;
   static float r = 0;
   const vec4 quad_color = {.2f, .2f, .8f, 1.f};
-  r += (PI / 2) * deltatime;
+  r += (F64_PI / 2) * deltatime;
   for (usize i = 0; i < grid; i++) {
     for (usize j = 0; j < grid; j++) {
       const vec2 pos = {i * size, j * size};
