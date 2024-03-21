@@ -48,7 +48,7 @@ static void cm_sprite_flush(void) {
   renderer->vertices_count = 0;
 }
 
-void cm_sprite_begin(const mat4 mvp, CmTexture2D *texture) {
+void cm_sprite_begin(mat4 mvp, CmTexture2D *texture) {
   cm_shader_bind(&renderer->shader);
   cm_shader_set_mat4(&renderer->shader, STR("u_mvp"), mvp);
   cm_shader_set_i32(&renderer->shader, STR("u_sampler"), 0);

@@ -3,7 +3,7 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-void cm_quad_begin(const mat4 mvp /* CmCamera* camera */);
+void cm_quad_begin(mat4 mvp /* CmCamera* camera */);
 void cm_quad_end(void);
 
 void cm_quad_push(const vec2 position, const vec2 size, float rotation,

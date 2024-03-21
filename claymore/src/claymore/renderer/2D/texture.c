@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 #include <stb_image.h>
 
-const static struct {
+static const struct {
   GLint internal;
   GLenum format;
   GLenum type;

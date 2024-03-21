@@ -48,7 +48,7 @@ static void cm_quad_flush(void) {
   renderer->vertices_count = 0;
 }
 
-void cm_quad_begin(const mat4 mvp) {
+void cm_quad_begin(mat4 mvp) {
   cm_shader_bind(&renderer->shader);
   cm_shader_set_mat4(&renderer->shader, STR("u_mvp"), mvp);
 }

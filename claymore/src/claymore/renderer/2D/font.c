@@ -105,7 +105,7 @@ static void _cm_font_renderer_flush(CmFont *font) {
   font->vertex_count = 0;
 }
 
-void cm_font_draw(CmFont *font, const mat4 mvp, const vec2 pos, Str text) {
+void cm_font_draw(CmFont *font, mat4 mvp, const vec2 pos, Str text) {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, font->texture_id);
 
