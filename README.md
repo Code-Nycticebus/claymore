@@ -70,7 +70,7 @@ const ClaymoreConfig *claymore_init(void) {
               .height = 420,
               .title = "test project",
           },
-      .scene = scene_init,
+      .main = scene_init,
   };
   return &config;
 }
