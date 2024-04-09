@@ -77,8 +77,8 @@ static void update(CmScene *scene, double dt) {
     const float char_width = 13;
     cm_quad_begin(vp);
     cm_quad_push((vec2){pos[0], pos[1]},
-                (vec2){msg.len * char_width, font_size + margin}, 0,
-                (vec4){1, 0, 0, 1});
+                 (vec2){msg.len * char_width, font_size + margin}, 0,
+                 (vec4){1, 0, 0, 1});
     cm_quad_end();
     cm_font_draw(sandbox->font, vp, pos, msg);
   }
@@ -93,8 +93,8 @@ static CmSceneInterface *scene_init(void) {
   return &sandbox;
 }
 
-const ClaymoreConfig *claymore_init(void) {
-  static const ClaymoreConfig config = {
+ClaymoreConfig *claymore_init(void) {
+  static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "sandbox"},
       .main = scene_init,
   };

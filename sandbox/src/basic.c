@@ -9,8 +9,8 @@ static CmSceneInterface *scene_init(void) {
   return &benchmark;
 }
 
-const ClaymoreConfig *claymore_init(void) {
-  static const ClaymoreConfig config = {
+ClaymoreConfig *claymore_init(void) {
+  static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "basic"},
       .main = scene_init,
   };

@@ -13,10 +13,10 @@
                  LPSTR lpCmdLine, int nCmdShow)
 #endif
 
-const ClaymoreConfig *claymore_init(void);
+ClaymoreConfig *claymore_init(void);
 
 int main(void) {
-  const ClaymoreConfig *config = claymore_init();
+  ClaymoreConfig *config = claymore_init();
   if (!app_internal_init(config)) {
     return -1;
   }

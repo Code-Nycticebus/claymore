@@ -20,7 +20,7 @@ CmScene *app_root(void);
 
 // INTERNAL
 
-bool app_internal_init(const ClaymoreConfig *config);
+bool app_internal_init(ClaymoreConfig *config);
 bool app_internal_update(void);
 void app_internal_final(void);
 

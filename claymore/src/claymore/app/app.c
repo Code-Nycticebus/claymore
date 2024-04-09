@@ -23,7 +23,7 @@ static struct {
 
 CmScene *app_root(void) { return &app.main_scene->data; }
 
-bool app_internal_init(const ClaymoreConfig *config) {
+bool app_internal_init(ClaymoreConfig *config) {
   if (!cm_window_internal_create(config->window.width, config->window.height,
                                  config->window.title)) {
     clib_log_error("Could not open window");
