@@ -1,6 +1,6 @@
 #include "scene.h"
 
-void cm_scene_push(CmScene *scene, CmSceneInit init) {
+CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
   CmSceneInternal *new = cm_scene_internal_init(&scene->arena, init);
   new->parent = internal;
@@ -8,6 +8,7 @@ void cm_scene_push(CmScene *scene, CmSceneInit init) {
     new->interface->init(&new->data);
   }
   da_push(&internal->children, new);
+  return (CmScene *)new;
 }
 
 CmScene *cm_scene_parent(CmScene *scene) {
