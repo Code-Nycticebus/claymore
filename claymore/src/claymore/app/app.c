@@ -21,9 +21,9 @@ static struct {
   Arena arena;
 } app;
 
-CmScene *app_root(void) { return &app.main_scene->data; }
+CmScene *cm_app_root(void) { return &app.main_scene->data; }
 
-void app_set_main(CmSceneInit init) {
+void cm_app_set_main(CmSceneInit init) {
   // Free previous main scene
   cm_scene_internal_final(app.main_scene);
 
@@ -37,7 +37,7 @@ void app_set_main(CmSceneInit init) {
   app.last_frame = cm_window_time();
 }
 
-bool app_internal_init(ClaymoreConfig *config) {
+bool cm_app_internal_init(ClaymoreConfig *config) {
   if (!cm_window_internal_create(config->window.width, config->window.height,
                                  config->window.title)) {
     clib_log_error("Could not open window");
@@ -68,7 +68,7 @@ bool app_internal_init(ClaymoreConfig *config) {
   return true;
 }
 
-bool app_internal_update(void) {
+bool cm_app_internal_update(void) {
   if (cm_window_internal_should_close()) {
     return false;
   }
@@ -83,7 +83,7 @@ bool app_internal_update(void) {
   return true;
 }
 
-void app_internal_final(void) {
+void cm_app_internal_final(void) {
   cm_scene_internal_final(app.main_scene);
 
   cm_sound_interal_shutdown();
@@ -95,6 +95,6 @@ void app_internal_final(void) {
   arena_free(&app.arena);
 }
 
-void app_internal_event(CmEvent *event) {
+void cm_app_internal_event(CmEvent *event) {
   cm_scene_internal_event(app.main_scene, event);
 }

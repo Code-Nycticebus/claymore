@@ -16,15 +16,15 @@ typedef const struct {
   CmSceneInit main;
 } ClaymoreConfig;
 
-CmScene *app_root(void);
-void app_set_main(CmSceneInit init);
+CmScene *cm_app_root(void);
+void cm_app_set_main(CmSceneInit init);
 
 // INTERNAL
 
-bool app_internal_init(ClaymoreConfig *config);
-bool app_internal_update(void);
-void app_internal_final(void);
+bool cm_app_internal_init(ClaymoreConfig *config);
+bool cm_app_internal_update(void);
+void cm_app_internal_final(void);
 
-void app_internal_event(CmEvent *event);
+void cm_app_internal_event(CmEvent *event);
 
 #endif /* !__CLAYMORE_APP_H__ */

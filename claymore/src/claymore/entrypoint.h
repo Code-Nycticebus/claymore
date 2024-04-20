@@ -13,17 +13,18 @@
                  LPSTR lpCmdLine, int nCmdShow)
 #endif
 
+// User defined
 ClaymoreConfig *claymore_init(void);
 
 int main(void) {
   ClaymoreConfig *config = claymore_init();
-  if (!app_internal_init(config)) {
+  if (!cm_app_internal_init(config)) {
     return -1;
   }
-  while (app_internal_update()) {
+  while (cm_app_internal_update()) {
     // App running!
   }
-  app_internal_final();
+  cm_app_internal_final();
 }
 
 #endif

@@ -5,7 +5,7 @@
 
 #include <GLFW/glfw3.h>
 
-void cm_event_emit(CmEvent event) { app_internal_event(&event); }
+void cm_event_emit(CmEvent event) { cm_app_internal_event(&event); }
 
 CmKeyAction cm_event_key_pressed(CmKeyCodes key) {
   return (CmKeyAction)glfwGetKey(cm_window_context(), (int)key);
