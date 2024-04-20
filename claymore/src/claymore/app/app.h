@@ -17,6 +17,7 @@ typedef const struct {
 } ClaymoreConfig;
 
 CmScene *app_root(void);
+void app_set_main(CmSceneInit init);
 
 // INTERNAL
 

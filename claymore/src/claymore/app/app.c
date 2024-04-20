@@ -23,6 +23,20 @@ static struct {
 
 CmScene *app_root(void) { return &app.main_scene->data; }
 
+void app_set_main(CmSceneInit init) {
+  // Free previous main scene
+  cm_scene_internal_final(app.main_scene);
+
+  // Initialize new one
+  app.main_scene = cm_scene_internal_init(&app.arena, init);
+  if (!app.main_scene->interface->init) {
+    clib_log_error("Main CmSceneInterface needs an init function");
+    debugbreak();
+  }
+  app.main_scene->interface->init(&app.main_scene->data);
+  app.last_frame = cm_window_time();
+}
+
 bool app_internal_init(ClaymoreConfig *config) {
   if (!cm_window_internal_create(config->window.width, config->window.height,
                                  config->window.title)) {
