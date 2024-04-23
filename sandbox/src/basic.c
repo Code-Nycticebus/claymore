@@ -2,17 +2,17 @@
 
 void init(CmScene *scene) { (void)scene; }
 
-static CmSceneInterface *scene_init(void) {
-  static CmSceneInterface benchmark = {
+static CmSceneInterface *basic(void) {
+  static CmSceneInterface interface = {
       .init = init,
   };
-  return &benchmark;
+  return &interface;
 }
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "basic"},
-      .main = scene_init,
+      .main = basic,
   };
   return &config;
 }
