@@ -84,19 +84,19 @@ static void update(CmScene *scene, double dt) {
   }
 }
 
-static CmSceneInterface *scene_init(void) {
-  static CmSceneInterface sandbox = {
+static CmSceneInterface *sandbox(void) {
+  static CmSceneInterface interface = {
       .init = init,
       .update = update,
       .event = event,
   };
-  return &sandbox;
+  return &interface;
 }
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "sandbox"},
-      .main = scene_init,
+      .main = sandbox,
   };
   return &config;
 }

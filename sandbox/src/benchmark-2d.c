@@ -118,19 +118,19 @@ static void update(CmScene *scene, double deltatime) {
   cm_quad_end();
 }
 
-static CmSceneInterface *scene_init(void) {
-  static CmSceneInterface benchmark = {
+static CmSceneInterface *benchmark(void) {
+  static CmSceneInterface interface = {
       .init = init,
       .update = update,
       .event = on_event,
   };
-  return &benchmark;
+  return &interface;
 }
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = width, .height = height, .title = "benchmark"},
-      .main = scene_init,
+      .main = benchmark,
   };
   return &config;
 }
