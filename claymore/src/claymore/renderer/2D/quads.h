@@ -9,7 +9,7 @@ void cm_quad_end(void);
 void cm_quad_push(const vec2 position, const vec2 size, float rotation,
                   const vec4 color);
 
-void cm_quad_internal_init(void);
+usize cm_quad_internal_init(void);
 void cm_quad_internal_free(void);
 
 #endif /* __CLAYMORE_QUADS_H__ */

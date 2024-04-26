@@ -100,7 +100,7 @@ void cm_quad_push(const vec2 position, const vec2 size, float rotation,
   renderer->indices_count += CM_QUADS_INDICES;
 }
 
-void cm_quad_internal_init(void) {
+usize cm_quad_internal_init(void) {
   renderer = calloc(1, sizeof(struct RenderQuadData));
   renderer->gpu = cm_gpu_internal_init(&renderer->arena);
 
@@ -138,8 +138,7 @@ void cm_quad_internal_init(void) {
           "}\n"),
       ErrPanic);
 
-  const usize bytes = sizeof(struct RenderQuadData) / 1000;
-  clib_log_info("Quad Renderer: %" USIZE_FMT " kb", bytes);
+  return sizeof(struct RenderQuadData);
 }
 
 void cm_quad_internal_free(void) {

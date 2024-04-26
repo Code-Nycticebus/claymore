@@ -103,7 +103,7 @@ void cm_sprite_push(const vec2 position, const vec2 size, float rotation,
   renderer->indices_count += CM_SPRITES_INDICES;
 }
 
-void cm_sprite_internal_init(void) {
+usize cm_sprite_internal_init(void) {
   renderer = calloc(1, sizeof(struct RenderSpriteData));
   renderer->gpu = cm_gpu_internal_init(&renderer->arena);
 
@@ -142,8 +142,7 @@ void cm_sprite_internal_init(void) {
           "}\n"),
       ErrPanic);
 
-  const usize bytes = sizeof(struct RenderSpriteData) / 1000;
-  clib_log_info("Sprite Renderer: %" USIZE_FMT " kb", bytes);
+  return sizeof(struct RenderSpriteData);
 }
 
 void cm_sprite_internal_free(void) {
