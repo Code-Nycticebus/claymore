@@ -52,14 +52,14 @@ static void init(CmScene *scene) {
   (void)scene;
 }
 
-static CmSceneInterface *scene_init(void) {
-  static CmSceneInterface scene = {
+static CmSceneInterface *scene(void) {
+  static CmSceneInterface interface = {
       .init = init,
       .update = NULL,
       .event = NULL,
       .final = NULL,
   };
-  return &scene;
+  return &interface;
 }
 
 ClaymoreConfig *claymore_init(void) {
@@ -70,7 +70,7 @@ ClaymoreConfig *claymore_init(void) {
               .height = 420,
               .title = "test project",
           },
-      .main = scene_init,
+      .main = scene,
   };
   return &config;
 }
