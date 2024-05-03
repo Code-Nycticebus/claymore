@@ -89,7 +89,7 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
     break;
   case GL_DEBUG_SEVERITY_HIGH:
     clib_log_error("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
-    debugbreak();
+    DEBUGBREAK();
   }
 }
 #endif

@@ -5,7 +5,7 @@
 
 #include <cglm/cglm.h>
 
-#include <clib/clib.h>
+#include <clib.h>
 
 // IWYU pragma: end_exports
 

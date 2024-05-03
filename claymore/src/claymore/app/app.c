@@ -30,7 +30,7 @@ void cm_app_set_main(CmSceneInit init) {
   app.main_scene = cm_scene_internal_init(&app.arena, init);
   if (!app.main_scene->interface->init) {
     clib_log_error("Main CmSceneInterface needs an init function");
-    debugbreak();
+    DEBUGBREAK();
   }
   app.main_scene->interface->init(&app.main_scene->data);
   app.last_frame = cm_window_time();
