@@ -8,6 +8,7 @@ sandbox="src/sandbox.c"
 benchmark-2d="src/benchmark-2d.c"
 basic="src/basic.c"
 hello="src/hello.c"
+animation="src/animation.c"
 
 [deps.claymore]
 dir="../claymore/" 
