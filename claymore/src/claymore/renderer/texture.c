@@ -41,7 +41,7 @@ CmTexture2D cm_texture_from_file(Str filename, Error *error) {
                STR_ARG(filename), fail);
     goto defer;
   }
-  clib_assert(bpp == 4, "Pixel format not supported!");
+  cebus_assert(bpp == 4, "Pixel format not supported!");
 
   texture =
       cm_texture_from_memory(width, height, texture_buffer, CM_TEXTURE_RGBA);

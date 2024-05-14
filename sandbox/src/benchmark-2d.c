@@ -44,7 +44,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
 }
 
 static void init(CmScene *scene) {
-  clib_log_info("benchmark init");
+  cebus_log_info("benchmark init");
   Benchmark *benchmark = cm_scene_alloc_data(scene, sizeof(Benchmark));
 
   const vec3 bg_color = {0.15f, 0.15f, 0.15f};
@@ -68,12 +68,12 @@ static void update(CmScene *scene, double deltatime) {
   static double timer = 0;
   const float fps = 1 / deltatime;
   if ((timer += deltatime) >= 1) {
-    clib_log_info("grid: %" USIZE_FMT, grid * grid);
+    cebus_log_info("grid: %" USIZE_FMT, grid * grid);
     static usize count = 0;
     count++;
     static usize max = 0;
     max += grid * grid;
-    clib_log_info("avg: %" USIZE_FMT, max / count);
+    cebus_log_info("avg: %" USIZE_FMT, max / count);
     timer = 0;
   }
   Benchmark *benchmark = scene->data;

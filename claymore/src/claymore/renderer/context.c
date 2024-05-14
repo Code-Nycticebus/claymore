@@ -82,13 +82,13 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
     // Ignore
     break;
   case GL_DEBUG_SEVERITY_LOW:
-    clib_log_info("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
+    cebus_log_info("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
     break;
   case GL_DEBUG_SEVERITY_MEDIUM:
-    clib_log_warning("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
+    cebus_log_warning("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
     break;
   case GL_DEBUG_SEVERITY_HIGH:
-    clib_log_error("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
+    cebus_log_error("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
     DEBUGBREAK();
   }
 }
@@ -99,7 +99,7 @@ bool cm_platform_context_init(void *window_context) {
 
   GLenum err = glewInit();
   if (err != GLEW_OK) {
-    clib_log_error("GLEW initialization failed: %s", glewGetString(err));
+    cebus_log_error("GLEW initialization failed: %s", glewGetString(err));
     return false;
   }
 
@@ -117,9 +117,9 @@ bool cm_platform_context_init(void *window_context) {
 
 #ifdef CLAYMORE_DEBUG
   // Logs info
-  clib_log_info("OpenGl %s", glGetString(GL_VERSION));
-  clib_log_info("GPU: %s", glGetString(GL_RENDERER));
-  clib_log_info("GLSL: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  cebus_log_info("OpenGl %s", glGetString(GL_VERSION));
+  cebus_log_info("GPU: %s", glGetString(GL_RENDERER));
+  cebus_log_info("GLSL: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
   // Debug
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);

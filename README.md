@@ -4,10 +4,10 @@ A C Game Engine
 > ⚠️ The Project as well as the Documentation is not yet finished.
 
 ## Setup
-First clone the repo and the [clib](https://github.com/Code-Nycticebus/clib) library:
+First clone the repo and the [cebus](https://github.com/Code-Nycticebus/cebus) library:
 
 ```terminal
-git clone https://github.com/Code-Nycticebus/clib
+git clone https://github.com/Code-Nycticebus/cebus
 git clone https://github.com/Code-Nycticebus/claymore
 cd claymore
 ```

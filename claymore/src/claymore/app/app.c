@@ -29,7 +29,7 @@ void cm_app_set_main(CmSceneInit init) {
   // Initialize new one
   app.main_scene = cm_scene_internal_init(&app.arena, init);
   if (!app.main_scene->interface->init) {
-    clib_log_error("Main CmSceneInterface needs an init function");
+    cebus_log_error("Main CmSceneInterface needs an init function");
     DEBUGBREAK();
   }
   app.main_scene->interface->init(&app.main_scene->data);
@@ -39,17 +39,17 @@ void cm_app_set_main(CmSceneInit init) {
 bool cm_app_internal_init(ClaymoreConfig *config) {
   if (!cm_window_internal_create(config->window.width, config->window.height,
                                  config->window.title)) {
-    clib_log_error("Could not open window");
+    cebus_log_error("Could not open window");
     return false;
   }
 
   if (!cm_sound_internal_init()) {
-    clib_log_error("Could not initialize sound engine");
+    cebus_log_error("Could not initialize sound engine");
     return false;
   }
 
   if (!cm_platform_context_init(cm_window_context())) {
-    clib_log_error("Could not initialize context");
+    cebus_log_error("Could not initialize context");
     return false;
   }
 
@@ -57,7 +57,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 
   app.main_scene = cm_scene_internal_init(&app.arena, config->main);
   if (!app.main_scene->interface->init) {
-    clib_log_error("Main CmSceneInterface needs an init function");
+    cebus_log_error("Main CmSceneInterface needs an init function");
     return false;
   }
   app.main_scene->interface->init(&app.main_scene->data);

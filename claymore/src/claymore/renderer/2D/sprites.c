@@ -58,14 +58,14 @@ void cm_sprite_end(void) { cm_sprite_flush(); }
 
 void cm_sprite_push(const vec2 position, const vec2 size, float rotation,
                     const vec2 uv, const vec2 uv_size) {
-  clib_assert_debug(renderer, "Renderer 2D was not initialized!");
+  cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
   if (!(renderer->vertices_count < CM_SPRITES_VERTICES_MAX)) {
     cm_sprite_flush();
   }
 
   // For safety i still assert
-  clib_assert_debug(renderer->vertices_count < CM_SPRITES_VERTICES_MAX, "");
-  clib_assert_debug(renderer->indices_count < CM_SPRITES_INDICES_MAX, "");
+  cebus_assert_debug(renderer->vertices_count < CM_SPRITES_VERTICES_MAX, "");
+  cebus_assert_debug(renderer->indices_count < CM_SPRITES_INDICES_MAX, "");
 
   float cos_theta;
   float sin_theta;

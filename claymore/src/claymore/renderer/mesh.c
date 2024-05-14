@@ -22,7 +22,7 @@ void cm_mesh_attach_ebo(CmMesh *mesh, usize count, const u32 *indices) {
 }
 
 CmVbo cm_mesh_attach_f32(CmMesh *mesh, usize count, const f32 *v) {
-  clib_assert(mesh->vbo.len == count, "This would result in a crash");
+  cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
   CmVbo vbo =
       cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
@@ -31,7 +31,7 @@ CmVbo cm_mesh_attach_f32(CmMesh *mesh, usize count, const f32 *v) {
 }
 
 CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
-  clib_assert(mesh->count == 1 || mesh->count == count,
+  cebus_assert(mesh->count == 1 || mesh->count == count,
               "This would result in a crash");
   mesh->count = count;
 
@@ -42,7 +42,7 @@ CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
 }
 
 CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v) {
-  clib_assert(mesh->vbo.len == count, "This would result in a crash");
+  cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
   CmVbo vbo =
       cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
@@ -51,7 +51,7 @@ CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v) {
 }
 
 CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v) {
-  clib_assert(mesh->count == 1 || mesh->count == count,
+  cebus_assert(mesh->count == 1 || mesh->count == count,
               "This would result in a crash");
   mesh->count = count;
 
@@ -63,7 +63,7 @@ CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v) {
 }
 
 CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
-  clib_assert(mesh->vbo.len == count, "This would result in a crash");
+  cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
   CmVbo vbo =
       cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
@@ -72,7 +72,7 @@ CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
 }
 
 CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
-  clib_assert(mesh->count == 1 || mesh->count == count,
+  cebus_assert(mesh->count == 1 || mesh->count == count,
               "This would result in a crash");
   mesh->count = count;
 

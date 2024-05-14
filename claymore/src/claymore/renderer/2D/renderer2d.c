@@ -8,7 +8,7 @@ bool cm_renderer2d_internal_init(void) {
 
 #if defined(CLAYMORE_DEBUG)
   const usize bytes = size / 1000;
-  clib_log_info("Renderer2D: %" USIZE_FMT " kb", bytes);
+  cebus_log_info("Renderer2D: %" USIZE_FMT " kb", bytes);
 #endif
 
   return true;

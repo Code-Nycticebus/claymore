@@ -9,7 +9,7 @@ static GLenum get_type(CmGpuType type) {
   case CM_DYNAMIC_DRAW:
     return GL_DYNAMIC_DRAW;
   }
-  clib_assert(false, "UNREACHABLE");
+  cebus_assert(false, "UNREACHABLE");
   return 0;
 }
 
@@ -20,7 +20,7 @@ static GLenum get_mode(CmGpuDrawMode mode) {
   case CM_DRAW_LINES:
     return GL_LINES;
   }
-  clib_assert(false, "UNREACHABLE");
+  cebus_assert(false, "UNREACHABLE");
   return 0;
 }
 

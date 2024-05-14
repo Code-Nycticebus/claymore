@@ -56,14 +56,14 @@ void cm_quad_end(void) { cm_quad_flush(); }
 
 void cm_quad_push(const vec2 position, const vec2 size, float rotation,
                   const vec4 color) {
-  clib_assert_debug(renderer, "Renderer 2D was not initialized!");
+  cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
   if (!(renderer->vertices_count < CM_QUADS_VERTICES_MAX)) {
     cm_quad_flush();
   }
 
   // For safety i still assert
-  clib_assert_debug(renderer->vertices_count < CM_QUADS_VERTICES_MAX, "");
-  clib_assert_debug(renderer->indices_count < CM_QUADS_INDICES_MAX, "");
+  cebus_assert_debug(renderer->vertices_count < CM_QUADS_VERTICES_MAX, "");
+  cebus_assert_debug(renderer->indices_count < CM_QUADS_INDICES_MAX, "");
 
   float cos_theta;
   float sin_theta;
