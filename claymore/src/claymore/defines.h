@@ -5,7 +5,7 @@
 
 #include <cglm/cglm.h>
 
-#include <clib.h>
+#include <cebus.h>
 
 // IWYU pragma: end_exports
 
