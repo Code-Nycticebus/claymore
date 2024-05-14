@@ -13,7 +13,7 @@ typedef struct {
   Keyframe *keyframes;
 } Animation;
 
-void init(CmScene *scene) {
+static void init(CmScene *scene) {
   Animation *animation = cm_scene_alloc_data(scene, sizeof(*animation));
 
   static Keyframe KEYFRAMES[] = {
@@ -26,7 +26,7 @@ void init(CmScene *scene) {
   animation->keyframes = KEYFRAMES;
 }
 
-void update(CmScene *scene, double dt) {
+static void update(CmScene *scene, double dt) {
   Animation *animation = scene->data;
 
   Keyframe *keyframe = &animation->keyframes[animation->idx];

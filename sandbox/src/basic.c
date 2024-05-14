@@ -1,6 +1,6 @@
 #include "claymore/entrypoint.h"
 
-void init(CmScene *scene) { (void)scene; }
+static void init(CmScene *scene) { (void)scene; }
 
 static CmSceneInterface *basic(void) {
   static CmSceneInterface interface = {

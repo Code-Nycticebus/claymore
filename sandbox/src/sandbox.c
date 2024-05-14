@@ -1,6 +1,6 @@
 #include "claymore/entrypoint.h"
 
-CmSceneInterface *fps_scene_init(void);
+#include "scenes/fps.h"
 
 typedef struct {
   float zoom;

@@ -2,13 +2,13 @@
 
 #include "claymore.h"
 
+#include "scenes/fps.h"
+
 const usize height = 420;
 const usize width = 720;
 const float aspect = (float)width / (float)height;
 
 const float speed = 1000.f;
-
-CmSceneInterface *fps_scene_init(void);
 
 typedef struct {
   float zoom;
