@@ -72,7 +72,7 @@ CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
                        ttf_bitmap_resolution, ttf_bitmap_resolution,
                        FONT_CHAR_MIN, FONT_CHAR_MAX, font_renderer->cdata);
 
-  glGenTextures(1, &font_renderer->texture_id);
+  font_renderer->texture_id = cm_gpu_texture(gpu);
   glBindTexture(GL_TEXTURE_2D, font_renderer->texture_id);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ttf_bitmap_resolution,
                ttf_bitmap_resolution, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);
