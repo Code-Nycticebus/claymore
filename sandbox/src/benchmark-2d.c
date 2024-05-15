@@ -1,4 +1,3 @@
-#include "claymore/app/camera.h"
 #include "claymore/entrypoint.h"
 
 #include "claymore.h"

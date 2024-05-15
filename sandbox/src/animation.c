@@ -1,5 +1,8 @@
 #include "claymore/entrypoint.h"
 
+const vec4 color = {.2, .2, .2, 1};
+const vec2 size = {100, 100};
+
 typedef struct {
   vec2 start;
   vec2 end;
@@ -18,10 +21,10 @@ static void init(CmScene *scene) {
   Animation *animation = cm_scene_alloc_data(scene, sizeof(*animation));
 
   static Keyframe KEYFRAMES[] = {
-      {{25, 300}, {500, 300}, 3},
-      {{500, 300}, {500, 25}, 1},
-      {{500, 25}, {25, 25}, 3},
-      {{25, 25}, {25, 300}, 1},
+      {{25, 300}, {500, 300}, 3}, // NOLINT
+      {{500, 300}, {500, 25}, 1}, // NOLINT
+      {{500, 25}, {25, 25}, 3},   // NOLINT
+      {{25, 25}, {25, 300}, 1},   // NOLINT
   };
   animation->max = ARRAY_LEN(KEYFRAMES);
   animation->keyframes = KEYFRAMES;
@@ -38,7 +41,7 @@ static void update(CmScene *scene, double dt) {
                 animation->timer / keyframe->duration, pos);
 
   cm_renderer2d_begin(&animation->camera);
-  cm_quad_push(pos, (vec2){100, 100}, 0, (vec4){.2, .2, .2, 1});
+  cm_quad_push(pos, size, 0, color);
   cm_renderer2d_end();
 
   animation->timer += dt;

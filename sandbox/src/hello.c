@@ -1,6 +1,6 @@
-#include "cglm/mat4.h"
-#include "cglm/types.h"
 #include "claymore/entrypoint.h"
+
+const float font_size = 48.f;
 
 typedef struct {
   CmFont *font;
@@ -10,8 +10,8 @@ typedef struct {
 static void init(CmScene *scene) {
   HelloWorld *hello = cm_scene_alloc_data(scene, sizeof(HelloWorld));
 
-  hello->font = cm_font_init(&scene->gpu, STR("res/fonts/Silkscreen.ttf"), 48.f,
-                             ErrPanic);
+  hello->font = cm_font_init(&scene->gpu, STR("res/fonts/Silkscreen.ttf"),
+                             font_size, ErrPanic);
 
   vec2 window_size;
   cm_window_get_size(window_size);
@@ -34,9 +34,11 @@ static void update(CmScene *scene, double dt) {
   glm_vec2_divs(center, 2, center);
 
   Str label = STR("Hello World");
-  center[0] -= (label.len / 2.f) * 24.f;
-  center[1] -= 48.f;
-  cm_font_draw(hello->font, hello->mvp, center, label);
+  const vec2 pos = {
+      center[0] - (label.len / 2.f) * (font_size / 2),
+      center[1] - font_size,
+  };
+  cm_font_draw(hello->font, hello->mvp, pos, label);
 }
 
 static CmSceneInterface *hello(void) {
