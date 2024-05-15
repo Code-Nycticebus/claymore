@@ -52,9 +52,7 @@ static void update(CmScene *scene, double dt) {
                      (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
     }
   }
-  cm_renderer2d_end();
 
-  cm_renderer2d_begin(&sandbox->camera);
   Str msg = STR("This is Claymore!");
   vec2 pos;
   cm_event_cursor_position(pos);

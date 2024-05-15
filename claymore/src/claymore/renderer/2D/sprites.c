@@ -5,6 +5,8 @@
 
 #include <stdlib.h>
 
+#include <GL/glew.h>
+
 #define CM_SPRITES_MAX 1000
 
 #define CM_SPRITES_VERTICES 4
@@ -12,9 +14,12 @@
 #define CM_SPRITES_INDICES 6
 #define CM_SPRITES_INDICES_MAX (CM_SPRITES_MAX * CM_SPRITES_INDICES)
 
+#define CM_TEXTURE_SLOTS 8
+
 typedef struct {
   vec2 pos;
   vec2 uv;
+  float idx;
 } Vertex;
 
 struct RenderSpriteData {
@@ -24,7 +29,8 @@ struct RenderSpriteData {
   CmShader shader;
 
   CmCamera2D *camera;
-  CmTexture2D *texture;
+  usize texture_idx;
+  CmTexture2D *texture[CM_TEXTURE_SLOTS];
 
   CmVbo vbo;
   CmVao vao;
@@ -43,8 +49,10 @@ static void cm_sprite_flush(void) {
   cm_shader_bind(&renderer->shader);
   cm_shader_set_mat4(&renderer->shader, STR("u_mvp"),
                      renderer->camera->base.vp);
-  cm_shader_set_i32(&renderer->shader, STR("u_sampler"), 0);
-  cm_texture_bind(renderer->texture, 0);
+
+  for (usize i = 0; i < renderer->texture_idx; i++) {
+    cm_texture_bind(renderer->texture[i], i);
+  }
 
   cm_gpu_vbo_update(&renderer->vbo, sizeof(Vertex), renderer->vertices_count,
                     (float *)renderer->data);
@@ -64,14 +72,26 @@ void cm_sprite_end(void) {
   }
 }
 
+static usize _cm_sprite_push_texture(CmTexture2D *texture) {
+  if (CM_TEXTURE_SLOTS <= renderer->texture_idx) {
+    cm_sprite_flush();
+    renderer->texture_idx = 0;
+  }
+
+  for (usize i = 0; i < renderer->texture_idx; i++) {
+    if (texture == renderer->texture[i]) {
+      return i;
+    }
+  }
+  renderer->texture[renderer->texture_idx++] = texture;
+  return renderer->texture_idx - 1;
+}
+
 void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
                     float rotation, const vec2 uv, const vec2 uv_size) {
   cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
 
-  if (renderer->texture && texture != renderer->texture) {
-    cm_sprite_flush();
-  }
-  renderer->texture = texture;
+  usize idx = _cm_sprite_push_texture(texture);
 
   if (!(renderer->vertices_count < CM_SPRITES_VERTICES_MAX)) {
     cm_sprite_flush();
@@ -111,6 +131,8 @@ void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
 
     vertices[i].uv[0] = sprite[i].uv[0];
     vertices[i].uv[1] = sprite[i].uv[1];
+
+    vertices[i].idx = idx;
   }
 
   renderer->vertices_count += CM_SPRITES_VERTICES;
@@ -127,6 +149,7 @@ usize cm_sprite_internal_init(void) {
   renderer->vao = cm_gpu_vao(&renderer->gpu);
   cm_gpu_vao_push(&renderer->vao, 2, sizeof(Vertex), offsetof(Vertex, pos));
   cm_gpu_vao_push(&renderer->vao, 2, sizeof(Vertex), offsetof(Vertex, uv));
+  cm_gpu_vao_push(&renderer->vao, 1, sizeof(Vertex), offsetof(Vertex, idx));
 
   u32 indices[CM_SPRITES_INDICES] = {0, 1, 3, 1, 2, 3};
   for (size_t i = 0; i < CM_SPRITES_INDICES_MAX; ++i) {
@@ -141,20 +164,54 @@ usize cm_sprite_internal_init(void) {
       STR("#version 330 core\n"
           "layout (location = 0) in vec2 a_pos;\n"
           "layout (location = 1) in vec2 a_uv;\n"
+          "layout (location = 2) in float a_idx;\n"
           "uniform mat4 u_mvp;\n"
           "out vec2 v_uv;\n"
+          "flat out int v_idx;\n"
           "void main() {\n"
           "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
           "  v_uv = a_uv;\n"
+          "  v_idx = int(a_idx);\n"
           "}\n"),
       STR("#version 330 core\n"
           "in vec2 v_uv;\n"
           "out vec4 f_color;\n"
-          "uniform sampler2D u_sampler;\n"
+          "flat in int v_idx;\n"
+          "uniform sampler2D u_sampler[8];\n"
           "void main() {\n"
-          "  f_color = texture(u_sampler, v_uv);\n"
+          "  switch (v_idx) {\n"
+          "    case 0:\n"
+          "      f_color = texture(u_sampler[0], v_uv);\n"
+          "      break;\n"
+          "    case 1:\n"
+          "      f_color = texture(u_sampler[1], v_uv);\n"
+          "      break;\n"
+          "    case 2:\n"
+          "      f_color = texture(u_sampler[2], v_uv);\n"
+          "      break;\n"
+          "    case 3:\n"
+          "      f_color = texture(u_sampler[3], v_uv);\n"
+          "      break;\n"
+          "    case 4:\n"
+          "      f_color = texture(u_sampler[4], v_uv);\n"
+          "      break;\n"
+          "    case 5:\n"
+          "      f_color = texture(u_sampler[5], v_uv);\n"
+          "      break;\n"
+          "    case 6:\n"
+          "      f_color = texture(u_sampler[6], v_uv);\n"
+          "      break;\n"
+          "    case 7:\n"
+          "      f_color = texture(u_sampler[7], v_uv);\n"
+          "      break;\n"
+          "  }\n"
           "}\n"),
       ErrPanic);
+
+  cm_shader_bind(&renderer->shader);
+  u32 loc = glGetUniformLocation(renderer->shader.id, "u_sampler");
+  const int slots[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+  glUniform1iv(loc, ARRAY_LEN(slots), slots);
 
   return sizeof(struct RenderSpriteData);
 }
