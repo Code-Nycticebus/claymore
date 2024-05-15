@@ -1,5 +1,15 @@
 #include "renderer2d.h"
 
+void cm_renderer2d_begin(CmCamera2D *camera) {
+  cm_camera_update(camera);
+  cm_quad_begin(camera);
+  cm_sprite_begin(camera);
+}
+void cm_renderer2d_end(void) {
+  cm_quad_end();
+  cm_sprite_end();
+}
+
 bool cm_renderer2d_internal_init(void) {
   usize size = 0;
 

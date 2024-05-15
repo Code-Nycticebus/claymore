@@ -22,6 +22,7 @@ struct RenderQuadData {
   CmGpu gpu;
 
   CmShader shader;
+  CmCamera2D *camera;
 
   CmVbo vbo;
   CmVao vao;
@@ -37,6 +38,10 @@ struct RenderQuadData {
 static struct RenderQuadData *renderer = NULL;
 
 static void cm_quad_flush(void) {
+  cm_shader_bind(&renderer->shader);
+  cm_shader_set_mat4(&renderer->shader, STR("u_mvp"),
+                     renderer->camera->base.vp);
+
   cm_gpu_vbo_update(&renderer->vbo, sizeof(Vertex), renderer->vertices_count,
                     (float *)renderer->data);
 
@@ -48,11 +53,12 @@ static void cm_quad_flush(void) {
   renderer->vertices_count = 0;
 }
 
-void cm_quad_begin(mat4 mvp) {
-  cm_shader_bind(&renderer->shader);
-  cm_shader_set_mat4(&renderer->shader, STR("u_mvp"), mvp);
+void cm_quad_begin(CmCamera2D *camera) { renderer->camera = camera; }
+void cm_quad_end(void) {
+  if (renderer->vertices_count) {
+    cm_quad_flush();
+  }
 }
-void cm_quad_end(void) { cm_quad_flush(); }
 
 void cm_quad_push(const vec2 position, const vec2 size, float rotation,
                   const vec4 color) {

@@ -1,3 +1,4 @@
+#include "claymore/app/camera.h"
 #include "claymore/entrypoint.h"
 
 #include "claymore.h"
@@ -18,7 +19,7 @@ typedef struct {
 } Camera;
 
 typedef struct {
-  Camera camera;
+  CmCamera2D camera;
 } Benchmark;
 
 #define MAX_QUADS 317
@@ -38,8 +39,9 @@ static void on_event(CmScene *scene, CmEvent *event) {
     float zoom = benchmark->camera.zoom;
     zoom = glm_max(zoom - scroll->offset[1] * (zoom / scroll_speed), min_zoom);
     glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
-              benchmark->camera.projection);
+              benchmark->camera.base.projection);
     benchmark->camera.zoom = zoom;
+    cm_camera_update(&benchmark->camera);
   });
 }
 
@@ -53,11 +55,12 @@ static void init(CmScene *scene) {
   const float zoom = 100.f;
   benchmark->camera.zoom = zoom;
   glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
-            benchmark->camera.projection);
+            benchmark->camera.base.projection);
 
   glm_vec3_zero(benchmark->camera.position);
-  glm_mat4_identity(benchmark->camera.view);
-  glm_translate(benchmark->camera.view, (vec3){0});
+  glm_mat4_identity(benchmark->camera.base.view);
+  glm_translate(benchmark->camera.base.view, (vec3){0});
+  cm_camera2d_screen(&benchmark->camera);
 
   cm_scene_push(scene, fps_scene_init);
 }
@@ -96,15 +99,14 @@ static void update(CmScene *scene, double deltatime) {
   }
 
   const float zoom = benchmark->camera.zoom / 100;
-  glm_vec3_scale(dir, deltatime * zoom, dir);
+  glm_vec2_scale(dir, deltatime * zoom, dir);
   glm_vec3_add(benchmark->camera.position, dir, benchmark->camera.position);
 
-  glm_mat4_identity(benchmark->camera.view);
-  glm_translate(benchmark->camera.view, benchmark->camera.position);
+  glm_mat4_identity(benchmark->camera.base.view);
+  glm_translate(benchmark->camera.base.view, benchmark->camera.position);
+  benchmark->camera.base.dirty = true;
 
-  mat4 vp;
-  glm_mat4_mul(benchmark->camera.projection, benchmark->camera.view, vp);
-  cm_quad_begin(vp);
+  cm_renderer2d_begin(&benchmark->camera);
   const float size = 100;
   static float r = 0;
   const vec4 quad_color = {.2f, .2f, .8f, 1.f};
@@ -115,7 +117,7 @@ static void update(CmScene *scene, double deltatime) {
       cm_quad_push(pos, (vec2){size, size}, r, quad_color);
     }
   }
-  cm_quad_end();
+  cm_renderer2d_end();
 }
 
 static CmSceneInterface *benchmark(void) {

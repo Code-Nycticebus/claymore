@@ -16,7 +16,7 @@ void _cm_camera_update(CmCameraBase *camera);
 
 typedef struct {
   CmCameraBase base;
-  vec2 pos;
+  vec3 position;
   float zoom;
 } CmCamera2D;
 

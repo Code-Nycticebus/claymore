@@ -58,7 +58,11 @@ static void cm_sprite_flush(void) {
 }
 
 void cm_sprite_begin(CmCamera2D *camera) { renderer->camera = camera; }
-void cm_sprite_end(void) { cm_sprite_flush(); }
+void cm_sprite_end(void) {
+  if (renderer->vertices_count) {
+    cm_sprite_flush();
+  }
+}
 
 void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
                     float rotation, const vec2 uv, const vec2 uv_size) {

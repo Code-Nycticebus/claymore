@@ -34,9 +34,9 @@ static void update(CmScene *scene, double dt) {
   glm_vec2_lerp(keyframe->start, keyframe->end,
                 animation->timer / keyframe->duration, pos);
 
-  cm_quad_begin(GLM_MAT4_IDENTITY);
-  cm_quad_push(pos, (vec2){.25, .25}, 0, (vec4){1, 0, 0, 1});
-  cm_quad_end();
+  // cm_quad_begin(GLM_MAT4_IDENTITY);
+  // cm_quad_push(pos, (vec2){.25, .25}, 0, (vec4){1, 0, 0, 1});
+  // cm_quad_end();
 
   animation->timer += dt;
   if (keyframe->duration <= animation->timer) {
