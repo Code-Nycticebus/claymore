@@ -36,6 +36,7 @@ typedef struct {
   DA(CmGpuID) ebo;
   DA(CmGpuID) vao;
   DA(CmGpuID) program;
+  DA(CmGpuID) textures;
 } CmGpu;
 
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
@@ -53,6 +54,7 @@ void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
                           usize offset);
 
 CmGpuID cm_gpu_program(CmGpu *b);
+CmGpuID cm_gpu_texture(CmGpu *b);
 
 CmGpu cm_gpu_internal_init(Arena *arena);
 void cm_gpu_internal_free(CmGpu *bm);

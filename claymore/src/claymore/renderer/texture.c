@@ -23,7 +23,7 @@ static const struct {
 
 };
 
-CmTexture2D cm_texture_from_file(Str filename, Error *error) {
+CmTexture2D cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
   CmTexture2D texture = {0};
   Arena temp = {0};
 
@@ -43,8 +43,8 @@ CmTexture2D cm_texture_from_file(Str filename, Error *error) {
   }
   cebus_assert(bpp == 4, "Pixel format not supported!");
 
-  texture =
-      cm_texture_from_memory(width, height, texture_buffer, CM_TEXTURE_RGBA);
+  texture = cm_texture_from_memory(gpu, width, height, texture_buffer,
+                                   CM_TEXTURE_RGBA);
 
   stbi_image_free(texture_buffer);
 
@@ -53,15 +53,15 @@ defer:
   return texture;
 }
 
-CmTexture2D cm_texture_from_memory(usize width, usize height, const void *data,
-                                   CmTextureFormat format) {
+CmTexture2D cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
+                                   const void *data, CmTextureFormat format) {
   CmTexture2D texture = {
       .id = 0,
       .width = width,
       .height = height,
   };
 
-  glGenTextures(1, &texture.id);
+  texture.id = cm_gpu_texture(gpu);
   glBindTexture(GL_TEXTURE_2D, texture.id);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -85,8 +85,4 @@ void cm_texture_bind(CmTexture2D *texture, uint32_t slot) {
 void cm_texture_unbind(uint32_t slot) {
   glActiveTexture(GL_TEXTURE0 + slot);
   glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void cm_texture_delete(CmTexture2D *texture) {
-  glDeleteTextures(1, &texture->id);
 }

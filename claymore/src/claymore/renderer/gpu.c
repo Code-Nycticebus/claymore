@@ -104,6 +104,13 @@ CmGpuID cm_gpu_program(CmGpu *b) {
   return program;
 }
 
+CmGpuID cm_gpu_texture(CmGpu *b) {
+  CmGpuID texture = glCreateProgram();
+  glGenTextures(1, &texture);
+  da_push(&b->textures, texture);
+  return texture;
+}
+
 CmGpu cm_gpu_internal_init(Arena *arena) {
   CmGpu gpu = {0};
   gpu.arena = arena;
@@ -111,6 +118,7 @@ CmGpu cm_gpu_internal_init(Arena *arena) {
   da_init(&gpu.vao, arena);
   da_init(&gpu.ebo, arena);
   da_init(&gpu.program, arena);
+  da_init(&gpu.textures, arena);
   return gpu;
 }
 
@@ -121,4 +129,5 @@ void cm_gpu_internal_free(CmGpu *b) {
   for (usize i = 0; i < b->program.len; ++i) {
     glDeleteProgram(b->program.items[i]);
   }
+  glDeleteTextures(b->textures.len, b->textures.items);
 }

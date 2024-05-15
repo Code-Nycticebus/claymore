@@ -29,10 +29,10 @@ static void init(CmScene *scene) {
   sandbox->font = cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"),
                                font_size, ErrPanic);
 
-  sandbox->texture[0] =
-      cm_texture_from_file(STR("res/textures/claymore-sword.png"), ErrPanic);
-  sandbox->texture[1] =
-      cm_texture_from_file(STR("res/textures/mushroom.png"), ErrPanic);
+  sandbox->texture[0] = cm_texture_from_file(
+      &scene->gpu, STR("res/textures/claymore-sword.png"), ErrPanic);
+  sandbox->texture[1] = cm_texture_from_file(
+      &scene->gpu, STR("res/textures/mushroom.png"), ErrPanic);
 
   cm_scene_push(scene, fps_scene_init);
 }

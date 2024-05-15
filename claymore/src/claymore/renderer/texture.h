@@ -3,6 +3,8 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
+#include "claymore/renderer/gpu.h"
+
 typedef enum {
   CM_TEXTURE_R,
   CM_TEXTURE_RGBA,
@@ -14,14 +16,11 @@ typedef struct {
   usize height;
 } CmTexture2D;
 
-CmTexture2D cm_texture_from_file(Str filename, Error *error);
-CmTexture2D cm_texture_from_memory(usize width, usize height, const void *data,
-                                   CmTextureFormat format);
+CmTexture2D cm_texture_from_file(CmGpu *gpu, Str filename, Error *error);
+CmTexture2D cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
+                                   const void *data, CmTextureFormat format);
 
 void cm_texture_bind(CmTexture2D *texture, uint32_t slot);
 void cm_texture_unbind(uint32_t slot);
-
-// TODO remove and move it to GPU
-void cm_texture_delete(CmTexture2D *texture);
 
 #endif /* !__CLAYMORE_TEXTURE2D_H__ */
