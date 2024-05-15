@@ -23,6 +23,9 @@ struct RenderSpriteData {
 
   CmShader shader;
 
+  CmCamera2D *camera;
+  CmTexture2D *texture;
+
   CmVbo vbo;
   CmVao vao;
   CmEbo ebo;
@@ -37,6 +40,12 @@ struct RenderSpriteData {
 static struct RenderSpriteData *renderer = NULL;
 
 static void cm_sprite_flush(void) {
+  cm_shader_bind(&renderer->shader);
+  cm_shader_set_mat4(&renderer->shader, STR("u_mvp"),
+                     renderer->camera->base.vp);
+  cm_shader_set_i32(&renderer->shader, STR("u_sampler"), 0);
+  cm_texture_bind(renderer->texture, 0);
+
   cm_gpu_vbo_update(&renderer->vbo, sizeof(Vertex), renderer->vertices_count,
                     (float *)renderer->data);
 
@@ -48,17 +57,18 @@ static void cm_sprite_flush(void) {
   renderer->vertices_count = 0;
 }
 
-void cm_sprite_begin(mat4 mvp, CmTexture2D *texture) {
-  cm_shader_bind(&renderer->shader);
-  cm_shader_set_mat4(&renderer->shader, STR("u_mvp"), mvp);
-  cm_shader_set_i32(&renderer->shader, STR("u_sampler"), 0);
-  cm_texture_bind(texture, 0);
-}
+void cm_sprite_begin(CmCamera2D *camera) { renderer->camera = camera; }
 void cm_sprite_end(void) { cm_sprite_flush(); }
 
-void cm_sprite_push(const vec2 position, const vec2 size, float rotation,
-                    const vec2 uv, const vec2 uv_size) {
+void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
+                    float rotation, const vec2 uv, const vec2 uv_size) {
   cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
+
+  if (renderer->texture && texture != renderer->texture) {
+    cm_sprite_flush();
+  }
+  renderer->texture = texture;
+
   if (!(renderer->vertices_count < CM_SPRITES_VERTICES_MAX)) {
     cm_sprite_flush();
   }

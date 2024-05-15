@@ -5,7 +5,7 @@
 typedef struct {
   CmCamera2D camera;
   CmFont *font;
-  CmTexture2D texture;
+  CmTexture2D texture[2];
 } Sandbox;
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -29,8 +29,10 @@ static void init(CmScene *scene) {
   sandbox->font = cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"),
                                font_size, ErrPanic);
 
-  sandbox->texture =
+  sandbox->texture[0] =
       cm_texture_from_file(STR("res/textures/claymore-sword.png"), ErrPanic);
+  sandbox->texture[1] =
+      cm_texture_from_file(STR("res/textures/mushroom.png"), ErrPanic);
 
   cm_scene_push(scene, fps_scene_init);
 }
@@ -41,14 +43,15 @@ static void update(CmScene *scene, double dt) {
   cm_camera_update(&sandbox->camera);
 
   {
-    cm_sprite_begin(cm_camera_vp(&sandbox->camera), &sandbox->texture);
+    cm_sprite_begin(&sandbox->camera);
     const vec2 size = {100.f, 100.f};
     const f32 margin = 10.f;
     for (usize i = 0; i < 4; ++i) {
       float y = (size[1] + margin) * i;
       for (usize j = 0; j < 4; ++j) {
         float x = (size[0] + margin) * j;
-        cm_sprite_push((vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+        cm_sprite_push(&sandbox->texture[(i + j) % 2], (vec2){x, y}, size, 0,
+                       (vec2){0}, (vec2){1, 1});
       }
     }
     cm_sprite_end();
