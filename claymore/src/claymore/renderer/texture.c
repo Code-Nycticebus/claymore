@@ -32,7 +32,7 @@ CmTexture2D cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
   int32_t width;
   int32_t bpp;
 
-  stbi_set_flip_vertically_on_load(true);
+  // stbi_set_flip_vertically_on_load(false);
   unsigned char *texture_buffer =
       stbi_load(path.data, &width, &height, &bpp, 4);
   const char *fail = stbi_failure_reason();

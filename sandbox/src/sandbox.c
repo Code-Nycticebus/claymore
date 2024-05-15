@@ -48,8 +48,8 @@ static void update(CmScene *scene, double dt) {
     float y = (size[1] + margin) * i;
     for (usize j = 0; j < 4; ++j) {
       float x = (size[0] + margin) * j;
-      cm_sprite_push(&sandbox->texture[(i + j) % 2], (vec2){x, y}, size, 0,
-                     (vec2){0}, (vec2){1, 1});
+      cm_sprite_push(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
+                     (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
     }
   }
   cm_renderer2d_end();
