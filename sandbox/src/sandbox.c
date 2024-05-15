@@ -3,14 +3,7 @@
 #include "scenes/fps.h"
 
 typedef struct {
-  float zoom;
-  vec3 position;
-  mat4 view;
-  mat4 projection;
-} Camera;
-
-typedef struct {
-  Camera camera;
+  CmCamera2D camera;
   CmFont *font;
   CmTexture2D texture;
 } Sandbox;
@@ -30,14 +23,7 @@ static void event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   Sandbox *sandbox = cm_scene_alloc_data(scene, sizeof(Sandbox));
 
-  vec2 window_size;
-  cm_window_get_size(window_size);
-  glm_ortho(0, window_size[0], window_size[1], 0, -1.F, 100.F,
-            sandbox->camera.projection);
-
-  glm_vec3_zero(sandbox->camera.position);
-  glm_mat4_identity(sandbox->camera.view);
-  glm_translate(sandbox->camera.view, (vec3){0});
+  cm_camera2d_screen(&sandbox->camera);
 
   const float font_size = 32.f;
   sandbox->font = cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"),
@@ -52,11 +38,10 @@ static void init(CmScene *scene) {
 static void update(CmScene *scene, double dt) {
   (void)dt;
   Sandbox *sandbox = scene->data;
-  mat4 vp;
-  glm_mat4_mul(sandbox->camera.projection, sandbox->camera.view, vp);
+  cm_camera_update(&sandbox->camera);
 
   {
-    cm_sprite_begin(vp, &sandbox->texture);
+    cm_sprite_begin(cm_camera_vp(&sandbox->camera), &sandbox->texture);
     const vec2 size = {100.f, 100.f};
     const f32 margin = 10.f;
     for (usize i = 0; i < 4; ++i) {
@@ -75,12 +60,12 @@ static void update(CmScene *scene, double dt) {
     const float margin = 5;
     const float font_size = 32;
     const float char_width = 13;
-    cm_quad_begin(vp);
+    cm_quad_begin(cm_camera_vp(&sandbox->camera));
     cm_quad_push((vec2){pos[0], pos[1]},
                  (vec2){msg.len * char_width, font_size + margin}, 0,
                  (vec4){1, 0, 0, 1});
     cm_quad_end();
-    cm_font_draw(sandbox->font, vp, pos, msg);
+    cm_font_draw(sandbox->font, cm_camera_vp(&sandbox->camera), pos, msg);
   }
 }
 

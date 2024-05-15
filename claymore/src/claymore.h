@@ -6,6 +6,7 @@
 #include "claymore/defines.h"
 
 #include "claymore/app/app.h"
+#include "claymore/app/camera.h"
 #include "claymore/app/scene.h"
 #include "claymore/app/sound.h"
 #include "claymore/app/window.h"
