@@ -32,7 +32,7 @@ static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
   }
 
   cebus_assert(gl_check == GL_COMPILE_STATUS || gl_check == GL_LINK_STATUS,
-              "Other checks are not supported");
+               "Other checks are not supported");
   return false;
 }
 
@@ -40,7 +40,7 @@ static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
 
 static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
   cebus_assert((type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER),
-              "Shader only supports these types for now!");
+               "Shader only supports these types for now!");
 
   GLuint shader_id = glCreateShader(type);
 
@@ -89,7 +89,11 @@ CmShader cm_shader_from_memory(CmGpu *gpu, Str vs, Str fs, Error *e) {
   glLinkProgram(program.id);
 
   _cm_shader_check_error(program.id, GL_LINK_STATUS, e);
-  error_propagate(e, { goto defer; });
+  error_propagate(e, {
+    glDeleteProgram(da_pop(&gpu->program));
+    program = (CmShader){0};
+    goto defer;
+  });
 
 defer:
   if (vs_id) {
@@ -119,11 +123,11 @@ static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   GLint location = glGetUniformLocation(shader->id, name.data);
   if (location == -1) {
     cebus_log_error("Uniform location '" STR_FMT "' not found in shader %u",
-                   STR_ARG(uniform_name), shader->id);
+                    STR_ARG(uniform_name), shader->id);
   }
 
   cebus_assert(shader->uniform_count < CM_SHADER_UNIFORM_MAX,
-              "shader has to many cached uniforms");
+               "shader has to many cached uniforms");
 
   shader->uniforms[shader->uniform_count].location = location;
   shader->uniforms[shader->uniform_count].hash = hash;
