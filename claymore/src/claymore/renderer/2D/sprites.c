@@ -63,6 +63,8 @@ static void cm_sprite_flush(void) {
 
   renderer->indices_count = 0;
   renderer->vertices_count = 0;
+
+  renderer->texture_idx = 0;
 }
 
 void cm_sprite_begin(CmCamera2D *camera) { renderer->camera = camera; }
@@ -75,7 +77,6 @@ void cm_sprite_end(void) {
 static usize _cm_sprite_push_texture(CmTexture2D *texture) {
   if (CM_TEXTURE_SLOTS <= renderer->texture_idx) {
     cm_sprite_flush();
-    renderer->texture_idx = 0;
   }
 
   for (usize i = 0; i < renderer->texture_idx; i++) {
