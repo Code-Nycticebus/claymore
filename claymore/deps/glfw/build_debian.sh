@@ -1,4 +1,5 @@
-sudo apt install xorg-dev
+sudo apt install xorg-dev libxkbcommon-x11-dev
+sudo apt install libwayland-dev
 
 mkdir glfw-linux
 cd glfw-linux
