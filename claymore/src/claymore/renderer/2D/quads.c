@@ -53,13 +53,6 @@ static void cm_quad_flush(void) {
   renderer->vertices_count = 0;
 }
 
-void cm_quad_begin(CmCamera2D *camera) { renderer->camera = camera; }
-void cm_quad_end(void) {
-  if (renderer->vertices_count) {
-    cm_quad_flush();
-  }
-}
-
 void cm_quad_push(const vec2 position, const vec2 size, float rotation,
                   const vec4 color) {
   cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
@@ -104,6 +97,13 @@ void cm_quad_push(const vec2 position, const vec2 size, float rotation,
 
   renderer->vertices_count += CM_QUADS_VERTICES;
   renderer->indices_count += CM_QUADS_INDICES;
+}
+
+void cm_quad_internal_begin(CmCamera2D *camera) { renderer->camera = camera; }
+void cm_quad_internal_end(void) {
+  if (renderer->vertices_count) {
+    cm_quad_flush();
+  }
 }
 
 usize cm_quad_internal_init(void) {

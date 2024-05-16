@@ -2,14 +2,14 @@
 
 void cm_renderer2d_begin(CmCamera2D *camera) {
   cm_camera_update(camera);
-  cm_quad_begin(camera);
-  cm_sprite_begin(camera);
-  cm_font_begin(camera);
+  cm_quad_internal_begin(camera);
+  cm_sprite_internal_begin(camera);
+  cm_font_internal_begin(camera);
 }
 void cm_renderer2d_end(void) {
-  cm_quad_end();
-  cm_sprite_end();
-  cm_font_end();
+  cm_quad_internal_end();
+  cm_sprite_internal_end();
+  cm_font_internal_end();
 }
 
 bool cm_renderer2d_internal_init(void) {

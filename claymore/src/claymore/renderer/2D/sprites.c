@@ -67,13 +67,6 @@ static void cm_sprite_flush(void) {
   renderer->texture_idx = 0;
 }
 
-void cm_sprite_begin(CmCamera2D *camera) { renderer->camera = camera; }
-void cm_sprite_end(void) {
-  if (renderer->vertices_count) {
-    cm_sprite_flush();
-  }
-}
-
 static usize _cm_sprite_push_texture(CmTexture2D *texture) {
   if (CM_TEXTURE_SLOTS <= renderer->texture_idx) {
     cm_sprite_flush();
@@ -138,6 +131,13 @@ void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
 
   renderer->vertices_count += CM_SPRITES_VERTICES;
   renderer->indices_count += CM_SPRITES_INDICES;
+}
+
+void cm_sprite_internal_begin(CmCamera2D *camera) { renderer->camera = camera; }
+void cm_sprite_internal_end(void) {
+  if (renderer->vertices_count) {
+    cm_sprite_flush();
+  }
 }
 
 usize cm_sprite_internal_init(void) {

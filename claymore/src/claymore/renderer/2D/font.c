@@ -145,9 +145,9 @@ void cm_font_draw(CmFont *font, const vec2 pos, Str text) {
   }
 }
 
-void cm_font_begin(CmCamera2D *camera) { renderer->camera = camera; }
+void cm_font_internal_begin(CmCamera2D *camera) { renderer->camera = camera; }
 
-void cm_font_end(void) {
+void cm_font_internal_end(void) {
   if (renderer->vertex_count) {
     _cm_font_renderer_flush();
   }
