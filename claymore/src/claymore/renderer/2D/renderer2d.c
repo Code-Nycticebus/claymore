@@ -6,6 +6,7 @@ void cm_renderer2d_begin(CmCamera2D *camera) {
   cm_sprite_internal_begin(camera);
   cm_font_internal_begin(camera);
 }
+
 void cm_renderer2d_end(void) {
   cm_quad_internal_end();
   cm_sprite_internal_end();
