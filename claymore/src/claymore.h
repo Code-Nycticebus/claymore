@@ -14,7 +14,6 @@
 #include "claymore/event/event.h"
 
 #include "claymore/renderer/2D/renderer2d.h"
-#include "claymore/renderer/font.h"
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/mesh.h"
 #include "claymore/renderer/shaders.h"

@@ -4,10 +4,12 @@ void cm_renderer2d_begin(CmCamera2D *camera) {
   cm_camera_update(camera);
   cm_quad_begin(camera);
   cm_sprite_begin(camera);
+  cm_font_begin(camera);
 }
 void cm_renderer2d_end(void) {
   cm_quad_end();
   cm_sprite_end();
+  cm_font_end();
 }
 
 bool cm_renderer2d_internal_init(void) {
@@ -15,6 +17,7 @@ bool cm_renderer2d_internal_init(void) {
 
   size += cm_quad_internal_init();
   size += cm_sprite_internal_init();
+  size += cm_font_internal_init();
 
 #if defined(CLAYMORE_DEBUG)
   const usize bytes = size / 1000;
@@ -27,4 +30,5 @@ bool cm_renderer2d_internal_init(void) {
 void cm_renderer2d_internal_free(void) {
   cm_quad_internal_free();
   cm_sprite_internal_free();
+  cm_font_internal_free();
 }

@@ -4,7 +4,7 @@
 
 typedef struct {
   CmFont *font;
-  mat4 projection;
+  CmCamera2D camera;
 } Fps;
 
 const float font_heigth = 24.f;
@@ -15,12 +15,7 @@ static void init(CmScene *scene) {
   fps->font = cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"),
                            font_heigth, ErrPanic);
 
-  vec2 window_size;
-  cm_window_get_size(window_size);
-
-  mat4 projection;
-  glm_ortho(0, window_size[0], window_size[1], 0, -1.F, 100.F, projection);
-  glm_mat4_mul(projection, GLM_MAT4_IDENTITY, fps->projection);
+  cm_camera2d_screen(&fps->camera);
 }
 
 static void update(CmScene *scene, double deltatime) {
@@ -29,7 +24,9 @@ static void update(CmScene *scene, double deltatime) {
   const float ms = deltatime * 1000;
   usize len = snprintf(buffer, BUFFER_MAX, "FRAME: % 3.2f ms\nFPS: %.0f", ms,
                        1 / deltatime);
-  cm_font_draw(fps->font, fps->projection, offset, str_from_parts(len, buffer));
+  cm_renderer2d_begin(&fps->camera);
+  cm_font_draw(fps->font, offset, str_from_parts(len, buffer));
+  cm_renderer2d_end();
 }
 
 CmSceneInterface *fps_scene_init(void) {

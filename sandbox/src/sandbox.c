@@ -61,9 +61,10 @@ static void update(CmScene *scene, double dt) {
   cm_quad_push((vec2){pos[0], pos[1]},
                (vec2){msg.len * char_width, font_size + margin}, 0,
                (vec4){1, 0, 0, 1});
-  cm_renderer2d_end();
 
-  cm_font_draw(sandbox->font, cm_camera_vp(&sandbox->camera), pos, msg);
+  cm_font_draw(sandbox->font, pos, msg);
+
+  cm_renderer2d_end();
 }
 
 static CmSceneInterface *sandbox(void) {
