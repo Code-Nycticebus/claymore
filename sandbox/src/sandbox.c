@@ -16,8 +16,6 @@ static void event(CmScene *scene, CmEvent *event) {
       cm_window_close(true);
     }
   });
-
-  cm_event_cursor(event, { cebus_log_info(VEC2_FMT, VEC2_ARG(cursor->pos)); });
 }
 
 static void init(CmScene *scene) {
