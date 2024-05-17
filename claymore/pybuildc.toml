@@ -5,6 +5,7 @@ version="0.1.0"
 cflags = ["-std=c99", "-DGLEW_STATIC", "-Wno-static-in-inline"]
 
 [deps]
+glad = { dir="deps/glad", type="pybuildc" }
 stb_image = { dir="deps/stb_image/", type="pybuildc" }
 stb_truetype = { dir="deps/stb_truetype/", type="pybuildc" }
 miniaudio = { dir="deps/miniaudio/", type="pybuildc" }
@@ -13,8 +14,6 @@ cglm = { dir="deps/cglm/cglm", I=["include"] }
 cebus = { dir = "../../cebus", type="pybuildc" }
 
 [deps.linux]
-gl   = { l="GL" }
-glew = { l="GLEW", dir="deps/glew/glew-linux", L="lib", I=["glew/include"] }
 glfw = { l="glfw3", dir="deps/glfw/glfw-linux", L="build/src", I=["glfw/include"] }
 math = { l="m" }
 
@@ -22,6 +21,4 @@ math = { l="m" }
 Shell32 = { l="Shell32" }
 User32  = { l="User32" }
 Gdi32   = { l="Gdi32" }
-gl      = { l="opengl32" }
-glew    = { l="glew32s", dir="deps/glew/glew-win", L="lib/Release/Win32", I=["include/"] }
 glfw    = { l="glfw3_mt", dir="deps/glfw/glfw-win", L="lib-vc2022/", I=["include/"] }

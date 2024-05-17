@@ -2,7 +2,7 @@
 
 #include "claymore/renderer/shaders.h"
 
-#include <GL/glew.h>
+#include <glad.h>
 #include <stb_truetype.h>
 #include <stdlib.h>
 
@@ -65,6 +65,7 @@ CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
                        FONT_CHAR_MIN, FONT_CHAR_MAX, font_renderer->cdata);
 
   font_renderer->texture_id = cm_gpu_texture(gpu);
+  glActiveTexture(GL_TEXTURE0 + 0);
   glBindTexture(GL_TEXTURE_2D, font_renderer->texture_id);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ttf_bitmap_resolution,
                ttf_bitmap_resolution, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);

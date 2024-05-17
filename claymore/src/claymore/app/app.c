@@ -5,7 +5,7 @@
 #include "sound.h"
 #include "window.h"
 
-#include <GL/glew.h>
+#include <glad.h>
 
 static double dt_get(double *last_frame) {
   double current_time = cm_window_time();

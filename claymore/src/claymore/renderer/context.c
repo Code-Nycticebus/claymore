@@ -1,8 +1,10 @@
 #include "context.h"
 
-#include <GL/glew.h>
+#include <glad.h>
+
 #include <GLFW/glfw3.h>
 
+#undef CLAYMORE_DEBUG
 #ifdef CLAYMORE_DEBUG
 static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
                                                GLuint id, GLenum severity,
@@ -97,9 +99,8 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
 bool cm_platform_context_init(void *window_context) {
   glfwMakeContextCurrent(window_context);
 
-  GLenum err = glewInit();
-  if (err != GLEW_OK) {
-    cebus_log_error("GLEW initialization failed: %s", glewGetString(err));
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    cebus_log_error("GLAD initialization failed");
     return false;
   }
 
@@ -122,7 +123,7 @@ bool cm_platform_context_init(void *window_context) {
   cebus_log_info("GLSL: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
   // Debug
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);
+  // glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);
 #endif
 
   return true;

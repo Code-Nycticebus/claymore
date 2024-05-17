@@ -1,6 +1,6 @@
 #include "texture.h"
 
-#include <GL/glew.h>
+#include <glad.h>
 #include <stb_image.h>
 
 static const struct {
@@ -79,7 +79,8 @@ CmTexture2D cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
 }
 
 void cm_texture_bind(CmTexture2D *texture, uint32_t slot) {
-  glBindTextureUnit(slot, texture->id);
+  glActiveTexture(GL_TEXTURE0 + slot);
+  glBindTexture(GL_TEXTURE_2D, texture->id);
 }
 
 void cm_texture_unbind(uint32_t slot) {

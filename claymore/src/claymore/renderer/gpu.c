@@ -1,6 +1,6 @@
 #include "gpu.h"
 
-#include <GL/glew.h>
+#include <glad.h>
 
 static GLenum get_type(CmGpuType type) {
   switch (type) {

@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#include <GL/glew.h>
+#include <glad.h>
 
 #define CM_SPRITES_MAX 1000
 

@@ -1,0 +1,12 @@
+[pybuildc]
+name = "glad"
+
+[deps.linux]
+GL={ l="GL" }
+
+[deps.windows]
+gl={ l="opengl32" }
+
+
+[build.script]
+dependencies = {cmd="sh", args=[]}
