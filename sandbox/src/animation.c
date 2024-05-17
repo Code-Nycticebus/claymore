@@ -21,9 +21,9 @@ static void init(CmScene *scene) {
   Animation *animation = cm_scene_alloc_data(scene, sizeof(*animation));
 
   static Keyframe KEYFRAMES[] = {
-      {{25, 300}, {500, 300}, 3}, // NOLINT
+      {{25, 300}, {500, 300}, 2}, // NOLINT
       {{500, 300}, {500, 25}, 1}, // NOLINT
-      {{500, 25}, {25, 25}, 3},   // NOLINT
+      {{500, 25}, {25, 25}, 2},   // NOLINT
       {{25, 25}, {25, 300}, 1},   // NOLINT
   };
   animation->max = ARRAY_LEN(KEYFRAMES);
