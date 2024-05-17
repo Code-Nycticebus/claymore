@@ -4,7 +4,6 @@
 
 #include <GLFW/glfw3.h>
 
-#undef CLAYMORE_DEBUG
 #ifdef CLAYMORE_DEBUG
 static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
                                                GLuint id, GLenum severity,
@@ -97,6 +96,10 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
 #endif
 
 bool cm_platform_context_init(void *window_context) {
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
   glfwMakeContextCurrent(window_context);
 
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -123,7 +126,7 @@ bool cm_platform_context_init(void *window_context) {
   cebus_log_info("GLSL: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
   // Debug
   glEnable(GL_DEBUG_OUTPUT);
-  // glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);
+  glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);
 #endif
 
   return true;
