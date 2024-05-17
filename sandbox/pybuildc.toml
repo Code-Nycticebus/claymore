@@ -1,7 +1,7 @@
 [pybuildc]
 name="sandbox"
 
-cflags=["-fsanitize=address", "-Wno-static-in-inline"]
+cflags=["-Wno-static-in-inline"]
 
 [exe]
 sandbox="src/sandbox.c"

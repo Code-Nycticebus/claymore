@@ -2,7 +2,7 @@
 name="claymore"
 version="0.1.0"
 
-cflags = ["-std=c99", "-DGLEW_STATIC", "-Wno-static-in-inline"]
+cflags = ["-std=c99", "-Wno-static-in-inline"]
 
 [deps]
 glad = { dir="deps/glad", type="pybuildc" }
