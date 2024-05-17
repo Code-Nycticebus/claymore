@@ -1,2 +1,1 @@
-*.h linguist-language=C
-*.c linguist-language=C
+claymore/deps/**/* linguist-vendored
