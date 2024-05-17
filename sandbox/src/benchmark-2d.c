@@ -106,14 +106,16 @@ static void update(CmScene *scene, double deltatime) {
   benchmark->camera.base.dirty = true;
 
   cm_renderer2d_begin(&benchmark->camera);
-  const float size = 100;
-  static float r = 0;
-  const vec4 quad_color = {.2f, .2f, .8f, 1.f};
-  r += (F64_PI / 2) * deltatime;
-  for (usize i = 0; i < grid; i++) {
-    for (usize j = 0; j < grid; j++) {
-      const vec2 pos = {i * size, j * size};
-      cm_quad_push(pos, (vec2){size, size}, r, quad_color);
+  {
+    const float size = 100;
+    static float r = 0;
+    const vec4 quad_color = {.2f, .2f, .8f, 1.f};
+    r += (F64_PI / 2) * deltatime;
+    for (usize i = 0; i < grid; i++) {
+      for (usize j = 0; j < grid; j++) {
+        const vec2 pos = {i * size, j * size};
+        cm_quad_push(pos, (vec2){size, size}, r, quad_color);
+      }
     }
   }
   cm_renderer2d_end();

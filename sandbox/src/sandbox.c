@@ -40,28 +40,29 @@ static void update(CmScene *scene, double dt) {
   Sandbox *sandbox = scene->data;
 
   cm_renderer2d_begin(&sandbox->camera);
-  const vec2 size = {100.f, 100.f};
-  const f32 margin = 10.f;
-  for (usize i = 0; i < 4; ++i) {
-    float y = (size[1] + margin) * i;
-    for (usize j = 0; j < 4; ++j) {
-      float x = (size[0] + margin) * j;
-      cm_sprite_push(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
-                     (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+  {
+    const vec2 size = {100.f, 100.f};
+    const f32 margin = 10.f;
+    for (usize i = 0; i < 4; ++i) {
+      float y = (size[1] + margin) * i;
+      for (usize j = 0; j < 4; ++j) {
+        float x = (size[0] + margin) * j;
+        cm_sprite_push(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
+                       (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+      }
     }
+
+    Str msg = STR("This is Claymore!");
+    vec2 pos;
+    cm_event_cursor_position(pos);
+    const float font_size = 32;
+    const float char_width = 13;
+    cm_quad_push((vec2){pos[0], pos[1]},
+                 (vec2){msg.len * char_width, font_size + margin}, 0,
+                 (vec4){1, 0, 0, 1});
+
+    cm_font_draw(sandbox->font, pos, msg);
   }
-
-  Str msg = STR("This is Claymore!");
-  vec2 pos;
-  cm_event_cursor_position(pos);
-  const float font_size = 32;
-  const float char_width = 13;
-  cm_quad_push((vec2){pos[0], pos[1]},
-               (vec2){msg.len * char_width, font_size + margin}, 0,
-               (vec4){1, 0, 0, 1});
-
-  cm_font_draw(sandbox->font, pos, msg);
-
   cm_renderer2d_end();
 }
 
