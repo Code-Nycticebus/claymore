@@ -1,10 +1,6 @@
 [pybuildc]
 name = "RGFW"
 
-[[scripts.build]]
-cmd="sh"
-args=["dependencies.sh"]
-
 [deps.linux]
 X11  = { l="X11" }
 Xrandr  = { l="Xrandr" }
