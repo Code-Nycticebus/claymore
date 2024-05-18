@@ -113,6 +113,7 @@ bool cm_platform_context_init(void *window_context) {
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // glfwSwapInterval(0);
+  RGFW_window_swapInterval(window_context, 0);
 
   // int32_t width;
   // int32_t height;
