@@ -10,6 +10,7 @@ typedef enum {
 
 typedef enum {
   CM_DRAW_TRIANGLES,
+  CM_DRAW_TRIANGLE_STRIP,
   CM_DRAW_LINES,
 } CmGpuDrawMode;
 

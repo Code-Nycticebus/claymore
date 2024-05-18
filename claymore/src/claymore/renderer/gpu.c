@@ -17,6 +17,8 @@ static GLenum get_mode(CmGpuDrawMode mode) {
   switch (mode) {
   case CM_DRAW_TRIANGLES:
     return GL_TRIANGLES;
+  case CM_DRAW_TRIANGLE_STRIP:
+    return GL_TRIANGLE_STRIP;
   case CM_DRAW_LINES:
     return GL_LINES;
   }
@@ -43,7 +45,8 @@ void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v) {
 
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
-  glDrawArraysInstanced(get_mode(mode), 0, vbo->len, count);
+  // This could be wrong idk
+  glDrawArraysInstanced(get_mode(mode), 0, count, vbo->len);
 }
 
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
