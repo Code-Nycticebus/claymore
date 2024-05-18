@@ -1,0 +1,3 @@
+[submodule "claymore/deps/cebus"]
+	path = claymore/deps/cebus
+	url = https://github.com/Code-Nycticebus/cebus

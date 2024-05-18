@@ -10,6 +10,6 @@ glad         = { dir="deps/glad", type="pybuildc" }
 stb_image    = { dir="deps/stb_image/", type="pybuildc" }
 stb_truetype = { dir="deps/stb_truetype/", type="pybuildc" }
 miniaudio    = { dir="deps/miniaudio/", type="pybuildc" }
-cglm         = { dir="deps/cglm/cglm", I=["include"] }
-cebus        = { dir = "../../cebus", type="pybuildc" }
+cglm         = { dir="deps/cglm", I=["include"] }
+cebus        = { dir="deps/cebus", type="pybuildc" }
 
