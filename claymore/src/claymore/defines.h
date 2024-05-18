@@ -5,9 +5,6 @@
 
 #include <cebus.h>
 
-#if defined(WINDOWS)
-#define CGLM_INLINE inline
-#endif
 #include <cglm/cglm.h>
 
 // IWYU pragma: end_exports
