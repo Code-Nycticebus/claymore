@@ -1,4 +1,7 @@
 /*
+* Disclaimer: This code has been altered to fix some compiler errors.
+* 	- Code-Nycticebus
+*
 * Copyright (C) 2023-24 ColleagueRiley
 *
 * libpng license
