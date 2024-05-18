@@ -28,7 +28,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
 
   cm_event_key(event, {
     if (key->code == CM_KEY_ESCAPE) {
-      cm_window_close(true);
+      cm_window_close();
     }
   });
 

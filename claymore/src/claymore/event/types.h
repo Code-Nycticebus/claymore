@@ -3,7 +3,7 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-#include "glfw_keymap.h" // IWYU pragma: export
+#include "rgfw_keymap.h"
 
 typedef enum {
   CM_EVENT_KEY,

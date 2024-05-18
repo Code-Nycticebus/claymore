@@ -2,116 +2,73 @@
 
 #include "claymore/event/event.h"
 
-#include <GLFW/glfw3.h>
+#define u8 u8
+#define RGFWDEF
+#include <RGFW.h>
 
 static struct {
-  void *context;
+  RGFW_window *context;
 } window;
 
 void *cm_window_context(void) { return window.context; }
 
-double cm_window_time(void) { return glfwGetTime(); }
+double cm_window_time(void) { return 0; }
 
 void cm_window_set_bg(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 
 void cm_window_get_size(vec2 out) {
-  int size[2];
-  glfwGetWindowSize(window.context, &size[0], &size[1]);
-  out[0] = size[0];
-  out[1] = size[1];
+  out[0] = window.context->r.w;
+  out[1] = window.context->r.h;
 }
 
-void cm_window_close(bool c) { glfwSetWindowShouldClose(window.context, c); }
-
-static void keyboard_callback(GLFWwindow *context, int key, int scancode,
-                              int action, int mods) {
-  (void)context, (void)scancode, (void)mods;
-  cm_event_emit((CmEvent){
-      .type = CM_EVENT_KEY,
-      .event.key = {.code = key, .action = action},
-  });
-}
-
-static void mouse_callback(GLFWwindow *context, int btn, int action, int mods) {
-  (void)mods;
-  double pos[2];
-  glfwGetCursorPos(context, &pos[0], &pos[1]);
-  cm_event_emit((CmEvent){
-      .type = CM_EVENT_MOUSE,
-      .event.mouse =
-          {
-              .button = btn,
-              .action = action,
-              .pos = {pos[0], pos[1]},
-          },
-  });
-}
-
-static void cursor_callback(GLFWwindow *context, double x, double y) {
-  (void)context;
-  cm_event_emit((CmEvent){
-      .type = CM_EVENT_CURSOR,
-      .event.cursor = {.pos = {x, y}},
-  });
-}
-
-static void scroll_callback(GLFWwindow *context, double x, double y) {
-  (void)context;
-  cm_event_emit((CmEvent){
-      .type = CM_EVENT_SCROLL,
-      .event.scroll = {.offset = {x, y}},
-  });
-}
-
-static void resize_callback(GLFWwindow *context, i32 width, i32 height) {
-  (void)context;
-  glViewport(0, 0, width, height);
-  cm_event_emit((CmEvent){
-      .type = CM_EVENT_RESIZE,
-      .event.resize = {.size = {width, height}},
-  });
-}
-
-static void drop_callback(GLFWwindow *context, int count, const char **paths) {
-  (void)context;
-  cm_event_emit((CmEvent){
-      .type = CM_EVENT_DROP,
-      .event.drop =
-          {
-              .count = count,
-              .files = paths,
-          },
-  });
-}
+void cm_window_close(void) { RGFW_window_setShouldClose(window.context); }
 
 bool cm_window_internal_create(usize width, usize height, const char *title) {
-  if (!glfwInit()) {
-    return false;
-  }
-
-  window.context = glfwCreateWindow(width, height, title, NULL, NULL);
+  window.context = RGFW_createWindow(title, RGFW_RECT(0, 0, width, height), 0);
+  ;
   if (window.context == NULL) {
     return false;
   }
 
-  glfwSetKeyCallback(window.context, keyboard_callback);
-  glfwSetMouseButtonCallback(window.context, mouse_callback);
-  glfwSetCursorPosCallback(window.context, cursor_callback);
-  glfwSetScrollCallback(window.context, scroll_callback);
-  glfwSetFramebufferSizeCallback(window.context, resize_callback);
-  glfwSetDropCallback(window.context, drop_callback);
-
   return true;
 }
 
-void cm_window_internal_close(void) {
-  glfwDestroyWindow(window.context);
-  glfwTerminate();
-}
-
 bool cm_window_internal_should_close(void) {
-  return glfwWindowShouldClose(window.context);
+  return RGFW_window_shouldClose(window.context);
 }
 
-void cm_window_internal_swap_buffers(void) { glfwSwapBuffers(window.context); }
-void cm_window_internal_poll_events(void) { glfwPollEvents(); }
+void cm_window_internal_close(void) { RGFW_window_close(window.context); }
+
+void cm_window_internal_swap_buffers(void) {
+  RGFW_window_swapBuffers(window.context);
+}
+
+void cm_window_internal_poll_events(void) {
+  while (RGFW_window_checkEvent(window.context)) {
+    RGFW_Event *event = &window.context->event;
+    if (event->type == RGFW_quit) {
+      cm_window_close();
+      return;
+    }
+    if (event->type == RGFW_keyPressed || event->type == RGFW_keyReleased) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_KEY,
+          .event.key =
+              {
+                  .code = window.context->event.keyCode,
+                  .action = window.context->event.type,
+              },
+      });
+    } else if (event->type == RGFW_mousePosChanged) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_CURSOR,
+          .event.cursor = {.pos = {event->point.x, event->point.y}},
+      });
+    } else if (event->type == RGFW_windowAttribsChange) {
+      cebus_log_error("ATTRIB");
+    } else {
+      cebus_log_error("%d", event->type);
+      NOT_IMPLEMENTED();
+    }
+  }
+}

@@ -32,7 +32,7 @@
 
 void cm_event_emit(CmEvent event);
 
-CmKeyAction cm_event_key_pressed(CmKeyCodes key);
+bool cm_event_key_pressed(CmKeyCodes key);
 CmKeyAction cm_event_mouse_button_pressed(CmMouseButtons button);
 void cm_event_cursor_position(vec2 out);
 

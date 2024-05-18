@@ -2,7 +2,9 @@
 
 #include <glad.h>
 
-#include <GLFW/glfw3.h>
+#define u8 u8
+#define RGFWDEF
+#include <RGFW.h>
 
 #ifdef CLAYMORE_DEBUG
 static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
@@ -96,13 +98,11 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
 #endif
 
 bool cm_platform_context_init(void *window_context) {
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  RGFW_setGLVersion(4, 3);
 
-  glfwMakeContextCurrent(window_context);
+  RGFW_window_makeCurrent(window_context);
 
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+  if (!gladLoadGLLoader((GLADloadproc)RGFW_getProcAddress)) {
     cebus_log_error("GLAD initialization failed");
     return false;
   }
@@ -112,12 +112,12 @@ bool cm_platform_context_init(void *window_context) {
   glEnable(GL_BLEND); // Enables Transparency of png files
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glfwSwapInterval(0);
+  // glfwSwapInterval(0);
 
-  int32_t width;
-  int32_t height;
-  glfwGetWindowSize(window_context, &width, &height);
-  glViewport(0, 0, width, height);
+  // int32_t width;
+  // int32_t height;
+  // glfwGetWindowSize(window_context, &width, &height);
+  // glViewport(0, 0, width, height);
 
 #ifdef CLAYMORE_DEBUG
   // Logs info

@@ -5,8 +5,6 @@
 #include "sound.h"
 #include "window.h"
 
-#include <glad.h>
-
 static double dt_get(double *last_frame) {
   double current_time = cm_window_time();
   double dt = current_time - *last_frame;
@@ -67,9 +65,12 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 }
 
 bool cm_app_internal_update(void) {
+  cm_window_internal_poll_events();
+
   if (cm_window_internal_should_close()) {
     return false;
   }
+
   glClear(GL_COLOR_BUFFER_BIT);
 
   double deltatime = dt_get(&app.last_frame);
@@ -77,7 +78,6 @@ bool cm_app_internal_update(void) {
   cm_scene_internal_update(app.main_scene, deltatime);
 
   cm_window_internal_swap_buffers();
-  cm_window_internal_poll_events();
   return true;
 }
 

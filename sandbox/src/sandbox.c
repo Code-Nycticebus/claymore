@@ -13,7 +13,7 @@ static void event(CmScene *scene, CmEvent *event) {
   (void)sandbox, (void)event;
   cm_event_key(event, {
     if (key->action == CM_KEY_PRESS && key->code == CM_KEY_ESCAPE) {
-      cm_window_close(true);
+      cm_window_close();
     }
   });
 }

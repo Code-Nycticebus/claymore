@@ -7,7 +7,7 @@ void *cm_window_context(void);
 double cm_window_time(void);
 void cm_window_set_bg(const vec3 color);
 void cm_window_get_size(vec2 out);
-void cm_window_close(bool close);
+void cm_window_close(void);
 
 bool cm_window_internal_create(usize width, usize heigth, const char *title);
 void cm_window_internal_close(void);
