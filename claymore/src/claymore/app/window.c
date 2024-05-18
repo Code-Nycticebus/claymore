@@ -73,6 +73,25 @@ void cm_window_internal_poll_events(void) {
           .type = CM_EVENT_RESIZE,
           .event.resize = {.size = {window.context->r.w, window.context->r.h}},
       });
+    } else if (event->type == RGFW_mouseButtonPressed ||
+               event->type == RGFW_mouseButtonReleased) {
+      if (event->button == RGFW_mouseScrollUp ||
+          event->button == RGFW_mouseScrollDown) {
+        cm_event_emit((CmEvent){
+            .type = CM_EVENT_SCROLL,
+            .event.scroll = {.offset = {0, event->scroll}},
+        });
+      } else {
+        cm_event_emit((CmEvent){
+            .type = CM_EVENT_MOUSE,
+            .event.mouse =
+                {
+                    .action = event->type,
+                    .button = event->button,
+                    .pos = {event->point.x, event->point.y},
+                },
+        });
+      }
     } else {
       cebus_log_error("EVENT %d", event->type);
       NOT_IMPLEMENTED();
