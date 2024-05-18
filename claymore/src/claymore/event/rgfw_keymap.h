@@ -3,6 +3,7 @@
 
 #include "claymore/defines.h"
 
+#define RGFW_NO_API
 #define u8 u8
 #define RGFWDEF
 #include <RGFW.h>

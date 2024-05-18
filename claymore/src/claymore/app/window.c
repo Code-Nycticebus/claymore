@@ -1,12 +1,12 @@
 #include "window.h"
 
-#include "claymore/event/event.h"
+#include <glad.h>
 
 #define u8 u8
 #define RGFWDEF
 #include <RGFW.h>
 
-#include <glad.h>
+#include "claymore/event/event.h"
 
 static struct {
   RGFW_window *context;
