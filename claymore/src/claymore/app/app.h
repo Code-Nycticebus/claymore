@@ -3,7 +3,7 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-#include "claymore/event/types.h"
+#include "event_types.h"
 
 #include "scene.h"
 

@@ -3,8 +3,8 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-#include "claymore/event/types.h"
 #include "claymore/renderer/gpu.h"
+#include "event_types.h"
 
 typedef struct {
   Arena arena;

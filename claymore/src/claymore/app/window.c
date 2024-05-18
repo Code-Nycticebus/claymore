@@ -6,7 +6,7 @@
 #define RGFWDEF
 #include <RGFW.h>
 
-#include "claymore/event/event.h"
+#include "event.h"
 
 static struct {
   RGFW_window *context;

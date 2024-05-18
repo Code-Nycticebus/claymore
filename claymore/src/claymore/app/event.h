@@ -2,7 +2,7 @@
 #define __CLAYMORE_EVENTS_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
-#include "types.h"
+#include "event_types.h"
 
 #define _cm_event(e, MEMBER, T, TYPE, ...)                                     \
   do {                                                                         \
