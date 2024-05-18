@@ -4,26 +4,10 @@ A C Game Engine
 > ⚠️ The Project as well as the Documentation is not yet finished.
 
 ## Setup
-First clone the repo and the [cebus](https://github.com/Code-Nycticebus/cebus) library:
+First clone the repo:
 
 ```terminal
-git clone https://github.com/Code-Nycticebus/cebus
-git clone https://github.com/Code-Nycticebus/claymore
-cd claymore
-```
-
-Run these scripts to build the dependencies.
-
-#### Linux
-```
-cd claymore/deps
-sh build_debian.sh
-```
-
-#### Windows
-```
-cd claymore/deps
-.\build_win32.bat
+git clone https://github.com/Code-Nycticebus/claymore --recurse-submodules 
 ```
 
 
