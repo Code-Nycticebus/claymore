@@ -2,7 +2,7 @@
 name="claymore"
 version="0.1.0"
 
-cflags = ["-std=c99", "-Wno-static-in-inline"]
+cflags = ["-std=c99", "-Wno-static-in-inline", "-fgnu89-inline"]
 
 [deps]
 RGFW         = { dir="deps/RGFW", type="pybuildc" }
