@@ -6,6 +6,8 @@
 #define RGFWDEF
 #include <RGFW.h>
 
+#include <glad.h>
+
 static struct {
   RGFW_window *context;
 } window;
