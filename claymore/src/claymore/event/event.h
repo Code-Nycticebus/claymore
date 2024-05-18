@@ -34,6 +34,5 @@ void cm_event_emit(CmEvent event);
 
 bool cm_event_key_pressed(CmKeyCodes key);
 CmKeyAction cm_event_mouse_button_pressed(CmMouseButtons button);
-void cm_event_cursor_position(vec2 out);
 
 #endif /* !__CLAYMORE_EVENTS_H__ */

@@ -6,6 +6,7 @@ typedef struct {
   CmCamera2D camera;
   CmFont *font;
   CmTexture2D texture[2];
+  vec2 mouse_pos;
 } Sandbox;
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -15,6 +16,10 @@ static void event(CmScene *scene, CmEvent *event) {
     if (key->action == CM_KEY_PRESS && key->code == CM_KEY_ESCAPE) {
       cm_window_close();
     }
+  });
+  cm_event_cursor(event, {
+    sandbox->mouse_pos[0] = cursor->pos[0];
+    sandbox->mouse_pos[1] = cursor->pos[1];
   });
 }
 
@@ -53,15 +58,13 @@ static void update(CmScene *scene, double dt) {
     }
 
     Str msg = STR("This is Claymore!");
-    vec2 pos;
-    cm_event_cursor_position(pos);
     const float font_size = 32;
     const float char_width = 13;
-    cm_quad_push((vec2){pos[0], pos[1]},
+    cm_quad_push(sandbox->mouse_pos,
                  (vec2){msg.len * char_width, font_size + margin}, 0,
                  (vec4){1, 0, 0, 1});
 
-    cm_font_draw(sandbox->font, pos, msg);
+    cm_font_draw(sandbox->font, sandbox->mouse_pos, msg);
   }
   cm_renderer2d_end();
 }

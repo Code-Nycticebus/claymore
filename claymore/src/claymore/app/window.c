@@ -14,7 +14,10 @@ static struct {
 
 void *cm_window_context(void) { return window.context; }
 
-double cm_window_time(void) { return 0; }
+double cm_window_time(void) {
+  const double ns = 1e9;
+  return RGFW_getTimeNS() / ns;
+}
 
 void cm_window_set_bg(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 
@@ -27,7 +30,6 @@ void cm_window_close(void) { RGFW_window_setShouldClose(window.context); }
 
 bool cm_window_internal_create(usize width, usize height, const char *title) {
   window.context = RGFW_createWindow(title, RGFW_RECT(0, 0, width, height), 0);
-  ;
   if (window.context == NULL) {
     return false;
   }
@@ -67,9 +69,12 @@ void cm_window_internal_poll_events(void) {
           .event.cursor = {.pos = {event->point.x, event->point.y}},
       });
     } else if (event->type == RGFW_windowAttribsChange) {
-      cebus_log_error("ATTRIB");
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_RESIZE,
+          .event.resize = {.size = {window.context->r.w, window.context->r.h}},
+      });
     } else {
-      cebus_log_error("%d", event->type);
+      cebus_log_error("EVENT %d", event->type);
       NOT_IMPLEMENTED();
     }
   }
