@@ -638,7 +638,7 @@ typedef struct { i32 x, y; } RGFW_vector;
 	RGFWDEF void RGFW_window_makeCurrent(RGFW_window* win);
 
 	/*error handling*/
-	RGFWDEF u8 RGFW_Error(); /* returns true if an error has occurred (doesn't print errors itself) */
+	RGFWDEF u8 RGFW_Error(void); /* returns true if an error has occurred (doesn't print errors itself) */
 
 	/*!< if window == NULL, it checks if the key is pressed globally. Otherwise, it checks only if the key is pressed while the window in focus.*/
 	RGFWDEF u8 RGFW_isPressedI(RGFW_window* win, u32 key); /*!< if key is pressed (key code)*/
@@ -697,7 +697,7 @@ typedef struct { i32 x, y; } RGFW_vector;
 	/*! native opengl functions */
 #ifdef RGFW_OPENGL
 /*! Get max OpenGL version */
-	RGFWDEF u8* RGFW_getMaxGLVersion();
+	RGFWDEF u8* RGFW_getMaxGLVersion(void);
 	/* OpenGL init hints */
 	RGFWDEF void RGFW_setGLStencil(i32 stencil); /* set stencil buffer bit size (8 by default) */
 	RGFWDEF void RGFW_setGLSamples(i32 samples); /* set number of sampiling buffers (4 by default) */
