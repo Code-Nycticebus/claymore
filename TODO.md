@@ -8,10 +8,11 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [ ] A way to embed /preload music
 - [ ] Framebuffer
 - [ ] Dependencies
-    - [ ] Add cebus as submodule
-    - [ ] Add cglm as submodule
-    - [ ] Switch glfw to rgfw
+    - [x] Add cebus as submodule
+    - [x] Add cglm as submodule
+    - [x] Switch glfw to rgfw
 - [ ] Make sandbox to a menu
 - [ ] GUI
 - [ ] Joystick support
 - [ ] Model loading
+- [ ] Overwork event system
