@@ -1,6 +1,8 @@
 [submodule "claymore/deps/cebus"]
 	path = claymore/deps/cebus
 	url = https://github.com/Code-Nycticebus/cebus
+  ignore = all
 [submodule "claymore/deps/cglm"]
 	path = claymore/deps/cglm
 	url = https://github.com/recp/cglm.git
+  ignore = all
