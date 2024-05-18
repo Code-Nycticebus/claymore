@@ -76,8 +76,6 @@ bool cm_app_internal_update(void) {
   glClear(GL_COLOR_BUFFER_BIT);
 
   double deltatime = dt_get(&app.last_frame);
-  cebus_log("HERE: %g", app.last_frame);
-
   cm_scene_internal_update(app.main_scene, deltatime);
 
   cm_window_internal_swap_buffers();
