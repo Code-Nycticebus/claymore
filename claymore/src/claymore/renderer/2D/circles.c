@@ -40,7 +40,7 @@ static void _cm_circle_flush(void) {
 }
 
 void cm_circle(const vec2 position, const vec2 radius, const vec4 color) {
-  if (!(renderer->vertex_count <= CM_CIRCLES_MAX)) {
+  if (!(renderer->vertex_count < CM_CIRCLES_MAX)) {
     _cm_circle_flush();
   }
 
