@@ -122,8 +122,8 @@ typedef enum {
 } CmKeyCodes;
 
 typedef enum {
-  CM_KEY_PRESS = RGFW_keyPressed,    /* a key has been pressed */
-  CM_KEY_RELEASE = RGFW_keyReleased, /*!< a key has been released*/
+  CM_KEY_PRESS = RGFW_keyPressed,
+  CM_KEY_RELEASE = RGFW_keyReleased,
 } CmKeyAction;
 
 typedef enum {

@@ -86,7 +86,9 @@ void cm_window_internal_poll_events(void) {
             .type = CM_EVENT_MOUSE,
             .event.mouse =
                 {
-                    .action = event->type,
+                    .action = event->type == RGFW_mouseButtonPressed
+                                  ? CM_KEY_PRESS
+                                  : CM_KEY_RELEASE,
                     .button = event->button,
                     .pos = {event->point.x, event->point.y},
                 },
