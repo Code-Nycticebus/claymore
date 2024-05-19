@@ -4,6 +4,7 @@
 #include "claymore/app/camera.h"
 #include "claymore/defines.h" // IWYU pragma: export
 
+#include "circles.h" // IWYU pragma: export
 #include "font.h"    // IWYU pragma: export
 #include "quads.h"   // IWYU pragma: export
 #include "sprites.h" // IWYU pragma: export

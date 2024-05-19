@@ -1,8 +1,9 @@
 #ifndef __CLAYMORE_SPRITES_H__
 #define __CLAYMORE_SPRITES_H__
 
-#include "claymore/app/camera.h"
 #include "claymore/defines.h" // IWYU pragma: export
+
+#include "claymore/app/camera.h"
 #include "claymore/renderer/texture.h"
 
 void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
