@@ -5,8 +5,8 @@
 
 #include "claymore/app/camera.h"
 
-void cm_quad_push(const vec2 position, const vec2 size, float rotation,
-                  const vec4 color);
+void cm_quad(const vec2 position, const vec2 size, float rotation,
+             const vec4 color);
 
 void cm_quad_internal_begin(CmCamera2D *camera);
 void cm_quad_internal_end(void);

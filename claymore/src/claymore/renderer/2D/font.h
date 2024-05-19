@@ -9,7 +9,7 @@
 typedef struct CmFont CmFont;
 
 CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height, Error *error);
-void cm_font_draw(CmFont *font, const vec2 pos, Str text);
+void cm_font(CmFont *font, const vec2 pos, Str text);
 
 void cm_font_internal_begin(CmCamera2D *camera);
 void cm_font_internal_end(void);

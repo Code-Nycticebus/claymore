@@ -81,8 +81,8 @@ static usize _cm_sprite_push_texture(CmTexture2D *texture) {
   return renderer->texture_idx - 1;
 }
 
-void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
-                    float rotation, const vec2 uv, const vec2 uv_size) {
+void cm_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
+               float rotation, const vec2 uv, const vec2 uv_size) {
   cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
 
   usize idx = _cm_sprite_push_texture(texture);

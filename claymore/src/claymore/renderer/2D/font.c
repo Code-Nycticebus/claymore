@@ -99,7 +99,7 @@ static void _cm_font_renderer_flush(void) {
   renderer->vertex_count = 0;
 }
 
-void cm_font_draw(CmFont *font, const vec2 pos, Str text) {
+void cm_font(CmFont *font, const vec2 pos, Str text) {
   renderer->texture_id = font->texture_id;
 
   float text_y = pos[1] + font->height;

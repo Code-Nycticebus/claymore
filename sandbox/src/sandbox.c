@@ -52,19 +52,25 @@ static void update(CmScene *scene, double dt) {
       float y = (size[1] + margin) * i;
       for (usize j = 0; j < 4; ++j) {
         float x = (size[0] + margin) * j;
-        cm_sprite_push(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
-                       (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+        cm_sprite(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
+                  (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
       }
     }
 
     Str msg = STR("This is Claymore!");
     const float font_size = 32;
     const float char_width = 13;
-    cm_quad_push(sandbox->mouse_pos,
-                 (vec2){msg.len * char_width, font_size + margin}, 0,
-                 (vec4){1, 0, 0, 1});
+    cm_quad(sandbox->mouse_pos,
+            (vec2){msg.len * char_width, font_size + margin}, 0,
+            (vec4){1, 0, 0, 1});
 
-    cm_font_draw(sandbox->font, sandbox->mouse_pos, msg);
+    vec2 pos;
+    cm_window_get_size(pos);
+    glm_vec2_divs(pos, 2, pos);
+    const float r = 210;
+    cm_circle(pos, r, (vec4){0, 0, 1, 1});
+
+    cm_font(sandbox->font, sandbox->mouse_pos, msg);
   }
   cm_renderer2d_end();
 }

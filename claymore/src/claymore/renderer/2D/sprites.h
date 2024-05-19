@@ -6,8 +6,8 @@
 #include "claymore/app/camera.h"
 #include "claymore/renderer/texture.h"
 
-void cm_sprite_push(CmTexture2D *texture, const vec2 position, const vec2 size,
-                    float rotation, const vec2 uv, const vec2 uv_size);
+void cm_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
+               float rotation, const vec2 uv, const vec2 uv_size);
 
 void cm_sprite_internal_begin(CmCamera2D *camera);
 void cm_sprite_internal_end(void);
