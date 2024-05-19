@@ -30,7 +30,7 @@ static void update(CmScene *scene, double dt) {
       center[1] - font_size,
   };
   cm_renderer2d_begin(&hello->camera);
-  { cm_font_draw(hello->font, pos, label); }
+  { cm_font(hello->font, pos, label); }
   cm_renderer2d_end();
 }
 

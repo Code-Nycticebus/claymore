@@ -114,7 +114,7 @@ static void update(CmScene *scene, double deltatime) {
     for (usize i = 0; i < grid; i++) {
       for (usize j = 0; j < grid; j++) {
         const vec2 pos = {i * size, j * size};
-        cm_quad_push(pos, (vec2){size, size}, r, quad_color);
+        cm_quad(pos, (vec2){size, size}, r, quad_color);
       }
     }
   }

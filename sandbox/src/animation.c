@@ -41,7 +41,7 @@ static void update(CmScene *scene, double dt) {
                 animation->timer / keyframe->duration, pos);
 
   cm_renderer2d_begin(&animation->camera);
-  { cm_quad_push(pos, size, 0, color); }
+  { cm_quad(pos, size, 0, color); }
   cm_renderer2d_end();
 
   animation->timer += dt;
