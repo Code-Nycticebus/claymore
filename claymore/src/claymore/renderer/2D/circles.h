@@ -5,6 +5,8 @@
 
 #include "claymore/app/camera.h"
 
+void cm_circle_push(const vec2 position, float radius, const vec4 color);
+
 void cm_circle_internal_begin(CmCamera2D *camera);
 void cm_circle_internal_end(void);
 usize cm_circle_internal_init(void);
