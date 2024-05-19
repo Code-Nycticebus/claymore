@@ -67,7 +67,7 @@ static void update(CmScene *scene, double dt) {
     vec2 pos;
     cm_window_get_size(pos);
     glm_vec2_divs(pos, 2, pos);
-    const float r = 210;
+    const vec2 r = {210, 210};
     cm_circle(pos, r, (vec4){0, 0, 1, 1});
 
     cm_font(sandbox->font, sandbox->mouse_pos, msg);

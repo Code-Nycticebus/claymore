@@ -7,7 +7,7 @@
 
 typedef struct {
   vec2 p;
-  float r;
+  vec2 r;
   vec4 c;
 } Vertex;
 
@@ -39,14 +39,15 @@ static void _cm_circle_flush(void) {
   renderer->vertex_count = 0;
 }
 
-void cm_circle(const vec2 position, float radius, const vec4 color) {
+void cm_circle(const vec2 position, const vec2 radius, const vec4 color) {
   if (!(renderer->vertex_count <= CM_CIRCLES_MAX)) {
     _cm_circle_flush();
   }
 
   renderer->vertices[renderer->vertex_count].p[0] = position[0];
   renderer->vertices[renderer->vertex_count].p[1] = position[1];
-  renderer->vertices[renderer->vertex_count].r = radius;
+  renderer->vertices[renderer->vertex_count].r[0] = radius[0];
+  renderer->vertices[renderer->vertex_count].r[1] = radius[1];
   renderer->vertices[renderer->vertex_count].c[0] = color[0];
   renderer->vertices[renderer->vertex_count].c[1] = color[1];
   renderer->vertices[renderer->vertex_count].c[2] = color[2];
@@ -74,7 +75,7 @@ usize cm_circle_internal_init(void) {
   renderer->vao = cm_gpu_vao(&renderer->gpu);
   cm_gpu_vao_instanced(&renderer->vao, 1, 2, sizeof(Vertex),
                        offsetof(Vertex, p));
-  cm_gpu_vao_instanced(&renderer->vao, 1, 1, sizeof(Vertex),
+  cm_gpu_vao_instanced(&renderer->vao, 1, 2, sizeof(Vertex),
                        offsetof(Vertex, r));
   cm_gpu_vao_instanced(&renderer->vao, 1, 4, sizeof(Vertex),
                        offsetof(Vertex, c));
@@ -83,7 +84,7 @@ usize cm_circle_internal_init(void) {
       &renderer->gpu,
       STR("#version 430 core\n"
           "layout (location = 0) in vec2 a_pos;\n"
-          "layout (location = 1) in float a_radius;\n"
+          "layout (location = 1) in vec2 a_radius;\n"
           "layout (location = 2) in vec4 a_color;\n"
           "uniform mat4 u_mvp;\n"
           "out vec2 v_uv;\n"
