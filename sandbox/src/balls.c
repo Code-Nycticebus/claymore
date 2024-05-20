@@ -6,9 +6,10 @@
 const float damping = 0.999;
 const float gravity = 1000;
 
-const float max_speed = 0.5f;
+const float max_balls = 1050.f;
+const float max_speed = 1.f;
 
-const float r = 220;
+const float r = 350;
 static vec2 center;
 
 typedef struct {
@@ -55,7 +56,7 @@ static void physics(Balls *balls, double dt) {
       // Calculate velocity
       vec2 displacement;
       glm_vec2_sub(ball->pos, ball->last_pos, displacement);
-	  glm_vec2_clamp(displacement, -max_speed, +max_speed);
+      glm_vec2_clamp(displacement, -max_speed, +max_speed);
 
       // Save current position
       glm_vec2_copy(ball->pos, ball->last_pos);
@@ -104,7 +105,6 @@ static void physics(Balls *balls, double dt) {
 static void update(CmScene *scene, double dt) {
   Balls *balls = scene->data;
 
-  const float max_balls = 1100.f;
   if (da_len(&balls->balls) < max_balls) {
     static float timer = 0.0f;
     static float countdown = 0.0f;
@@ -123,7 +123,7 @@ static void update(CmScene *scene, double dt) {
                                  .last_pos = {pos[0] + sinf(timer) * 200 * dt,
                                               pos[1] - 100 * dt},
                                  .vel = {0},
-                                 .radius = 5,
+                                 .radius = 10,
                                  .color = {VEC4_ARG(color)},
                              });
     }
@@ -146,7 +146,8 @@ static void update(CmScene *scene, double dt) {
 
 #define N 20
   char buffer[N];
-  usize size = snprintf(buffer, N, "%"USIZE_FMT" Balls", da_len(&balls->balls));
+  usize size =
+      snprintf(buffer, N, "%" USIZE_FMT " Balls", da_len(&balls->balls));
   Str s = str_from_parts(size, buffer);
   cm_font(balls->font, (vec2){10, 50}, s);
 
@@ -172,7 +173,7 @@ static CmSceneInterface *balls(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = 720, .height = 480, .title = "balls"},
+      .window = {.width = 1280, .height = 720, .title = "balls"},
       .main = balls,
   };
   return &config;

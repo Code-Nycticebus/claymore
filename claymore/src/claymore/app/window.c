@@ -38,7 +38,7 @@ bool cm_window_internal_create(usize width, usize height, const char *title) {
 }
 
 bool cm_window_internal_should_close(void) {
-  return RGFW_window_shouldClose(window.context);
+  return window.context->event.type == RGFW_quit;
 }
 
 void cm_window_internal_close(void) { RGFW_window_close(window.context); }

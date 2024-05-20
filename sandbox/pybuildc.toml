@@ -12,5 +12,5 @@ balls="src/balls.c"
 [deps.claymore]
 dir="../claymore/" 
 type="pybuildc"
-# mode="debug"
+mode="debug"
 
