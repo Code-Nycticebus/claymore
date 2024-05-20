@@ -7,9 +7,10 @@ benchmark-2d="src/benchmark-2d.c"
 basic="src/basic.c"
 hello="src/hello.c"
 animation="src/animation.c"
+balls="src/balls.c"
 
 [deps.claymore]
 dir="../claymore/" 
 type="pybuildc"
-mode="debug"
+# mode="debug"
 
