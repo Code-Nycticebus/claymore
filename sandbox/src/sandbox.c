@@ -37,7 +37,7 @@ static void init(CmScene *scene) {
   sandbox->texture[1] = cm_texture_from_file(
       &scene->gpu, STR("res/textures/mushroom.png"), ErrPanic);
 
-  cm_scene_push(scene, fps_scene_init);
+  cm_scene_push(scene, fps);
 }
 
 static void update(CmScene *scene, double dt) {

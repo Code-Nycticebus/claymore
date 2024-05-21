@@ -61,7 +61,7 @@ static void init(CmScene *scene) {
   glm_translate(benchmark->camera.base.view, (vec3){0});
   cm_camera2d_screen(&benchmark->camera);
 
-  cm_scene_push(scene, fps_scene_init);
+  cm_scene_push(scene, fps);
 }
 
 static void update(CmScene *scene, double deltatime) {

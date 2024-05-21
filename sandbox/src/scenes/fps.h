@@ -3,6 +3,6 @@
 
 #include "claymore.h"
 
-CmSceneInterface *fps_scene_init(void);
+CmSceneInterface *fps(void);
 
 #endif /* __SANDBOX_FPS_H__ */

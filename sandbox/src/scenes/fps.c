@@ -29,7 +29,7 @@ static void update(CmScene *scene, double deltatime) {
   cm_renderer2d_end();
 }
 
-CmSceneInterface *fps_scene_init(void) {
+CmSceneInterface *fps(void) {
   static CmSceneInterface sandbox = {
       .init = init,
       .update = update,

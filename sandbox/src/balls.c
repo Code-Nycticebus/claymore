@@ -34,7 +34,7 @@ static void init(CmScene *scene) {
   balls->font =
       cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"), 20, ErrPanic);
 
-  cm_scene_push(scene, fps_scene_init);
+  cm_scene_push(scene, fps);
   cm_camera2d_screen(&balls->camera);
 
   cm_window_get_size(center);
