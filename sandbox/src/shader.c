@@ -3,14 +3,30 @@
 
 #include "glad.h"
 
+typedef struct {
+  CmShader shader;
+  float time;
+  vec2 resolution;
+  i32 frame;
+} ShaderToy;
+
 static void init(CmScene *scene) {
-  (void)cm_scene_alloc_data(scene, sizeof(CmScene));
+  (void)cm_scene_alloc_data(scene, sizeof(ShaderToy));
 }
 
 static void update(CmScene *scene, double dt) {
-  (void)dt;
-  CmShader *shader = scene->data;
-  cm_shader_bind(shader);
+  ShaderToy *toy = scene->data;
+  toy->time += dt;
+  toy->frame++;
+
+  cm_shader_bind(&toy->shader);
+  cm_shader_set_f32(&toy->shader, STR("u_time"), toy->time);
+  cm_shader_set_i32(&toy->shader, STR("u_frame"), toy->frame);
+  cm_shader_set_vec2(&toy->shader, STR("u_resolution"), toy->resolution);
+
+  cm_shader_set_f32(&toy->shader, STR("u_deltatime"), dt);
+  cm_shader_set_f32(&toy->shader, STR("u_fps"), 1 / dt);
+
   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
 }
 
@@ -24,10 +40,13 @@ static CmSceneInterface *shader(void) {
 
 static CmScene *shader_init(CmScene *parent, Str filename) {
   CmScene *scene = cm_scene_push(parent, shader);
+  ShaderToy *toy = scene->data;
+
+  cm_window_get_size(toy->resolution);
 
   Arena arena = {0};
   Str content = file_read_str(filename, &arena, ErrPanic);
-  *(CmShader *)scene->data =
+  toy->shader =
       cm_shader_from_memory(&scene->gpu,
                             STR("#version 430 core\n"
                                 "void main() {\n"
