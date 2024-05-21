@@ -9,6 +9,7 @@
 #include "event.h"
 
 static struct {
+  bool running;
   RGFW_window *context;
 } window;
 
@@ -26,20 +27,19 @@ void cm_window_get_size(vec2 out) {
   out[1] = window.context->r.h;
 }
 
-void cm_window_close(void) { RGFW_window_setShouldClose(window.context); }
+void cm_window_close(void) { window.running = false; }
 
 bool cm_window_internal_create(usize width, usize height, const char *title) {
   window.context = RGFW_createWindow(title, RGFW_RECT(0, 0, width, height), 0);
   if (window.context == NULL) {
     return false;
   }
+  window.running = true;
 
   return true;
 }
 
-bool cm_window_internal_should_close(void) {
-  return window.context->event.type == RGFW_quit;
-}
+bool cm_window_internal_should_close(void) { return !window.running; }
 
 void cm_window_internal_close(void) { RGFW_window_close(window.context); }
 
