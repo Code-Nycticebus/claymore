@@ -142,6 +142,11 @@ void cm_shader_set_mat4(CmShader *shader, Str uniform_name, mat4 mat) {
   glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
+void cm_shader_set_vec2(CmShader *shader, Str uniform_name, vec2 vec) {
+  i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
+  glUniform2fv(location, 1, vec);
+}
+
 void cm_shader_set_vec3(CmShader *shader, Str uniform_name, vec3 vec) {
   i32 location = _cm_shader_get_uniform_location(shader, uniform_name);
   glUniform3fv(location, 1, vec);
