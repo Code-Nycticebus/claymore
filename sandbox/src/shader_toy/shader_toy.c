@@ -76,7 +76,7 @@ static CmSceneInterface *toy(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = 720, .height = 420, .title = "Shader Toy"},
+      .window = {.width = 1080, .height = 1080, .title = "Shader Toy"},
       .main = toy,
   };
   return &config;
