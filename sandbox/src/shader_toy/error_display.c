@@ -34,6 +34,6 @@ static CmSceneInterface *error_display(void) {
 CmScene *error_display_init(CmScene *parent, Str message) {
   CmScene *scene = cm_scene_push(parent, error_display);
   ErrorDisplay *display = scene->data;
-  display->message = message;
+  display->message = str_copy(message, &scene->arena);
   return scene;
 }

@@ -19,8 +19,9 @@ static void load_shader_scene(CmScene *scene) {
   toy->child = shader_init(scene, toy->filename, &toy->error);
   error_context(&toy->error, {
     cm_scene_delete(scene, toy->child);
-    toy->child =
-        error_display_init(scene, str_copy(error_msg(), &scene->arena));
+    Arena arena = {0}; // Because of cebus bug
+    toy->child = error_display_init(scene, str_copy(error_msg(), &arena));
+    arena_free(&arena);
     error_except();
   });
 }
