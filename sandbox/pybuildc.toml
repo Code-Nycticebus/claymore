@@ -8,7 +8,7 @@ basic="src/basic.c"
 hello="src/hello.c"
 animation="src/animation.c"
 balls="src/balls.c"
-shader="src/shader.c"
+shader="src/shader_toy/shader_toy.c"
 
 [deps.claymore]
 dir="../claymore/" 

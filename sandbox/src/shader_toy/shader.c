@@ -1,5 +1,5 @@
-#include "claymore/app/scene.h"
-#include "claymore/entrypoint.h"
+#include "cebus/core/error.h"
+#include "shader_toy.h"
 
 #include "glad.h"
 
@@ -38,7 +38,7 @@ static CmSceneInterface *shader(void) {
   return &interface;
 }
 
-static CmScene *shader_init(CmScene *parent, Str filename) {
+CmScene *shader_init(CmScene *parent, Str filename, Error *error) {
   CmScene *scene = cm_scene_push(parent, shader);
   ShaderToy *toy = scene->data;
 
@@ -46,6 +46,20 @@ static CmScene *shader_init(CmScene *parent, Str filename) {
 
   Arena arena = {0};
   Str content = file_read_str(filename, &arena, ErrPanic);
+
+  StringBuilder sb = sb_init(&arena);
+  sb_append_str(&sb, STR("#version 430 core\n"
+                         "layout(location = 0) out vec4 f_color;\n"
+                         "uniform float u_time;\n"
+                         "uniform int u_frame;\n"
+                         "uniform vec2 u_resolution;\n"
+                         "uniform float u_deltatime;\n"
+                         "uniform float u_fps;\n"));
+  sb_append_str(&sb, content);
+  sb_append_str(&sb, STR("void main() {\n"
+                         "  mainImage(f_color, gl_FragCoord.xy);\n"
+                         "}\n"));
+
   toy->shader =
       cm_shader_from_memory(&scene->gpu,
                             STR("#version 430 core\n"
@@ -57,53 +71,8 @@ static CmScene *shader_init(CmScene *parent, Str filename) {
                                 "    1.0\n"
                                 "  );\n"
                                 "}\n"),
-                            content, ErrPanic);
+                            sb_to_str(&sb), error);
   arena_free(&arena);
+
   return scene;
-}
-
-typedef struct {
-  Error error;
-  CmScene *child;
-  Str filename;
-} Toy;
-
-static void toy_init(CmScene *scene) {
-  Toy *toy = cm_scene_alloc_data(scene, sizeof(Toy));
-
-  toy->filename = STR("assets/shader/toy.fs.glsl");
-  toy->child = shader_init(scene, toy->filename);
-}
-
-static void event(CmScene *scene, CmEvent *event) {
-  Toy *toy = scene->data;
-  cm_event_key(event, {
-    if (key->action == CM_KEY_RELEASE) {
-      if (key->code == CM_KEY_ESCAPE) {
-        cm_window_close();
-        return;
-      }
-      if (key->code == CM_KEY_F5) {
-        // Releoad
-        cm_scene_delete(scene, toy->child);
-        toy->child = shader_init(scene, toy->filename);
-      }
-    }
-  });
-}
-
-static CmSceneInterface *toy(void) {
-  static CmSceneInterface interface = {
-      .init = toy_init,
-      .event = event,
-  };
-  return &interface;
-}
-
-ClaymoreConfig *claymore_init(void) {
-  static ClaymoreConfig config = {
-      .window = {.width = 720, .height = 420, .title = "Shader Toy"},
-      .main = toy,
-  };
-  return &config;
 }
