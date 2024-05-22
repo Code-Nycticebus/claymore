@@ -2,6 +2,8 @@
 
 #include "shader_toy.h"
 
+#include <sys/stat.h>
+
 typedef struct {
   Error error;
   CmScene *child;
@@ -10,21 +12,24 @@ typedef struct {
 
 static void load_shader_scene(CmScene *scene) {
   Toy *toy = scene->data;
+  if (toy->child != NULL) {
+    cm_scene_delete(scene, toy->child);
+  }
+  // Reload
   toy->child = shader_init(scene, toy->filename, &toy->error);
   error_context(&toy->error, {
     cm_scene_delete(scene, toy->child);
-
     toy->child =
         error_display_init(scene, str_copy(error_msg(), &scene->arena));
     error_except();
   });
 }
 
-static void toy_init(CmScene *scene) {
+static void init(CmScene *scene) {
   Toy *toy = cm_scene_alloc_data(scene, sizeof(Toy));
 
+  // keep file watcher in mind!
   toy->filename = STR("assets/shader/toy.fs.glsl");
-  load_shader_scene(scene);
 }
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -43,9 +48,27 @@ static void event(CmScene *scene, CmEvent *event) {
   });
 }
 
+static void update(CmScene *scene, double dt) {
+  Toy *toy = scene->data;
+  const float interval = 1.0f;
+  static float timer = interval;
+  timer += dt;
+  if (interval < timer) {
+    timer = 0;
+    static time_t last = 0;
+    struct stat file;
+    stat(toy->filename.data, &file);
+    if (last != file.st_mtim.tv_sec) {
+      last = file.st_mtim.tv_sec;
+      load_shader_scene(scene);
+    }
+  }
+}
+
 static CmSceneInterface *toy(void) {
   static CmSceneInterface interface = {
-      .init = toy_init,
+      .init = init,
+      .update = update,
       .event = event,
   };
   return &interface;
