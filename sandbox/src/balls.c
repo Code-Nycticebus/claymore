@@ -6,7 +6,7 @@
 const float damping = 0.999;
 const float gravity = 1000;
 
-const float max_balls = 1050.f;
+const float max_balls = 2000.f;
 const float max_speed = 1.f;
 
 const float r = 350;
@@ -87,13 +87,20 @@ static void physics(Balls *balls, double dt) {
     {
       for (size_t j = i; j < da_len(&balls->balls); ++j) {
         Ball *ball2 = &da_get(&balls->balls, j);
+
+        // Get distance between balls
         const float distance = glm_vec2_distance(ball->pos, ball2->pos);
         const float min_distance = ball->radius + ball2->radius;
         if (distance < min_distance) {
+          // Get Normalized direction
           vec2 dir;
           glm_vec2_sub(ball->pos, ball2->pos, dir);
           glm_vec2_normalize(dir);
+
+          // Get half of the overlapping distance
           glm_vec2_scale(dir, (distance - min_distance) / 2, dir);
+
+          // Push balls into direction
           glm_vec2_sub(ball->pos, dir, ball->pos);
           glm_vec2_add(ball2->pos, dir, ball2->pos);
         }
@@ -111,21 +118,21 @@ static void update(CmScene *scene, double dt) {
     countdown -= dt;
     timer += dt;
     if (countdown < 0) {
-      countdown = 0.07;
+      countdown = 0.1f;
 
       vec2 pos = {center[0], center[1] - r * 0.9f};
       vec4 red = {.8, 0, 0.7, 1};
       vec4 green = {0, 0.8, 0.7, 1};
       vec4 color;
       glm_vec4_lerp(red, green, da_len(&balls->balls) / max_balls, color);
-      da_push(&balls->balls, (Ball){
-                                 .pos = {VEC2_ARG(pos)},
-                                 .last_pos = {pos[0] + sinf(timer) * 200 * dt,
-                                              pos[1] - 100 * dt},
-                                 .vel = {0},
-                                 .radius = 10,
-                                 .color = {VEC4_ARG(color)},
-                             });
+      da_push(&balls->balls,
+              (Ball){
+                  .pos = {VEC2_ARG(pos)},
+                  .last_pos = {pos[0] + sinf(timer) * 0.5, pos[1]},
+                  .vel = {0},
+                  .radius = 5,
+                  .color = {VEC4_ARG(color)},
+              });
     }
   }
 
