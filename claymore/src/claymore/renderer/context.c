@@ -91,8 +91,10 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
     cebus_log_warning("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
     break;
   case GL_DEBUG_SEVERITY_HIGH:
-    cebus_log_error("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
-    DEBUGBREAK();
+    if (source != GL_DEBUG_SOURCE_SHADER_COMPILER) {
+      cebus_log_error("CALLBACK: %s(%d) %s: %s", _type, id, _source, message);
+      DEBUGBREAK();
+    }
   }
 }
 #endif
