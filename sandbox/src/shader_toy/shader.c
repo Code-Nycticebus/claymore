@@ -48,13 +48,14 @@ CmScene *shader_init(CmScene *parent, Str filename, Error *error) {
   Str content = file_read_str(filename, &arena, ErrPanic);
 
   StringBuilder sb = sb_init(&arena);
-  sb_append_str(&sb, STR("#version 430 core\n"
-                         "layout(location = 0) out vec4 f_color;\n"
-                         "uniform float u_time;\n"
-                         "uniform int u_frame;\n"
-                         "uniform vec2 u_resolution;\n"
-                         "uniform float u_deltatime;\n"
-                         "uniform float u_fps;\n"));
+  Str header = STR("#version 430 core\n"
+                   "layout(location = 0) out vec4 f_color;\n"
+                   "uniform float u_time;\n"
+                   "uniform int u_frame;\n"
+                   "uniform vec2 u_resolution;\n"
+                   "uniform float u_deltatime;\n"
+                   "uniform float u_fps;\n");
+  sb_append_str(&sb, header);
   sb_append_str(&sb, content);
   sb_append_str(&sb, STR("void main() {\n"
                          "  mainImage(f_color, gl_FragCoord.xy);\n"
@@ -72,6 +73,12 @@ CmScene *shader_init(CmScene *parent, Str filename, Error *error) {
                                 "  );\n"
                                 "}\n"),
                             sb_to_str(&sb), error);
+  error_propagate(error, {
+    Str msg = error_msg();
+    (void)str_take(&msg, 2);
+    int line = str_chop_i64(&msg) - str_count(header, STR("\n"));
+    error_set_msg("%d" STR_FMT, line, STR_ARG(msg));
+  });
   arena_free(&arena);
 
   return scene;

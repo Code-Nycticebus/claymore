@@ -19,7 +19,7 @@ static void update(CmScene *scene, double dt) {
   ErrorDisplay *display = scene->data;
 
   cm_renderer2d_begin(&display->camera);
-  cm_font(display->font, (vec2){10, 10}, display->message);
+  cm_font(display->font, (vec2){20, 20}, display->message);
   cm_renderer2d_end();
 }
 
