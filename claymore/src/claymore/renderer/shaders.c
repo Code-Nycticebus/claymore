@@ -13,6 +13,7 @@
     if (lenght > 0) {                                                          \
       char *err_msg = calloc(sizeof(char), lenght);                            \
       gl_get_log(shader_id, lenght, NULL, err_msg);                            \
+      err_msg[lenght - 2] = '\0';                                              \
       error_emit(error, -1, "%s", err_msg);                                    \
       free(err_msg);                                                           \
       return false;                                                            \
