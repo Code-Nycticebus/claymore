@@ -10,7 +10,7 @@ typedef struct {
 static void init(CmScene *scene) {
   HelloWorld *hello = cm_scene_alloc_data(scene, sizeof(HelloWorld));
 
-  hello->font = cm_font_init(&scene->gpu, STR("res/fonts/Silkscreen.ttf"),
+  hello->font = cm_font_init(&scene->gpu, STR("assets/fonts/Silkscreen.ttf"),
                              font_size, ErrPanic);
 
   cm_camera2d_screen(&hello->camera);

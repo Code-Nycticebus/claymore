@@ -32,7 +32,7 @@ static void init(CmScene *scene) {
   da_init(&balls->balls, &scene->arena);
 
   balls->font =
-      cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"), 20, ErrPanic);
+      cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 20, ErrPanic);
 
   cm_scene_push(scene, fps);
   cm_camera2d_screen(&balls->camera);

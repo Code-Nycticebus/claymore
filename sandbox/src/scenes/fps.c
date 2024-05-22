@@ -12,7 +12,7 @@ const vec2 offset = {10, 0};
 
 static void init(CmScene *scene) {
   Fps *fps = cm_scene_alloc_data(scene, sizeof(Fps));
-  fps->font = cm_font_init(&scene->gpu, STR("res/fonts/Ubuntu.ttf"),
+  fps->font = cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"),
                            font_heigth, ErrPanic);
 
   cm_camera2d_screen(&fps->camera);

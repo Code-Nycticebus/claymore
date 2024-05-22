@@ -71,7 +71,7 @@ typedef struct {
 static void toy_init(CmScene *scene) {
   Toy *toy = cm_scene_alloc_data(scene, sizeof(Toy));
 
-  toy->filename = STR("res/shader/toy.fs.glsl");
+  toy->filename = STR("assets/shader/toy.fs.glsl");
   toy->child = shader_init(scene, toy->filename);
 }
 
