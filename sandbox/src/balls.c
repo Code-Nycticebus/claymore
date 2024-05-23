@@ -13,22 +13,23 @@ const float r = 350;
 static vec2 center;
 
 typedef struct {
-  vec2 pos;
-  vec2 last_pos;
-  vec2 vel;
+  vec2 position;
+  vec2 last_position;
   float radius;
   vec4 color;
 } Ball;
 
+typedef DA(Ball) Balls;
+
 typedef struct {
   CmCamera2D camera;
   CmFont *font;
-  DA(Ball) balls;
+  Balls balls;
   vec2 cursor;
-} Balls;
+} BallSimulation;
 
 static void init(CmScene *scene) {
-  Balls *balls = cm_scene_alloc_data(scene, sizeof(Balls));
+  BallSimulation *balls = cm_scene_alloc_data(scene, sizeof(BallSimulation));
   da_init(&balls->balls, &scene->arena);
 
   balls->font =
@@ -41,76 +42,71 @@ static void init(CmScene *scene) {
   glm_vec2_divs(center, 2, center);
 }
 
-static void physics(Balls *balls, double dt) {
-  for (size_t i = 0; i < da_len(&balls->balls); ++i) {
-    Ball *ball = &da_get(&balls->balls, i);
+static void verlet_integration(Ball *ball, double deltatime) {
+  // Gravity
+  vec2 velocity = {0, gravity};
+  glm_vec2_scale(velocity, deltatime * deltatime, velocity);
 
-    // Gravity
-    {
-      vec2 grav = {0, gravity};
-      glm_vec2_add(ball->vel, grav, ball->vel);
-    }
+  // Calculate ball movement
+  vec2 displacement;
+  glm_vec2_sub(ball->position, ball->last_position, displacement);
+  // Optional min/max:
+  glm_vec2_clamp(displacement, -max_speed, +max_speed);
+  // add displacement to gravity
+  glm_vec2_add(velocity, displacement, velocity);
+  // Save current position
+  glm_vec2_copy(ball->position, ball->last_position);
+  // add to postion
+  glm_vec2_add(ball->position, velocity, ball->position);
+}
 
-    // Verlet
-    {
-      // Calculate velocity
-      vec2 displacement;
-      glm_vec2_sub(ball->pos, ball->last_pos, displacement);
-      glm_vec2_clamp(displacement, -max_speed, +max_speed);
+static void bounds(Ball *ball) {
+  vec2 diff;
+  glm_vec2_sub(ball->position, center, diff);
+  const float distance = glm_vec2_distance(ball->position, center);
+  if (r - ball->radius < distance) {
+    vec2 normal;
+    glm_vec2_divs(diff, distance, normal);
+    glm_vec2_scale(normal, r - ball->radius, normal);
+    glm_vec2_add(center, normal, ball->position);
+  }
+}
 
-      // Save current position
-      glm_vec2_copy(ball->pos, ball->last_pos);
+static void collision(Ball *ball, Balls *balls) {
+  for (size_t i = 0; i < da_len(balls); ++i) {
+    Ball *ball2 = &da_get(balls, i);
 
-      // Verlet integration
-      glm_vec2_scale(ball->vel, dt * dt, ball->vel);
-      glm_vec2_add(ball->vel, displacement, displacement);
-      glm_vec2_add(ball->pos, displacement, ball->pos);
+    // Get distance between balls
+    const float distance = glm_vec2_distance(ball->position, ball2->position);
+    const float min_distance = ball->radius + ball2->radius;
+    if (distance < min_distance) {
+      // Get Normalized direction
+      vec2 dir;
+      glm_vec2_sub(ball->position, ball2->position, dir);
+      glm_vec2_normalize(dir);
 
-      // Reset vel
-      glm_vec2_zero(ball->vel);
-    }
+      // Get half of the overlapping distance
+      glm_vec2_scale(dir, (distance - min_distance) / 2, dir);
 
-    // Bounds
-    {
-      vec2 diff;
-      glm_vec2_sub(ball->pos, center, diff);
-      const float distance = glm_vec2_distance(ball->pos, center);
-      if (r - ball->radius < distance) {
-        vec2 normal;
-        glm_vec2_divs(diff, distance, normal);
-        glm_vec2_scale(normal, r - ball->radius, normal);
-        glm_vec2_add(center, normal, ball->pos);
-      }
-    }
-
-    // Collision
-    {
-      for (size_t j = i; j < da_len(&balls->balls); ++j) {
-        Ball *ball2 = &da_get(&balls->balls, j);
-
-        // Get distance between balls
-        const float distance = glm_vec2_distance(ball->pos, ball2->pos);
-        const float min_distance = ball->radius + ball2->radius;
-        if (distance < min_distance) {
-          // Get Normalized direction
-          vec2 dir;
-          glm_vec2_sub(ball->pos, ball2->pos, dir);
-          glm_vec2_normalize(dir);
-
-          // Get half of the overlapping distance
-          glm_vec2_scale(dir, (distance - min_distance) / 2, dir);
-
-          // Push balls into direction
-          glm_vec2_sub(ball->pos, dir, ball->pos);
-          glm_vec2_add(ball2->pos, dir, ball2->pos);
-        }
-      }
+      // Push balls into direction
+      glm_vec2_sub(ball->position, dir, ball->position);
+      glm_vec2_add(ball2->position, dir, ball2->position);
     }
   }
 }
 
+static void physics(BallSimulation *balls, double dt) {
+  for (size_t i = 0; i < da_len(&balls->balls); ++i) {
+    Ball *ball = &da_get(&balls->balls, i);
+
+    verlet_integration(ball, dt);
+    bounds(ball);
+    collision(ball, &balls->balls);
+  }
+}
+
 static void update(CmScene *scene, double dt) {
-  Balls *balls = scene->data;
+  BallSimulation *balls = scene->data;
 
   if (da_len(&balls->balls) < max_balls) {
     static float timer = 0.0f;
@@ -118,7 +114,7 @@ static void update(CmScene *scene, double dt) {
     countdown -= dt;
     timer += dt;
     if (countdown < 0) {
-      countdown = 0.1f;
+      countdown = 0.3f;
 
       vec2 pos = {center[0], center[1] - r * 0.9f};
       vec4 red = {.8, 0, 0.7, 1};
@@ -127,10 +123,9 @@ static void update(CmScene *scene, double dt) {
       glm_vec4_lerp(red, green, da_len(&balls->balls) / max_balls, color);
       da_push(&balls->balls,
               (Ball){
-                  .pos = {VEC2_ARG(pos)},
-                  .last_pos = {pos[0] + sinf(timer) * 0.5, pos[1]},
-                  .vel = {0},
-                  .radius = 5,
+                  .position = {VEC2_ARG(pos)},
+                  .last_position = {pos[0] + sinf(timer) * 0.5, pos[1]},
+                  .radius = 10,
                   .color = {VEC4_ARG(color)},
               });
     }
@@ -148,7 +143,7 @@ static void update(CmScene *scene, double dt) {
   cm_renderer2d_begin(&balls->camera);
   for (size_t i = 0; i < da_len(&balls->balls); i++) {
     Ball *ball = &da_get(&balls->balls, i);
-    cm_circle(ball->pos, (vec2){ball->radius, ball->radius}, ball->color);
+    cm_circle(ball->position, (vec2){ball->radius, ball->radius}, ball->color);
   }
 
 #define N 20
@@ -162,7 +157,7 @@ static void update(CmScene *scene, double dt) {
 }
 
 static void event(CmScene *scene, CmEvent *event) {
-  Balls *balls = scene->data;
+  BallSimulation *balls = scene->data;
   cm_event_cursor(event, {
     balls->cursor[0] = cursor->pos[0];
     balls->cursor[1] = cursor->pos[1];
