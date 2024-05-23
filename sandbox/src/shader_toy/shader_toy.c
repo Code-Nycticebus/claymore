@@ -3,6 +3,11 @@
 #include "shader_toy.h"
 
 #include <sys/stat.h>
+#if defined(LINUX)
+#define MTIME(s) (s).st_mtim.tv_sec
+#elif defined(WINDOWS)
+#define MTIME(s) (s).st_mtime
+#endif
 
 typedef struct {
   Error error;
@@ -54,11 +59,12 @@ static void update(CmScene *scene, double dt) {
   timer += dt;
   if (interval < timer) {
     timer = 0;
-    static time_t last = 0;
+    static int last = 0;
     struct stat file;
     stat(toy->filename.data, &file);
-    if (last != file.st_mtim.tv_sec) {
-      last = file.st_mtim.tv_sec;
+	int mtime = MTIME(file);
+    if (last != mtime) {
+      last = mtime;
       load_shader_scene(scene);
     }
   }
@@ -75,7 +81,7 @@ static CmSceneInterface *toy(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = 1080, .height = 1080, .title = "Shader Toy"},
+      .window = {.width = 720, .height = 720, .title = "Shader Toy"},
       .main = toy,
   };
   return &config;
