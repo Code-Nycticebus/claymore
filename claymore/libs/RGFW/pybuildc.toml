@@ -10,3 +10,4 @@ math = { l = "m" }
 Shell32 = { l = "Shell32" }
 User32 = { l = "User32" }
 Gdi32 = { l = "Gdi32" }
+Winmm = { l = "winmm" }
