@@ -5,11 +5,11 @@ version="0.1.0"
 cflags = ["-std=c99"]
 
 [deps]
-RGFW         = { dir="dependencies/RGFW", type="pybuildc" }
-glad         = { dir="dependencies/glad", type="pybuildc" }
-stb_image    = { dir="dependencies/stb_image/", type="pybuildc" }
-stb_truetype = { dir="dependencies/stb_truetype/", type="pybuildc" }
-miniaudio    = { dir="dependencies/miniaudio/", type="pybuildc" }
-cglm         = { dir="dependencies/cglm", I=["include"] }
-cebus        = { dir="dependencies/cebus", type="pybuildc" }
+RGFW         = { dir="libs/RGFW", type="pybuildc" }
+glad         = { dir="libs/glad", type="pybuildc" }
+stb_image    = { dir="libs/stb_image/", type="pybuildc" }
+stb_truetype = { dir="libs/stb_truetype/", type="pybuildc" }
+miniaudio    = { dir="libs/miniaudio/", type="pybuildc" }
+cglm         = { dir="libs/cglm", I=["include"] }
+cebus        = { dir="libs/cebus", type="pybuildc" }
 
