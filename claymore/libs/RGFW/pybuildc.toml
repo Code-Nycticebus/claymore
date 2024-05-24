@@ -2,11 +2,11 @@
 name = "RGFW"
 
 [libs.linux]
-X11  = { l="X11" }
-Xrandr  = { l="Xrandr" }
-math = { l="m" }
+X11  = { l = "X11" }
+Xrandr  = { l = "Xrandr" }
+math = { l = "m" }
 
 [libs.windows]
-Shell32 = { l="Shell32" }
-User32  = { l="User32" }
-Gdi32   = { l="Gdi32" }
+Shell32 = { l = "Shell32" }
+User32 = { l = "User32" }
+Gdi32 = { l = "Gdi32" }

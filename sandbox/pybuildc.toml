@@ -2,15 +2,15 @@
 name="sandbox"
 
 [exe]
-sandbox="src/sandbox.c"
-benchmark-2d="src/benchmark-2d.c"
-basic="src/basic.c"
-hello="src/hello.c"
-animation="src/animation.c"
-balls="src/balls.c"
+sandbox = "src/sandbox.c"
+benchmark-2d = "src/benchmark-2d.c"
+basic = "src/basic.c"
+hello = "src/hello.c"
+animation = "src/animation.c"
+balls = "src/balls.c"
 
 [libs.claymore]
-dir="../claymore/" 
-type="pybuildc"
-mode="debug"
+dir = "../claymore/" 
+type = "pybuildc"
+mode = "debug"
 

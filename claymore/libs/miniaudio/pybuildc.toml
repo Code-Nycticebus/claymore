@@ -2,6 +2,6 @@
 name="miniaudio"
 
 [libs.linux]
-dl = { l="dl" }
-pthread = { l="pthread" }
-m = { l="m" }
+dl = { l = "dl" }
+pthread = { l = "pthread" }
+m = { l = "m" }

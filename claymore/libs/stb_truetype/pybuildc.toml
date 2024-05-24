@@ -2,4 +2,4 @@
 name="stb_truetype"
 
 [libs.linux]
-m = { l="m" }
+m = { l = "m" }

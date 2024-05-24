@@ -2,7 +2,7 @@
 name = "glad"
 
 [libs.linux]
-GL={ l="GL" }
+GL={ l = "GL" }
 
 [libs.windows]
-gl={ l="opengl32" }
+gl={ l = "opengl32" }

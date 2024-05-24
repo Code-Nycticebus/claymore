@@ -2,4 +2,4 @@
 name="stb_image"
 
 [libs.linux]
-m = { l="m" }
+m = { l = "m" }
