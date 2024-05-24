@@ -49,7 +49,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
   app.data.window = RGFW_createWindow(
       config->window.title,
       RGFW_RECT(0, 0, config->window.width, config->window.height), 0);
-  if (RGFW_Error()) {
+  if (app.data.window == NULL) {
     cebus_log_error("Could not open window");
     return false;
   }
