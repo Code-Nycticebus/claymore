@@ -1,7 +1,7 @@
 [pybuildc]
 name="miniaudio"
 
-[deps.linux]
+[libs.linux]
 dl = { l="dl" }
 pthread = { l="pthread" }
 m = { l="m" }

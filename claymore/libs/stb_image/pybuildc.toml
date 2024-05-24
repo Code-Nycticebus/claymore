@@ -1,5 +1,5 @@
 [pybuildc]
 name="stb_image"
 
-[deps.linux]
+[libs.linux]
 m = { l="m" }

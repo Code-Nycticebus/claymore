@@ -1,8 +1,8 @@
 [pybuildc]
 name = "glad"
 
-[deps.linux]
+[libs.linux]
 GL={ l="GL" }
 
-[deps.windows]
+[libs.windows]
 gl={ l="opengl32" }

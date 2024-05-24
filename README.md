@@ -21,7 +21,7 @@ pybuildc new test-project
 and add claymore as a dependency to the `pybuildc.toml`:
 
 ```toml
-[deps.claymore]
+[libs.claymore]
 dir="<CLAYMORE DIRECTORY>" 
 type="pybuildc"
 ```

@@ -4,7 +4,7 @@ version="0.1.0"
 
 cflags = ["-std=c99"]
 
-[deps]
+[libs]
 RGFW         = { dir="libs/RGFW", type="pybuildc" }
 glad         = { dir="libs/glad", type="pybuildc" }
 stb_image    = { dir="libs/stb_image/", type="pybuildc" }

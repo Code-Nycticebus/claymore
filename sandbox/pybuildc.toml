@@ -8,9 +8,8 @@ basic="src/basic.c"
 hello="src/hello.c"
 animation="src/animation.c"
 balls="src/balls.c"
-shader="src/shader_toy/shader_toy.c"
 
-[deps.claymore]
+[libs.claymore]
 dir="../claymore/" 
 type="pybuildc"
 mode="debug"
