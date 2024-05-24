@@ -27,7 +27,7 @@ type="pybuildc"
 
 ## Usage
 
-# Scene Structure
+### Scene Structure
 ```c
 typedef struct {
     // Data
@@ -53,7 +53,7 @@ static CmSceneInterface *scene(void) {
 }
 ```
 
-# Entry Point
+### Entry Point
 
 ```c
 #include <claymore/entrypoint.h>
@@ -67,7 +67,7 @@ static ClaymoreConfig *claymore_init(void) {
 }
 ```
 
-# Scene Initialization
+### Scene Initialization
 ```c
 CmScene* shader_init(CmScene* parent, ...) {
     CmScene* scene = cm_scene_push(parent, scene_interface);
@@ -78,3 +78,6 @@ CmScene* shader_init(CmScene* parent, ...) {
     return scene;
 }
 ```
+
+### Example
+Take a look at [shadertoy](https://github.com/Code-Nycticebus/shadertoy)
