@@ -136,11 +136,11 @@ static void update(CmScene *scene, double dt) {
     physics(balls, dt / (double)sub_steps);
   }
 
-  cm_renderer2D_begin(&balls->camera);
+  cm_2D_begin(&balls->camera);
   cm_circle(center, (vec2){r, r}, (vec4){0.1, 0.1, 0.1, 1.0});
-  cm_renderer2D_end();
+  cm_2D_end();
 
-  cm_renderer2D_begin(&balls->camera);
+  cm_2D_begin(&balls->camera);
   for (size_t i = 0; i < da_len(&balls->balls); i++) {
     Ball *ball = &da_get(&balls->balls, i);
     cm_circle(ball->position, (vec2){ball->radius, ball->radius}, ball->color);
@@ -153,7 +153,7 @@ static void update(CmScene *scene, double dt) {
   Str s = str_from_parts(size, buffer);
   cm_font(balls->font, (vec2){10, 50}, s);
 
-  cm_renderer2D_end();
+  cm_2D_end();
 }
 
 static void event(CmScene *scene, CmEvent *event) {

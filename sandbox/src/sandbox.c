@@ -44,7 +44,7 @@ static void update(CmScene *scene, double dt) {
   (void)dt;
   Sandbox *sandbox = scene->data;
 
-  cm_renderer2D_begin(&sandbox->camera);
+  cm_2D_begin(&sandbox->camera);
   {
     const vec2 size = {100.f, 100.f};
     const f32 margin = 10.f;
@@ -72,7 +72,7 @@ static void update(CmScene *scene, double dt) {
 
     cm_font(sandbox->font, sandbox->mouse_pos, msg);
   }
-  cm_renderer2D_end();
+  cm_2D_end();
 }
 
 static CmSceneInterface *sandbox(void) {

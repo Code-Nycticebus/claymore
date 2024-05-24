@@ -29,9 +29,9 @@ static void update(CmScene *scene, double dt) {
       center[0] - (label.len / 2.f) * (font_size / 2),
       center[1] - font_size,
   };
-  cm_renderer2D_begin(&hello->camera);
+  cm_2D_begin(&hello->camera);
   { cm_font(hello->font, pos, label); }
-  cm_renderer2D_end();
+  cm_2D_end();
 }
 
 static CmSceneInterface *hello(void) {

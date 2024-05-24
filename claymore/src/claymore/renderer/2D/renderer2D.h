@@ -6,8 +6,8 @@
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/texture.h"
 
-void cm_renderer2D_begin(CmCamera2D *camera);
-void cm_renderer2D_end(void);
+void cm_2D_begin(CmCamera2D *camera);
+void cm_2D_end(void);
 
 void cm_circle(const vec2 pos, const vec2 radius, const vec4 color);
 void cm_quad(const vec2 pos, const vec2 size, float rotation, const vec4 color);
@@ -21,8 +21,8 @@ void cm_font(CmFont *font, const vec2 pos, Str text);
 
 // INTERNAL
 
-bool cm_renderer2D_internal_init(void);
-void cm_renderer2D_internal_free(void);
+bool cm_2D_internal_init(void);
+void cm_2D_internal_free(void);
 
 void cm_circle_internal_begin(CmCamera2D *camera);
 void cm_circle_internal_end(void);

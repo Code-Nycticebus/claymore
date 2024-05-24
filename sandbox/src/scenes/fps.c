@@ -24,9 +24,9 @@ static void update(CmScene *scene, double deltatime) {
   const float ms = deltatime * 1000;
   usize len = snprintf(buffer, BUFFER_MAX, "FRAME: % 3.2f ms\nFPS: %.0f", ms,
                        1 / deltatime);
-  cm_renderer2D_begin(&fps->camera);
+  cm_2D_begin(&fps->camera);
   cm_font(fps->font, offset, str_from_parts(len, buffer));
-  cm_renderer2D_end();
+  cm_2D_end();
 }
 
 CmSceneInterface *fps(void) {

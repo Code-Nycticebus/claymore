@@ -107,7 +107,7 @@ static void update(CmScene *scene, double deltatime) {
   glm_translate(benchmark->camera.base.view, benchmark->camera.position);
   benchmark->camera.base.dirty = true;
 
-  cm_renderer2D_begin(&benchmark->camera);
+  cm_2D_begin(&benchmark->camera);
   {
     const float size = 100;
     static float r = 0;
@@ -120,7 +120,7 @@ static void update(CmScene *scene, double deltatime) {
       }
     }
   }
-  cm_renderer2D_end();
+  cm_2D_end();
 }
 
 static CmSceneInterface *benchmark(void) {
