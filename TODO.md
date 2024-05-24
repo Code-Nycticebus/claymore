@@ -13,6 +13,10 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [x] Switch glfw to rgfw
 - [ ] Make sandbox to a menu
 - [ ] GUI
-- [ ] Joystick support
+- [x] Joystick support
 - [ ] Model loading
-- [ ] Overwork event system
+- [x] Overwork event system
+
+- [ ] README
+    - [ ] Credit all the libraries
+    - [ ] Simple documentation
