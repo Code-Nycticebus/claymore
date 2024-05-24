@@ -1,4 +1,4 @@
-#include "circles.h"
+#include "renderer2D.h"
 
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/shaders.h"
@@ -39,13 +39,13 @@ static void _cm_circle_flush(void) {
   renderer->vertex_count = 0;
 }
 
-void cm_circle(const vec2 position, const vec2 radius, const vec4 color) {
+void cm_circle(const vec2 pos, const vec2 radius, const vec4 color) {
   if (!(renderer->vertex_count < CM_CIRCLES_MAX)) {
     _cm_circle_flush();
   }
 
-  renderer->vertices[renderer->vertex_count].p[0] = position[0];
-  renderer->vertices[renderer->vertex_count].p[1] = position[1];
+  renderer->vertices[renderer->vertex_count].p[0] = pos[0];
+  renderer->vertices[renderer->vertex_count].p[1] = pos[1];
   renderer->vertices[renderer->vertex_count].r[0] = radius[0];
   renderer->vertices[renderer->vertex_count].r[1] = radius[1];
   renderer->vertices[renderer->vertex_count].c[0] = color[0];

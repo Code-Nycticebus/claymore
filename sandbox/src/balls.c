@@ -36,7 +36,7 @@ static void init(CmScene *scene) {
       cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 20, ErrPanic);
 
   cm_scene_push(scene, fps);
-  cm_camera2d_screen(&balls->camera);
+  cm_camera2D_screen(&balls->camera);
 
   RGFW_window *window = cm_app_window();
   glm_vec2_divs((vec2){window->r.w, window->r.h}, 2, center);
@@ -136,11 +136,11 @@ static void update(CmScene *scene, double dt) {
     physics(balls, dt / (double)sub_steps);
   }
 
-  cm_renderer2d_begin(&balls->camera);
+  cm_renderer2D_begin(&balls->camera);
   cm_circle(center, (vec2){r, r}, (vec4){0.1, 0.1, 0.1, 1.0});
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 
-  cm_renderer2d_begin(&balls->camera);
+  cm_renderer2D_begin(&balls->camera);
   for (size_t i = 0; i < da_len(&balls->balls); i++) {
     Ball *ball = &da_get(&balls->balls, i);
     cm_circle(ball->position, (vec2){ball->radius, ball->radius}, ball->color);
@@ -153,7 +153,7 @@ static void update(CmScene *scene, double dt) {
   Str s = str_from_parts(size, buffer);
   cm_font(balls->font, (vec2){10, 50}, s);
 
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 }
 
 static void event(CmScene *scene, CmEvent *event) {

@@ -59,7 +59,7 @@ static void init(CmScene *scene) {
   glm_vec3_zero(benchmark->camera.position);
   glm_mat4_identity(benchmark->camera.base.view);
   glm_translate(benchmark->camera.base.view, (vec3){0});
-  cm_camera2d_screen(&benchmark->camera);
+  cm_camera2D_screen(&benchmark->camera);
 
   cm_scene_push(scene, fps);
 }
@@ -107,7 +107,7 @@ static void update(CmScene *scene, double deltatime) {
   glm_translate(benchmark->camera.base.view, benchmark->camera.position);
   benchmark->camera.base.dirty = true;
 
-  cm_renderer2d_begin(&benchmark->camera);
+  cm_renderer2D_begin(&benchmark->camera);
   {
     const float size = 100;
     static float r = 0;
@@ -120,7 +120,7 @@ static void update(CmScene *scene, double deltatime) {
       }
     }
   }
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 }
 
 static CmSceneInterface *benchmark(void) {

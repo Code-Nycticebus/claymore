@@ -20,8 +20,8 @@ typedef struct {
   float zoom;
 } CmCamera2D;
 
-void cm_camera2d_screen(CmCamera2D *camera);
-void cm_camera2d_ortho(CmCamera2D *camera);
+void cm_camera2D_screen(CmCamera2D *camera);
+void cm_camera2D_ortho(CmCamera2D *camera);
 
 typedef struct {
   bool dirty;

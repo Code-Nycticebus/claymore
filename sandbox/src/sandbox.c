@@ -26,7 +26,7 @@ static void event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   Sandbox *sandbox = cm_scene_alloc_data(scene, sizeof(Sandbox));
 
-  cm_camera2d_screen(&sandbox->camera);
+  cm_camera2D_screen(&sandbox->camera);
 
   const float font_size = 32.f;
   sandbox->font = cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"),
@@ -44,7 +44,7 @@ static void update(CmScene *scene, double dt) {
   (void)dt;
   Sandbox *sandbox = scene->data;
 
-  cm_renderer2d_begin(&sandbox->camera);
+  cm_renderer2D_begin(&sandbox->camera);
   {
     const vec2 size = {100.f, 100.f};
     const f32 margin = 10.f;
@@ -72,7 +72,7 @@ static void update(CmScene *scene, double dt) {
 
     cm_font(sandbox->font, sandbox->mouse_pos, msg);
   }
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 }
 
 static CmSceneInterface *sandbox(void) {

@@ -15,7 +15,7 @@ static void init(CmScene *scene) {
   fps->font = cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"),
                            font_heigth, ErrPanic);
 
-  cm_camera2d_screen(&fps->camera);
+  cm_camera2D_screen(&fps->camera);
 }
 
 static void update(CmScene *scene, double deltatime) {
@@ -24,9 +24,9 @@ static void update(CmScene *scene, double deltatime) {
   const float ms = deltatime * 1000;
   usize len = snprintf(buffer, BUFFER_MAX, "FRAME: % 3.2f ms\nFPS: %.0f", ms,
                        1 / deltatime);
-  cm_renderer2d_begin(&fps->camera);
+  cm_renderer2D_begin(&fps->camera);
   cm_font(fps->font, offset, str_from_parts(len, buffer));
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 }
 
 CmSceneInterface *fps(void) {

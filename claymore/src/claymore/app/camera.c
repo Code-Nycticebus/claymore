@@ -9,7 +9,7 @@ void _cm_camera_update(CmCameraBase *camera) {
   }
 }
 
-void cm_camera2d_screen(CmCamera2D *camera) {
+void cm_camera2D_screen(CmCamera2D *camera) {
   RGFW_window *window = cm_app_window();
   glm_ortho(0, window->r.w, window->r.h, 0, -1.F, 100.F,
             camera->base.projection);

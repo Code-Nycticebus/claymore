@@ -29,7 +29,7 @@ static void init(CmScene *scene) {
   animation->max = ARRAY_LEN(KEYFRAMES);
   animation->keyframes = KEYFRAMES;
 
-  cm_camera2d_screen(&animation->camera);
+  cm_camera2D_screen(&animation->camera);
 }
 
 static void update(CmScene *scene, double dt) {
@@ -40,9 +40,9 @@ static void update(CmScene *scene, double dt) {
   glm_vec2_lerp(keyframe->start, keyframe->end,
                 animation->timer / keyframe->duration, pos);
 
-  cm_renderer2d_begin(&animation->camera);
+  cm_renderer2D_begin(&animation->camera);
   { cm_quad(pos, size, 0, color); }
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 
   animation->timer += dt;
   if (keyframe->duration <= animation->timer) {

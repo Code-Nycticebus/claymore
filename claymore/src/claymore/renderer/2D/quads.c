@@ -1,4 +1,4 @@
-#include "quads.h"
+#include "renderer2D.h"
 
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/shaders.h"
@@ -53,8 +53,7 @@ static void cm_quad_flush(void) {
   renderer->vertices_count = 0;
 }
 
-void cm_quad(const vec2 position, const vec2 size, float rotation,
-             const vec4 color) {
+void cm_quad(const vec2 pos, const vec2 s, float r, const vec4 color) {
   cebus_assert_debug(renderer, "Renderer 2D was not initialized!");
   if (!(renderer->vertices_count < CM_QUADS_VERTICES_MAX)) {
     cm_quad_flush();
@@ -66,28 +65,28 @@ void cm_quad(const vec2 position, const vec2 size, float rotation,
 
   float cos_theta;
   float sin_theta;
-  if (rotation != 0) {
-    cos_theta = cosf(rotation);
-    sin_theta = sinf(rotation);
+  if (r != 0) {
+    cos_theta = cosf(r);
+    sin_theta = sinf(r);
   }
 
   vec2 quad[CM_QUADS_VERTICES] = {
       {0, 0},
-      {size[0], 0},
-      {size[0], size[1]},
-      {0, size[1]},
+      {s[0], 0},
+      {s[0], s[1]},
+      {0, s[1]},
   };
   Vertex *vertices = &renderer->data[renderer->vertices_count];
   for (int i = 0; i < CM_QUADS_VERTICES; ++i) {
-    if (rotation != 0.f) {
+    if (r != 0.f) {
       const float x = quad[i][0];
       const float y = quad[i][1];
       quad[i][0] = x * cos_theta - y * sin_theta;
       quad[i][1] = x * sin_theta + y * cos_theta;
     }
 
-    vertices[i].pos[0] = quad[i][0] + position[0];
-    vertices[i].pos[1] = quad[i][1] + position[1];
+    vertices[i].pos[0] = quad[i][0] + pos[0];
+    vertices[i].pos[1] = quad[i][1] + pos[1];
 
     vertices[i].color[0] = color[0];
     vertices[i].color[1] = color[1];

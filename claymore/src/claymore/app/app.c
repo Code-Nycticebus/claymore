@@ -1,6 +1,6 @@
 #include "app.h"
 
-#include "claymore/renderer/2D/renderer2d.h"
+#include "claymore/renderer/2D/renderer2D.h"
 #include "claymore/renderer/context.h"
 #include "sound.h"
 
@@ -64,7 +64,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
 
-  cm_renderer2d_internal_init();
+  cm_renderer2D_internal_init();
 
   app.main_scene = cm_scene_internal_init(&app.data.arena, config->main);
   if (!app.main_scene->interface->init) {
@@ -100,7 +100,7 @@ void cm_app_internal_final(void) {
 
   cm_sound_interal_shutdown();
 
-  cm_renderer2d_internal_free();
+  cm_renderer2D_internal_free();
 
   RGFW_window_close(app.data.window);
   arena_free(&app.data.arena);

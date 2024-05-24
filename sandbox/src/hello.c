@@ -13,7 +13,7 @@ static void init(CmScene *scene) {
   hello->font = cm_font_init(&scene->gpu, STR("assets/fonts/Silkscreen.ttf"),
                              font_size, ErrPanic);
 
-  cm_camera2d_screen(&hello->camera);
+  cm_camera2D_screen(&hello->camera);
 }
 
 static void update(CmScene *scene, double dt) {
@@ -29,9 +29,9 @@ static void update(CmScene *scene, double dt) {
       center[0] - (label.len / 2.f) * (font_size / 2),
       center[1] - font_size,
   };
-  cm_renderer2d_begin(&hello->camera);
+  cm_renderer2D_begin(&hello->camera);
   { cm_font(hello->font, pos, label); }
-  cm_renderer2d_end();
+  cm_renderer2D_end();
 }
 
 static CmSceneInterface *hello(void) {
