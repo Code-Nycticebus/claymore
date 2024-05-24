@@ -99,10 +99,10 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type,
 }
 #endif
 
-bool cm_platform_context_init(void *window_context) {
+bool cm_platform_context_init(RGFW_window *window) {
   RGFW_setGLVersion(4, 3);
 
-  RGFW_window_makeCurrent(window_context);
+  RGFW_window_makeCurrent(window);
 
   if (!gladLoadGLLoader((GLADloadproc)RGFW_getProcAddress)) {
     cebus_log_error("GLAD initialization failed");
@@ -114,13 +114,9 @@ bool cm_platform_context_init(void *window_context) {
   glEnable(GL_BLEND); // Enables Transparency of png files
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  // glfwSwapInterval(0);
-  RGFW_window_swapInterval(window_context, 0);
+  RGFW_window_swapInterval(window, 0);
 
-  // int32_t width;
-  // int32_t height;
-  // glfwGetWindowSize(window_context, &width, &height);
-  // glViewport(0, 0, width, height);
+  glViewport(0, 0, window->r.w, window->r.h);
 
 #ifdef CLAYMORE_DEBUG
   // Logs info

@@ -20,9 +20,9 @@ static void update(CmScene *scene, double dt) {
   (void)dt;
   HelloWorld *hello = scene->data;
 
+  RGFW_window *window = cm_app_window();
   vec2 center;
-  cm_window_get_size(center);
-  glm_vec2_divs(center, 2, center);
+  glm_vec2_divs((vec2){window->r.w, window->r.h}, 2, center);
 
   Str label = STR("Hello World");
   const vec2 pos = {

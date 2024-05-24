@@ -38,8 +38,8 @@ static void init(CmScene *scene) {
   cm_scene_push(scene, fps);
   cm_camera2d_screen(&balls->camera);
 
-  cm_window_get_size(center);
-  glm_vec2_divs(center, 2, center);
+  RGFW_window *window = cm_app_window();
+  glm_vec2_divs((vec2){window->r.w, window->r.h}, 2, center);
 }
 
 static void verlet_integration(Ball *ball, double deltatime) {

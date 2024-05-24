@@ -3,6 +3,6 @@
 
 #include "claymore/defines.h" // IWYU pragma: export
 
-bool cm_platform_context_init(void *window_context);
+bool cm_platform_context_init(RGFW_window *window_context);
 
 #endif /* !__CLAYMORE_CONTEXT_H__ */

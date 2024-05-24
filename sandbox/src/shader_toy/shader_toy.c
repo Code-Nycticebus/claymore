@@ -37,16 +37,12 @@ static void init(CmScene *scene) {
 }
 
 static void event(CmScene *scene, CmEvent *event) {
-  Toy *toy = scene->data;
+  (void)scene;
   cm_event_key(event, {
-    if (key->action == CM_KEY_RELEASE) {
-      if (key->code == CM_KEY_ESCAPE) {
-        cm_window_close();
+    if (key->action == RGFW_keyPressed) {
+      if (key->code == RGFW_Escape) {
+        cm_app_quit();
         return;
-      }
-      if (key->code == CM_KEY_F5) {
-        cm_scene_delete(scene, toy->child);
-        load_shader_scene(scene);
       }
     }
   });
@@ -62,7 +58,7 @@ static void update(CmScene *scene, double dt) {
     static int last = 0;
     struct stat file;
     stat(toy->filename.data, &file);
-	int mtime = MTIME(file);
+    int mtime = MTIME(file);
     if (last != mtime) {
       last = mtime;
       load_shader_scene(scene);

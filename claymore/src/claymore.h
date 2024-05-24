@@ -10,7 +10,6 @@
 #include "claymore/app/event.h"
 #include "claymore/app/scene.h"
 #include "claymore/app/sound.h"
-#include "claymore/app/window.h"
 
 #include "claymore/renderer/2D/renderer2d.h"
 #include "claymore/renderer/gpu.h"

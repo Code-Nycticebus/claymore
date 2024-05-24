@@ -7,6 +7,12 @@
 
 #include <cglm/cglm.h>
 
+#include <glad.h>
+
+#define u8 u8 // because cebus already defines it
+#define RGFWDEF
+#include <RGFW.h>
+
 // IWYU pragma: end_exports
 
 #define VEC2_FMT "%f, %f"

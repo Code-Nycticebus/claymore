@@ -13,8 +13,8 @@ static void event(CmScene *scene, CmEvent *event) {
   Sandbox *sandbox = scene->data;
   (void)sandbox, (void)event;
   cm_event_key(event, {
-    if (key->action == CM_KEY_PRESS && key->code == CM_KEY_ESCAPE) {
-      cm_window_close();
+    if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
+      cm_app_quit();
     }
   });
   cm_event_cursor(event, {
@@ -64,8 +64,8 @@ static void update(CmScene *scene, double dt) {
             (vec2){msg.len * char_width, font_size + margin}, 0,
             (vec4){1, 0, 0, 1});
 
-    vec2 pos;
-    cm_window_get_size(pos);
+    RGFW_window *window = cm_app_window();
+    vec2 pos = {window->r.h, window->r.h};
     glm_vec2_divs(pos, 2, pos);
     const vec2 r = {210, 210};
     cm_circle(pos, r, (vec4){0, 0, 1, 1});

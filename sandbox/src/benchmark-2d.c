@@ -27,8 +27,8 @@ static void on_event(CmScene *scene, CmEvent *event) {
   Benchmark *benchmark = scene->data;
 
   cm_event_key(event, {
-    if (key->code == CM_KEY_ESCAPE) {
-      cm_window_close();
+    if (key->code == RGFW_Escape) {
+      cm_app_quit();
     }
   });
 
@@ -49,7 +49,7 @@ static void init(CmScene *scene) {
   Benchmark *benchmark = cm_scene_alloc_data(scene, sizeof(Benchmark));
 
   const vec3 bg_color = {0.15f, 0.15f, 0.15f};
-  cm_window_set_bg(bg_color);
+  cm_app_background(bg_color);
 
   const float zoom = 100.f;
   benchmark->camera.zoom = zoom;
@@ -84,16 +84,18 @@ static void update(CmScene *scene, double deltatime) {
   grid += fps > fps_threshold ? 1 : grid > 0 ? -1 : 0;
 
   vec3 dir = {0};
-  if (cm_event_key_pressed(CM_KEY_W)) {
+
+  RGFW_window *window = cm_app_window();
+  if (RGFW_isPressedI(window, RGFW_w)) {
     dir[1] = -speed;
   }
-  if (cm_event_key_pressed(CM_KEY_S)) {
+  if (RGFW_isPressedI(window, RGFW_s)) {
     dir[1] = speed;
   }
-  if (cm_event_key_pressed(CM_KEY_A)) {
+  if (RGFW_isPressedI(window, RGFW_a)) {
     dir[0] = speed;
   }
-  if (cm_event_key_pressed(CM_KEY_D)) {
+  if (RGFW_isPressedI(window, RGFW_d)) {
     dir[0] = -speed;
   }
 

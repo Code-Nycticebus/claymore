@@ -42,7 +42,9 @@ CmScene *shader_init(CmScene *parent, Str filename, Error *error) {
   CmScene *scene = cm_scene_push(parent, shader);
   ShaderToy *toy = scene->data;
 
-  cm_window_get_size(toy->resolution);
+  RGFW_window *window = cm_app_window();
+  toy->resolution[0] = window->r.w;
+  toy->resolution[1] = window->r.h;
 
   Arena arena = {0};
   Str content = file_read_str(filename, &arena, ErrPanic);

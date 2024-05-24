@@ -2,7 +2,61 @@
 #define __CLAYMORE_EVENTS_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
-#include "event_types.h"
+
+typedef enum {
+  CM_EVENT_KEY,
+  CM_EVENT_MOUSE,
+  CM_EVENT_CURSOR,
+  CM_EVENT_SCROLL,
+  CM_EVENT_RESIZE,
+  CM_EVENT_DROP,
+  CM_EVENT_QUIT,
+} CmEventType;
+
+typedef struct {
+  u64 code;
+  u64 action;
+} CmEventKey;
+
+typedef struct {
+  u64 button;
+  u64 action;
+  vec2 pos;
+} CmEventMouse;
+
+typedef struct {
+  vec2 pos;
+} CmEventCursor;
+
+typedef struct {
+  vec2 offset;
+} CmEventScroll;
+
+typedef struct {
+  vec2 size;
+} CmEventResize;
+
+typedef struct {
+  size_t count;
+  const char **files;
+} CmEventDrop;
+
+// typedef struct {} CmEventQuit;
+
+typedef union {
+  CmEventKey key;
+  CmEventCursor cursor;
+  CmEventMouse mouse;
+  CmEventScroll scroll;
+  CmEventResize resize;
+  CmEventDrop drop;
+} CmEventData;
+
+typedef struct {
+  bool handled;
+  CmEventType type;
+  CmEventData event;
+} CmEvent;
 
 #define _cm_event(e, MEMBER, T, TYPE, ...)                                     \
   do {                                                                         \
@@ -32,7 +86,6 @@
 
 void cm_event_emit(CmEvent event);
 
-bool cm_event_key_pressed(CmKeyCodes key);
-CmKeyAction cm_event_mouse_button_pressed(CmMouseButtons button);
+void cm_event_internal_poll_events(RGFW_window *window);
 
 #endif /* !__CLAYMORE_EVENTS_H__ */
