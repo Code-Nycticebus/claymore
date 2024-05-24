@@ -65,7 +65,7 @@ static void update(CmScene *scene, double dt) {
             (vec4){1, 0, 0, 1});
 
     RGFW_window *window = cm_app_window();
-    vec2 pos = {window->r.h, window->r.h};
+    vec2 pos = {window->r.w, window->r.h};
     glm_vec2_divs(pos, 2, pos);
     const vec2 r = {210, 210};
     cm_circle(pos, r, (vec4){0, 0, 1, 1});
