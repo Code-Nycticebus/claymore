@@ -1,8 +1,8 @@
-[submodule "claymore/deps/cebus"]
-	path = claymore/deps/cebus
+[submodule "claymore/dependencies/cebus"]
+	path = claymore/dependencies/cebus
 	url = https://github.com/Code-Nycticebus/cebus
   ignore = all
-[submodule "claymore/deps/cglm"]
-	path = claymore/deps/cglm
+[submodule "claymore/dependencies/cglm"]
+	path = claymore/dependencies/cglm
 	url = https://github.com/recp/cglm.git
   ignore = all
