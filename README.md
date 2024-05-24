@@ -10,7 +10,6 @@ First clone the repo:
 git clone https://github.com/Code-Nycticebus/claymore --recurse-submodules 
 ```
 
-
 ## Start a project
 Claymore uses my own build system [pybuildc](https://github.com/Code-Nycticebus/pybuildc)
 
@@ -26,36 +25,56 @@ dir="<CLAYMORE DIRECTORY>"
 type="pybuildc"
 ```
 
+## Usage
 
-To get a quick program started:
-
+# Scene Structure
 ```c
-#include "claymore/entrypoint.h"
+typedef struct {
+    // Data
+} SceneData;
 
-static void init(CmScene *scene) {
-  (void)scene;
+static void init(CmScene* scene) {
+    SceneData* data = cm_scene_alloc(scene, sizeof(SceneData));
+    // ...
+}
+
+static void update(CmScene* scene, double deltatime) {
+    // draw here
 }
 
 static CmSceneInterface *scene(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .update = NULL,
+      .update = update,
       .event = NULL,
       .final = NULL,
   };
   return &interface;
 }
+```
 
-ClaymoreConfig *claymore_init(void) {
+# Entry Point
+
+```c
+#include <claymore/entrypoint.h>
+
+static ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window =
-          {
-              .width = 720,
-              .height = 420,
-              .title = "test project",
-          },
+      .window = {.width = 720, .height = 420, .title = "Claymore"},
       .main = scene,
   };
   return &config;
+}
+```
+
+# Scene Initialization
+```c
+CmScene* shader_init(CmScene* parent, ...) {
+    CmScene* scene = cm_scene_push(parent, scene_interface);
+    SceneData* data = scene->data;
+
+    // Initializing SceneData based on parameters
+
+    return scene;
 }
 ```
