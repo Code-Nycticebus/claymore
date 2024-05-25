@@ -42,7 +42,7 @@ void *cm_scene_alloc_data(CmScene *scene, usize size) {
 }
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
-  CmSceneInternal *scene = arena_calloc(arena, sizeof(CmSceneInternal));
+  CmSceneInternal *scene = arena_calloc_chunk(arena, sizeof(CmSceneInternal));
   scene->interface = init();
   da_init(&scene->children, &scene->data.arena); // NOLINT
   scene->data.gpu = cm_gpu_internal_init(&scene->data.arena);
@@ -67,6 +67,7 @@ void cm_scene_internal_final(CmSceneInternal *scene) {
   }
   cm_gpu_internal_free(&scene->data.gpu);
   arena_free(&scene->data.arena);
+  arena_free_chunk(&scene->parent->data.arena, scene);
 }
 
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event) {
