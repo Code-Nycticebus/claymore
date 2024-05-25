@@ -45,6 +45,8 @@ static void init(CmScene *scene) {
       &scene->gpu, STR("assets/textures/claymore-sword.png"), ErrPanic);
   sandbox->texture[1] = cm_texture_from_file(
       &scene->gpu, STR("assets/textures/mushroom.png"), ErrPanic);
+
+  RGFW_registerJoystick(cm_app_window(), 0);
 }
 
 static void update(CmScene *scene, double dt) {
@@ -75,6 +77,7 @@ static void update(CmScene *scene, double dt) {
     vec2 pos = {window->r.w, window->r.h};
     glm_vec2_divs(pos, 2, pos);
     const vec2 r = {210, 210};
+
     cm_circle(pos, r, (vec4){0, 0, 1, 1});
 
     cm_font(sandbox->font, sandbox->mouse_pos, msg);

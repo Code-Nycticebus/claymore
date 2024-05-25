@@ -35,9 +35,9 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
     map(scene, &internal->children.items[i]->data);
   }
 }
+
 void *cm_scene_set_data(CmScene *scene, usize size) {
-  cebus_assert(scene->data == NULL,
-               "Trying to set data twice would result in a memory leak");
+  cebus_assert(scene->data == NULL, "Trying to set data twice");
   scene->data = arena_calloc(&scene->arena, size);
   return scene->data;
 }
