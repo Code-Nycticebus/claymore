@@ -14,6 +14,7 @@ static struct {
 CmApp *cm_app(void) { return &app.data; }
 CmScene *cm_app_root(void) { return &app.main_scene->data; }
 RGFW_window *cm_app_window(void) { return app.data.window; }
+Arena *cm_app_arena(void) { return &app.data.arena; }
 void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
 
 void cm_app_set_main(CmSceneInit init) {

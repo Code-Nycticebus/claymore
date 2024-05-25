@@ -24,6 +24,7 @@ typedef struct {
 CmApp *cm_app(void);
 CmScene *cm_app_root(void);
 RGFW_window *cm_app_window(void);
+Arena *cm_app_arena(void);
 void *cm_app_alloc(usize size);
 
 void cm_app_set_main(CmSceneInit init);
