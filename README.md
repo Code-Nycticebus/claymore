@@ -7,7 +7,7 @@ A C Game Engine
 
 - [RGFW](https://github.com/ColleagueRiley/RGFW): cross platform lightweight single-header very simple-to-use window library.
 - [CGLM](https://github.com/recp/cglm): Highly Optimized 2D/3D Graphics Math for C.
-- [STB](https://github.com/nothings/stb): stb single-file public domain libraries for C/C++. I use `stb_image.h` and `stb_truetype.h` for image and font loading.
+- [STB](https://github.com/nothings/stb): stb single-file public domain libraries for C/C++. I use `stb_image.h` and `stb_truetype.h`.
 - [Miniaudio](https://github.com/mackron/miniaudio): Audio playback and capture library written in C, in a single source file.
 - [glad](https://github.com/Dav1dde/glad): Multi-Language GL Loader-Generator.
 - [cebus](https://github.com/Code-Nycticebus/cebus): My own core C library.
