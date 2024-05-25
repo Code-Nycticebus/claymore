@@ -16,6 +16,7 @@ void cm_scene_delete(CmScene *parent, CmScene *scene) {
   for (usize i = 0; i < internal->children.len; i++) {
     if (da_get(&internal->children, i) == (CmSceneInternal *)scene) {
       cm_scene_internal_final((CmSceneInternal *)scene);
+      arena_free_chunk(&parent->arena, scene);
       da_remove(&internal->children, i);
       return;
     }

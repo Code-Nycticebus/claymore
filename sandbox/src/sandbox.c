@@ -7,6 +7,7 @@ typedef struct {
   CmFont *font;
   CmTexture2D texture[2];
   vec2 mouse_pos;
+  CmScene *overlay;
 } Sandbox;
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -15,6 +16,14 @@ static void event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
       cm_app_quit();
+    }
+    if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
+      if (sandbox->overlay == NULL) {
+        sandbox->overlay = cm_scene_push(scene, fps);
+      } else {
+        cm_scene_delete(scene, sandbox->overlay);
+        sandbox->overlay = NULL;
+      }
     }
   });
   cm_event_cursor(event, {
@@ -36,8 +45,6 @@ static void init(CmScene *scene) {
       &scene->gpu, STR("assets/textures/claymore-sword.png"), ErrPanic);
   sandbox->texture[1] = cm_texture_from_file(
       &scene->gpu, STR("assets/textures/mushroom.png"), ErrPanic);
-
-  cm_scene_push(scene, fps);
 }
 
 static void update(CmScene *scene, double dt) {
