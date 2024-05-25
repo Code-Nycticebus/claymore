@@ -15,8 +15,7 @@ void cm_scene_delete(CmScene *parent, CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)parent;
   for (usize i = 0; i < internal->children.len; i++) {
     if (da_get(&internal->children, i) == (CmSceneInternal *)scene) {
-      cm_scene_internal_final((CmSceneInternal *)scene);
-      arena_free_chunk(&parent->arena, scene);
+      cm_scene_internal_final(&parent->arena, (CmSceneInternal *)scene);
       da_remove(&internal->children, i);
       return;
     }
@@ -60,15 +59,16 @@ void cm_scene_internal_update(CmSceneInternal *scene, double deltatime) {
   }
 }
 
-void cm_scene_internal_final(CmSceneInternal *scene) {
+void cm_scene_internal_final(Arena *arena, CmSceneInternal *scene) {
   for (usize i = 0; i < scene->children.len; i++) {
-    cm_scene_internal_final(scene->children.items[i]);
+    cm_scene_internal_final(&scene->data.arena, scene->children.items[i]);
   }
   if (scene->interface->final) {
     scene->interface->final(&scene->data);
   }
   cm_gpu_internal_free(&scene->data.gpu);
   arena_free(&scene->data.arena);
+  arena_free_chunk(arena, scene);
 }
 
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event) {

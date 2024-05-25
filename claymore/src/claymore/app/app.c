@@ -18,8 +18,7 @@ void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
 
 void cm_app_set_main(CmSceneInit init) {
   // Free previous main scene
-  cm_scene_internal_final(app.main_scene);
-  arena_free_chunk(&app.data.arena, app.main_scene);
+  cm_scene_internal_final(&app.data.arena, app.main_scene);
 
   // Initialize new one
   app.main_scene = cm_scene_internal_init(&app.data.arena, init);
@@ -97,7 +96,7 @@ bool cm_app_internal_update(void) {
 }
 
 void cm_app_internal_final(void) {
-  cm_scene_internal_final(app.main_scene);
+  cm_scene_internal_final(&app.data.arena, app.main_scene);
 
   cm_sound_interal_shutdown();
 

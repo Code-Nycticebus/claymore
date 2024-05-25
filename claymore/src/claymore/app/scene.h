@@ -39,7 +39,7 @@ typedef struct CmSceneInternal {
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, CmSceneInit init);
 void cm_scene_internal_update(CmSceneInternal *scene, double deltatime);
-void cm_scene_internal_final(CmSceneInternal *scene);
+void cm_scene_internal_final(Arena *arena, CmSceneInternal *scene);
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event);
 
 #endif /* !__CLAYMORE_SCENE_H__ */
