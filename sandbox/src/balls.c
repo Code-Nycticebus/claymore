@@ -29,7 +29,7 @@ typedef struct {
 } BallSimulation;
 
 static void init(CmScene *scene) {
-  BallSimulation *balls = cm_scene_alloc_data(scene, sizeof(BallSimulation));
+  BallSimulation *balls = cm_scene_set_data(scene, sizeof(BallSimulation));
   da_init(&balls->balls, &scene->arena);
 
   balls->font =

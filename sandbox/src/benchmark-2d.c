@@ -46,7 +46,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
 
 static void init(CmScene *scene) {
   cebus_log_info("benchmark init");
-  Benchmark *benchmark = cm_scene_alloc_data(scene, sizeof(Benchmark));
+  Benchmark *benchmark = cm_scene_set_data(scene, sizeof(Benchmark));
 
   const vec3 bg_color = {0.15f, 0.15f, 0.15f};
   cm_app_background(bg_color);

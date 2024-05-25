@@ -8,7 +8,7 @@ typedef struct {
 } HelloWorld;
 
 static void init(CmScene *scene) {
-  HelloWorld *hello = cm_scene_alloc_data(scene, sizeof(HelloWorld));
+  HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
 
   hello->font = cm_font_init(&scene->gpu, STR("assets/fonts/Silkscreen.ttf"),
                              font_size, ErrPanic);

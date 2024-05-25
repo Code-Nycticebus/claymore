@@ -18,7 +18,7 @@ typedef struct {
 } Animation;
 
 static void init(CmScene *scene) {
-  Animation *animation = cm_scene_alloc_data(scene, sizeof(*animation));
+  Animation *animation = cm_scene_set_data(scene, sizeof(*animation));
 
   static Keyframe KEYFRAMES[] = {
       {{25, 300}, {500, 300}, 2}, // NOLINT

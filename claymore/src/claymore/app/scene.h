@@ -26,7 +26,7 @@ void cm_scene_delete(CmScene *parent, CmScene *scene);
 
 CmScene *cm_scene_parent(CmScene *scene);
 void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
-void *cm_scene_alloc_data(CmScene *scene, usize size);
+void *cm_scene_set_data(CmScene *scene, usize size);
 
 // INTERNAL
 

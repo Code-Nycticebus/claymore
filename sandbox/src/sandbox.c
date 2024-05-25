@@ -33,7 +33,7 @@ static void event(CmScene *scene, CmEvent *event) {
 }
 
 static void init(CmScene *scene) {
-  Sandbox *sandbox = cm_scene_alloc_data(scene, sizeof(Sandbox));
+  Sandbox *sandbox = cm_scene_set_data(scene, sizeof(Sandbox));
 
   cm_camera2D_screen(&sandbox->camera);
 
