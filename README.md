@@ -5,12 +5,12 @@ A C Game Engine
 
 ## Libraries
 
-- [RGFW](https://github.com/ColleagueRiley/RGFW): for window creation and input handling.
-- [CGLM](https://github.com/recp/cglm): For linear algebra
-- [STB](https://github.com/nothings/stb): I use `stb_image.h` and `stb_truetype.h` for image and font loading.
-- [Miniaudio](https://github.com/mackron/miniaudio): For audio.
-- [glad](https://github.com/Dav1dde/glad): For opengl function loading.
-- [cebus](https://github.com/Code-Nycticebus/cebus): My own core library.
+- [RGFW](https://github.com/ColleagueRiley/RGFW): cross platform lightweight single-header very simple-to-use window library.
+- [CGLM](https://github.com/recp/cglm): Highly Optimized 2D/3D Graphics Math for C.
+- [STB](https://github.com/nothings/stb): stb single-file public domain libraries for C/C++. I use `stb_image.h` and `stb_truetype.h` for image and font loading.
+- [Miniaudio](https://github.com/mackron/miniaudio): Audio playback and capture library written in C, in a single source file.
+- [glad](https://github.com/Dav1dde/glad): Multi-Language GL Loader-Generator.
+- [cebus](https://github.com/Code-Nycticebus/cebus): My own core C library.
 
 ## Setup
 First clone the repo:
