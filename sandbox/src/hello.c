@@ -1,36 +1,33 @@
 #include "claymore/entrypoint.h"
 
+const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
 const float font_size = 48.f;
+
+const Str label = STR_STATIC("Hello World");
 
 typedef struct {
   CmFont *font;
   CmCamera2D camera;
+  vec2 position;
 } HelloWorld;
 
 static void init(CmScene *scene) {
   HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
-
-  hello->font = cm_font_init(&scene->gpu, STR("assets/fonts/Silkscreen.ttf"),
-                             font_size, ErrPanic);
-
+  hello->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
   cm_camera2D_screen(&hello->camera);
+
+  RGFW_window *window = cm_app_window();
+  vec2 center = {window->r.w / (float)2, window->r.h / (float)2};
+  hello->position[0] = center[0] - (label.len / (float)2) * (font_size / 2);
+  hello->position[1] = center[1] - font_size;
 }
 
 static void update(CmScene *scene, double dt) {
   (void)dt;
   HelloWorld *hello = scene->data;
 
-  RGFW_window *window = cm_app_window();
-  vec2 center;
-  glm_vec2_divs((vec2){window->r.w, window->r.h}, 2, center);
-
-  Str label = STR("Hello World");
-  const vec2 pos = {
-      center[0] - (label.len / 2.f) * (font_size / 2),
-      center[1] - font_size,
-  };
   cm_2D_begin(&hello->camera);
-  { cm_font(hello->font, pos, label); }
+  { cm_font(hello->font, hello->position, label); }
   cm_2D_end();
 }
 
