@@ -1,10 +1,6 @@
 [pybuildc]
 name="sandbox"
 
-cflags = [
-  "-fsanitize=address",
-]
-
 [exe]
 sandbox = "src/sandbox.c"
 benchmark-2d = "src/benchmark-2d.c"
