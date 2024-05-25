@@ -3,6 +3,15 @@ A C Game Engine
 
 > ⚠️ The Project as well as the Documentation is not yet finished and is prone to change.
 
+## Libraries
+
+- [RGFW](https://github.com/ColleagueRiley/RGFW): for window creation and input handling.
+- [CGLM](https://github.com/recp/cglm): For linear algebra
+- [STB](https://github.com/nothings/stb): I use `stb_image.h` and `stb_truetype.h` for image and font loading.
+- [Miniaudio](https://github.com/mackron/miniaudio): For audio.
+- [glad](https://github.com/Dav1dde/glad): For opengl function loading.
+- [cebus](https://github.com/Code-Nycticebus/cebus): My own core library.
+
 ## Setup
 First clone the repo:
 
@@ -29,8 +38,8 @@ type="pybuildc"
 
 ## Entry Point
 
-Include `claymore/entrypoint.h` in a single `.c` file. In this file, implement the function `ClaymoreConfig* claymore_init(void);`. 
-This function should return a pointer to a static `ClaymoreConfig` structure, where you define the window information and specify the main [scene](#Scene).
+Include `claymore/entrypoint.h` in only one  `.c` file. In this file, implement `ClaymoreConfig* claymore_init(void);`. 
+This function should return a pointer to a `ClaymoreConfig` structure, where you define the window information and specify the main [scene](#Scene).
 
 ```c
 #include <claymore/entrypoint.h>
@@ -38,7 +47,7 @@ This function should return a pointer to a static `ClaymoreConfig` structure, wh
 static ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "Claymore"},
-      .main = scene,
+      .main = scene_interface,
   };
   return &config;
 }
@@ -48,11 +57,10 @@ static ClaymoreConfig *claymore_init(void) {
 
 ### Definition
 
-In this code snippet, you define a custom scene by implementing 
-an interface with four main functions: `init`, `update`, `final`, and `event`. 
+You define a custom scene by implementing an interface with 
+four main functions: `init`, `update`, `final`, and `event`. 
 You can name these functions however you like, and they can also be `NULL` if not needed. 
-The `CmSceneInterface *scene_interface(void);` function returns a pointer to a static 
-`CmSceneInterface` structure, which includes these function pointers.
+The `CmSceneInterface *scene_interface(void);` function returns a pointer to a `CmSceneInterface` struct.
 
 ```c
 static void init(CmScene* scene) {
@@ -115,7 +123,7 @@ Parents are updated first, then the order that scenes where pushed.
 
 ```c
 static void init(CmScene* scene) {
-    CmScene* child = cm_scene_push(scene, child_scene);
+    CmScene* child = cm_scene_push(scene, child_interface);
 }
 ```
 
