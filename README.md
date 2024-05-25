@@ -35,6 +35,6 @@ type="pybuildc"
 ```
 
 ## Usage
-Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/DOCUMENTATION.md) for more info. 
+Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/DOC.md) for more info. 
 For an example project, take a look at [shadertoy](https://github.com/Code-Nycticebus/shadertoy).
 
