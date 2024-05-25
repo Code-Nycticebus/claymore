@@ -69,7 +69,6 @@ void cm_scene_internal_final(CmSceneInternal *scene) {
   }
   cm_gpu_internal_free(&scene->data.gpu);
   arena_free(&scene->data.arena);
-  arena_free_chunk(&scene->parent->data.arena, scene);
 }
 
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event) {
