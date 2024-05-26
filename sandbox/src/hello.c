@@ -22,7 +22,7 @@ static void init(CmScene *scene) {
   hello->position[1] = center[1] - font_size;
 }
 
-static void update(CmScene *scene, double dt) {
+static void frame_update(CmScene *scene, double dt) {
   (void)dt;
   HelloWorld *hello = scene->data;
 
@@ -34,7 +34,7 @@ static void update(CmScene *scene, double dt) {
 static CmSceneInterface *hello(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .update = update,
+      .frame_update = frame_update,
   };
   return &interface;
 }

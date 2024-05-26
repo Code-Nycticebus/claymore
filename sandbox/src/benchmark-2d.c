@@ -64,7 +64,7 @@ static void init(CmScene *scene) {
   cm_scene_push(scene, fps);
 }
 
-static void update(CmScene *scene, double deltatime) {
+static void frame_update(CmScene *scene, double deltatime) {
   static usize grid = 1;
 
   static double timer = 0;
@@ -126,7 +126,7 @@ static void update(CmScene *scene, double deltatime) {
 static CmSceneInterface *benchmark(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .update = update,
+      .frame_update = frame_update,
       .event = on_event,
   };
   return &interface;

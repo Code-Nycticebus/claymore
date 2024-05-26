@@ -18,7 +18,7 @@ static void init(CmScene *scene) {
   cm_camera2D_screen(&fps->camera);
 }
 
-static void update(CmScene *scene, double deltatime) {
+static void frame_update(CmScene *scene, double deltatime) {
   Fps *fps = scene->data;
   char buffer[BUFFER_MAX] = {0};
   const float ms = deltatime * 1000;
@@ -32,7 +32,7 @@ static void update(CmScene *scene, double deltatime) {
 CmSceneInterface *fps(void) {
   static CmSceneInterface sandbox = {
       .init = init,
-      .update = update,
+      .frame_update = frame_update,
   };
   return &sandbox;
 }

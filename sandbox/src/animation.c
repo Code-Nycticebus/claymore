@@ -32,7 +32,7 @@ static void init(CmScene *scene) {
   cm_camera2D_screen(&animation->camera);
 }
 
-static void update(CmScene *scene, double dt) {
+static void frame_update(CmScene *scene, double dt) {
   Animation *animation = scene->data;
 
   Keyframe *keyframe = &animation->keyframes[animation->idx];
@@ -55,7 +55,7 @@ static void update(CmScene *scene, double dt) {
 static CmSceneInterface *animation(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .update = update,
+      .frame_update = frame_update,
   };
   return &interface;
 }

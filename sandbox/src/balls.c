@@ -112,7 +112,7 @@ static void fixed_update(CmScene *scene, double dt) {
   }
 }
 
-static void update(CmScene *scene, double dt) {
+static void frame_update(CmScene *scene, double dt) {
   BallSimulation *balls = scene->data;
 
   if (da_len(&balls->balls) < max_balls) {
@@ -171,7 +171,7 @@ static void event(CmScene *scene, CmEvent *event) {
 static CmSceneInterface *balls(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .update = update,
+      .frame_update = frame_update,
       .fixed_update = fixed_update,
       .event = event,
   };

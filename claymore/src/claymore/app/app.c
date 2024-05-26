@@ -98,7 +98,7 @@ bool cm_app_internal_update(void) {
   }
 
   glClear(GL_COLOR_BUFFER_BIT);
-  cm_scene_internal_update(app.main_scene, dt);
+  cm_scene_internal_frame_update(app.main_scene, dt);
 
   RGFW_window_swapBuffers(app.data.window);
   return true;

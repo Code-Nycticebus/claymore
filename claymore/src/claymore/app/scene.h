@@ -14,7 +14,7 @@ typedef struct {
 
 typedef const struct {
   void (*init)(CmScene *scene);
-  void (*update)(CmScene *scene, double deltatime);
+  void (*frame_update)(CmScene *scene, double deltatime);
   void (*fixed_update)(CmScene *scene, double deltatime);
   void (*final)(CmScene *scene);
   void (*event)(CmScene *scene, CmEvent *event);
@@ -39,7 +39,7 @@ typedef struct CmSceneInternal {
 } CmSceneInternal;
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, CmSceneInit init);
-void cm_scene_internal_update(CmSceneInternal *scene, double deltatime);
+void cm_scene_internal_frame_update(CmSceneInternal *scene, double deltatime);
 void cm_scene_internal_fixed_update(CmSceneInternal *scene, double deltatime);
 void cm_scene_internal_final(Arena *arena, CmSceneInternal *scene);
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event);

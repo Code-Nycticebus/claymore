@@ -50,12 +50,12 @@ CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   return scene;
 }
 
-void cm_scene_internal_update(CmSceneInternal *scene, double deltatime) {
-  if (scene->interface->update) {
-    scene->interface->update(&scene->data, deltatime);
+void cm_scene_internal_frame_update(CmSceneInternal *scene, double deltatime) {
+  if (scene->interface->frame_update) {
+    scene->interface->frame_update(&scene->data, deltatime);
   }
   for (usize i = 0; i < scene->children.len; i++) {
-    cm_scene_internal_update(scene->children.items[i], deltatime);
+    cm_scene_internal_frame_update(scene->children.items[i], deltatime);
   }
 }
 void cm_scene_internal_fixed_update(CmSceneInternal *scene, double deltatime) {

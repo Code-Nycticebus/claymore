@@ -49,7 +49,7 @@ static void init(CmScene *scene) {
   RGFW_registerJoystick(cm_app_window(), 0);
 }
 
-static void update(CmScene *scene, double dt) {
+static void frame_update(CmScene *scene, double dt) {
   (void)dt;
   Sandbox *sandbox = scene->data;
 
@@ -88,7 +88,7 @@ static void update(CmScene *scene, double dt) {
 static CmSceneInterface *sandbox(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .update = update,
+      .frame_update = frame_update,
       .event = event,
   };
   return &interface;
