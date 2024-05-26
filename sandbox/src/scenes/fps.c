@@ -1,29 +1,29 @@
 #include "fps.h"
 
-#define BUFFER_MAX 40
+#define SIZE 40
 
 typedef struct {
   CmFont *font;
   CmCamera2D camera;
 } Fps;
 
+static const Str font = STR("assets/fonts/Ubuntu.ttf");
 const float font_heigth = 24.f;
 const vec2 offset = {10, 0};
 
 static void init(CmScene *scene) {
   Fps *fps = cm_scene_set_data(scene, sizeof(Fps));
-  fps->font = cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"),
-                           font_heigth, ErrPanic);
+  fps->font = cm_font_init(&scene->gpu, font, font_heigth, ErrPanic);
 
   cm_camera2D_screen(&fps->camera);
 }
 
-static void frame_update(CmScene *scene, double deltatime) {
+static void frame_update(CmScene *scene, double dt) {
   Fps *fps = scene->data;
-  char buffer[BUFFER_MAX] = {0};
-  const float ms = deltatime * 1000;
-  usize len = snprintf(buffer, BUFFER_MAX, "FRAME: % 3.2f ms\nFPS: %.0f", ms,
-                       1 / deltatime);
+
+  char buffer[SIZE] = {0};
+  const float ms = dt * 1000;
+  usize len = snprintf(buffer, SIZE, "FRAME: % 3.2f ms\nFPS: %.0f", ms, 1 / dt);
   cm_2D_begin(&fps->camera);
   cm_font(fps->font, offset, str_from_parts(len, buffer));
   cm_2D_end();

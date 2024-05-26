@@ -58,6 +58,7 @@ void cm_scene_internal_frame_update(CmSceneInternal *scene, double deltatime) {
     cm_scene_internal_frame_update(scene->children.items[i], deltatime);
   }
 }
+
 void cm_scene_internal_fixed_update(CmSceneInternal *scene, double deltatime) {
   if (scene->interface->fixed_update) {
     scene->interface->fixed_update(&scene->data, deltatime);

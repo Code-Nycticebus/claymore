@@ -89,12 +89,12 @@ bool cm_app_internal_update(void) {
   double dt = current_time - app.last_frame;
   app.last_frame = current_time;
 
-  const float physics_interval = 1.f / 60.f;
-  static float physics_timer = 0;
-  physics_timer += dt;
-  while (physics_interval <= physics_timer) {
-    cm_scene_internal_fixed_update(app.main_scene, physics_interval);
-    physics_timer -= physics_interval;
+  const float fixed_interval = 1.f / 60.f;
+  static float fixed_timer = 0;
+  fixed_timer += dt;
+  while (fixed_interval <= fixed_timer) {
+    cm_scene_internal_fixed_update(app.main_scene, fixed_interval);
+    fixed_timer -= fixed_interval;
   }
 
   glClear(GL_COLOR_BUFFER_BIT);
