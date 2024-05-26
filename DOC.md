@@ -22,13 +22,17 @@ static ClaymoreConfig *claymore_init(void) {
 ### Definition
 
 You define a custom scene by implementing an interface with 
-four main functions: `init`, `update`, `final`, and `event`. 
+five functions: `init`, `fixed_update`, `update`, `final`, and `event`. 
 You can name these functions however you like, and they can also be `NULL` if not needed. 
 The `CmSceneInterface *scene_interface(void);` function returns a pointer to a `CmSceneInterface` struct.
 
 ```c
 static void init(CmScene* scene) {
     // Initialization code...
+}
+
+static void fixed_update(CmScene* scene, double deltatime) {
+    // Update logic
 }
 
 static void update(CmScene* scene, double deltatime) {
@@ -46,6 +50,7 @@ static void event(CmScene* scene, CmEvent* event) {
 static CmSceneInterface *scene_interface(void) {
   static CmSceneInterface interface = {
       .init = init,
+      .fixed_update = fixed_update,
       .update = update,
       .final = final,
       .event = event,
