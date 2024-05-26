@@ -3,11 +3,9 @@
 #include "scenes/fps.h"
 #include <stdio.h>
 
-const float damping = 0.999;
 const float gravity = 981;
 
-const float max_balls = 2000.f;
-const float max_speed = 1.f;
+const float max_balls = 650.f;
 
 const float r = 350;
 static vec2 center;
@@ -52,8 +50,6 @@ static void verlet_integration(Ball *ball, double deltatime) {
   // Calculate ball movement
   vec2 displacement;
   glm_vec2_sub(ball->position, ball->last_position, displacement);
-  // Optional min/max:
-  glm_vec2_clamp(displacement, -max_speed, +max_speed);
   // add displacement to gravity
   glm_vec2_add(velocity, displacement, velocity);
   // Save current position
@@ -107,6 +103,15 @@ static void physics(BallSimulation *balls, double dt) {
   }
 }
 
+static void fixed_update(CmScene *scene, double dt) {
+  BallSimulation *balls = scene->data;
+
+  const usize sub_steps = 2;
+  for (usize i = 0; i < sub_steps; ++i) {
+    physics(balls, dt / (double)sub_steps);
+  }
+}
+
 static void update(CmScene *scene, double dt) {
   BallSimulation *balls = scene->data;
 
@@ -118,7 +123,7 @@ static void update(CmScene *scene, double dt) {
     if (countdown < 0) {
       countdown = 0.2f;
 
-      vec2 pos = {center[0], center[1] - r * 0.9f};
+      vec2 pos = {center[0] - 100, center[1] - r * 0.9f};
       vec4 red = {.8, 0, 0.7, 1};
       vec4 green = {0, 0.8, 0.7, 1};
       vec4 color;
@@ -133,28 +138,25 @@ static void update(CmScene *scene, double dt) {
     }
   }
 
-  const usize sub_steps = 4;
-  for (usize i = 0; i < sub_steps; ++i) {
-    physics(balls, dt / (double)sub_steps);
-  }
-
   cm_2D_begin(&balls->camera);
   cm_circle(center, (vec2){r, r}, (vec4){0.1, 0.1, 0.1, 1.0});
   cm_2D_end();
 
   cm_2D_begin(&balls->camera);
-  for (size_t i = 0; i < da_len(&balls->balls); i++) {
-    Ball *ball = &da_get(&balls->balls, i);
-    cm_circle(ball->position, (vec2){ball->radius, ball->radius}, ball->color);
-  }
+  {
+    for (size_t i = 0; i < da_len(&balls->balls); i++) {
+      Ball *ball = &da_get(&balls->balls, i);
+      cm_circle(ball->position, (vec2){ball->radius, ball->radius},
+                ball->color);
+    }
 
 #define N 20
-  char buffer[N];
-  usize size =
-      snprintf(buffer, N, "%" USIZE_FMT " Balls", da_len(&balls->balls));
-  Str s = str_from_parts(size, buffer);
-  cm_font(balls->font, (vec2){10, 50}, s);
-
+    char buffer[N];
+    usize size =
+        snprintf(buffer, N, "%" USIZE_FMT " Balls", da_len(&balls->balls));
+    Str s = str_from_parts(size, buffer);
+    cm_font(balls->font, (vec2){10, 50}, s);
+  }
   cm_2D_end();
 }
 
@@ -170,6 +172,7 @@ static CmSceneInterface *balls(void) {
   static CmSceneInterface interface = {
       .init = init,
       .update = update,
+      .fixed_update = fixed_update,
       .event = event,
   };
   return &interface;
