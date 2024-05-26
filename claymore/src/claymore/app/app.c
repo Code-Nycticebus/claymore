@@ -73,7 +73,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
   app.main_scene->interface->init(&app.main_scene->data);
-
+  app.last_frame = cm_app_time();
   app.running = true;
   return true;
 }

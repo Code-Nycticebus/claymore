@@ -4,13 +4,16 @@
 #include <stdio.h>
 
 const float damping = 0.999;
-const float gravity = 1000;
+const float gravity = 981;
 
 const float max_balls = 2000.f;
 const float max_speed = 1.f;
 
 const float r = 350;
 static vec2 center;
+
+static Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
+static const float font_size = 20;
 
 typedef struct {
   vec2 position;
@@ -32,8 +35,7 @@ static void init(CmScene *scene) {
   BallSimulation *balls = cm_scene_set_data(scene, sizeof(BallSimulation));
   da_init(&balls->balls, &scene->arena);
 
-  balls->font =
-      cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 20, ErrPanic);
+  balls->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
 
   cm_scene_push(scene, fps);
   cm_camera2D_screen(&balls->camera);
@@ -114,7 +116,7 @@ static void update(CmScene *scene, double dt) {
     countdown -= dt;
     timer += dt;
     if (countdown < 0) {
-      countdown = 0.3f;
+      countdown = 0.2f;
 
       vec2 pos = {center[0], center[1] - r * 0.9f};
       vec4 red = {.8, 0, 0.7, 1};
@@ -124,7 +126,7 @@ static void update(CmScene *scene, double dt) {
       da_push(&balls->balls,
               (Ball){
                   .position = {VEC2_ARG(pos)},
-                  .last_position = {pos[0] + sinf(timer) * 0.5, pos[1]},
+                  .last_position = {pos[0] + sinf(timer), pos[1]},
                   .radius = 10,
                   .color = {VEC4_ARG(color)},
               });
