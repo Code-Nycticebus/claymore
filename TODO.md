@@ -2,6 +2,14 @@
 currently i'm not really working towards a goal so i decieded to create a roadmap.
 
 ## TODO
+- [ ] Hot reloading
+    - [ ] Could be a "scene" or i will create a exe
+    - [ ] libraries need to be compiled with -fPIC
+
+- [ ] Model loading
+    - [ ] .obj files since they are easy to parse
+    - [ ] .iqm for animations. raylib has info on it (don't forget to credit)
+
 - [ ] Assets
     - [ ] A way to Embed assets
     - [ ] Asset manager?
@@ -13,7 +21,8 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [ ] A way to embed /preload music
 
 - [ ] Framebuffer
-    - [ ] could actually be a scene 
+    - [ ] wrap the gl implementation
+    - [ ] could be a scene 
     - [ ] something you load a scene into
     
 - [ ] Dependencies
@@ -21,18 +30,20 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [x] Add cglm as submodule
     - [x] Switch glfw to rgfw
 
+- [ ] custom events
+
 - [ ] implement font color
 
 - [ ] Make sandbox to a menu
 
 - [ ] GUI
 
-- [x] Joystick support
+- [ ] Joystick support
 
 - [ ] Model loading
 
 - [x] Overwork event system
 
 - [ ] README
-    - [ ] Credit all the libraries
+    - [x] Credit all the libraries
     - [ ] Simple documentation
