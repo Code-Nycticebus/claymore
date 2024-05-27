@@ -5,9 +5,14 @@
 
 const float gravity = 981;
 
-const float max_balls = 650.f;
+const float max_balls = 2500;
 
-const float r = 350;
+#define WINDOW_SIZE 720
+
+#define BALL_SIZE 5
+#define GRID_SIZE 99
+#define CELL_SIZE (WINDOW_SIZE / (float)GRID_SIZE)
+
 static vec2 center;
 
 static Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
@@ -21,6 +26,25 @@ typedef struct {
 } Ball;
 
 typedef DA(Ball) Balls;
+typedef DA(Ball *) Cell;
+
+Cell grid[GRID_SIZE][GRID_SIZE];
+
+void grid_init(Arena *arena) {
+  for (usize x = 0; x < GRID_SIZE; ++x) {
+    for (usize y = 0; y < GRID_SIZE; ++y) {
+      da_init(&grid[x][y], arena);
+    }
+  }
+}
+
+void grid_clear(void) {
+  for (usize x = 0; x < GRID_SIZE; ++x) {
+    for (usize y = 0; y < GRID_SIZE; ++y) {
+      da_clear(&grid[x][y]);
+    }
+  }
+}
 
 typedef struct {
   CmCamera2D camera;
@@ -32,6 +56,7 @@ typedef struct {
 static void init(CmScene *scene) {
   BallSimulation *balls = cm_scene_set_data(scene, sizeof(BallSimulation));
   da_init(&balls->balls, &scene->arena);
+  da_reserve(&balls->balls, max_balls);
 
   balls->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
 
@@ -40,6 +65,8 @@ static void init(CmScene *scene) {
 
   RGFW_window *window = cm_app_window();
   glm_vec2_divs((vec2){window->r.w, window->r.h}, 2, center);
+
+  grid_init(&scene->arena);
 }
 
 static void verlet_integration(Ball *ball, double deltatime) {
@@ -59,54 +86,76 @@ static void verlet_integration(Ball *ball, double deltatime) {
 }
 
 static void bounds(Ball *ball) {
-  vec2 diff;
-  glm_vec2_sub(ball->position, center, diff);
-  const float distance = glm_vec2_distance(ball->position, center);
-  if (r - ball->radius < distance) {
-    vec2 normal;
-    glm_vec2_divs(diff, distance, normal);
-    glm_vec2_scale(normal, r - ball->radius, normal);
-    glm_vec2_add(center, normal, ball->position);
+  float s1 = WINDOW_SIZE - CELL_SIZE - BALL_SIZE;
+  float s2 = CELL_SIZE + BALL_SIZE;
+  ball->position[0] = glm_clamp(ball->position[0], s2, s1);
+  ball->position[1] = glm_clamp(ball->position[1], s2, s1);
+}
+
+static void collision(Ball *b1, Ball *b2) {
+  // Get distance between balls
+  const float distance = glm_vec2_distance(b1->position, b2->position);
+  const float min_distance = b1->radius + b2->radius;
+  if (distance < min_distance) {
+    // Get Normalized direction
+    vec2 dir;
+    glm_vec2_sub(b1->position, b2->position, dir);
+    glm_vec2_normalize(dir);
+
+    // Get half of the overlapping distance
+    glm_vec2_scale(dir, (distance - min_distance) / 2, dir);
+
+    // Push balls into direction
+    glm_vec2_sub(b1->position, dir, b1->position);
+    glm_vec2_add(b2->position, dir, b2->position);
   }
 }
 
-static void collision(Ball *ball, Balls *balls) {
-  for (size_t i = 0; i < da_len(balls); ++i) {
-    Ball *ball2 = &da_get(balls, i);
+void cell_resolve(Cell *c1, Cell *c2) {
+  for (usize i = 0; i < da_len(c1); ++i) {
+    Ball *b1 = da_get(c1, i);
+    for (usize j = 0; j < da_len(c2); ++j) {
+      Ball *b2 = da_get(c2, j);
+      if (b1 != b2) {
+        collision(b1, b2);
+      }
+    }
+  }
+}
 
-    // Get distance between balls
-    const float distance = glm_vec2_distance(ball->position, ball2->position);
-    const float min_distance = ball->radius + ball2->radius;
-    if (distance < min_distance) {
-      // Get Normalized direction
-      vec2 dir;
-      glm_vec2_sub(ball->position, ball2->position, dir);
-      glm_vec2_normalize(dir);
-
-      // Get half of the overlapping distance
-      glm_vec2_scale(dir, (distance - min_distance) / 2, dir);
-
-      // Push balls into direction
-      glm_vec2_sub(ball->position, dir, ball->position);
-      glm_vec2_add(ball2->position, dir, ball2->position);
+void grid_resolve(void) {
+  for (i32 x = 1; x < GRID_SIZE - 1; ++x) {
+    for (i32 y = 1; y < GRID_SIZE - 1; ++y) {
+      Cell *current_cell = &grid[x][y];
+      for (i32 x1 = -1; x1 <= 1; ++x1) {
+        for (i32 y1 = -1; y1 <= 1; ++y1) {
+          Cell *other_cell = &grid[x + x1][y + y1];
+          cell_resolve(current_cell, other_cell);
+        }
+      }
     }
   }
 }
 
 static void physics(BallSimulation *balls, double dt) {
+  grid_clear();
+
   for (size_t i = 0; i < da_len(&balls->balls); ++i) {
     Ball *ball = &da_get(&balls->balls, i);
-
     verlet_integration(ball, dt);
     bounds(ball);
-    collision(ball, &balls->balls);
+    int x = ball->position[0] / CELL_SIZE;
+    int y = ball->position[1] / CELL_SIZE;
+    da_push(&grid[x][y], ball);
   }
+
+  grid_resolve();
 }
 
 static void fixed_update(CmScene *scene, double dt) {
   BallSimulation *balls = scene->data;
 
-  const usize sub_steps = 2;
+  const usize sub_steps = 8;
   for (usize i = 0; i < sub_steps; ++i) {
     physics(balls, dt / (double)sub_steps);
   }
@@ -121,26 +170,25 @@ static void frame_update(CmScene *scene, double dt) {
     countdown -= dt;
     timer += dt;
     if (countdown < 0) {
-      countdown = 0.2f;
+      countdown = 0.15f;
 
-      vec2 pos = {center[0] - 100, center[1] - r * 0.9f};
-      vec4 red = {.8, 0, 0.7, 1};
-      vec4 green = {0, 0.8, 0.7, 1};
-      vec4 color;
-      glm_vec4_lerp(red, green, da_len(&balls->balls) / max_balls, color);
-      da_push(&balls->balls,
-              (Ball){
-                  .position = {VEC2_ARG(pos)},
-                  .last_position = {pos[0] + sinf(timer), pos[1]},
-                  .radius = 10,
-                  .color = {VEC4_ARG(color)},
-              });
+      for (int i = -4; i <= 4; ++i) {
+        vec2 pos = {center[0] + 15 * i, 100};
+        vec4 red = {.8, 0, 0.7, 1};
+        vec4 green = {0, 0.8, 0.7, 1};
+        vec4 color;
+        const float t = (da_len(&balls->balls) % 100) / 100.f;
+        glm_vec4_lerp(red, green, t, color);
+        da_push(&balls->balls,
+                (Ball){
+                    .position = {VEC2_ARG(pos)},
+                    .last_position = {pos[0] + sinf(timer), pos[1]},
+                    .radius = BALL_SIZE,
+                    .color = {VEC4_ARG(color)},
+                });
+      }
     }
   }
-
-  cm_2D_begin(&balls->camera);
-  cm_circle(center, (vec2){r, r}, (vec4){0.1, 0.1, 0.1, 1.0});
-  cm_2D_end();
 
   cm_2D_begin(&balls->camera);
   {
@@ -180,7 +228,7 @@ static CmSceneInterface *balls(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = 1280, .height = 720, .title = "balls"},
+      .window = {.width = WINDOW_SIZE, .height = WINDOW_SIZE, .title = "balls"},
       .main = balls,
   };
   return &config;
