@@ -2,7 +2,7 @@
 name="sandbox"
 
 cflags=[
-   # "-fsanitize=address",
+  # "-fsanitize=address",
 ]
 
 [exe]

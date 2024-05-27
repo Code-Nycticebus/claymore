@@ -7,11 +7,14 @@ const float gravity = 981;
 
 const float max_balls = 2500;
 
-#define WINDOW_SIZE 720
+#define WINDOW_SIZE_Y 1000
+#define WINDOW_SIZE_X 1500
 
 #define BALL_SIZE 5
-#define GRID_SIZE 99
-#define CELL_SIZE (WINDOW_SIZE / (float)GRID_SIZE)
+#define GRID_SIZE_X (WINDOW_SIZE_X / (BALL_SIZE * 2))
+#define GRID_SIZE_Y (WINDOW_SIZE_Y / (BALL_SIZE * 2))
+#define CELL_SIZE_X (WINDOW_SIZE_X / GRID_SIZE_X)
+#define CELL_SIZE_Y (WINDOW_SIZE_Y / GRID_SIZE_Y)
 
 static vec2 center;
 
@@ -28,19 +31,19 @@ typedef struct {
 typedef DA(Ball) Balls;
 typedef DA(Ball *) Cell;
 
-Cell grid[GRID_SIZE][GRID_SIZE];
+Cell grid[GRID_SIZE_X][GRID_SIZE_Y];
 
 void grid_init(Arena *arena) {
-  for (usize x = 0; x < GRID_SIZE; ++x) {
-    for (usize y = 0; y < GRID_SIZE; ++y) {
+  for (usize x = 0; x < GRID_SIZE_X; ++x) {
+    for (usize y = 0; y < GRID_SIZE_Y; ++y) {
       da_init(&grid[x][y], arena);
     }
   }
 }
 
 void grid_clear(void) {
-  for (usize x = 0; x < GRID_SIZE; ++x) {
-    for (usize y = 0; y < GRID_SIZE; ++y) {
+  for (usize x = 0; x < GRID_SIZE_X; ++x) {
+    for (usize y = 0; y < GRID_SIZE_Y; ++y) {
       da_clear(&grid[x][y]);
     }
   }
@@ -69,6 +72,17 @@ static void init(CmScene *scene) {
   grid_init(&scene->arena);
 }
 
+static void bounds(Ball *ball) {
+  float x1 = CELL_SIZE_X + BALL_SIZE * 2;
+  float x2 = WINDOW_SIZE_X - CELL_SIZE_X - BALL_SIZE;
+
+  float y1 = CELL_SIZE_Y + BALL_SIZE * 2;
+  float y2 = WINDOW_SIZE_Y - CELL_SIZE_Y - BALL_SIZE;
+
+  ball->position[0] = glm_clamp(ball->position[0], x1, x2);
+  ball->position[1] = glm_clamp(ball->position[1], y1, y2);
+}
+
 static void verlet_integration(Ball *ball, double deltatime) {
   // Gravity
   vec2 velocity = {0, gravity};
@@ -83,13 +97,6 @@ static void verlet_integration(Ball *ball, double deltatime) {
   glm_vec2_copy(ball->position, ball->last_position);
   // add to postion
   glm_vec2_add(ball->position, velocity, ball->position);
-}
-
-static void bounds(Ball *ball) {
-  float s1 = WINDOW_SIZE - CELL_SIZE - BALL_SIZE;
-  float s2 = CELL_SIZE + BALL_SIZE;
-  ball->position[0] = glm_clamp(ball->position[0], s2, s1);
-  ball->position[1] = glm_clamp(ball->position[1], s2, s1);
 }
 
 static void collision(Ball *b1, Ball *b2) {
@@ -124,8 +131,8 @@ void cell_resolve(Cell *c1, Cell *c2) {
 }
 
 void grid_resolve(void) {
-  for (i32 x = 1; x < GRID_SIZE - 1; ++x) {
-    for (i32 y = 1; y < GRID_SIZE - 1; ++y) {
+  for (i32 x = 1; x < GRID_SIZE_X - 1; ++x) {
+    for (i32 y = 1; y < GRID_SIZE_Y - 1; ++y) {
       Cell *current_cell = &grid[x][y];
       for (i32 x1 = -1; x1 <= 1; ++x1) {
         for (i32 y1 = -1; y1 <= 1; ++y1) {
@@ -144,8 +151,8 @@ static void physics(BallSimulation *balls, double dt) {
     Ball *ball = &da_get(&balls->balls, i);
     verlet_integration(ball, dt);
     bounds(ball);
-    int x = ball->position[0] / CELL_SIZE;
-    int y = ball->position[1] / CELL_SIZE;
+    int x = ball->position[0] / CELL_SIZE_X;
+    int y = ball->position[1] / CELL_SIZE_Y;
     da_push(&grid[x][y], ball);
   }
 
@@ -163,29 +170,30 @@ static void fixed_update(CmScene *scene, double dt) {
 
 static void frame_update(CmScene *scene, double dt) {
   BallSimulation *balls = scene->data;
+  static bool generating = true;
 
-  if (da_len(&balls->balls) < max_balls) {
-    static float timer = 0.0f;
+  if (generating) {
     static float countdown = 0.0f;
     countdown -= dt;
-    timer += dt;
     if (countdown < 0) {
-      countdown = 0.15f;
+      countdown = 0.1f;
+      if (1 / 60.f < dt) {
+        generating = false;
+      }
 
       for (int i = -4; i <= 4; ++i) {
-        vec2 pos = {center[0] + 15 * i, 100};
+        vec2 pos = {100 + (BALL_SIZE * 2) * i, 100 - (BALL_SIZE * 2) * i};
         vec4 red = {.8, 0, 0.7, 1};
         vec4 green = {0, 0.8, 0.7, 1};
         vec4 color;
-        const float t = (da_len(&balls->balls) % 100) / 100.f;
+        const float t = (da_len(&balls->balls) % 200) / 200.f;
         glm_vec4_lerp(red, green, t, color);
-        da_push(&balls->balls,
-                (Ball){
-                    .position = {VEC2_ARG(pos)},
-                    .last_position = {pos[0] + sinf(timer), pos[1]},
-                    .radius = BALL_SIZE,
-                    .color = {VEC4_ARG(color)},
-                });
+        da_push(&balls->balls, (Ball){
+                                   .position = {VEC2_ARG(pos)},
+                                   .last_position = {pos[0] - 2.5, pos[1]},
+                                   .radius = BALL_SIZE,
+                                   .color = {VEC4_ARG(color)},
+                               });
       }
     }
   }
@@ -228,7 +236,9 @@ static CmSceneInterface *balls(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = WINDOW_SIZE, .height = WINDOW_SIZE, .title = "balls"},
+      .window = {.width = WINDOW_SIZE_X,
+                 .height = WINDOW_SIZE_Y,
+                 .title = "balls"},
       .main = balls,
   };
   return &config;
