@@ -16,7 +16,13 @@ A C Game Engine
 First clone the repo:
 
 ```terminal
-git clone https://github.com/Code-Nycticebus/claymore --recurse-submodules 
+git clone --recursive https://github.com/Code-Nycticebus/claymore
+```
+
+Build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+
+```terminal
+pybuildc build
 ```
 
 ## Start a project
@@ -35,6 +41,6 @@ type="pybuildc"
 ```
 
 ## Usage
-Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/DOC.md) for more info. 
+Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/claymore/docs/) for more info. 
 For an example project, take a look at [shadertoy](https://github.com/Code-Nycticebus/shadertoy).
 

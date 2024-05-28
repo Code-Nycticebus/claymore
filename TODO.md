@@ -11,6 +11,7 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [ ] .iqm for animations. raylib has info on it (don't forget to credit)
 
 - [ ] Assets
+    - [ ] asset folder path
     - [ ] A way to Embed assets
     - [ ] Asset manager?
     - [ ] Precompile shaders (https://www.khronos.org/opengl/wiki_opengl/index.php?title=Shader_Compilation#Binary_upload)
@@ -18,7 +19,7 @@ currently i'm not really working towards a goal so i decieded to create a roadma
 - [ ] Audio
     - [ ] Master, Music, Ambient options
     - [ ] Spatial audio
-    - [ ] A way to embed /preload music
+    - [ ] A way to embed / preload music
 
 - [ ] Framebuffer
     - [ ] wrap the gl implementation
@@ -30,11 +31,6 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [x] Add cglm as submodule
     - [x] Switch glfw to rgfw
 
-- [ ] Render thread
-    - [ ] render_update function
-    - [ ] Lock mutex when regular updating. so rendering starts after scene update
-    - [ ] Takes `const CmScene*`
-
 - [ ] Misc
     - [ ] custom events/signals
     - [ ] implement font color
@@ -42,6 +38,7 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [ ] GUI
     - [ ] Joystick support
     - [x] Overwork event system
-    - [ ] README
-        - [x] Credit all the libraries
-        - [ ] Simple documentation
+
+- [ ] README
+    - [x] Credit all the libraries
+    - [ ] Simple documentation
