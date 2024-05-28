@@ -236,9 +236,12 @@ static CmSceneInterface *balls(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = WINDOW_SIZE_X,
-                 .height = WINDOW_SIZE_Y,
-                 .title = "balls"},
+      .window =
+          {
+              .width = WINDOW_SIZE_X,
+              .height = WINDOW_SIZE_Y,
+              .title = "balls",
+          },
       .main = balls,
   };
   return &config;
