@@ -30,20 +30,18 @@ currently i'm not really working towards a goal so i decieded to create a roadma
     - [x] Add cglm as submodule
     - [x] Switch glfw to rgfw
 
-- [ ] custom events
+- [ ] Render thread
+    - [ ] render_update function
+    - [ ] Lock mutex when regular updating. so rendering starts after scene update
+    - [ ] Takes `const CmScene*`
 
-- [ ] implement font color
-
-- [ ] Make sandbox to a menu
-
-- [ ] GUI
-
-- [ ] Joystick support
-
-- [ ] Model loading
-
-- [x] Overwork event system
-
-- [ ] README
-    - [x] Credit all the libraries
-    - [ ] Simple documentation
+- [ ] Misc
+    - [ ] custom events/signals
+    - [ ] implement font color
+    - [ ] Make sandbox to a menu
+    - [ ] GUI
+    - [ ] Joystick support
+    - [x] Overwork event system
+    - [ ] README
+        - [x] Credit all the libraries
+        - [ ] Simple documentation
