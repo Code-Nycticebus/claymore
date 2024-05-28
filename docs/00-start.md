@@ -4,7 +4,7 @@
 
 Include `claymore/entrypoint.h` in only one  `.c` file. In this file, implement `ClaymoreConfig* claymore_init(void);`. 
 This function should return a pointer to a `ClaymoreConfig` structure, 
-where you define the window information and specify the main [scene](https://github.com/Code-Nycticebus/claymore/blob/main/claymore/docs/01-scenes.md).
+where you define the window information and specify the main [scene](https://github.com/Code-Nycticebus/claymore/blob/main/docs/01-scenes.md).
 
 ```c
 #include <claymore/entrypoint.h>

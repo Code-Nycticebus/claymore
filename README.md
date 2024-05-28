@@ -22,7 +22,7 @@ git clone --recursive https://github.com/Code-Nycticebus/claymore
 Build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
 
 ```terminal
-pybuildc build
+pybuildc -d claymore build
 ```
 
 ## Start a project
@@ -41,6 +41,6 @@ type="pybuildc"
 ```
 
 ## Usage
-Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/claymore/docs/) for more info. 
+Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/docs/00-start.md) for more info. 
 For an example project, take a look at [shadertoy](https://github.com/Code-Nycticebus/shadertoy).
 
