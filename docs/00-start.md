@@ -1,10 +1,28 @@
 # Claymore
 
+## Pybuildc
+
+Claymore uses my own build system [pybuildc](https://github.com/Code-Nycticebus/pybuildc)
+
+```
+pybuildc new test-project
+```
+
+and add claymore as a dependency to the `pybuildc.toml`:
+
+```toml
+[libs.claymore]
+dir="<CLAYMORE DIRECTORY>" 
+type="pybuildc"
+```
+
+## Prebuild binaries
+
+> :warning: Not implemented yet!
+
 ## Entry Point
 
 Include `claymore/entrypoint.h` in only one  `.c` file. In this file, implement `ClaymoreConfig* claymore_init(void);`. 
-This function should return a pointer to a `ClaymoreConfig` structure, 
-where you define the window information and specify the main [scene](https://github.com/Code-Nycticebus/claymore/blob/main/docs/01-scenes.md).
 
 ```c
 #include <claymore/entrypoint.h>

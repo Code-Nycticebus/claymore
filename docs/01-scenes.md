@@ -10,26 +10,26 @@ The `CmSceneInterface *scene_interface(void);` function returns a pointer to a `
 
 ```c
 static void init(CmScene* scene) {
-    // Initialization code...
+    // Runs once when the scene is initialized
 }
 
 static void fixed_update(CmScene* scene, double deltatime) {
-    // Update logic
+    // Runs an update in a fixed interval
 }
 
 static void frame_update(CmScene* scene, double deltatime) {
-    // Update logic
+    // Runs every frame
 }
 
 static void final(CmScene* scene) {
-    // Cleanup code
+    // Runs when scene is removed
 }
 
 static void event(CmScene* scene, CmEvent* event) {
-    // Event handling code...
+    // Runs on event
 }
 
-static CmSceneInterface *scene_interface(void) {
+CmSceneInterface *scene_interface(void) {
   static CmSceneInterface interface = {
       .init = init,
       .fixed_update = fixed_update,
@@ -45,6 +45,7 @@ static CmSceneInterface *scene_interface(void) {
 ### Common Scene Structure
 
 You can define a scene that uses custom data in a `SceneData` struct. 
+Allocate data with `cm_scene_set_data()`.
 
 ```c
 typedef struct {
@@ -58,7 +59,7 @@ static void init(CmScene* scene) {
     cm_camera2D_screen(&data->camera);
 }
 
-static void update(CmScene* scene, double deltatime) {
+static void frame_update(CmScene* scene, double deltatime) {
     SceneData* data = scene->data;
     cm_2D_begin(&data->camera);
     cm_circle((vec2){0, 0}, data->radius, (vec4){1, 0, 0, 1});
@@ -81,8 +82,8 @@ static void init(CmScene* scene) {
 
 ### Scene Initialization
 
-Since its not possible to pass parameters to the init function i came up with this solution.
-you define a function that pushes the scene onto the parrent.
+If a scene is dependent on certain parameters you can do something like this.
+You define a function that pushes the scene onto the parrent and then initializes data with the parameters.
 
 ```c
 CmScene* scene_init(CmScene* parent, float radius) {

@@ -25,20 +25,7 @@ Build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
 pybuildc -d claymore build
 ```
 
-## Start a project
-Claymore uses my own build system [pybuildc](https://github.com/Code-Nycticebus/pybuildc)
 
-```
-pybuildc new test-project
-```
-
-and add claymore as a dependency to the `pybuildc.toml`:
-
-```toml
-[libs.claymore]
-dir="<CLAYMORE DIRECTORY>" 
-type="pybuildc"
-```
 
 ## Usage
 Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/docs/00-start.md) for more info. 
