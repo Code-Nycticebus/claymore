@@ -5,8 +5,11 @@ const CmCamera2D *current_camera;
 
 void cm_2D_begin(CmCamera2D *camera) {
   if (current_camera != NULL && current_camera != camera) {
-    cebus_log_warning(
-        "'cm_2D_begin()' was called twice before 'cm_2D_end()' was called!");
+    cebus_log_error(
+        FILE_LOCATION_FMT
+        ": 'cm_2D_begin()' was called twice before 'cm_2D_end()' was called",
+        FILE_LOCATION_ARG_CURRENT);
+    DEBUGBREAK();
   }
   current_camera = camera;
   cm_camera_update(camera);
@@ -17,6 +20,11 @@ void cm_2D_begin(CmCamera2D *camera) {
 }
 
 void cm_2D_end(void) {
+  if (current_camera == NULL) {
+    cebus_log_error(FILE_LOCATION_FMT ": 'cm_2D_begin()' was never called",
+                    FILE_LOCATION_ARG_CURRENT);
+    DEBUGBREAK();
+  }
   current_camera = NULL;
   cm_quad_internal_end();
   cm_circle_internal_end();
