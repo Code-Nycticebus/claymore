@@ -89,6 +89,8 @@ bool cm_app_internal_update(void) {
   double dt = current_time - app.last_frame;
   app.last_frame = current_time;
 
+  cm_scene_internal_pre_update(app.main_scene);
+
   const float fixed_interval = 1.f / 60.f;
   static float fixed_timer = 0;
   fixed_timer += dt;
@@ -99,6 +101,8 @@ bool cm_app_internal_update(void) {
 
   glClear(GL_COLOR_BUFFER_BIT);
   cm_scene_internal_frame_update(app.main_scene, dt);
+
+  cm_scene_internal_post_update(app.main_scene);
 
   RGFW_window_swapBuffers(app.data.window);
   return true;

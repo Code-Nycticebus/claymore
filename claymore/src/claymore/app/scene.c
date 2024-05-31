@@ -50,6 +50,15 @@ CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   return scene;
 }
 
+void cm_scene_internal_fixed_update(CmSceneInternal *scene, double deltatime) {
+  if (scene->interface->fixed_update) {
+    scene->interface->fixed_update(&scene->data, deltatime);
+  }
+  for (usize i = 0; i < scene->children.len; i++) {
+    cm_scene_internal_fixed_update(scene->children.items[i], deltatime);
+  }
+}
+
 void cm_scene_internal_frame_update(CmSceneInternal *scene, double deltatime) {
   if (scene->interface->frame_update) {
     scene->interface->frame_update(&scene->data, deltatime);
@@ -59,12 +68,21 @@ void cm_scene_internal_frame_update(CmSceneInternal *scene, double deltatime) {
   }
 }
 
-void cm_scene_internal_fixed_update(CmSceneInternal *scene, double deltatime) {
-  if (scene->interface->fixed_update) {
-    scene->interface->fixed_update(&scene->data, deltatime);
+void cm_scene_internal_pre_update(CmSceneInternal *scene) {
+  if (scene->interface->pre_update) {
+    scene->interface->pre_update(&scene->data);
   }
   for (usize i = 0; i < scene->children.len; i++) {
-    cm_scene_internal_fixed_update(scene->children.items[i], deltatime);
+    cm_scene_internal_pre_update(scene->children.items[i]);
+  }
+}
+
+void cm_scene_internal_post_update(CmSceneInternal *scene) {
+  for (usize i = 0; i < scene->children.len; i++) {
+    cm_scene_internal_post_update(scene->children.items[i]);
+  }
+  if (scene->interface->post_update) {
+    scene->interface->post_update(&scene->data);
   }
 }
 
