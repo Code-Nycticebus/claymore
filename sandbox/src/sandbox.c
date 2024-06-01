@@ -10,6 +10,9 @@ typedef struct {
   CmScene *overlay;
 } Sandbox;
 
+const Str font = STR("assets/fonts/Ubuntu.ttf");
+const float font_size = 32.f;
+
 static void event(CmScene *scene, CmEvent *event) {
   Sandbox *sandbox = scene->data;
   (void)sandbox, (void)event;
@@ -19,7 +22,8 @@ static void event(CmScene *scene, CmEvent *event) {
     }
     if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
       if (sandbox->overlay == NULL) {
-        sandbox->overlay = cm_scene_push(scene, fps);
+        const vec2 pos = {10, 0};
+        sandbox->overlay = fps(scene, pos, font, font_size);
       } else {
         cm_scene_delete(scene, sandbox->overlay);
         sandbox->overlay = NULL;
@@ -37,9 +41,7 @@ static void init(CmScene *scene) {
 
   cm_camera2D_screen(&sandbox->camera);
 
-  const float font_size = 32.f;
-  sandbox->font = cm_font_init(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"),
-                               font_size, ErrPanic);
+  sandbox->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
 
   sandbox->texture[0] = cm_texture_from_file(
       &scene->gpu, STR("assets/textures/claymore-sword.png"), ErrPanic);
@@ -49,55 +51,46 @@ static void init(CmScene *scene) {
   RGFW_registerJoystick(cm_app_window(), 0);
 }
 
-static void pre_update(CmScene *scene) {
-  Sandbox *sandbox = scene->data;
-  cm_2D_begin(&sandbox->camera);
-}
-
 static void frame_update(CmScene *scene, double dt) {
   (void)dt;
   Sandbox *sandbox = scene->data;
 
-  const vec2 size = {100.f, 100.f};
-  const f32 margin = 10.f;
-  for (usize i = 0; i < 4; ++i) {
-    float y = (size[1] + margin) * i;
-    for (usize j = 0; j < 4; ++j) {
-      float x = (size[0] + margin) * j;
-      cm_sprite(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
-                (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+  cm_2D_begin(&sandbox->camera);
+  {
+    const vec2 size = {100.f, 100.f};
+    const f32 margin = 10.f;
+    for (usize i = 0; i < 4; ++i) {
+      float y = (size[1] + margin) * i;
+      for (usize j = 0; j < 4; ++j) {
+        float x = (size[0] + margin) * j;
+        cm_sprite(&sandbox->texture[(i + j) % ARRAY_LEN(sandbox->texture)],
+                  (vec2){x, y}, size, 0, (vec2){0}, (vec2){1, 1});
+      }
     }
+
+    Str msg = STR("This is Claymore!");
+    const float font_size = 32;
+    const float char_width = 13;
+    cm_quad(sandbox->mouse_pos,
+            (vec2){msg.len * char_width, font_size + margin}, 0,
+            (vec4){1, 0, 0, 1});
+
+    RGFW_window *window = cm_app_window();
+    vec2 pos = {window->r.w, window->r.h};
+    glm_vec2_divs(pos, 2, pos);
+    const vec2 r = {210, 210};
+
+    cm_circle(pos, r, (vec4){0, 0, 1, 1});
+
+    cm_font(sandbox->font, sandbox->mouse_pos, msg);
   }
-
-  Str msg = STR("This is Claymore!");
-  const float font_size = 32;
-  const float char_width = 13;
-  cm_quad(sandbox->mouse_pos, (vec2){msg.len * char_width, font_size + margin},
-          0, (vec4){1, 0, 0, 1});
-
-  RGFW_window *window = cm_app_window();
-  vec2 pos = {window->r.w, window->r.h};
-  glm_vec2_divs(pos, 2, pos);
-  const vec2 r = {210, 210};
-
-  cm_circle(pos, r, (vec4){0, 0, 1, 1});
-
-  cm_font(sandbox->font, sandbox->mouse_pos, msg);
-}
-
-static void post_update(CmScene *scene) {
-  (void)scene;
   cm_2D_end();
 }
 
 static CmSceneInterface *sandbox(void) {
   static CmSceneInterface interface = {
       .init = init,
-
-      .pre_update = pre_update,
       .frame_update = frame_update,
-      .post_update = post_update,
-
       .event = event,
   };
   return &interface;

@@ -51,10 +51,10 @@ static void init(CmScene *scene) {
   const vec3 bg_color = {0.15f, 0.15f, 0.15f};
   cm_app_background(bg_color);
 
-  const float zoom = 100.f;
-  benchmark->camera.zoom = zoom;
-  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
-            benchmark->camera.base.projection);
+  const vec2 position = {10, 0};
+  const Str font = STR("assets/fonts/Ubuntu.ttf");
+  const float height = 32.f;
+  fps(scene, position, font, height);
 
   glm_vec3_zero(benchmark->camera.position);
   glm_mat4_identity(benchmark->camera.base.view);

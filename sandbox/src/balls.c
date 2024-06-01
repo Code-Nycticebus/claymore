@@ -63,7 +63,9 @@ static void init(CmScene *scene) {
 
   balls->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
 
-  cm_scene_push(scene, fps);
+  const vec2 pos = {10, 0};
+  fps(scene, pos, font, font_size);
+
   cm_camera2D_screen(&balls->camera);
 
   RGFW_window *window = cm_app_window();
@@ -211,7 +213,7 @@ static void frame_update(CmScene *scene, double dt) {
     usize size =
         snprintf(buffer, N, "%" USIZE_FMT " Balls", da_len(&balls->balls));
     Str s = str_from_parts(size, buffer);
-    cm_font(balls->font, (vec2){10, 50}, s);
+    cm_font(balls->font, (vec2){10, font_size}, s);
   }
   cm_2D_end();
 }

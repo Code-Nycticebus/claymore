@@ -5,34 +5,56 @@
 typedef struct {
   CmFont *font;
   CmCamera2D camera;
+  vec2 position;
+  double time;
+  double deltas;
+  u32 count;
+  char buffer[SIZE];
+  Str label;
 } Fps;
-
-static const Str font = STR("assets/fonts/Ubuntu.ttf");
-const float font_heigth = 24.f;
-const vec2 offset = {10, 0};
 
 static void init(CmScene *scene) {
   Fps *fps = cm_scene_set_data(scene, sizeof(Fps));
-  fps->font = cm_font_init(&scene->gpu, font, font_heigth, ErrPanic);
-
   cm_camera2D_screen(&fps->camera);
 }
 
 static void frame_update(CmScene *scene, double dt) {
   Fps *fps = scene->data;
 
-  char buffer[SIZE] = {0};
-  const float ms = dt * 1000;
-  usize len = snprintf(buffer, SIZE, "FRAME: % 3.2f ms\nFPS: %.0f", ms, 1 / dt);
+  fps->time += dt;
+  fps->count++;
+  const double interval = .1f;
+  if (interval <= fps->time) {
+    const float a = fps->time / fps->count;
+    const float ms = a * 1000;
+    usize len = snprintf(fps->buffer, SIZE, "FPS: %.0f, % 3.2f ms", 1 / a, ms);
+    fps->label = str_from_parts(len, fps->buffer);
+
+    fps->time = 0;
+    fps->count = 0;
+  }
+
   cm_2D_begin(&fps->camera);
-  cm_font(fps->font, offset, str_from_parts(len, buffer));
+  cm_font(fps->font, fps->position, fps->label);
   cm_2D_end();
 }
 
-CmSceneInterface *fps(void) {
-  static CmSceneInterface sandbox = {
+static CmSceneInterface *interface(void) {
+  static CmSceneInterface interface = {
       .init = init,
       .frame_update = frame_update,
   };
-  return &sandbox;
+  return &interface;
+}
+
+CmScene *fps(CmScene *parent, const vec2 position, Str font, float heigth) {
+  CmScene *scene = cm_scene_push(parent, interface);
+  Fps *fps = scene->data;
+
+  fps->position[0] = position[0];
+  fps->position[1] = position[1];
+
+  fps->font = cm_font_init(&scene->gpu, font, heigth, ErrPanic);
+
+  return scene;
 }
