@@ -2,7 +2,15 @@
 name="claymore"
 version="0.1.0"
 
-cflags = ["-std=c99"]
+cflags = [
+  "-std=c99", 
+  # "-fsanitize=address",
+  "-Wextra",
+  "-Wall",
+  "-Wpedantic",
+  "-Werror",
+  "-Wstrict-prototypes",
+]
 
 [libs]
 RGFW = { dir = "libs/RGFW", type = "pybuildc" }

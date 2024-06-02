@@ -3,6 +3,11 @@ name="sandbox"
 
 cflags=[
   # "-fsanitize=address",
+  "-Wextra",
+  "-Wall",
+  "-Wpedantic",
+  "-Werror",
+  "-Wstrict-prototypes",
 ]
 
 [exe]

@@ -60,8 +60,6 @@ static void init(CmScene *scene) {
   glm_mat4_identity(benchmark->camera.base.view);
   glm_translate(benchmark->camera.base.view, (vec3){0});
   cm_camera2D_screen(&benchmark->camera);
-
-  cm_scene_push(scene, fps);
 }
 
 static void frame_update(CmScene *scene, double deltatime) {
