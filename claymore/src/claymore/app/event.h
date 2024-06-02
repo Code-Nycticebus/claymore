@@ -26,6 +26,7 @@ typedef struct {
 
 typedef struct {
   vec2 pos;
+  vec2 dir;
 } CmEventCursor;
 
 typedef struct {

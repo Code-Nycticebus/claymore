@@ -23,10 +23,17 @@ void cm_event_internal_poll_events(RGFW_window *window) {
               },
       });
     } else if (event->type == RGFW_mousePosChanged) {
+      vec2 pos = {event->point.x, event->point.y};
+      static vec2 last_pos = {0};
       cm_event_emit((CmEvent){
           .type = CM_EVENT_CURSOR,
-          .event.cursor = {.pos = {event->point.x, event->point.y}},
+          .event.cursor =
+              {
+                  .dir = {last_pos[0] - pos[0], last_pos[1] - pos[1]},
+                  .pos = {pos[0], pos[1]},
+              },
       });
+      glm_vec2_copy(pos, last_pos);
     } else if (event->type == RGFW_windowAttribsChange) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_RESIZE,
