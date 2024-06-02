@@ -21,13 +21,18 @@ typedef struct {
 } CmCamera2D;
 
 void cm_camera2D_screen(CmCamera2D *camera);
-void cm_camera2D_ortho(CmCamera2D *camera);
+// void cm_camera2D_ortho(CmCamera2D *camera);
 
 typedef struct {
-  bool dirty;
-  mat4 view;
-  mat4 projection;
-  mat4 vp;
+  CmCameraBase base;
+  vec3 position;
+  vec3 lookat;
+  vec3 up;
+  float fov;
+  float aspect;
 } CmCamera3D;
+
+void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
+                             vec3 lookat, float aspect);
 
 #endif /* __CLAYMORE_CAMERA_H__ */
