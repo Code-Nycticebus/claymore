@@ -110,7 +110,7 @@ bool cm_platform_context_init(RGFW_window *window) {
   }
 
   /* Default OpenGl Options */
-  // glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);
   glEnable(GL_BLEND); // Enables Transparency of png files
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

@@ -99,7 +99,7 @@ bool cm_app_internal_update(void) {
     fixed_timer -= fixed_interval;
   }
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   cm_scene_internal_frame_update(app.main_scene, dt);
 
   cm_scene_internal_post_update(app.main_scene);
