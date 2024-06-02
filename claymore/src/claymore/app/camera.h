@@ -34,5 +34,6 @@ typedef struct {
 
 void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
                              vec3 lookat, float aspect);
+void cm_camera3D_position(CmCamera3D *camera, vec3 position);
 
 #endif /* __CLAYMORE_CAMERA_H__ */

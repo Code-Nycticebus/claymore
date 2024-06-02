@@ -37,3 +37,9 @@ void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
   camera->base.dirty = true;
   cm_camera_update(camera);
 }
+
+void cm_camera3D_position(CmCamera3D *camera, vec3 position) {
+  glm_lookat(position, camera->lookat, camera->up, camera->base.view);
+  glm_vec3_copy(position, camera->position);
+  camera->base.dirty = true;
+}
