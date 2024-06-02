@@ -27,6 +27,12 @@ CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v);
 CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v);
 CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v);
 
+CmVbo cm_mesh_attach_vec4(CmMesh *mesh, usize count, vec4 *v);
+CmVbo cm_mesh_attach_vec4_instanced(CmMesh *mesh, usize count, vec4 *v);
+
+// CmVbo cm_mesh_attach_mat4(CmMesh *mesh, size_t count, mat4 *m);
+CmVbo cm_mesh_attach_mat4_instanced(CmMesh *mesh, size_t count, mat4 *m);
+
 void cm_mesh_draw_indexed(CmMesh *mesh, CmGpuDrawMode mode);
 void cm_mesh_draw(CmMesh *mesh, CmGpuDrawMode mode);
 
