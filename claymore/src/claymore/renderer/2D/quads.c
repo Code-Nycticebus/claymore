@@ -63,8 +63,8 @@ void cm_quad(const vec2 pos, const vec2 s, float r, const vec4 color) {
   cebus_assert_debug(renderer->vertices_count < CM_QUADS_VERTICES_MAX, "");
   cebus_assert_debug(renderer->indices_count < CM_QUADS_INDICES_MAX, "");
 
-  float cos_theta;
-  float sin_theta;
+  float cos_theta = 1;
+  float sin_theta = 0;
   if (r != 0) {
     cos_theta = cosf(r);
     sin_theta = sinf(r);
@@ -78,7 +78,7 @@ void cm_quad(const vec2 pos, const vec2 s, float r, const vec4 color) {
   };
   Vertex *vertices = &renderer->data[renderer->vertices_count];
   for (int i = 0; i < CM_QUADS_VERTICES; ++i) {
-    if (r != 0.f) {
+    if (r != 0) {
       const float x = quad[i][0];
       const float y = quad[i][1];
       quad[i][0] = x * cos_theta - y * sin_theta;

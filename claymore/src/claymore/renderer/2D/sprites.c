@@ -95,8 +95,8 @@ void cm_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
   cebus_assert_debug(renderer->vertices_count < CM_SPRITES_VERTICES_MAX, "");
   cebus_assert_debug(renderer->indices_count < CM_SPRITES_INDICES_MAX, "");
 
-  float cos_theta;
-  float sin_theta;
+  float cos_theta = 1;
+  float sin_theta = 0;
   if (rotation != 0) {
     cos_theta = cosf(rotation);
     sin_theta = sinf(rotation);
