@@ -5,7 +5,7 @@
 
 const float gravity = 981;
 
-const float max_balls = 2500;
+const int max_balls = 2500;
 
 #define WINDOW_SIZE_Y 1000
 #define WINDOW_SIZE_X 1500
@@ -184,9 +184,9 @@ static void frame_update(CmScene *scene, double dt) {
       }
 
       for (int i = -4; i <= 4; ++i) {
-        vec2 pos = {100 + (BALL_SIZE * 2) * i, 100 - (BALL_SIZE * 2) * i};
-        vec4 red = {.8, 0, 0.7, 1};
-        vec4 green = {0, 0.8, 0.7, 1};
+        vec2 pos = {100.f + (BALL_SIZE * 2) * i, 100.f - (BALL_SIZE * 2) * i};
+        vec4 red = {.8f, 0, 0.7f, 1};
+        vec4 green = {0, 0.8f, 0.7f, 1};
         vec4 color;
         const float t = (da_len(&balls->balls) % 200) / 200.f;
         glm_vec4_lerp(red, green, t, color);
