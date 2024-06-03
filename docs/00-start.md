@@ -30,7 +30,7 @@ Include `claymore/entrypoint.h` in only one  `.c` file. In this file, implement 
 static ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "Claymore"},
-      .main = scene_interface,
+      .root = scene_interface,
   };
   return &config;
 }

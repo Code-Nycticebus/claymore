@@ -42,7 +42,7 @@ static CmSceneInterface *hello(void) {
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "Hello World"},
-      .main = hello,
+      .root = hello,
   };
   return &config;
 }

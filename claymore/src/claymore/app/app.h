@@ -13,7 +13,7 @@ typedef const struct {
     usize width;
     usize height;
   } window;
-  CmSceneInit main;
+  CmSceneInit root;
 } ClaymoreConfig;
 
 typedef struct {

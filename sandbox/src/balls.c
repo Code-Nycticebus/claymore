@@ -244,7 +244,7 @@ ClaymoreConfig *claymore_init(void) {
               .height = WINDOW_SIZE_Y,
               .title = "balls",
           },
-      .main = balls,
+      .root = balls,
   };
   return &config;
 }

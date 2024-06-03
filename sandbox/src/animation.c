@@ -63,7 +63,7 @@ static CmSceneInterface *animation(void) {
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "Animation"},
-      .main = animation,
+      .root = animation,
   };
   return &config;
 }

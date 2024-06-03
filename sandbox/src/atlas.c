@@ -104,7 +104,7 @@ static CmSceneInterface *texture(void) {
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 1280, .height = 720, .title = "texture"},
-      .main = texture,
+      .root = texture,
   };
   return &config;
 }

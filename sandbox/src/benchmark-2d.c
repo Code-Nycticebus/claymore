@@ -133,7 +133,7 @@ static CmSceneInterface *benchmark(void) {
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = width, .height = height, .title = "benchmark"},
-      .main = benchmark,
+      .root = benchmark,
   };
   return &config;
 }

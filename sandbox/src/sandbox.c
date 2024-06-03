@@ -349,7 +349,7 @@ static CmSceneInterface *sandbox(void) {
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "sandbox"},
-      .main = sandbox,
+      .root = sandbox,
   };
   return &config;
 }
