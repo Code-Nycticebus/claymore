@@ -183,9 +183,9 @@ static void init(CmScene *scene) {
 
       // Left
       {0, 0},
-      {0, 1},
-      {1, 1},
       {1, 0},
+      {1, 1},
+      {0, 1},
 
       // Back
       {0, 0},
@@ -270,11 +270,12 @@ static void init(CmScene *scene) {
           "uniform vec3 u_light_pos;\n"
           "uniform vec4 u_light_color = vec4(1, 1, 1, 1);\n"
           "uniform vec3 u_view_pos;\n"
-          "uniform sampler2D sampler[3];\n"
+          "uniform sampler2D sampler[2];\n"
 
           "void main() {\n"
-          "  vec3 norm = normalize(texture(sampler[2], v_uv).xyz + v_normal);\n"
-          "  // f_color = vec4(norm, 1); return;\n"
+          "  vec3 norm = normalize(v_normal);\n"
+          // "  f_color = vec4(norm*0.5+0.5, 1); return;\n"
+
           "  vec3 light_dir = normalize(u_light_pos - v_frag_pos);\n"
           "  vec3 light_color = u_light_color.rgb;\n"
 
@@ -305,12 +306,10 @@ static void init(CmScene *scene) {
       &scene->gpu, STR("assets/textures/container/texture.png"), ErrPanic);
   sandbox->texture[1] = cm_texture_from_file(
       &scene->gpu, STR("assets/textures/container/specular.png"), ErrPanic);
-  sandbox->texture[2] = cm_texture_from_file(
-      &scene->gpu, STR("assets/textures/container/normal.png"), ErrPanic);
 
   RGFW_window_showMouse(window, false);
 
-  glm_vec3_copy((vec3){2, 2, -2}, sandbox->light_pos);
+  glm_vec3_copy((vec3){2, -2, -2}, sandbox->light_pos);
 }
 
 static void frame_update(CmScene *scene, double dt) {
@@ -321,18 +320,19 @@ static void frame_update(CmScene *scene, double dt) {
 
   cm_texture_bind(&sandbox->texture[0], 0);
   cm_texture_bind(&sandbox->texture[1], 1);
-  cm_texture_bind(&sandbox->texture[2], 2);
 
   cm_shader_bind(&sandbox->shader);
   cm_shader_set_mat4(&sandbox->shader, STR("u_vp"),
                      cm_camera_vp(&sandbox->camera));
+  // sandbox->light_pos[0] = sinf(cm_app_time()) * 3;
+  // sandbox->light_pos[1] = cosf(cm_app_time()) * 3;
+  // sandbox->light_pos[2] = tanf(cm_app_time()) * 3;
   cm_shader_set_vec3(&sandbox->shader, STR("u_light_pos"),
                      sandbox->camera.position);
   cm_shader_set_vec3(&sandbox->shader, STR("u_view_pos"),
                      sandbox->camera.position);
   cm_shader_set_i32(&sandbox->shader, STR("sampler[0]"), 0);
   cm_shader_set_i32(&sandbox->shader, STR("sampler[1]"), 1);
-  cm_shader_set_i32(&sandbox->shader, STR("sampler[2]"), 2);
 
   cm_mesh_draw_indexed(&sandbox->mesh, CM_DRAW_TRIANGLES);
 }
