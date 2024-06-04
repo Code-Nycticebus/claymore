@@ -78,6 +78,7 @@ void cm_event_internal_poll_events(RGFW_window *window) {
           .type = CM_EVENT_JOYSTICK,
           .event.joystick =
               {
+                  .joystick = event->joystick,
                   .axis =
                       {
                           {event->axis[0].x, event->axis[0].y},
