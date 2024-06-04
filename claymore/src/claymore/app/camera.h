@@ -21,7 +21,7 @@ typedef struct {
 } CmCamera2D;
 
 void cm_camera2D_screen(CmCamera2D *camera);
-// void cm_camera2D_ortho(CmCamera2D *camera);
+void cm_camera2D_ortho(CmCamera2D *camera, vec3 pos, float aspect, float zoom);
 
 typedef struct {
   CmCameraBase base;

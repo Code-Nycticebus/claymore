@@ -21,6 +21,19 @@ void cm_camera2D_screen(CmCamera2D *camera) {
   cm_camera_update(camera);
 }
 
+void cm_camera2D_ortho(CmCamera2D *camera, vec3 pos, float aspect, float zoom) {
+  glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
+            camera->base.projection);
+
+  glm_mat4_identity(camera->base.view);
+  glm_translate(camera->base.view, pos);
+
+  glm_vec3_copy(pos, camera->position);
+
+  camera->base.dirty = true;
+  cm_camera_update(camera);
+}
+
 void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
                              vec3 lookat, float aspect) {
   glm_vec3_copy(position, camera->position);
