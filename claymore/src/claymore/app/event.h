@@ -9,7 +9,9 @@ typedef enum {
   CM_EVENT_CURSOR,
   CM_EVENT_SCROLL,
   CM_EVENT_RESIZE,
-  CM_EVENT_DROP,
+  // CM_EVENT_DROP,
+  CM_EVENT_CONTROLLER,
+  CM_EVENT_JOYSTICK,
   CM_EVENT_QUIT,
 } CmEventType;
 
@@ -37,12 +39,24 @@ typedef struct {
   vec2 size;
 } CmEventResize;
 
-typedef struct {
-  size_t count;
-  const char **files;
-} CmEventDrop;
+// typedef struct {
+//   size_t count;
+//   const char **files;
+// } CmEventDrop;
 
 // typedef struct {} CmEventQuit;
+
+typedef struct {
+  vec2 axis[2];
+  u8 action;
+  u8 button;
+  u8 joystick;
+} CmEventController;
+
+typedef struct {
+  vec2 axis[2];
+  u8 joystick;
+} CmEventJoystick;
 
 typedef union {
   CmEventKey key;
@@ -50,7 +64,9 @@ typedef union {
   CmEventMouse mouse;
   CmEventScroll scroll;
   CmEventResize resize;
-  CmEventDrop drop;
+  // CmEventDrop drop;
+  CmEventController controller;
+  CmEventJoystick joystick;
 } CmEventData;
 
 typedef struct {
@@ -84,6 +100,12 @@ typedef struct {
 
 #define cm_event_drop(e, ...)                                                  \
   _cm_event(e, drop, CmEventDrop, CM_EVENT_DROP, __VA_ARGS__)
+
+#define cm_event_controller(e, ...)                                            \
+  _cm_event(e, controller, CmEventController, CM_EVENT_CONTROLLER, __VA_ARGS__)
+
+#define cm_event_joystick(e, ...)                                              \
+  _cm_event(e, joystick, CmEventJoystick, CM_EVENT_JOYSTICK, __VA_ARGS__)
 
 void cm_event_emit(CmEvent event);
 

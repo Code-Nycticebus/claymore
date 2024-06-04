@@ -58,6 +58,33 @@ void cm_event_internal_poll_events(RGFW_window *window) {
                 },
         });
       }
+    } else if (event->type == RGFW_jsButtonPressed ||
+               event->type == RGFW_jsButtonReleased) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_CONTROLLER,
+          .event.controller =
+              {
+                  .action = event->type,
+                  .button = event->button,
+                  .axis =
+                      {
+                          {event->axis[0].x, event->axis[0].y},
+                          {event->axis[1].x, event->axis[1].y},
+                      },
+              },
+      });
+    } else if (event->type == RGFW_jsAxisMove) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_JOYSTICK,
+          .event.joystick =
+              {
+                  .axis =
+                      {
+                          {event->axis[0].x, event->axis[0].y},
+                          {event->axis[1].x, event->axis[1].y},
+                      },
+              },
+      });
     } else {
       cebus_log_error("EVENT %d", event->type);
       NOT_IMPLEMENTED();
