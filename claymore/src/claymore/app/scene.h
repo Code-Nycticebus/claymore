@@ -28,6 +28,7 @@ typedef const CmSceneInterface *(*CmSceneInit)(void);
 
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init);
 void cm_scene_delete(CmScene *parent, CmScene *scene);
+void cm_scene_delete_self(CmScene *scene);
 
 CmScene *cm_scene_parent(CmScene *scene);
 void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));

@@ -24,6 +24,11 @@ void cm_scene_delete(CmScene *parent, CmScene *scene) {
   UNREACHABLE();
 }
 
+void cm_scene_delete_self(CmScene *scene) {
+  CmScene *parent = cm_scene_parent(scene);
+  cm_scene_delete(parent, scene);
+}
+
 CmScene *cm_scene_parent(CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
   return &internal->parent->data;
