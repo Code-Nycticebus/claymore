@@ -42,6 +42,11 @@ void *cm_scene_set_data(CmScene *scene, usize size) {
   return scene->data;
 }
 
+CmSceneChildren *cm_scene_children(CmScene *scene) {
+  CmSceneInternal *internal = (CmSceneInternal *)scene;
+  return (CmSceneChildren *)&internal->children;
+}
+
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   CmSceneInternal *scene = arena_calloc_chunk(arena, sizeof(CmSceneInternal));
   scene->interface = init();

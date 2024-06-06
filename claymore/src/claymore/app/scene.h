@@ -33,6 +33,9 @@ CmScene *cm_scene_parent(CmScene *scene);
 void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
 void *cm_scene_set_data(CmScene *scene, usize size);
 
+typedef DA(CmScene *) CmSceneChildren;
+CmSceneChildren *cm_scene_children(CmScene *scene);
+
 // INTERNAL
 
 typedef struct CmSceneInternal {
