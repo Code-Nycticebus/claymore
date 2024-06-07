@@ -91,7 +91,7 @@ bool cm_app_internal_update(void) {
 
   cm_scene_internal_pre_update(app.root);
 
-  const float fixed_interval = 1.f / 60.f;
+  const float fixed_interval = 1.f / 50.f;
   static float fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
