@@ -45,6 +45,9 @@ void cm_app_background(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 // INTERNAL
 
 bool cm_app_internal_init(ClaymoreConfig *config) {
+  app.first_frame = RGFW_getTimeNS();
+  app.last_frame = app.first_frame;
+
   app.data.window = RGFW_createWindow(
       config->window.title,
       RGFW_RECT(0, 0, config->window.width, config->window.height), 0);
@@ -91,8 +94,8 @@ bool cm_app_internal_update(void) {
 
   cm_scene_internal_pre_update(app.root);
 
-  const u64 fixed_interval = 2e+7; // 50hz
-  static u64 fixed_timer = 0;
+  const i64 fixed_interval = 2e+7; // 50hz
+  static i64 fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
     cm_scene_internal_fixed_update(app.root, fixed_interval / ns);
