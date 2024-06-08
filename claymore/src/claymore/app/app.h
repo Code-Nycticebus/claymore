@@ -28,7 +28,7 @@ Arena *cm_app_arena(void);
 void *cm_app_alloc(usize size);
 
 void cm_app_set_main(CmSceneInit init);
-double cm_app_time(void);
+u64 cm_app_time(void);
 void cm_app_quit(void);
 void cm_app_background(const vec3 color);
 

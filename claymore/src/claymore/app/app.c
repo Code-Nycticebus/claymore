@@ -7,7 +7,8 @@
 static struct {
   CmApp data;
   bool running;
-  double last_frame;
+  u64 first_frame;
+  u64 last_frame;
   CmSceneInternal *root;
 } app;
 
@@ -30,10 +31,7 @@ void cm_app_set_main(CmSceneInit init) {
   app.root->interface->init(&app.root->data);
 }
 
-double cm_app_time(void) {
-  const double ns = 1e9;
-  return RGFW_getTimeNS() / ns;
-}
+u64 cm_app_time(void) { return RGFW_getTimeNS() - app.first_frame; }
 
 void cm_app_quit(void) {
   cm_event_emit((CmEvent){
@@ -73,7 +71,8 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
   app.root->interface->init(&app.root->data);
-  app.last_frame = cm_app_time();
+  app.first_frame = RGFW_getTimeNS();
+  app.last_frame = RGFW_getTimeNS();
   app.running = true;
   return true;
 }
@@ -85,22 +84,23 @@ bool cm_app_internal_update(void) {
     return false;
   }
 
-  double current_time = cm_app_time();
-  double dt = current_time - app.last_frame;
+  u64 current_time = RGFW_getTimeNS();
+  const double ns = 1e+9;
+  u64 dt = current_time - app.last_frame;
   app.last_frame = current_time;
 
   cm_scene_internal_pre_update(app.root);
 
-  const float fixed_interval = 1.f / 50.f;
-  static float fixed_timer = 0;
+  const u64 fixed_interval = 2e+7; // 50hz
+  static u64 fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
-    cm_scene_internal_fixed_update(app.root, fixed_interval);
+    cm_scene_internal_fixed_update(app.root, fixed_interval / ns);
     fixed_timer -= fixed_interval;
   }
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  cm_scene_internal_frame_update(app.root, dt);
+  cm_scene_internal_frame_update(app.root, dt / ns);
 
   cm_scene_internal_post_update(app.root);
 
