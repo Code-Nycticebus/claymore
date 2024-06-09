@@ -74,8 +74,6 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
   app.root->interface->init(&app.root->data);
-  app.first_frame = RGFW_getTimeNS();
-  app.last_frame = RGFW_getTimeNS();
   app.running = true;
   return true;
 }
@@ -87,8 +85,8 @@ bool cm_app_internal_update(void) {
     return false;
   }
 
-  u64 current_time = RGFW_getTimeNS();
   const double ns = 1e+9;
+  const u64 current_time = RGFW_getTimeNS();
   u64 dt = current_time - app.last_frame;
   app.last_frame = current_time;
 
