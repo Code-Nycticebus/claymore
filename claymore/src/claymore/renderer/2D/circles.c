@@ -34,7 +34,9 @@ static void _cm_circle_flush(void) {
   cm_gpu_vao_bind(&renderer->vao);
   cm_gpu_vbo_update(&renderer->vbo, sizeof(Vertex), renderer->vertex_count,
                     (float *)renderer->vertices);
+  glDisable(GL_DEPTH_TEST);
   cm_gpu_vbo_draw_instanced(&renderer->vbo, 4, CM_DRAW_TRIANGLE_STRIP);
+  glEnable(GL_DEPTH_TEST);
 
   renderer->vertex_count = 0;
 }

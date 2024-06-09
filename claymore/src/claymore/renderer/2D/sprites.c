@@ -59,7 +59,9 @@ static void cm_sprite_flush(void) {
 
   cm_gpu_vao_bind(&renderer->vao);
 
+  glDisable(GL_DEPTH_TEST);
   cm_gpu_ebo_draw(&renderer->ebo, renderer->indices_count, CM_DRAW_TRIANGLES);
+  glEnable(GL_DEPTH_TEST);
 
   renderer->indices_count = 0;
   renderer->vertices_count = 0;

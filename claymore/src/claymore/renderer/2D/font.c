@@ -14,7 +14,7 @@ typedef struct {
 #define FONT_CHAR_MIN 32
 #define FONT_CHAR_MAX 96
 
-#define FONT_RENDERER_CHAR_MAX 64
+#define FONT_RENDERER_CHAR_MAX 1000
 #define FONT_RENDERER_VERTECIES_PER_CHAR 6
 #define FONT_RENDERER_VERTECIES_MAX                                            \
   (FONT_RENDERER_CHAR_MAX * FONT_RENDERER_VERTECIES_PER_CHAR)
@@ -95,7 +95,9 @@ static void _cm_font_renderer_flush(void) {
 
   cm_gpu_vbo_update(&renderer->vbo, sizeof(Vertex), renderer->vertex_count,
                     (float *)renderer->buffer);
+  glDisable(GL_DEPTH_TEST);
   glDrawArrays(GL_TRIANGLES, 0, renderer->vertex_count);
+  glEnable(GL_DEPTH_TEST);
   renderer->vertex_count = 0;
 }
 
