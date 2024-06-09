@@ -85,7 +85,8 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 bool cm_app_internal_update(void) {
   while (da_len(&app.deleted)) {
     CmSceneInternal *scene = da_pop(&app.deleted);
-    cm_scene_internal_final(&scene->parent->data.arena, scene);
+    Arena *arena = scene->parent ? &app.data.arena : &scene->parent->data.arena;
+    cm_scene_internal_final(arena, scene);
   }
 
   cm_event_internal_poll_events(app.data.window);
