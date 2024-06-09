@@ -20,8 +20,8 @@ Arena *cm_app_arena(void) { return &app.data.arena; }
 void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
 
 void cm_app_set_main(CmSceneInit init) {
-  // Free previous main scene
-  cm_scene_internal_final(&app.data.arena, app.root);
+  // Schedule previous main scene for deletion
+  da_push(&app.deleted, app.root);
 
   // Initialize new one
   app.root = cm_scene_internal_init(&app.data.arena, init);
