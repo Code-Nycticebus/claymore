@@ -21,9 +21,6 @@ Arena *cm_app_arena(void) { return &app.data.arena; }
 void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
 
 void cm_app_set_main(CmSceneInit init) {
-  // Schedule previous main scene for deletion
-  da_push(&app.deleted, app.root);
-
   // Initialize new one
   app.new_root = cm_scene_internal_init(&app.data.arena, init);
 }
@@ -112,7 +109,11 @@ bool cm_app_internal_update(void) {
   cm_scene_internal_post_update(app.root);
 
   if (app.new_root) {
+    // Schedule previous main scene for deletion
+    da_push(&app.deleted, app.root);
+
     app.root = app.new_root;
+    app.new_root = NULL;
     if (!app.root->interface->init) {
       cebus_log_error("Main CmSceneInterface needs an init function");
       DEBUGBREAK();
