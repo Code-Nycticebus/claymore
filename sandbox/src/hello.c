@@ -1,4 +1,5 @@
 #include "claymore/entrypoint.h"
+#include "scenes/frame_count.h"
 
 const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
 const float font_size = 48.f;
@@ -12,6 +13,7 @@ typedef struct {
 } HelloWorld;
 
 static void init(CmScene *scene) {
+  frame_count(scene, STR(".build/hello.csv"));
   HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
   hello->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
   cm_camera2D_screen(&hello->camera);

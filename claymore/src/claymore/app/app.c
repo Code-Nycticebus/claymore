@@ -10,6 +10,7 @@ static struct {
   u64 first_frame;
   u64 last_frame;
   CmSceneInternal *root;
+  DA(CmSceneInternal *) deleted;
 } app;
 
 CmApp *cm_app(void) { return &app.data; }
@@ -66,6 +67,8 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
 
+  da_init(&app.deleted, &app.data.arena);
+
   cm_2D_internal_init();
 
   app.root = cm_scene_internal_init(&app.data.arena, config->root);
@@ -73,12 +76,18 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     cebus_log_error("Main CmSceneInterface needs an init function");
     return false;
   }
+
   app.root->interface->init(&app.root->data);
   app.running = true;
   return true;
 }
 
 bool cm_app_internal_update(void) {
+  while (da_len(&app.deleted)) {
+    CmSceneInternal *scene = da_pop(&app.deleted);
+    cm_scene_internal_final(&scene->parent->data.arena, scene);
+  }
+
   cm_event_internal_poll_events(app.data.window);
 
   if (!app.running) {
@@ -125,4 +134,8 @@ void cm_app_internal_event(CmEvent *event) {
   if (!event->handled && event->type == CM_EVENT_QUIT) {
     app.running = false;
   }
+}
+
+void cm_app_internal_schedule_delete(CmScene *scene) {
+  da_push(&app.deleted, (CmSceneInternal *)scene);
 }

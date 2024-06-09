@@ -1,5 +1,7 @@
 #include "scene.h"
 
+#include "claymore/app/app.h"
+
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
   CmSceneInternal *new = cm_scene_internal_init(&scene->arena, init);
@@ -15,7 +17,7 @@ void cm_scene_delete(CmScene *parent, CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)parent;
   for (usize i = 0; i < internal->children.len; i++) {
     if (da_get(&internal->children, i) == (CmSceneInternal *)scene) {
-      cm_scene_internal_final(&parent->arena, (CmSceneInternal *)scene);
+      cm_app_internal_schedule_delete(scene);
       da_remove(&internal->children, i);
       return;
     }

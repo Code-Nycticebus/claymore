@@ -40,4 +40,6 @@ void cm_app_internal_final(void);
 
 void cm_app_internal_event(CmEvent *event);
 
+void cm_app_internal_schedule_delete(CmScene *scene);
+
 #endif /* !__CLAYMORE_APP_H__ */

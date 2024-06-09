@@ -1,6 +1,7 @@
 #include "claymore/entrypoint.h"
 
 #include "scenes/fps.h"
+#include "scenes/frame_count.h"
 #include <stdio.h>
 
 const float gravity = 981;
@@ -57,6 +58,7 @@ typedef struct {
 } BallSimulation;
 
 static void init(CmScene *scene) {
+  frame_count(scene, STR(".build/balls.csv"));
   BallSimulation *balls = cm_scene_set_data(scene, sizeof(BallSimulation));
   da_init(&balls->balls, &scene->arena);
   da_reserve(&balls->balls, max_balls);
@@ -174,14 +176,15 @@ static void frame_update(CmScene *scene, double dt) {
   BallSimulation *balls = scene->data;
   static bool generating = true;
 
+  if (RGFW_isPressedI(cm_app_window(), RGFW_Escape)) {
+    generating = false;
+  }
+
   if (generating) {
     static float countdown = 0.0f;
     countdown -= dt;
     if (countdown < 0) {
       countdown = 0.1f;
-      if (1 / 60.f < dt) {
-        generating = false;
-      }
 
       for (int i = -4; i <= 4; ++i) {
         vec2 pos = {100.f + (BALL_SIZE * 2) * i, 100.f - (BALL_SIZE * 2) * i};
