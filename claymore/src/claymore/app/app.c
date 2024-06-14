@@ -20,9 +20,14 @@ RGFW_window *cm_app_window(void) { return app.data.window; }
 Arena *cm_app_arena(void) { return &app.data.arena; }
 void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
 
-void cm_app_set_main(CmSceneInit init) {
-  // Initialize new one
+CmScene *cm_app_set_main(CmSceneInit init) {
   app.new_root = cm_scene_internal_init(&app.data.arena, init);
+  if (!app.new_root->interface->init) {
+    cebus_log_error("Main CmSceneInterface needs an init function");
+    DEBUGBREAK();
+  }
+  app.new_root->interface->init(&app.new_root->data);
+  return (CmScene *)app.new_root;
 }
 
 u64 cm_app_time(void) { return RGFW_getTimeNS() - app.first_frame; }
@@ -76,6 +81,12 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 }
 
 bool cm_app_internal_update(void) {
+  if (app.new_root) {
+    da_push(&app.deleted, app.root);
+    app.root = app.new_root;
+    app.new_root = NULL;
+  }
+
   while (da_len(&app.deleted)) {
     CmSceneInternal *scene = da_pop(&app.deleted);
     Arena *arena = scene->parent ? &scene->parent->data.arena : &app.data.arena;
@@ -108,18 +119,6 @@ bool cm_app_internal_update(void) {
 
   cm_scene_internal_post_update(app.root);
 
-  if (app.new_root) {
-    // Schedule previous main scene for deletion
-    da_push(&app.deleted, app.root);
-
-    app.root = app.new_root;
-    app.new_root = NULL;
-    if (!app.root->interface->init) {
-      cebus_log_error("Main CmSceneInterface needs an init function");
-      DEBUGBREAK();
-    }
-    app.root->interface->init(&app.root->data);
-  }
   RGFW_window_swapBuffers(app.data.window);
   return true;
 }

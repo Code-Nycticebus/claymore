@@ -27,7 +27,7 @@ RGFW_window *cm_app_window(void);
 Arena *cm_app_arena(void);
 void *cm_app_alloc(usize size);
 
-void cm_app_set_main(CmSceneInit init);
+CmScene *cm_app_set_main(CmSceneInit init);
 u64 cm_app_time(void);
 void cm_app_quit(void);
 void cm_app_background(const vec3 color);
