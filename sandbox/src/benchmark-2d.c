@@ -2,7 +2,7 @@
 
 #include "claymore.h"
 
-#include "scenes/fps.h"
+#include "utils/fps.h"
 
 const usize height = 420;
 const usize width = 720;

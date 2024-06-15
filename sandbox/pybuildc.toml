@@ -13,11 +13,8 @@ cflags=[
 [exe]
 sandbox = "src/sandbox.c"
 benchmark-2d = "src/benchmark-2d.c"
-basic = "src/basic.c"
+template = "src/template.c"
 hello = "src/hello.c"
-animation = "src/animation.c"
-balls = "src/balls.c"
-atlas = "src/atlas.c"
 
 [libs.claymore]
 dir = "../claymore/" 

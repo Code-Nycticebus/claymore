@@ -1,5 +1,5 @@
 #include "claymore/entrypoint.h"
-#include "scenes/frame_count.h"
+#include "utils/frame_count.h"
 
 const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
 const float font_size = 48.f;

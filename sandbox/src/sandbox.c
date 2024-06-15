@@ -1,6 +1,6 @@
 #include "claymore/entrypoint.h"
 
-#include "scenes/fps.h"
+#include "utils/fps.h"
 
 typedef struct {
   CmScene *overlay;
