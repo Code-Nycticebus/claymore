@@ -12,6 +12,9 @@ static struct {
   CmSceneInternal *root;
   CmSceneInternal *new_root;
   DA(CmSceneInternal *) deleted;
+
+  bool update_scene_flat;
+  DA(CmSceneInternal *) flat;
 } app;
 
 CmApp *cm_app(void) { return &app.data; }
@@ -42,6 +45,13 @@ void cm_app_quit(void) {
 void cm_app_background(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 
 // INTERNAL
+
+static void cm_app_build_flat(CmSceneInternal *root) {
+  da_extend(&app.flat, da_len(&root->children), root->children.items);
+  for (usize i = 0; i < da_len(&root->children); ++i) {
+    cm_app_build_flat(da_get(&root->children, i));
+  }
+}
 
 bool cm_app_internal_init(ClaymoreConfig *config) {
   app.first_frame = RGFW_getTimeNS();
@@ -75,6 +85,9 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
 
+  da_init(&app.flat, &app.data.arena);
+  app.update_scene_flat = true;
+
   app.root->interface->init(&app.root->data);
   app.running = true;
   return true;
@@ -85,12 +98,19 @@ bool cm_app_internal_update(void) {
     da_push(&app.deleted, app.root);
     app.root = app.new_root;
     app.new_root = NULL;
+    app.update_scene_flat = true;
   }
 
   while (da_len(&app.deleted)) {
     CmSceneInternal *scene = da_pop(&app.deleted);
     Arena *arena = scene->parent ? &scene->parent->data.arena : &app.data.arena;
     cm_scene_internal_final(arena, scene);
+  }
+
+  if (app.update_scene_flat) {
+    da_push(&app.flat, app.root);
+    cm_app_build_flat(app.root);
+    app.update_scene_flat = false;
   }
 
   cm_event_internal_poll_events(app.data.window);
@@ -104,20 +124,45 @@ bool cm_app_internal_update(void) {
   u64 dt = current_time - app.last_frame;
   app.last_frame = current_time;
 
-  cm_scene_internal_pre_update(app.root);
+  // cm_scene_internal_pre_update(app.root);
+  for (usize i = 0; i < da_len(&app.flat); ++i) {
+    CmSceneInternal *scene = da_get(&app.flat, i);
+    if (scene->interface->pre_update) {
+      scene->interface->pre_update(&scene->data);
+    }
+  }
 
   const i64 fixed_interval = 2e+7; // 50hz
   static i64 fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
-    cm_scene_internal_fixed_update(app.root, fixed_interval / ns);
+    // cm_scene_internal_fixed_update(app.root, fixed_interval / ns);
+    for (usize i = 0; i < da_len(&app.flat); ++i) {
+      CmSceneInternal *scene = da_get(&app.flat, i);
+      if (scene->interface->fixed_update) {
+        scene->interface->fixed_update(&scene->data, fixed_interval);
+      }
+    }
+
     fixed_timer -= fixed_interval;
   }
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  cm_scene_internal_frame_update(app.root, dt / ns);
+  // cm_scene_internal_frame_update(app.root, dt / ns);
+  for (usize i = 0; i < da_len(&app.flat); ++i) {
+    CmSceneInternal *scene = da_get(&app.flat, i);
+    if (scene->interface->frame_update) {
+      scene->interface->frame_update(&scene->data, dt / ns);
+    }
+  }
 
-  cm_scene_internal_post_update(app.root);
+  // cm_scene_internal_post_update(app.root);
+  for (usize i = 0; i < da_len(&app.flat); ++i) {
+    CmSceneInternal *scene = da_get(&app.flat, i);
+    if (scene->interface->post_update) {
+      scene->interface->post_update(&scene->data);
+    }
+  }
 
   RGFW_window_swapBuffers(app.data.window);
   return true;
@@ -143,4 +188,5 @@ void cm_app_internal_event(CmEvent *event) {
 
 void cm_app_internal_schedule_delete(CmScene *scene) {
   da_push(&app.deleted, (CmSceneInternal *)scene);
+  app.update_scene_flat = true;
 }

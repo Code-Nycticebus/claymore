@@ -47,11 +47,6 @@ typedef struct CmSceneInternal {
 } CmSceneInternal;
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, CmSceneInit init);
-void cm_scene_internal_fixed_update(CmSceneInternal *scene, double deltatime);
-
-void cm_scene_internal_frame_update(CmSceneInternal *scene, double deltatime);
-void cm_scene_internal_pre_update(CmSceneInternal *scene);
-void cm_scene_internal_post_update(CmSceneInternal *scene);
 
 void cm_scene_internal_final(Arena *arena, CmSceneInternal *scene);
 void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event);
