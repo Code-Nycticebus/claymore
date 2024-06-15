@@ -108,6 +108,7 @@ bool cm_app_internal_update(void) {
   }
 
   if (app.update_scene_flat) {
+    da_clear(&app.flat);
     da_push(&app.flat, app.root);
     cm_app_build_flat(app.root);
     app.update_scene_flat = false;
@@ -124,23 +125,14 @@ bool cm_app_internal_update(void) {
   u64 dt = current_time - app.last_frame;
   app.last_frame = current_time;
 
-  // cm_scene_internal_pre_update(app.root);
-  for (usize i = 0; i < da_len(&app.flat); ++i) {
-    CmSceneInternal *scene = da_get(&app.flat, i);
-    if (scene->interface->pre_update) {
-      scene->interface->pre_update(&scene->data);
-    }
-  }
-
   const i64 fixed_interval = 2e+7; // 50hz
   static i64 fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
-    // cm_scene_internal_fixed_update(app.root, fixed_interval / ns);
     for (usize i = 0; i < da_len(&app.flat); ++i) {
       CmSceneInternal *scene = da_get(&app.flat, i);
       if (scene->interface->fixed_update) {
-        scene->interface->fixed_update(&scene->data, fixed_interval);
+        scene->interface->fixed_update(&scene->data, fixed_interval / ns);
       }
     }
 
@@ -148,17 +140,15 @@ bool cm_app_internal_update(void) {
   }
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  // cm_scene_internal_frame_update(app.root, dt / ns);
+
   for (usize i = 0; i < da_len(&app.flat); ++i) {
     CmSceneInternal *scene = da_get(&app.flat, i);
+    if (scene->interface->pre_update) {
+      scene->interface->pre_update(&scene->data);
+    }
     if (scene->interface->frame_update) {
       scene->interface->frame_update(&scene->data, dt / ns);
     }
-  }
-
-  // cm_scene_internal_post_update(app.root);
-  for (usize i = 0; i < da_len(&app.flat); ++i) {
-    CmSceneInternal *scene = da_get(&app.flat, i);
     if (scene->interface->post_update) {
       scene->interface->post_update(&scene->data);
     }
@@ -190,3 +180,5 @@ void cm_app_internal_schedule_delete(CmScene *scene) {
   da_push(&app.deleted, (CmSceneInternal *)scene);
   app.update_scene_flat = true;
 }
+
+void cm_app_internal_schedule_build(void) { app.update_scene_flat = true; }

@@ -41,5 +41,6 @@ void cm_app_internal_final(void);
 void cm_app_internal_event(CmEvent *event);
 
 void cm_app_internal_schedule_delete(CmScene *scene);
+void cm_app_internal_schedule_build(void);
 
 #endif /* !__CLAYMORE_APP_H__ */
