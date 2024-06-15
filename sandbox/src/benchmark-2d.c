@@ -64,7 +64,7 @@ static void init(CmScene *scene) {
   benchmark->camera.zoom = 100;
   cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100);
 
-  benchmark->font = cm_font_init(&scene->gpu, font, 3000, ErrPanic);
+  benchmark->font = cm_font_from_file(&scene->gpu, font, 3000, ErrPanic);
 }
 
 static void frame_update(CmScene *scene, double deltatime) {

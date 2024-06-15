@@ -16,7 +16,9 @@ void cm_sprite(CmTexture2D *texture, const vec2 pos, const vec2 size,
                float rotation, const vec2 uv, const vec2 uv_size);
 
 typedef struct CmFont CmFont;
-CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height, Error *error);
+
+CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height);
+CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error);
 void cm_font(CmFont *font, const vec2 pos, Str text);
 
 // INTERNAL

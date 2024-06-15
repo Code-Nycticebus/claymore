@@ -15,7 +15,7 @@ typedef struct {
 static void init(CmScene *scene) {
   frame_count(scene, STR(".build/hello.csv"));
   HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
-  hello->font = cm_font_init(&scene->gpu, font, font_size, ErrPanic);
+  hello->font = cm_font_from_file(&scene->gpu, font, font_size, ErrPanic);
   cm_camera2D_screen(&hello->camera);
 
   RGFW_window *window = cm_app_window();

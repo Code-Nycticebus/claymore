@@ -54,7 +54,7 @@ CmScene *fps(CmScene *parent, const vec2 position, Str font, float heigth) {
   fps->position[0] = position[0];
   fps->position[1] = position[1];
 
-  fps->font = cm_font_init(&scene->gpu, font, heigth, ErrPanic);
+  fps->font = cm_font_from_file(&scene->gpu, font, heigth, ErrPanic);
 
   return scene;
 }

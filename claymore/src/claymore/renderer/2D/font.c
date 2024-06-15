@@ -44,25 +44,22 @@ struct CmFont {
   size_t ttf_resoulution;
 };
 
-CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
-                     Error *error) {
+CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height) {
   CmFont *font_renderer = arena_calloc(gpu->arena, sizeof(CmFont));
 
   GLint max_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
 
   const size_t ttf_bitmap_resolution =
-      glm_min(512 * ceilf(font_height / 100.F), max_texture_size);
+      glm_min(512 * ceilf(height / 100.F), max_texture_size);
   const size_t ttf_bitmap_size = ttf_bitmap_resolution * ttf_bitmap_resolution;
 
   Arena temp = {0};
 
-  Bytes ttf_buffer = file_read_bytes(filename, &temp, error);
-
   uint8_t *ttf_bitmap = arena_calloc(&temp, sizeof(uint8_t) * ttf_bitmap_size);
-  stbtt_BakeFontBitmap(ttf_buffer.data, 0, font_height, ttf_bitmap,
-                       ttf_bitmap_resolution, ttf_bitmap_resolution,
-                       FONT_CHAR_MIN, FONT_CHAR_MAX, font_renderer->cdata);
+  stbtt_BakeFontBitmap(bytes.data, 0, height, ttf_bitmap, ttf_bitmap_resolution,
+                       ttf_bitmap_resolution, FONT_CHAR_MIN, FONT_CHAR_MAX,
+                       font_renderer->cdata);
 
   font_renderer->texture_id = cm_gpu_texture(gpu);
   glActiveTexture(GL_TEXTURE0 + 0);
@@ -75,10 +72,24 @@ CmFont *cm_font_init(CmGpu *gpu, Str filename, float font_height,
 
   arena_free(&temp);
 
-  font_renderer->height = font_height;
+  font_renderer->height = height;
   font_renderer->ttf_resoulution = ttf_bitmap_resolution;
 
   return font_renderer;
+}
+
+CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error) {
+  CmFont *font = NULL;
+  Arena temp = {0};
+
+  Bytes ttf_buffer = file_read_bytes(path, &temp, error);
+  error_propagate(error, { goto defer; });
+
+  font = cm_font_from_bytes(gpu, ttf_buffer, height);
+
+defer:
+  arena_free(&temp);
+  return font;
 }
 
 static void _cm_font_renderer_flush(void) {
