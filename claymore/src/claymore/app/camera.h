@@ -5,6 +5,7 @@
 
 typedef struct {
   bool dirty;
+  vec3 position;
   mat4 view;
   mat4 projection;
   mat4 vp;
@@ -16,16 +17,14 @@ void _cm_camera_update(CmCameraBase *camera);
 
 typedef struct {
   CmCameraBase base;
-  vec3 position;
   float zoom;
 } CmCamera2D;
 
 void cm_camera2D_screen(CmCamera2D *camera);
-void cm_camera2D_ortho(CmCamera2D *camera, vec3 pos, float aspect, float zoom);
+void cm_camera2D_ortho(CmCamera2D *camera, vec2 pos, float aspect, float zoom);
 
 typedef struct {
   CmCameraBase base;
-  vec3 position;
   vec3 lookat;
   vec3 up;
   float fov;

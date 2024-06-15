@@ -19,6 +19,7 @@ typedef struct {
 
 typedef struct {
   CmCamera2D camera;
+  CmFont *font;
 } Benchmark;
 
 #define MAX_QUADS 317
@@ -37,7 +38,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
     const float scroll_speed = 10.F;
     float zoom = benchmark->camera.zoom;
     zoom = glm_max(zoom - scroll->offset[1] * (zoom / scroll_speed), min_zoom);
-    glm_ortho(-aspect * zoom, aspect * zoom, -zoom, zoom, -1.F, 100.F,
+    glm_ortho(-aspect * zoom, aspect * zoom, zoom, -zoom, .1f, 100.f,
               benchmark->camera.base.projection);
     benchmark->camera.zoom = zoom;
     cm_camera_update(&benchmark->camera);
@@ -56,39 +57,32 @@ static void init(CmScene *scene) {
   const float height = 32.f;
   fps(scene, position, font, height);
 
-  glm_vec3_zero(benchmark->camera.position);
+  glm_vec3_zero(benchmark->camera.base.position);
   glm_mat4_identity(benchmark->camera.base.view);
   glm_translate(benchmark->camera.base.view, (vec3){0});
-  cm_camera2D_screen(&benchmark->camera);
+
+  benchmark->camera.zoom = 100;
+  cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100);
+
+  benchmark->font = cm_font_init(&scene->gpu, font, 3000, ErrPanic);
 }
 
 static void frame_update(CmScene *scene, double deltatime) {
-  static usize grid = 1;
-
-  static double timer = 0;
-  const float fps = 1 / deltatime;
-  if ((timer += deltatime) >= 1) {
-    cebus_log_info("grid: %" USIZE_FMT, grid * grid);
-    static usize count = 0;
-    count++;
-    static usize max = 0;
-    max += grid * grid;
-    cebus_log_info("avg: %" USIZE_FMT, max / count);
-    timer = 0;
-  }
-  Benchmark *benchmark = scene->data;
-
   const float fps_threshold = 60;
+  const float fps = 1 / deltatime;
+  static usize grid = 1;
   grid += fps > fps_threshold ? 1 : grid > 0 ? -1 : 0;
+
+  Benchmark *benchmark = scene->data;
 
   vec3 dir = {0};
 
   RGFW_window *window = cm_app_window();
   if (RGFW_isPressedI(window, RGFW_w)) {
-    dir[1] = -speed;
+    dir[1] = speed;
   }
   if (RGFW_isPressedI(window, RGFW_s)) {
-    dir[1] = speed;
+    dir[1] = -speed;
   }
   if (RGFW_isPressedI(window, RGFW_a)) {
     dir[0] = speed;
@@ -99,10 +93,11 @@ static void frame_update(CmScene *scene, double deltatime) {
 
   const float zoom = benchmark->camera.zoom / 100;
   glm_vec2_scale(dir, deltatime * zoom, dir);
-  glm_vec3_add(benchmark->camera.position, dir, benchmark->camera.position);
+  glm_vec3_add(benchmark->camera.base.position, dir,
+               benchmark->camera.base.position);
 
   glm_mat4_identity(benchmark->camera.base.view);
-  glm_translate(benchmark->camera.base.view, benchmark->camera.position);
+  glm_translate(benchmark->camera.base.view, benchmark->camera.base.position);
   benchmark->camera.base.dirty = true;
 
   cm_2D_begin(&benchmark->camera);
@@ -117,6 +112,10 @@ static void frame_update(CmScene *scene, double deltatime) {
         cm_quad(pos, (vec2){size, size}, r, quad_color);
       }
     }
+
+    char buffer[20];
+    usize s = snprintf(buffer, 20, "%" U64_FMT, grid * grid);
+    cm_font(benchmark->font, (vec2){0}, str_from_parts(s, buffer));
   }
   cm_2D_end();
 }

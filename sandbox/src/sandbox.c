@@ -34,7 +34,8 @@ static void event(CmScene *scene, CmEvent *event) {
     }
   });
   cm_event_cursor(event, {
-    float camera_distance = glm_vec3_distance(camera->position, camera->lookat);
+    float camera_distance =
+        glm_vec3_distance(camera->base.position, camera->lookat);
 
     static float rotation_horizontal = 0.F;
     static float rotation_vertical = 0.F;
@@ -63,13 +64,13 @@ static void event(CmScene *scene, CmEvent *event) {
 
     vec3 direction;
     vec3 center = {0, 0, 0};
-    float distance = glm_vec3_distance(center, camera->position);
-    glm_vec3_sub(center, camera->position, direction);
+    float distance = glm_vec3_distance(center, camera->base.position);
+    glm_vec3_sub(center, camera->base.position, direction);
     glm_vec3_normalize(direction);
     glm_vec3_scale(direction, scroll->offset[1] * distance / 4, direction);
 
     vec3 new_camera_pos;
-    glm_vec3_add(camera->position, direction, new_camera_pos);
+    glm_vec3_add(camera->base.position, direction, new_camera_pos);
     float new_distance = glm_vec3_distance(new_camera_pos, center);
     if (min_distance <= new_distance && new_distance <= max_distance) {
       cm_camera3D_position(camera, new_camera_pos);
@@ -328,9 +329,9 @@ static void frame_update(CmScene *scene, double dt) {
   // sandbox->light_pos[1] = cosf(cm_app_time()) * 3;
   // sandbox->light_pos[2] = tanf(cm_app_time()) * 3;
   cm_shader_set_vec3(&sandbox->shader, STR("u_light_pos"),
-                     sandbox->camera.position);
+                     sandbox->camera.base.position);
   cm_shader_set_vec3(&sandbox->shader, STR("u_view_pos"),
-                     sandbox->camera.position);
+                     sandbox->camera.base.position);
   cm_shader_set_i32(&sandbox->shader, STR("sampler[0]"), 0);
   cm_shader_set_i32(&sandbox->shader, STR("sampler[1]"), 1);
 
