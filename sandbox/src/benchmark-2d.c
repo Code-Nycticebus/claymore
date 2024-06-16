@@ -67,8 +67,10 @@ static void init(CmScene *scene) {
   benchmark->font = cm_font_from_file(&scene->gpu, font, 3000, ErrPanic);
 }
 
-static void frame_update(CmScene *scene, double deltatime) {
+static void frame_update(CmScene *scene) {
   const float fps_threshold = 60;
+
+  double deltatime = cm_app_deltatime();
   const float fps = 1 / deltatime;
   static usize grid = 1;
   grid += fps > fps_threshold ? 1 : grid > 0 ? -1 : 0;

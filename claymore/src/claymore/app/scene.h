@@ -14,9 +14,9 @@ typedef struct {
 
 typedef const struct {
   void (*init)(CmScene *scene);
-  void (*fixed_update)(CmScene *scene, double deltatime);
+  void (*fixed_update)(CmScene *scene);
 
-  void (*frame_update)(CmScene *scene, double deltatime);
+  void (*frame_update)(CmScene *scene);
   void (*pre_update)(CmScene *scene);
   void (*post_update)(CmScene *scene);
 

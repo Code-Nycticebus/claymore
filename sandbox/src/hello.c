@@ -24,8 +24,7 @@ static void init(CmScene *scene) {
   hello->position[1] = center[1] - font_size;
 }
 
-static void frame_update(CmScene *scene, double dt) {
-  (void)dt;
+static void frame_update(CmScene *scene) {
   HelloWorld *hello = scene->data;
 
   cm_2D_begin(&hello->camera);

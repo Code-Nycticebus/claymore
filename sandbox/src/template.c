@@ -1,7 +1,7 @@
 #include "claymore/entrypoint.h"
 
 static void init(CmScene *scene) { (void)scene; }
-static void frame_update(CmScene *scene, double dt) { (void)scene, (void)dt; }
+static void frame_update(CmScene *scene) { (void)scene; }
 
 static CmSceneInterface *template(void) {
   static CmSceneInterface interface = {

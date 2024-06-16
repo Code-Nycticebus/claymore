@@ -15,6 +15,8 @@ static struct {
 
   bool update_scene_flat;
   DA(CmSceneInternal *) flat;
+
+  double deltatime;
 } app;
 
 CmApp *cm_app(void) { return &app.data; }
@@ -22,6 +24,8 @@ CmScene *cm_app_root(void) { return &app.root->data; }
 RGFW_window *cm_app_window(void) { return app.data.window; }
 Arena *cm_app_arena(void) { return &app.data.arena; }
 void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
+
+double cm_app_deltatime(void) { return app.deltatime; }
 
 CmScene *cm_app_set_main(CmSceneInit init) {
   app.new_root = cm_scene_internal_init(&app.data.arena, init);
@@ -124,15 +128,16 @@ bool cm_app_internal_update(void) {
   const u64 current_time = RGFW_getTimeNS();
   u64 dt = current_time - app.last_frame;
   app.last_frame = current_time;
+  app.deltatime = dt / ns;
 
-  const i64 fixed_interval = 2e+7; // 50hz
+  const i64 fixed_interval = CM_FIXED_DELTA * ns;
   static i64 fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
     for (usize i = 0; i < da_len(&app.flat); ++i) {
       CmSceneInternal *scene = da_get(&app.flat, i);
       if (scene->interface->fixed_update) {
-        scene->interface->fixed_update(&scene->data, fixed_interval / ns);
+        scene->interface->fixed_update(&scene->data);
       }
     }
 
@@ -147,7 +152,7 @@ bool cm_app_internal_update(void) {
       scene->interface->pre_update(&scene->data);
     }
     if (scene->interface->frame_update) {
-      scene->interface->frame_update(&scene->data, dt / ns);
+      scene->interface->frame_update(&scene->data);
     }
     if (scene->interface->post_update) {
       scene->interface->post_update(&scene->data);

@@ -18,10 +18,10 @@ static void init(CmScene *scene) {
   cm_camera2D_screen(&fps->camera);
 }
 
-static void frame_update(CmScene *scene, double dt) {
+static void frame_update(CmScene *scene) {
   Fps *fps = scene->data;
 
-  fps->time += dt;
+  fps->time += cm_app_deltatime();
   fps->count++;
   const double interval = .1f;
   if (interval <= fps->time) {

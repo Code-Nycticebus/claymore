@@ -10,15 +10,9 @@ static void init(CmScene *scene) {
   fc->outfile = stdout;
 }
 
-static void fixed_update(CmScene *scene, double dt) {
+static void frame_update(CmScene *scene) {
   FrameCount *fc = scene->data;
-  (void)fc, (void)dt;
-  io_write_fmt(fc->outfile, "%ld,,,50\n", cm_app_time());
-  fflush(fc->outfile);
-}
-
-static void frame_update(CmScene *scene, double dt) {
-  FrameCount *fc = scene->data;
+  const double dt = cm_app_deltatime();
   io_write_fmt(fc->outfile, "%ld, %g, %g, \n", cm_app_time(), 1 / dt, dt);
   fflush(fc->outfile);
 }
@@ -26,7 +20,6 @@ static void frame_update(CmScene *scene, double dt) {
 static CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .fixed_update = fixed_update,
       .frame_update = frame_update,
   };
   return &interface;

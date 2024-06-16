@@ -7,6 +7,8 @@
 
 #include "scene.h"
 
+#define CM_FIXED_DELTA 0.02f // 50hz
+
 typedef const struct {
   struct {
     const char *title;
@@ -26,6 +28,7 @@ CmScene *cm_app_root(void);
 RGFW_window *cm_app_window(void);
 Arena *cm_app_arena(void);
 void *cm_app_alloc(usize size);
+double cm_app_deltatime(void);
 
 CmScene *cm_app_set_main(CmSceneInit init);
 u64 cm_app_time(void);

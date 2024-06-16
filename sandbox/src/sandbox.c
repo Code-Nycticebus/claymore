@@ -313,8 +313,7 @@ static void init(CmScene *scene) {
   glm_vec3_copy((vec3){2, -2, -2}, sandbox->light_pos);
 }
 
-static void frame_update(CmScene *scene, double dt) {
-  (void)dt, (void)scene;
+static void frame_update(CmScene *scene) {
   Sandbox *sandbox = scene->data;
 
   cm_camera_update(&sandbox->camera);
