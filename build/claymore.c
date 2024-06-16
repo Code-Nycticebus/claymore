@@ -10,8 +10,6 @@
 #define SRC_DIR "claymore/src/"
 #define LIB_DIR "claymore/libs/"
 
-int mkdir(const char* path, int mode);
-
 typedef DA(Str) Cmd;
 typedef DA(Str) Paths;
 
@@ -56,6 +54,7 @@ const Str claymore_files[] = {
 };
 
 #if defined(LINUX)
+#include <sys/stat.h>
 const Str claymore_libs[] = {
     STR_STATIC("-lm"),
     STR_STATIC("-lGL"),
@@ -63,11 +62,20 @@ const Str claymore_libs[] = {
     STR_STATIC("-lXrandr"),
 };
 #elif defined(WINDOWS)
+#include <windows.h>
 const Str claymore_libs[] = {
     STR_STATIC("-lopengl32"), STR_STATIC("-lShell32"), STR_STATIC("-lUser32"),
     STR_STATIC("-lGdi32"),    STR_STATIC("-lwinmm"),
 };
 #endif
+
+void create_directory(const char* path) {
+  #if defined(LINUX)
+  mkdir(path);
+  #elif defined(WINDOWS)
+  CreateDirectory(path, NULL);
+  #endif
+}
 
 void compile_libs(Arena *arena, Paths *objs) {
   Arena scratch = {0};
@@ -102,7 +110,7 @@ void compile_claymore(void) {
   Paths objs = {0};
   da_init(&objs, &arena);
 
-  mkdir("build/obj", 0777);
+  create_directory("build/obj");
   file_write_str(STR("build/obj/.gitignore"), STR("*\n"), ErrPanic);
 
   compile_libs(&arena, &objs);
@@ -132,7 +140,7 @@ void compile_claymore(void) {
     da_clear(&cmd);
   }
 
-  mkdir("build/lib", 0777);
+  create_directory("build/lib");
   file_write_str(STR("build/lib/.gitignore"), STR("*\n"), ErrPanic);
 
   da_push(&cmd, STR("ar"));
