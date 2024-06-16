@@ -117,7 +117,7 @@ void cm_font(CmFont *font, const vec2 pos, Str text) {
 
   float text_y = pos[1] + font->height;
   float text_x = pos[0];
-  Vertex *vertex = renderer->buffer;
+  Vertex *vertex = &renderer->buffer[renderer->vertex_count];
   for (size_t i = 0; i < text.len; i++) {
     if (FONT_CHAR_MIN <= text.data[i] &&
         text.data[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
