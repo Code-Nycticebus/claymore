@@ -53,12 +53,19 @@ const Str claymore_files[] = {
 
 };
 
+#if defined(LINUX)
 const Str claymore_libs[] = {
     STR_STATIC("-lm"),
     STR_STATIC("-lGL"),
     STR_STATIC("-lX11"),
     STR_STATIC("-lXrandr"),
 };
+#elif defined(WINDOWS)
+const Str claymore_libs[] = {
+    STR_STATIC("-lopengl32"), STR_STATIC("-lShell32"), STR_STATIC("-lUser32"),
+    STR_STATIC("-lGdi32"),    STR_STATIC("-lwinmm"),
+};
+#endif
 
 void compile_libs(Arena *arena, Paths *objs) {
   Arena scratch = {0};
