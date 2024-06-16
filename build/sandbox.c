@@ -10,7 +10,9 @@
 
 const Str files[] = {
     STR_STATIC("sandbox/src/utils/fps.c"),
-    STR_STATIC("sandbox/src/utils/frame_count.c"),
+    STR_STATIC("sandbox/src/hello.c"),
+    STR_STATIC("sandbox/src/benchmark-2d.c"),
+    STR_STATIC("sandbox/src/test.c"),
 };
 
 const Str cflags[] = {
@@ -19,7 +21,7 @@ const Str cflags[] = {
 };
 
 void compile_file(Str filename) {
-  cebus_log_info("Compiling: " STR_FMT, STR_ARG(filename));
+  cebus_log_info("Building: " STR_FMT, STR_ARG(filename));
   Arena arena = {0};
   DA(Str) cmd = {0};
   da_init(&cmd, &arena);
@@ -48,9 +50,5 @@ void compile_file(Str filename) {
 
 int main(void) {
   compile_claymore();
-  cebus_log_warning("%s", CC);
   compile_file(STR("sandbox/src/sandbox.c"));
-  compile_file(STR("sandbox/src/benchmark-2d.c"));
-  compile_file(STR("sandbox/src/hello.c"));
-  compile_file(STR("sandbox/src/template.c"));
 }

@@ -69,12 +69,12 @@ const Str claymore_libs[] = {
 };
 #endif
 
-void create_directory(const char* path) {
-  #if defined(LINUX)
-  mkdir(path);
-  #elif defined(WINDOWS)
+void create_directory(const char *path) {
+#if defined(LINUX)
+  mkdir(path, 0777); // NOLINT
+#elif defined(WINDOWS)
   CreateDirectory(path, NULL);
-  #endif
+#endif
 }
 
 void compile_libs(Arena *arena, Paths *objs) {
@@ -97,6 +97,8 @@ void compile_libs(Arena *arena, Paths *objs) {
     if (!file_exists(out)) {
       da_push(&cmd, out);
       da_push(&cmd, claymore_lib_files[i]);
+
+      cebus_log_info("Building: libs");
       cmd_exec(ErrPanic, cmd.len, cmd.items);
     }
     da_clear(&cmd);
@@ -115,10 +117,10 @@ void compile_claymore(void) {
 
   compile_libs(&arena, &objs);
 
+  cebus_log_info("Building: build/lib/libclaymore.a");
+
   Cmd cmd = {0};
   da_init(&cmd, &arena);
-
-
 
   for (usize i = 0; i < ARRAY_LEN(claymore_files); ++i) {
     da_push(&cmd, STR(CC));
@@ -147,6 +149,7 @@ void compile_claymore(void) {
   da_push(&cmd, STR("rcs"));
   da_push(&cmd, STR("build/lib/libclaymore.a"));
   da_extend(&cmd, objs.len, objs.items);
+
   cmd_exec(ErrPanic, cmd.len, cmd.items);
 
   arena_free(&arena);
