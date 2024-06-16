@@ -1,8 +1,4 @@
-#include "claymore/entrypoint.h"
-#include "utils/frame_count.h"
-
-const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
-const float font_size = 48.f;
+#include "claymore.h"
 
 const Str label = STR_STATIC("Hello World");
 
@@ -13,8 +9,10 @@ typedef struct {
 } HelloWorld;
 
 static void init(CmScene *scene) {
-  // frame_count(scene, STR(".build/hello-optimize.csv"));
   HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
+
+  const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
+  const float font_size = 48.f;
   hello->font = cm_font_from_file(&scene->gpu, font, font_size, ErrPanic);
   cm_camera2D_screen(&hello->camera);
 
@@ -32,18 +30,10 @@ static void frame_update(CmScene *scene) {
   cm_2D_end();
 }
 
-static CmSceneInterface *hello(void) {
+CmSceneInterface *hello(void) {
   static CmSceneInterface interface = {
       .init = init,
       .frame_update = frame_update,
   };
   return &interface;
-}
-
-ClaymoreConfig *claymore_init(void) {
-  static ClaymoreConfig config = {
-      .window = {.width = 720, .height = 420, .title = "Hello World"},
-      .root = hello,
-  };
-  return &config;
 }

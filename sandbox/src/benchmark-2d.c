@@ -1,5 +1,3 @@
-#include "claymore/entrypoint.h"
-
 #include "claymore.h"
 
 #include "utils/fps.h"
@@ -122,19 +120,11 @@ static void frame_update(CmScene *scene) {
   cm_2D_end();
 }
 
-static CmSceneInterface *benchmark(void) {
+CmSceneInterface *benchmark(void) {
   static CmSceneInterface interface = {
       .init = init,
       .frame_update = frame_update,
       .event = on_event,
   };
   return &interface;
-}
-
-ClaymoreConfig *claymore_init(void) {
-  static ClaymoreConfig config = {
-      .window = {.width = WIDTH, .height = HEIGTH, .title = "benchmark"},
-      .root = benchmark,
-  };
-  return &config;
 }
