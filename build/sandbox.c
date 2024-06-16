@@ -19,6 +19,7 @@ const Str cflags[] = {
 };
 
 void compile_file(Str filename) {
+  cebus_log_info("Compiling: " STR_FMT, STR_ARG(filename));
   Arena arena = {0};
   DA(Str) cmd = {0};
   da_init(&cmd, &arena);
@@ -36,12 +37,20 @@ void compile_file(Str filename) {
 
   da_push(&cmd, filename);
   da_extend(&cmd, ARRAY_LEN(files), files);
-  da_extend(&cmd, ARRAY_LEN(claymore_files), claymore_files);
 
+  da_push(&cmd, STR("-Lbuild/lib"));
+  da_push(&cmd, STR("-lclaymore"));
   da_extend(&cmd, ARRAY_LEN(claymore_libs), claymore_libs);
 
   cmd_exec(ErrPanic, cmd.len, cmd.items);
   arena_free(&arena);
 }
 
-int main(void) { compile_file(STR("sandbox/src/sandbox.c")); }
+int main(void) {
+  compile_claymore();
+  cebus_log_warning("%s", CC);
+  compile_file(STR("sandbox/src/sandbox.c"));
+  compile_file(STR("sandbox/src/benchmark-2d.c"));
+  compile_file(STR("sandbox/src/hello.c"));
+  compile_file(STR("sandbox/src/template.c"));
+}

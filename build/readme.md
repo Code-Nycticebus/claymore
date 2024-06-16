@@ -1,4 +1,12 @@
-## Usage
+## claymore
+
+Build claymore:
+```terminal
+gcc build/claymore.c
+./a.out
+```
+
+## sandbox
 
 Build the sandbox:
 ```terminal
@@ -11,7 +19,7 @@ Run the build executable
 ./a.out
 ```
 
-This will create and executable in `sandbox`. Run it like this.
+This will create and executable in `sandbox` directory. Run it like this.
 
 ```terminal
 cd sandbox
