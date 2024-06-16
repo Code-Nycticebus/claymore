@@ -12,19 +12,51 @@ A C Game Engine
 - [glad](https://github.com/Dav1dde/glad): Multi-Language GL Loader-Generator.
 - [cebus](https://github.com/Code-Nycticebus/cebus): My own core C library.
 
-## Setup
+## Build
 First clone the repo:
 
 ```terminal
 git clone --recursive https://github.com/Code-Nycticebus/claymore
 ```
 
-Build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+### Pybuildc
+Build or use it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
 
 ```terminal
 pybuildc -d claymore build
 ```
 
+### Compiler
+
+Build it with a c compiler:
+```terminal
+gcc build/claymore.c
+./a.out
+```
+
+## Running Sandbox
+
+### Pybuildc
+Build or use it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+
+```terminal
+pybuildc -d sandbox run
+```
+
+### Compiler
+
+Build it with a c compiler:
+```terminal
+gcc build/sandbox.c
+./a.out
+```
+
+Change into the `sandbox` directory and run the executable
+
+```terminal
+cd sandbox
+./sandbox
+```
 
 
 ## Usage
