@@ -10,6 +10,8 @@
 #define SRC_DIR "claymore/src/"
 #define LIB_DIR "claymore/libs/"
 
+int mkdir(const char* path, int mode);
+
 typedef DA(Str) Cmd;
 typedef DA(Str) Paths;
 
@@ -72,12 +74,6 @@ void compile_libs(Arena *arena, Paths *objs) {
   Cmd cmd = {0};
   da_init(&cmd, &scratch);
 
-  if (!file_exists(STR("build/obj/.gitignore"))) {
-    cmd_exec(ErrPanic, 3,
-             (Str[]){STR("mkdir"), STR("--parents"), STR("build/obj")});
-    file_write_str(STR("build/obj/.gitignore"), STR("*\n"), ErrPanic);
-  }
-
   for (usize i = 0; i < ARRAY_LEN(claymore_lib_files); ++i) {
     da_push(&cmd, STR(CC));
     da_push(&cmd, STR("-c"));
@@ -106,14 +102,15 @@ void compile_claymore(void) {
   Paths objs = {0};
   da_init(&objs, &arena);
 
+  mkdir("build/obj", 0777);
+  file_write_str(STR("build/obj/.gitignore"), STR("*\n"), ErrPanic);
+
   compile_libs(&arena, &objs);
 
   Cmd cmd = {0};
   da_init(&cmd, &arena);
 
-  cmd_exec(ErrPanic, 3,
-           (Str[]){STR("mkdir"), STR("--parents"), STR("build/obj")});
-  file_write_str(STR("build/obj/.gitignore"), STR("*\n"), ErrPanic);
+
 
   for (usize i = 0; i < ARRAY_LEN(claymore_files); ++i) {
     da_push(&cmd, STR(CC));
@@ -135,8 +132,7 @@ void compile_claymore(void) {
     da_clear(&cmd);
   }
 
-  cmd_exec(ErrPanic, 3,
-           (Str[]){STR("mkdir"), STR("--parents"), STR("build/lib")});
+  mkdir("build/lib", 0777);
   file_write_str(STR("build/lib/.gitignore"), STR("*\n"), ErrPanic);
 
   da_push(&cmd, STR("ar"));
