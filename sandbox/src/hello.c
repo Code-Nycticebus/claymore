@@ -13,7 +13,7 @@ typedef struct {
 } HelloWorld;
 
 static void init(CmScene *scene) {
-  frame_count(scene, STR(".build/hello-optimize.csv"));
+  // frame_count(scene, STR(".build/hello-optimize.csv"));
   HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
   hello->font = cm_font_from_file(&scene->gpu, font, font_size, ErrPanic);
   cm_camera2D_screen(&hello->camera);
