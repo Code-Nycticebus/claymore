@@ -4,9 +4,9 @@
 
 #include "utils/fps.h"
 
-const usize height = 420;
-const usize width = 720;
-const float aspect = (float)width / (float)height;
+#define HEIGTH 420
+#define WIDTH 720
+const float aspect = (float)WIDTH / (float)HEIGTH;
 
 const float speed = 1000.f;
 
@@ -133,7 +133,7 @@ static CmSceneInterface *benchmark(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = width, .height = height, .title = "benchmark"},
+      .window = {.width = WIDTH, .height = HEIGTH, .title = "benchmark"},
       .root = benchmark,
   };
   return &config;
