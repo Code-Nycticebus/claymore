@@ -42,9 +42,7 @@ void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
   glm_vec3_copy((vec3){0, 1, 0}, camera->up);
   glm_vec3_copy(lookat, camera->lookat);
 
-  const float near = 0.1f;
-  const float far = 1000.f;
-  glm_perspective(glm_rad(fov), aspect, near, far, camera->base.projection);
+  glm_perspective(glm_rad(fov), aspect, 1.f / 100.f, 100.f, camera->base.projection);
   glm_lookat(position, lookat, camera->up, camera->base.view);
 
   camera->fov = fov;
