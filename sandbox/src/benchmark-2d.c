@@ -62,7 +62,7 @@ static void init(CmScene *scene) {
   benchmark->camera.zoom = 100;
   cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100);
 
-  benchmark->font = cm_font_from_file(&scene->gpu, font, 3000, ErrPanic);
+  benchmark->font = cm_font_from_file(&scene->gpu, font, 500, ErrPanic);
 }
 
 static void frame_update(CmScene *scene) {
@@ -102,7 +102,7 @@ static void frame_update(CmScene *scene) {
 
   cm_2D_begin(&benchmark->camera);
   {
-    const float size = 100;
+    const float size = 10;
     static float r = 0;
     const vec4 quad_color = {.2f, .2f, .8f, 1.f};
     r += (F64_PI / 2) * deltatime;
