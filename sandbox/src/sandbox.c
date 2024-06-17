@@ -12,17 +12,14 @@ static void _event(CmScene *scene, CmEvent *event) {
   });
 }
 
-CmSceneInterface *manager(void) {
-  static CmSceneInterface interface = {
-      .event = _event,
-  };
+CmSceneInterface *app_controlls(void) {
+  static CmSceneInterface interface = {.event = _event};
   return &interface;
 }
 
 CmSceneInterface *quit(void) {
-  static CmSceneInterface interface = {0};
   cm_app_quit();
-  return &interface;
+  return (CmSceneInterface[]){0};
 }
 
 CmSceneInterface *test(void);
@@ -67,7 +64,8 @@ static bool button(Str label, const vec2 pos, const vec2 size, vec4 color) {
   }
 
   cm_quad(pos, size, 0, color);
-  cm_font(menu.font, (vec2){pos[0] + 20.f, pos[1]}, label);
+  const float padding = 20.f;
+  cm_font(menu.font, (vec2){pos[0] + padding, pos[1]}, label);
   return false;
 }
 
@@ -123,7 +121,7 @@ static void frame_update(CmScene *scene) {
           RGFW_isPressedI(w, RGFW_1 + i) ||
           (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
         CmScene *m = cm_app_set_main(buttons[i].interface);
-        cm_scene_push(m, manager);
+        cm_scene_push(m, app_controlls);
       }
       pos[1] += button_size[1] + margin;
     }
