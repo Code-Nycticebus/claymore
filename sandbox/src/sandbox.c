@@ -7,6 +7,7 @@ static void _event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
       cm_app_set_main(sandbox);
+      event->handled = true;
     }
   });
 }
@@ -15,6 +16,12 @@ CmSceneInterface *manager(void) {
   static CmSceneInterface interface = {
       .event = _event,
   };
+  return &interface;
+}
+
+CmSceneInterface *quit(void) {
+  static CmSceneInterface interface = {0};
+  cm_app_quit();
   return &interface;
 }
 
@@ -29,6 +36,7 @@ static const struct {
     {STR_STATIC("test"), test},
     {STR_STATIC("hello"), hello},
     {STR_STATIC("benchmark"), benchmark},
+    {STR_STATIC("quit"), quit},
 };
 
 typedef struct {
@@ -78,12 +86,19 @@ static void event(CmScene *scene, CmEvent *event) {
       }
     }
   });
+
+  cm_event_resize(event, {
+    (void)resize;
+    cm_camera2D_screen(&menu.camera);
+  });
 }
 
 static void init(CmScene *scene) {
   cm_camera2D_screen(&menu.camera);
-  menu.font = cm_font_from_file(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 24,
-                                ErrPanic);
+
+  Str font = STR("assets/fonts/Ubuntu.ttf");
+  const float height = 24.f;
+  menu.font = cm_font_from_file(&scene->gpu, font, height, ErrPanic);
 
   const vec3 bg_color = {0.05f, 0.05f, 0.05f};
   cm_app_background(bg_color);
@@ -111,10 +126,6 @@ static void frame_update(CmScene *scene) {
         cm_scene_push(m, manager);
       }
       pos[1] += button_size[1] + margin;
-    }
-
-    if (button(STR("quit"), pos, button_size, (vec4){.2f, .2f, .2f, 1})) {
-      cm_app_quit();
     }
   }
   cm_2D_end();
