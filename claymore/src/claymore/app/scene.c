@@ -4,10 +4,10 @@
 
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
-  CmSceneInternal *new = cm_scene_internal_init(&scene->arena, init);
+  CmSceneInternal *new = cm_scene_internal_init(&internal->arena, init);
   new->parent = internal;
   if (new->interface->init) {
-    new->interface->init(&new->data);
+    new->interface->init(&new->public);
   }
   da_push(&internal->children, new);
   cm_app_internal_schedule_build();
@@ -34,13 +34,13 @@ void cm_scene_delete_self(CmScene *scene) {
 
 CmScene *cm_scene_parent(CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
-  return &internal->parent->data;
+  return &internal->parent->public;
 }
 
 void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
   for (usize i = 0; i < internal->children.len; i++) {
-    map(scene, &internal->children.items[i]->data);
+    map(scene, &internal->children.items[i]->public);
   }
 }
 
@@ -58,20 +58,21 @@ CmSceneChildren *cm_scene_children(CmScene *scene) {
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   CmSceneInternal *scene = arena_calloc_chunk(arena, sizeof(CmSceneInternal));
   scene->interface = init();
-  da_init(&scene->children, &scene->data.arena); // NOLINT
-  scene->data.gpu = cm_gpu_internal_init(&scene->data.arena);
+  da_init(&scene->children, &scene->arena);
+  scene->public.gpu = cm_gpu_internal_init(&scene->arena);
   return scene;
 }
 
 void cm_scene_internal_final(Arena *arena, CmSceneInternal *scene) {
   for (usize i = 0; i < scene->children.len; i++) {
-    cm_scene_internal_final(&scene->data.arena, scene->children.items[i]);
+    cm_scene_internal_final(&scene->arena, scene->children.items[i]);
   }
   if (scene->interface->final) {
-    scene->interface->final(&scene->data);
+    scene->interface->final(&scene->public);
   }
-  cm_gpu_internal_free(&scene->data.gpu);
-  arena_free(&scene->data.arena);
+  cm_gpu_internal_free(&scene->public.gpu);
+  arena_free(&scene->public.arena);
+  arena_free(&scene->arena);
   arena_free_chunk(arena, scene);
 }
 
@@ -83,6 +84,6 @@ void cm_scene_internal_event(CmSceneInternal *scene, CmEvent *event) {
     cm_scene_internal_event(scene->children.items[i], event);
   }
   if (scene->interface->event) {
-    scene->interface->event(&scene->data, event);
+    scene->interface->event(&scene->public, event);
   }
 }

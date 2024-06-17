@@ -5,7 +5,8 @@
 #include "sound.h"
 
 static struct {
-  CmApp data;
+  CmApp public;
+  Arena arena;
   bool running;
   u64 first_frame;
   u64 last_frame;
@@ -19,18 +20,21 @@ static struct {
   double deltatime;
 } app;
 
-CmApp *cm_app(void) { return &app.data; }
-CmScene *cm_app_root(void) { return &app.root->data; }
-RGFW_window *cm_app_window(void) { return app.data.window; }
-Arena *cm_app_arena(void) { return &app.data.arena; }
-void *cm_app_alloc(usize size) { return arena_calloc(&app.data.arena, size); }
-
+CmApp *cm_app(void) { return &app.public; }
+CmScene *cm_app_root(void) { return &app.root->public; }
+RGFW_window *cm_app_window(void) { return app.public.window; }
+Arena *cm_app_arena(void) { return &app.public.arena; }
+void *cm_app_data(void) { return app.public.data; }
+void *cm_app_set_data(usize size) {
+  app.public.data = arena_calloc(&app.public.arena, size);
+  return app.public.data;
+}
 double cm_app_deltatime(void) { return app.deltatime; }
 
 CmScene *cm_app_set_main(CmSceneInit init) {
-  app.new_root = cm_scene_internal_init(&app.data.arena, init);
+  app.new_root = cm_scene_internal_init(&app.arena, init);
   if (app.new_root->interface->init) {
-    app.new_root->interface->init(&app.new_root->data);
+    app.new_root->interface->init(&app.new_root->public);
   }
   return (CmScene *)app.new_root;
 }
@@ -59,10 +63,10 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
   app.first_frame = RGFW_getTimeNS();
   app.last_frame = app.first_frame;
 
-  app.data.window = RGFW_createWindow(
+  app.public.window = RGFW_createWindow(
       config->window.title,
       RGFW_RECT(0, 0, config->window.width, config->window.height), 0);
-  if (app.data.window == NULL) {
+  if (app.public.window == NULL) {
     cebus_log_error("Could not open window");
     return false;
   }
@@ -72,25 +76,25 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
 
-  if (!cm_platform_context_init(app.data.window)) {
+  if (!cm_platform_context_init(app.public.window)) {
     cebus_log_error("Could not initialize context");
     return false;
   }
 
-  da_init(&app.deleted, &app.data.arena);
+  da_init(&app.deleted, &app.arena);
 
   cm_2D_internal_init();
 
-  app.root = cm_scene_internal_init(&app.data.arena, config->root);
+  app.root = cm_scene_internal_init(&app.arena, config->root);
   if (!app.root->interface->init) {
     cebus_log_error("Main CmSceneInterface needs an init function");
     return false;
   }
 
-  da_init(&app.flat, &app.data.arena);
+  da_init(&app.flat, &app.arena);
   app.update_scene_flat = true;
 
-  app.root->interface->init(&app.root->data);
+  app.root->interface->init(&app.root->public);
   app.running = true;
   return true;
 }
@@ -105,7 +109,7 @@ bool cm_app_internal_update(void) {
 
   while (da_len(&app.deleted)) {
     CmSceneInternal *scene = da_pop(&app.deleted);
-    Arena *arena = scene->parent ? &scene->parent->data.arena : &app.data.arena;
+    Arena *arena = scene->parent ? &scene->parent->arena : &app.arena;
     cm_scene_internal_final(arena, scene);
   }
 
@@ -116,7 +120,7 @@ bool cm_app_internal_update(void) {
     app.update_scene_flat = false;
   }
 
-  cm_event_internal_poll_events(app.data.window);
+  cm_event_internal_poll_events(app.public.window);
 
   if (!app.running) {
     return false;
@@ -135,7 +139,7 @@ bool cm_app_internal_update(void) {
     for (usize i = 0; i < da_len(&app.flat); ++i) {
       CmSceneInternal *scene = da_get(&app.flat, i);
       if (scene->interface->fixed_update) {
-        scene->interface->fixed_update(&scene->data);
+        scene->interface->fixed_update(&scene->public);
       }
     }
 
@@ -147,29 +151,29 @@ bool cm_app_internal_update(void) {
   for (usize i = 0; i < da_len(&app.flat); ++i) {
     CmSceneInternal *scene = da_get(&app.flat, i);
     if (scene->interface->pre_update) {
-      scene->interface->pre_update(&scene->data);
+      scene->interface->pre_update(&scene->public);
     }
     if (scene->interface->frame_update) {
-      scene->interface->frame_update(&scene->data);
+      scene->interface->frame_update(&scene->public);
     }
     if (scene->interface->post_update) {
-      scene->interface->post_update(&scene->data);
+      scene->interface->post_update(&scene->public);
     }
   }
 
-  RGFW_window_swapBuffers(app.data.window);
+  RGFW_window_swapBuffers(app.public.window);
   return true;
 }
 
 void cm_app_internal_final(void) {
-  cm_scene_internal_final(&app.data.arena, app.root);
+  cm_scene_internal_final(&app.arena, app.root);
 
   cm_sound_interal_shutdown();
 
   cm_2D_internal_free();
 
-  RGFW_window_close(app.data.window);
-  arena_free(&app.data.arena);
+  RGFW_window_close(app.public.window);
+  arena_free(&app.arena);
 }
 
 void cm_app_internal_event(CmEvent *event) {

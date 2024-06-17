@@ -40,7 +40,8 @@ CmSceneChildren *cm_scene_children(CmScene *scene);
 // INTERNAL
 
 typedef struct CmSceneInternal {
-  CmScene data; // has to be first!
+  CmScene public; // has to be first!
+  Arena arena;
   const CmSceneInterface *interface;
   struct CmSceneInternal *parent;
   DA(struct CmSceneInternal *) children;
