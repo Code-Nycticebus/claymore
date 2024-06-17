@@ -37,7 +37,7 @@ gcc build/claymore.c
 ## Running Sandbox
 
 ### Pybuildc
-Build or use it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+Build or run with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
 
 ```terminal
 pybuildc -d sandbox run
