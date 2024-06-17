@@ -35,6 +35,7 @@ void cm_event_internal_poll_events(RGFW_window *window) {
       });
       glm_vec2_copy(pos, last_pos);
     } else if (event->type == RGFW_windowAttribsChange) {
+      glViewport(0, 0, window->r.w, window->r.h);
       cm_event_emit((CmEvent){
           .type = CM_EVENT_RESIZE,
           .event.resize = {.size = {window->r.w, window->r.h}},
