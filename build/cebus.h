@@ -591,7 +591,7 @@ int popped = da_pop(&vec);
 - `da_empty`: Use to check if the array has no elements.
 - `da_len`: Get the length of the dynamic array.
 - `da_clear`: Reset the length of the array to zero.
-- `da_init`:  :warning: depricated :warning: Initialize dynamic array.
+- `da_init`:  Initialize dynamic array.
 - `da_init_list`: Initialize dynamic array from a array.
 - `da_init_static`: Initialize dynamic array from a static array.
 - `da_copy`: Duplicate the contents of one dynamic array into another.
@@ -2995,7 +2995,9 @@ void arena_free(Arena *arena) {
 
 void arena_reset(Arena *arena) {
   for (Chunk *next = arena->begin; next != NULL; next = next->next) {
-    next->allocated = 0;
+    if (next->cap != 0) {
+      next->allocated = 0;
+    }
   }
 }
 
@@ -3032,6 +3034,7 @@ void *arena_calloc(Arena *arena, usize size) {
 
 void *arena_alloc_chunk(Arena *arena, usize size) {
   Chunk *chunk = chunk_allocate(size);
+  chunk->cap = 0;
   chunk->allocated = size;
   chunk->next = arena->begin;
   if (arena->begin) {
