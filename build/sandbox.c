@@ -10,9 +10,9 @@
 
 const Str files[] = {
     STR_STATIC("sandbox/src/utils/fps.c"),
-    STR_STATIC("sandbox/src/hello.c"),
-    STR_STATIC("sandbox/src/benchmark-2d.c"),
-    STR_STATIC("sandbox/src/test.c"),
+    STR_STATIC("sandbox/src/scenes/hello.c"),
+    STR_STATIC("sandbox/src/scenes/benchmark-2d.c"),
+    STR_STATIC("sandbox/src/scenes/test.c"),
 };
 
 const Str cflags[] = {

@@ -4,12 +4,20 @@ CmSceneInterface *test(void);
 CmSceneInterface *hello(void);
 CmSceneInterface *benchmark(void);
 
+static const struct {
+  Str label;
+  CmSceneInit interface;
+} buttons[] = {
+    {STR_STATIC("test"), test},
+    {STR_STATIC("hello"), hello},
+    {STR_STATIC("benchmark"), benchmark},
+};
+
 typedef struct {
   CmCamera2D camera;
   bool pressed;
   CmFont *font;
 } Menu;
-
 static Menu menu = {0};
 
 static bool button(Str label, const vec2 pos, const vec2 size) {
@@ -29,7 +37,7 @@ static bool button(Str label, const vec2 pos, const vec2 size) {
     if (!menu.pressed && RGFW_isMousePressed(w, RGFW_mouseLeft)) {
       return true;
     }
-    glm_vec4_scale(color, 1.5, color);
+    glm_vec4_scale(color, 2, color);
   }
 
   cm_quad(pos, size, 0, color);
@@ -39,7 +47,7 @@ static bool button(Str label, const vec2 pos, const vec2 size) {
 
 static void init(CmScene *scene) {
   cm_camera2D_screen(&menu.camera);
-  menu.font = cm_font_from_file(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 32,
+  menu.font = cm_font_from_file(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 24,
                                 ErrPanic);
 }
 
@@ -49,18 +57,15 @@ static void frame_update(CmScene *scene) {
 
   cm_2D_begin(&menu.camera);
   {
-    const vec2 button_size = {300, 50};
-    vec2 pos = {w->r.w / (float)2 - button_size[0] / 2, 100.f};
-    if (button(STR("test"), pos, button_size)) {
-      cm_app_set_main(test);
-    }
-    pos[1] += button_size[1] + 10.f;
-    if (button(STR("hello"), pos, button_size)) {
-      cm_app_set_main(hello);
-    }
-    pos[1] += button_size[1] + 10.f;
-    if (button(STR("bechmark 2D"), pos, button_size)) {
-      cm_app_set_main(benchmark);
+    const vec2 button_size = {300, 35};
+    vec2 pos = {w->r.w / (float)2 - button_size[0] / 2, 50.f};
+    const float margin = 10.f;
+
+    for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
+      if (button(buttons[i].label, pos, button_size)) {
+        cm_app_set_main(buttons[i].interface);
+      }
+      pos[1] += button_size[1] + margin;
     }
   }
   cm_2D_end();
