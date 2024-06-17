@@ -17,11 +17,6 @@ CmSceneInterface *app_controlls(void) {
   return &interface;
 }
 
-CmSceneInterface *quit(void) {
-  cm_app_quit();
-  return (CmSceneInterface[]){0};
-}
-
 CmSceneInterface *test(void);
 CmSceneInterface *hello(void);
 CmSceneInterface *benchmark(void);
@@ -33,7 +28,7 @@ static const struct {
     {STR_STATIC("test"), test},
     {STR_STATIC("hello"), hello},
     {STR_STATIC("benchmark"), benchmark},
-    {STR_STATIC("quit"), quit},
+    {STR_STATIC("quit"), NULL},
 };
 
 typedef struct {
@@ -45,9 +40,7 @@ typedef struct {
 static Menu menu = {0};
 
 static bool button(Str label, const vec2 pos, const vec2 size, vec4 color) {
-
   RGFW_window *w = cm_app_window();
-
   if (glm_aabb2d_point(
           (vec2[]){
               {pos[0], pos[1]},
@@ -120,8 +113,12 @@ static void frame_update(CmScene *scene) {
       if (button(buttons[i].label, pos, button_size, color) ||
           RGFW_isPressedI(w, RGFW_1 + i) ||
           (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
-        CmScene *m = cm_app_set_main(buttons[i].interface);
-        cm_scene_push(m, app_controlls);
+        if (buttons[i].interface) {
+          CmScene *m = cm_app_set_main(buttons[i].interface);
+          cm_scene_push(m, app_controlls);
+        } else {
+          cm_app_quit();
+        }
       }
       pos[1] += button_size[1] + margin;
     }
