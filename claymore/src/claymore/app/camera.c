@@ -32,6 +32,8 @@ void cm_camera2D_ortho(CmCamera2D *camera, vec2 pos, float aspect, float zoom) {
 
   glm_vec3_copy(position, camera->base.position);
 
+  camera->zoom = zoom;
+
   camera->base.dirty = true;
   cm_camera_update(camera);
 }

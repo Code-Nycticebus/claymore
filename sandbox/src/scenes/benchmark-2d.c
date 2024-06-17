@@ -31,8 +31,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   Benchmark *benchmark = cm_scene_set_data(scene, sizeof(Benchmark));
 
-  benchmark->camera.zoom = 100;
-  cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100);
+  cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100.f);
 
   cm_camera2D_screen(&benchmark->overlay);
 
