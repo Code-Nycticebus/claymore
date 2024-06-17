@@ -24,6 +24,7 @@ CmApp *cm_app(void) { return &app.public; }
 CmScene *cm_app_root(void) { return &app.root->public; }
 RGFW_window *cm_app_window(void) { return app.public.window; }
 void *cm_app_data(void) { return app.public.data; }
+CmGpu *cm_app_gpu(void) { return &app.public.gpu; }
 
 void *cm_app_set_data(usize size) {
   cebus_assert(app.public.data == NULL, "Trying to set app data twice");
@@ -92,6 +93,8 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     cebus_log_error("Main CmSceneInterface needs an init function");
     return false;
   }
+
+  app.public.gpu = cm_gpu_internal_init(&app.arena);
 
   da_init(&app.flat, &app.arena);
   app.update_scene_flat = true;
@@ -175,7 +178,6 @@ void cm_app_internal_final(void) {
   cm_2D_internal_free();
 
   RGFW_window_close(app.public.window);
-  arena_free(&app.public.arena);
   arena_free(&app.arena);
 }
 

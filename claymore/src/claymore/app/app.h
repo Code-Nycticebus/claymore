@@ -20,6 +20,7 @@ typedef const struct {
 
 typedef struct {
   void *data;
+  CmGpu gpu;
   RGFW_window *window;
 } CmApp;
 
