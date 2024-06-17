@@ -173,6 +173,7 @@ void cm_app_internal_final(void) {
   cm_2D_internal_free();
 
   RGFW_window_close(app.public.window);
+  arena_free(&app.public.arena);
   arena_free(&app.arena);
 }
 
