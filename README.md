@@ -39,12 +39,6 @@ gcc build/sandbox.c
 ./a.out
 ```
 
-or build or run with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
-
-```terminal
-pybuildc -d sandbox run
-```
-
 Change into the `sandbox` directory and run the executable
 
 ```terminal
@@ -52,6 +46,11 @@ cd sandbox
 ./sandbox
 ```
 
+or build and run directly with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+
+```terminal
+pybuildc -d sandbox run
+```
 
 ## Usage
 Check out the [documentation](https://github.com/Code-Nycticebus/claymore/blob/main/docs/00-start.md) for more info. 
