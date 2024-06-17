@@ -23,29 +23,27 @@ const Str cflags[] = {
 void compile_file(Str filename) {
   cebus_log_info("Building: " STR_FMT, STR_ARG(filename));
   Arena arena = {0};
-  DA(Str) cmd = {0};
-  da_init(&cmd, &arena);
+  Cmd cmd = cmd_new(&arena);
 
-  da_push(&cmd, STR(CC));
+  cmd_push(&cmd, STR(CC));
 
   Str out = str_copy(filename, &arena);
   out = str_chop_right_by_delim(&out, '/');
   out = str_chop_by_delim(&out, '.');
+  out = str_append(STR("sandbox/"), out, &arena);
+  cmd_push(&cmd, STR("-o"), out);
 
-  da_push(&cmd, STR("-o"));
-  da_push(&cmd, str_append(STR("sandbox/"), out, &arena));
+  cmd_extend(&cmd, cflags);
+  cmd_extend(&cmd, claymore_cflags);
 
-  da_extend(&cmd, ARRAY_LEN(cflags), cflags);
-  da_extend(&cmd, ARRAY_LEN(claymore_cflags), claymore_cflags);
+  cmd_push(&cmd, filename);
+  cmd_extend(&cmd, files);
 
-  da_push(&cmd, filename);
-  da_extend(&cmd, ARRAY_LEN(files), files);
+  cmd_push(&cmd, STR("-Lbuild/lib"), STR("-lclaymore"));
+  cmd_extend(&cmd, claymore_libs);
 
-  da_push(&cmd, STR("-Lbuild/lib"));
-  da_push(&cmd, STR("-lclaymore"));
-  da_extend(&cmd, ARRAY_LEN(claymore_libs), claymore_libs);
+  cmd_exec_da(ErrPanic, &cmd);
 
-  cmd_exec(ErrPanic, cmd.len, cmd.items);
   arena_free(&arena);
 }
 

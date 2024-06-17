@@ -242,7 +242,7 @@ enhancing type safety with `printf`-like functions.
 #define MEGABYTES(s) ((usize)(s) * (usize)1e+6)
 #define GIGABYTES(s) ((usize)(s) * (usize)1e+9)
 
-#define ARRAY_LEN(A) (sizeof((A)) / sizeof((A)[0]))
+#define ARRAY_LEN(...) (sizeof((__VA_ARGS__)) / sizeof((__VA_ARGS__)[0]))
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -558,8 +558,7 @@ specific type.
 
 ```c
 Arena arena = {0};
-DA(int) vec = {0};
-da_init(&vec, &arena);
+DA(int) vec = da_new(&arena);
 ```
 
 ## Adding Elements
@@ -592,6 +591,7 @@ int popped = da_pop(&vec);
 - `da_empty`: Use to check if the array has no elements.
 - `da_len`: Get the length of the dynamic array.
 - `da_clear`: Reset the length of the array to zero.
+- `da_init`:  :warning: depricated :warning: Initialize dynamic array.
 - `da_init_list`: Initialize dynamic array from a array.
 - `da_init_static`: Initialize dynamic array from a static array.
 - `da_copy`: Duplicate the contents of one dynamic array into another.
@@ -638,7 +638,6 @@ destination.
   struct {                                                                     \
     usize cap;                                                                 \
     usize len;                                                                 \
-    usize _size;                                                               \
     Arena *arena;                                                              \
     T *items;                                                                  \
   }
@@ -654,13 +653,16 @@ destination.
 
 ///////////////////////////////////////////////////////////////////////////////
 
+#define da_new(_arena)                                                         \
+  { .arena = (_arena), .items = NULL, }
+
+// depricated
 #define da_init(list, _arena)                                                  \
   do {                                                                         \
     (list)->len = 0;                                                           \
     (list)->cap = 0;                                                           \
     (list)->arena = _arena;                                                    \
     (list)->items = NULL;                                                      \
-    (list)->_size = sizeof(*(list)->items);                                    \
   } while (0)
 
 #define da_init_list(list, _arena, count, array)                               \
@@ -669,7 +671,6 @@ destination.
     (list)->cap = 0;                                                           \
     (list)->arena = _arena;                                                    \
     (list)->items = NULL;                                                      \
-    (list)->_size = sizeof(*(list)->items);                                    \
     da_resize(list, count);                                                    \
     for (usize __e_i = 0; __e_i < (count); __e_i++) {                          \
       (list)->items[__e_i] = (array)[__e_i];                                   \
@@ -699,7 +700,7 @@ destination.
     }                                                                          \
     (list)->cap = size;                                                        \
     (list)->items = arena_realloc_chunk((list)->arena, (list)->items,          \
-                                        (list)->cap * (list)->_size);          \
+                                        (list)->cap * sizeof(*(list)->items)); \
   } while (0)
 
 #define da_reserve(list, size)                                                 \
@@ -723,11 +724,11 @@ destination.
     da_get(list, da_len(list)++) = (__VA_ARGS__);                              \
   } while (0)
 
-#define da_extend(list, count, _items)                                         \
+#define da_extend(list, count, ...)                                            \
   do {                                                                         \
     da_reserve((list), (count));                                               \
     for (usize __e_i = 0; __e_i < (count); __e_i++) {                          \
-      da_get(list, da_len(list) + __e_i) = (_items)[__e_i];                    \
+      da_get(list, da_len(list) + __e_i) = (__VA_ARGS__)[__e_i];               \
     }                                                                          \
     (list)->len += count;                                                      \
   } while (0)
@@ -1513,6 +1514,28 @@ void quicksort_ctx(const void *src, void *dest, usize size, usize nelem,
 ## Functions
 
 - **`cmd_exec(error, argc, argv)`**: Executes a system command.
+- **`cmd_exec_da(error, da)`**: Executes a with a dynamic array.
+
+## Construction a dynamic array
+
+```c
+Arena arena = {0};
+
+Cmd cmd = cmd_new(&arena);
+
+cmd_push(&cmd, STR("gcc"), STR("-o"), STR("main"));
+
+Str cflags[] = {STR("-Wall"), STR("-Wextra")};
+cmd_extend(&cmd, words);
+
+DA(Str) files = da_new(&arena);
+// collect files...
+cmd_extend_da(&cmd, &files);
+
+cmd_exec_da(ErrPanic, &cmd);
+
+arena_free(&arena);
+```
 
 ## Error Handling
 
@@ -1536,6 +1559,7 @@ error_context(&error, {
 #ifndef __CEBUS_CMD_H__
 #define __CEBUS_CMD_H__
 
+// #include "cebus/collection/da.h"
 // #include "cebus/core/defines.h"
 // #include "cebus/core/error.h"
 
@@ -1546,6 +1570,17 @@ typedef enum {
 } CmdError;
 
 void cmd_exec(Error *error, size_t argc, Str *argv);
+
+typedef DA(Str) Cmd;
+
+#define cmd_new(arena) da_new(arena)
+#define cmd_push(cmd, ...)                                                     \
+  da_extend(cmd, ARRAY_LEN((Str[]){__VA_ARGS__}), (Str[]){__VA_ARGS__})
+#define cmd_extend(cmd, ...)                                                   \
+  da_extend(cmd, ARRAY_LEN(__VA_ARGS__), (__VA_ARGS__))
+#define cmd_extend_da(cmd, da) da_extend(cmd, (da)->len, (da)->items)
+
+void cmd_exec_da(Error *error, const Cmd *cmd);
 
 #endif // !__CEBUS_CMD_H__
 
@@ -3321,6 +3356,10 @@ void quicksort_ctx(const void *src, void *dest, usize size, usize nelem,
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+void cmd_exec_da(Error *error, const Cmd *cmd) {
+  cmd_exec(error, cmd->len, cmd->items);
+}
 
 ////////////////////////////////////////////////////////////////////////////
 #if defined(LINUX)

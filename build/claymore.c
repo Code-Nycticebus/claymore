@@ -10,7 +10,6 @@
 #define SRC_DIR "claymore/src/"
 #define LIB_DIR "claymore/libs/"
 
-typedef DA(Str) Cmd;
 typedef DA(Str) Paths;
 
 const Str claymore_cflags[] = {
@@ -78,8 +77,7 @@ void create_directory(const char *path) {
 
 void compile_libs(Arena *arena, Paths *objs) {
   Arena scratch = {0};
-  Cmd cmd = {0};
-  da_init(&cmd, &scratch);
+  Cmd cmd = cmd_new(&scratch);
 
   for (usize i = 0; i < ARRAY_LEN(claymore_lib_files); ++i) {
     Str name = claymore_lib_files[i];
@@ -89,18 +87,16 @@ void compile_libs(Arena *arena, Paths *objs) {
     da_push(objs, out);
 
     if (!file_exists(out)) {
-      da_push(&cmd, STR(CC));
-      da_push(&cmd, STR("-c"));
-      da_extend(&cmd, ARRAY_LEN(claymore_cflags), claymore_cflags);
-      da_push(&cmd, STR("-O2"));
-      da_push(&cmd, STR("-DNDEBUG"));
+      cmd_push(&cmd, STR(CC), STR("-c"));
+      cmd_push(&cmd, STR("-O2"), STR("-DNDEBUG"));
+      cmd_extend(&cmd, claymore_cflags);
 
-      da_push(&cmd, STR("-o"));
-      da_push(&cmd, out);
-      da_push(&cmd, claymore_lib_files[i]);
+      cmd_push(&cmd, STR("-o"), out);
+
+      cmd_push(&cmd, claymore_lib_files[i]);
 
       cebus_log_info("Building: " STR_FMT, STR_ARG(out));
-      cmd_exec(ErrPanic, cmd.len, cmd.items);
+      cmd_exec_da(ErrPanic, &cmd);
     }
     da_clear(&cmd);
   }
@@ -110,8 +106,7 @@ void compile_libs(Arena *arena, Paths *objs) {
 
 void compile_claymore(void) {
   Arena arena = {0};
-  Paths objs = {0};
-  da_init(&objs, &arena);
+  Paths objs = da_new(&arena);
 
   create_directory("build/obj");
   file_write_str(STR("build/obj/.gitignore"), STR("*\n"), ErrPanic);
@@ -120,24 +115,21 @@ void compile_claymore(void) {
 
   cebus_log_info("Building: build/lib/libclaymore.a");
 
-  Cmd cmd = {0};
-  da_init(&cmd, &arena);
+  Cmd cmd = cmd_new(&arena);
 
   for (usize i = 0; i < ARRAY_LEN(claymore_files); ++i) {
-    da_push(&cmd, STR(CC));
-    da_push(&cmd, STR("-c"));
-    da_extend(&cmd, ARRAY_LEN(claymore_cflags), claymore_cflags);
+    cmd_push(&cmd, STR(CC), STR("-c"));
+    cmd_extend(&cmd, claymore_cflags);
 
-    da_push(&cmd, STR("-o"));
     Str name = claymore_files[i];
     name = str_chop_right_by_delim(&name, '/');
     name = str_chop_by_delim(&name, '.');
     Str out = str_format(&arena, "build/obj/" STR_FMT ".o", STR_ARG(name));
-    da_push(&cmd, out);
+    cmd_push(&cmd, STR("-o"), out);
 
     da_push(&objs, out);
 
-    da_push(&cmd, claymore_files[i]);
+    cmd_push(&cmd, claymore_files[i]);
 
     cmd_exec(ErrPanic, cmd.len, cmd.items);
     da_clear(&cmd);
@@ -146,12 +138,11 @@ void compile_claymore(void) {
   create_directory("build/lib");
   file_write_str(STR("build/lib/.gitignore"), STR("*\n"), ErrPanic);
 
-  da_push(&cmd, STR("ar"));
-  da_push(&cmd, STR("rcs"));
-  da_push(&cmd, STR("build/lib/libclaymore.a"));
-  da_extend(&cmd, objs.len, objs.items);
+  cmd_push(&cmd, STR("ar"), STR("rcs"), STR("build/lib/libclaymore.a"));
 
-  cmd_exec(ErrPanic, cmd.len, cmd.items);
+  cmd_extend_da(&cmd, &objs);
+
+  cmd_exec_da(ErrPanic, &cmd);
 
   arena_free(&arena);
 }
