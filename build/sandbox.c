@@ -27,10 +27,10 @@ void compile_file(Str filename) {
 
   cmd_push(&cmd, STR(CC));
 
-  Str out = str_copy(filename, &arena);
-  out = str_chop_right_by_delim(&out, '/');
-  out = str_chop_by_delim(&out, '.');
-  out = str_append(STR("sandbox/"), out, &arena);
+  Str name = filename;
+  name = str_chop_right_by_delim(&name, '/');
+  name = str_chop_by_delim(&name, '.');
+  Str out = str_append(STR("sandbox/"), name, &arena);
   cmd_push(&cmd, STR("-o"), out);
 
   cmd_extend(&cmd, cflags);

@@ -131,7 +131,7 @@ void compile_claymore(void) {
 
     cmd_push(&cmd, claymore_files[i]);
 
-    cmd_exec(ErrPanic, cmd.len, cmd.items);
+    cmd_exec_da(ErrPanic, &cmd);
     da_clear(&cmd);
   }
 
