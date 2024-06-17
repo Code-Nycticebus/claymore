@@ -19,31 +19,30 @@ First clone the repo:
 git clone --recursive https://github.com/Code-Nycticebus/claymore
 ```
 
-Build or use it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
-
-```terminal
-pybuildc -d claymore build
-```
-
-
-or build it with a c compiler:
+Build it with a c compiler:
 ```terminal
 gcc build/claymore.c
 ./a.out
 ```
 
-## Running Sandbox
-
-Build or run with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+or build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
 
 ```terminal
-pybuildc -d sandbox run
+pybuildc -d claymore build
 ```
 
-or build it with a c compiler:
+## Running Sandbox
+
+Build it with a c compiler:
 ```terminal
 gcc build/sandbox.c
 ./a.out
+```
+
+or build or run with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
+
+```terminal
+pybuildc -d sandbox run
 ```
 
 Change into the `sandbox` directory and run the executable
