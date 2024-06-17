@@ -1,7 +1,7 @@
 # Claymore
 A C Game Engine
 
-> ⚠️ The Project as well as the Documentation is not yet finished and is prone to change.
+> ⚠️ The Project as well as the Documentation is WIP and is prone to change.
 
 ## Libraries
 
@@ -14,7 +14,6 @@ A C Game Engine
 
 ## Building Claymore
 First clone the repo:
-
 ```terminal
 git clone --recursive https://github.com/Code-Nycticebus/claymore
 ```
@@ -26,13 +25,11 @@ gcc build/claymore.c
 ```
 
 or build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
-
 ```terminal
 pybuildc -d claymore build
 ```
 
 ## Running Sandbox
-
 Build it with a c compiler:
 ```terminal
 gcc build/sandbox.c
@@ -40,14 +37,12 @@ gcc build/sandbox.c
 ```
 
 Change into the `sandbox` directory and run the executable
-
 ```terminal
 cd sandbox
 ./sandbox
 ```
 
 or build and run directly with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
-
 ```terminal
 pybuildc -d sandbox run
 ```
