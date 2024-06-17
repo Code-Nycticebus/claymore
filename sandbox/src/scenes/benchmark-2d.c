@@ -17,6 +17,7 @@ typedef struct {
 
 typedef struct {
   CmCamera2D camera;
+  CmCamera2D overlay;
   CmFont *font;
 } Benchmark;
 
@@ -38,7 +39,6 @@ static void on_event(CmScene *scene, CmEvent *event) {
 }
 
 static void init(CmScene *scene) {
-  cebus_log_info("benchmark init");
   Benchmark *benchmark = cm_scene_set_data(scene, sizeof(Benchmark));
 
   const vec2 position = {10, 0};
@@ -46,14 +46,12 @@ static void init(CmScene *scene) {
   const float height = 32.f;
   fps(scene, position, font, height);
 
-  glm_vec3_zero(benchmark->camera.base.position);
-  glm_mat4_identity(benchmark->camera.base.view);
-  glm_translate(benchmark->camera.base.view, (vec3){0});
-
   benchmark->camera.zoom = 100;
   cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100);
 
-  benchmark->font = cm_font_from_file(&scene->gpu, font, 500, ErrPanic);
+  cm_camera2D_screen(&benchmark->overlay);
+
+  benchmark->font = cm_font_from_file(&scene->gpu, font, height, ErrPanic);
 }
 
 static void frame_update(CmScene *scene) {
@@ -103,10 +101,14 @@ static void frame_update(CmScene *scene) {
         cm_quad(pos, (vec2){size, size}, r, quad_color);
       }
     }
+  }
+  cm_2D_end();
 
+  cm_2D_begin(&benchmark->overlay);
+  {
     char buffer[20];
     usize s = snprintf(buffer, 20, "%" U64_FMT, grid * grid);
-    cm_font(benchmark->font, (vec2){0}, str_from_parts(s, buffer));
+    cm_font(benchmark->font, (vec2){10, 32}, str_from_parts(s, buffer));
   }
   cm_2D_end();
 }
