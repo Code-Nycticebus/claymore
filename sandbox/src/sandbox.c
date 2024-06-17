@@ -46,7 +46,7 @@ CmSceneInterface *benchmark(void);
 
 static const struct {
   Str label;
-  CmSceneInit interface;
+  CmSceneInit scene;
 } buttons[] = {
     {STR_STATIC("test"), test},
     {STR_STATIC("hello"), hello},
@@ -136,8 +136,8 @@ static void frame_update(CmScene *scene) {
       if (button(buttons[i].label, pos, button_size, color) ||
           RGFW_isPressedI(w, RGFW_1 + i) ||
           (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
-        if (buttons[i].interface) {
-          CmScene *m = cm_app_set_main(buttons[i].interface);
+        if (buttons[i].scene) {
+          CmScene *m = cm_app_set_main(buttons[i].scene);
           cm_scene_push(m, app_controlls);
         } else {
           cm_app_quit();
