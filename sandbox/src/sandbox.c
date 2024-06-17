@@ -43,15 +43,17 @@ CmSceneInterface *app_controlls(void) {
 CmSceneInterface *test(void);
 CmSceneInterface *hello(void);
 CmSceneInterface *benchmark(void);
+CmSceneInterface *template(void);
 
 static const struct {
   Str label;
   CmSceneInit scene;
 } buttons[] = {
-    {STR_STATIC("test"), test},
-    {STR_STATIC("hello"), hello},
-    {STR_STATIC("benchmark"), benchmark},
-    {STR_STATIC("quit"), NULL},
+    {.label = STR_STATIC("test"), .scene = test},
+    {.label = STR_STATIC("hello"), .scene = hello},
+    {.label = STR_STATIC("benchmark"), .scene = benchmark},
+    {.label = STR_STATIC("template"), .scene = template},
+    {.label = STR_STATIC("quit"), .scene = NULL},
 };
 
 typedef struct {
