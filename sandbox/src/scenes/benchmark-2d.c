@@ -1,7 +1,5 @@
 #include "claymore.h"
 
-#include "utils/fps.h"
-
 #define HEIGTH 420
 #define WIDTH 720
 const float aspect = (float)WIDTH / (float)HEIGTH;
@@ -9,19 +7,11 @@ const float aspect = (float)WIDTH / (float)HEIGTH;
 const float speed = 1000.f;
 
 typedef struct {
-  float zoom;
-  vec3 position;
-  mat4 view;
-  mat4 projection;
-} Camera;
-
-typedef struct {
   CmCamera2D camera;
   CmCamera2D overlay;
   CmFont *font;
+  usize grid;
 } Benchmark;
-
-#define MAX_QUADS 317
 
 static void on_event(CmScene *scene, CmEvent *event) {
   Benchmark *benchmark = scene->data;
@@ -52,14 +42,12 @@ static void init(CmScene *scene) {
 }
 
 static void frame_update(CmScene *scene) {
-  const float fps_threshold = 60;
+  Benchmark *benchmark = scene->data;
 
+  const float fps_threshold = 60;
   double deltatime = cm_app_deltatime();
   const float fps = 1 / deltatime;
-  static usize grid = 1;
-  grid += fps > fps_threshold ? 1 : grid > 0 ? -1 : 0;
-
-  Benchmark *benchmark = scene->data;
+  benchmark->grid += fps > fps_threshold ? 1 : benchmark->grid > 0 ? -1 : 0;
 
   vec3 dir = {0};
 
@@ -92,8 +80,8 @@ static void frame_update(CmScene *scene) {
     static float r = 0;
     const vec4 quad_color = {.2f, .2f, .8f, 1.f};
     r += (F64_PI / 2) * deltatime;
-    for (usize i = 0; i < grid; i++) {
-      for (usize j = 0; j < grid; j++) {
+    for (usize i = 0; i < benchmark->grid; i++) {
+      for (usize j = 0; j < benchmark->grid; j++) {
         const vec2 pos = {i * size, j * size};
         cm_quad(pos, (vec2){size, size}, r, quad_color);
       }
@@ -104,8 +92,10 @@ static void frame_update(CmScene *scene) {
   cm_2D_begin(&benchmark->overlay);
   {
     char buffer[20];
-    usize s = snprintf(buffer, 20, "%" U64_FMT, grid * grid);
-    cm_font(benchmark->font, (vec2){10, 32}, str_from_parts(s, buffer));
+    usize s =
+        snprintf(buffer, 20, "%8" U64_FMT, benchmark->grid * benchmark->grid);
+    cm_font(benchmark->font, (vec2){window->r.w - 16 * 9, 0},
+            str_from_parts(s, buffer));
   }
   cm_2D_end();
 }
