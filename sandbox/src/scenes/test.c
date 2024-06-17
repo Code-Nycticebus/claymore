@@ -1,11 +1,8 @@
 #include "claymore.h"
 
-#include "utils/fps.h"
-
 CmSceneInterface *sandbox(void);
 
 typedef struct {
-  CmScene *overlay;
 
   CmMesh mesh;
   CmCamera3D camera;
@@ -18,19 +15,6 @@ static void event(CmScene *scene, CmEvent *event) {
   Test *test = scene->data;
   CmCamera3D *camera = &test->camera;
 
-  cm_event_key(event, {
-    if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
-      if (test->overlay == NULL) {
-        const vec2 pos = {10, 0};
-        const Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
-        const float font_size = 32.f;
-        test->overlay = fps(scene, pos, font, font_size);
-      } else {
-        cm_scene_delete(scene, test->overlay);
-        test->overlay = NULL;
-      }
-    }
-  });
   cm_event_cursor(event, {
     float camera_distance =
         glm_vec3_distance(camera->base.position, camera->lookat);

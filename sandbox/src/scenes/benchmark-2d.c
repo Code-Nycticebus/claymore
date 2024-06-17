@@ -41,16 +41,13 @@ static void on_event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   Benchmark *benchmark = cm_scene_set_data(scene, sizeof(Benchmark));
 
-  const vec2 position = {10, 0};
-  const Str font = STR("assets/fonts/Ubuntu.ttf");
-  const float height = 32.f;
-  fps(scene, position, font, height);
-
   benchmark->camera.zoom = 100;
   cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100);
 
   cm_camera2D_screen(&benchmark->overlay);
 
+  const Str font = STR("assets/fonts/Ubuntu.ttf");
+  const float height = 32.f;
   benchmark->font = cm_font_from_file(&scene->gpu, font, height, ErrPanic);
 }
 

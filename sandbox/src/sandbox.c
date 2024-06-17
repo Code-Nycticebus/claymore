@@ -1,19 +1,42 @@
 #include "claymore/entrypoint.h"
 
+#include "utils/fps.h"
+
 CmSceneInterface *sandbox(void);
 
+static void _init(CmScene *scene) {
+  (void)cm_scene_set_data(scene, sizeof(CmScene *));
+}
+
 static void _event(CmScene *scene, CmEvent *event) {
-  (void)scene;
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
       cm_app_set_main(sandbox);
       event->handled = true;
     }
   });
+
+  CmScene **overlay = scene->data;
+  cm_event_key(event, {
+    if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
+      if (*overlay == NULL) {
+        const vec2 pos = {10, 0};
+        const Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
+        const float font_size = 32.f;
+        *overlay = fps(scene, pos, font, font_size);
+      } else {
+        cm_scene_delete(scene, *overlay);
+        *overlay = NULL;
+      }
+    }
+  });
 }
 
 CmSceneInterface *app_controlls(void) {
-  static CmSceneInterface interface = {.event = _event};
+  static CmSceneInterface interface = {
+      .event = _event,
+      .init = _init,
+  };
   return &interface;
 }
 
