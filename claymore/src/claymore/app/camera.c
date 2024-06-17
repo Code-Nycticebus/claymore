@@ -10,9 +10,8 @@ void _cm_camera_update(CmCameraBase *camera) {
 }
 
 void cm_camera2D_screen(CmCamera2D *camera) {
-  RGFW_window *window = cm_app_window();
-  glm_ortho(0, window->r.w, window->r.h, 0, 1.f / 100.f, 100.f,
-            camera->base.projection);
+  RGFW_window *w = cm_app_window();
+  glm_ortho(0, w->r.w, w->r.h, 0, 1.f / 100.f, 100.f, camera->base.projection);
 
   glm_mat4_identity(camera->base.view);
   glm_translate(camera->base.view, (vec3){0, 0, -1.f});
@@ -22,8 +21,9 @@ void cm_camera2D_screen(CmCamera2D *camera) {
 }
 
 void cm_camera2D_ortho(CmCamera2D *camera, vec2 pos, float aspect, float zoom) {
-  glm_ortho(-aspect * zoom, aspect * zoom, zoom, -zoom, 1.f / 100.f, 100.f,
-            camera->base.projection);
+  const float x = aspect * zoom;
+  const float y = zoom;
+  glm_ortho(-x, x, y, -y, 1.f / 100.f, 100.f, camera->base.projection);
 
   vec3 position = {pos[0], pos[1], -1.f};
 
@@ -42,7 +42,8 @@ void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
   glm_vec3_copy((vec3){0, 1, 0}, camera->up);
   glm_vec3_copy(lookat, camera->lookat);
 
-  glm_perspective(glm_rad(fov), aspect, 1.f / 100.f, 100.f, camera->base.projection);
+  glm_perspective(glm_rad(fov), aspect, 1.f / 100.f, 100.f,
+                  camera->base.projection);
   glm_lookat(position, lookat, camera->up, camera->base.view);
 
   camera->fov = fov;
