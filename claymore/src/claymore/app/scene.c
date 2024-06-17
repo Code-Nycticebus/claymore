@@ -50,7 +50,7 @@ void *cm_scene_set_data(CmScene *scene, usize size) {
   return scene->data;
 }
 
-CmSceneChildren *cm_scene_children(CmScene *scene) {
+const CmSceneChildren *cm_scene_children(CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
   return (CmSceneChildren *)&internal->children;
 }
