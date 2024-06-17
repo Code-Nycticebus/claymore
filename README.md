@@ -18,6 +18,11 @@ First clone the repo:
 git clone --recursive https://github.com/Code-Nycticebus/claymore
 ```
 
+On linux you need to install these dependencies:
+```terminal
+sudo apt install libmesa-dev xorg-dev 
+```
+
 Build it with a c compiler:
 ```terminal
 gcc build/claymore.c
