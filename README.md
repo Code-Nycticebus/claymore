@@ -20,7 +20,7 @@ git clone --recursive https://github.com/Code-Nycticebus/claymore
 
 On linux you need to install these dependencies:
 ```terminal
-sudo apt install libmesa-dev xorg-dev 
+sudo apt install libmesa-dev xorg-dev libxrandr-dev 
 ```
 
 Build it with a c compiler:
