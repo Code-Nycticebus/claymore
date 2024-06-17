@@ -29,11 +29,9 @@ double cm_app_deltatime(void) { return app.deltatime; }
 
 CmScene *cm_app_set_main(CmSceneInit init) {
   app.new_root = cm_scene_internal_init(&app.data.arena, init);
-  if (!app.new_root->interface->init) {
-    cebus_log_error("Main CmSceneInterface needs an init function");
-    DEBUGBREAK();
+  if (app.new_root->interface->init) {
+    app.new_root->interface->init(&app.new_root->data);
   }
-  app.new_root->interface->init(&app.new_root->data);
   return (CmScene *)app.new_root;
 }
 
