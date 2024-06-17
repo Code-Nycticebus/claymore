@@ -19,9 +19,6 @@ static void event(CmScene *scene, CmEvent *event) {
   CmCamera3D *camera = &test->camera;
 
   cm_event_key(event, {
-    if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
-      cm_app_set_main(sandbox);
-    }
     if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
       if (test->overlay == NULL) {
         const vec2 pos = {10, 0};

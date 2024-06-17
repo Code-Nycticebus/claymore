@@ -1,5 +1,23 @@
 #include "claymore/entrypoint.h"
 
+CmSceneInterface *sandbox(void);
+
+static void _event(CmScene *scene, CmEvent *event) {
+  (void)scene;
+  cm_event_key(event, {
+    if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
+      cm_app_set_main(sandbox);
+    }
+  });
+}
+
+CmSceneInterface *manager(void) {
+  static CmSceneInterface interface = {
+      .event = _event,
+  };
+  return &interface;
+}
+
 CmSceneInterface *test(void);
 CmSceneInterface *hello(void);
 CmSceneInterface *benchmark(void);
@@ -45,10 +63,22 @@ static bool button(Str label, const vec2 pos, const vec2 size) {
   return false;
 }
 
+static void event(CmScene *scene, CmEvent *event) {
+  (void)scene;
+  cm_event_key(event, {
+    if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
+      cm_app_quit();
+    }
+  });
+}
+
 static void init(CmScene *scene) {
   cm_camera2D_screen(&menu.camera);
   menu.font = cm_font_from_file(&scene->gpu, STR("assets/fonts/Ubuntu.ttf"), 24,
                                 ErrPanic);
+
+  const vec3 bg_color = {0.05f, 0.05f, 0.05f};
+  cm_app_background(bg_color);
 }
 
 static void frame_update(CmScene *scene) {
@@ -63,23 +93,25 @@ static void frame_update(CmScene *scene) {
 
     for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
       if (button(buttons[i].label, pos, button_size)) {
-        cm_app_set_main(buttons[i].interface);
+        CmScene *m = cm_app_set_main(buttons[i].interface);
+        cm_scene_push(m, manager);
       }
       pos[1] += button_size[1] + margin;
+    }
+
+    if (button(STR("quit"), pos, button_size)) {
+      cm_app_quit();
     }
   }
   cm_2D_end();
 
-  if (RGFW_isMousePressed(w, RGFW_mouseLeft)) {
-    menu.pressed = true;
-  } else if (RGFW_isMouseReleased(w, RGFW_mouseLeft)) {
-    menu.pressed = false;
-  }
+  menu.pressed = RGFW_isMousePressed(w, RGFW_mouseLeft);
 }
 
 CmSceneInterface *sandbox(void) {
   static CmSceneInterface interface = {
       .init = init,
+      .event = event,
       .frame_update = frame_update,
   };
   return &interface;

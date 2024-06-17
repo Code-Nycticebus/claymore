@@ -25,12 +25,6 @@ typedef struct {
 static void on_event(CmScene *scene, CmEvent *event) {
   Benchmark *benchmark = scene->data;
 
-  cm_event_key(event, {
-    if (key->code == RGFW_Escape) {
-      cm_app_quit();
-    }
-  });
-
   cm_event_scroll(event, {
     const float min_zoom = 1.F;
     const float scroll_speed = 10.F;
@@ -46,9 +40,6 @@ static void on_event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   cebus_log_info("benchmark init");
   Benchmark *benchmark = cm_scene_set_data(scene, sizeof(Benchmark));
-
-  const vec3 bg_color = {0.15f, 0.15f, 0.15f};
-  cm_app_background(bg_color);
 
   const vec2 position = {10, 0};
   const Str font = STR("assets/fonts/Ubuntu.ttf");
