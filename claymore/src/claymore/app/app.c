@@ -26,7 +26,7 @@ RGFW_window *cm_app_window(void) { return app.public.window; }
 Arena *cm_app_arena(void) { return &app.public.arena; }
 void *cm_app_data(void) { return app.public.data; }
 void *cm_app_set_data(usize size) {
-  app.public.data = arena_calloc(&app.public.arena, size);
+  app.public.data = arena_calloc(&app.arena, size);
   return app.public.data;
 }
 double cm_app_deltatime(void) { return app.deltatime; }

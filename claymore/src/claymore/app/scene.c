@@ -46,7 +46,7 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
 
 void *cm_scene_set_data(CmScene *scene, usize size) {
   cebus_assert(scene->data == NULL, "Trying to set data twice");
-  scene->data = arena_calloc(&scene->arena, size);
+  scene->data = arena_calloc(&((CmSceneInternal *)scene)->arena, size);
   return scene->data;
 }
 
