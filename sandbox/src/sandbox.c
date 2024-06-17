@@ -34,12 +34,12 @@ static const struct {
 typedef struct {
   CmCamera2D camera;
   bool pressed;
+  usize selected;
   CmFont *font;
 } Menu;
 static Menu menu = {0};
 
-static bool button(Str label, const vec2 pos, const vec2 size) {
-  vec4 color = {.2f, .2f, .2f, 1};
+static bool button(Str label, const vec2 pos, const vec2 size, vec4 color) {
 
   RGFW_window *w = cm_app_window();
 
@@ -66,8 +66,16 @@ static bool button(Str label, const vec2 pos, const vec2 size) {
 static void event(CmScene *scene, CmEvent *event) {
   (void)scene;
   cm_event_key(event, {
-    if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
-      cm_app_quit();
+    if (key->action == RGFW_keyPressed) {
+      if (key->code == RGFW_Escape) {
+        cm_app_quit();
+      }
+      if (key->code == RGFW_Up || key->code == RGFW_k) {
+        menu.selected = glm_clamp(menu.selected - 1, 1, ARRAY_LEN(buttons));
+      }
+      if (key->code == RGFW_Down || key->code == RGFW_j) {
+        menu.selected = glm_clamp(menu.selected + 1, 1, ARRAY_LEN(buttons));
+      }
     }
   });
 }
@@ -92,14 +100,20 @@ static void frame_update(CmScene *scene) {
     const float margin = 10.f;
 
     for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
-      if (button(buttons[i].label, pos, button_size)) {
+      vec4 color = {.2f, .2f, .2f, 1};
+      if (menu.selected == i + 1) {
+        glm_vec4_scale(color, 2, color);
+      }
+      if (button(buttons[i].label, pos, button_size, color) ||
+          RGFW_isPressedI(w, RGFW_1 + i) ||
+          (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
         CmScene *m = cm_app_set_main(buttons[i].interface);
         cm_scene_push(m, manager);
       }
       pos[1] += button_size[1] + margin;
     }
 
-    if (button(STR("quit"), pos, button_size)) {
+    if (button(STR("quit"), pos, button_size, (vec4){.2f, .2f, .2f, 1})) {
       cm_app_quit();
     }
   }
