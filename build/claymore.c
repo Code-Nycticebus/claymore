@@ -50,7 +50,6 @@ const Str claymore_files[] = {
     STR_STATIC(SRC_DIR "claymore/renderer/texture.c"),
     STR_STATIC(SRC_DIR "claymore/renderer/shaders.c"),
     STR_STATIC(SRC_DIR "claymore/renderer/mesh.c"),
-
 };
 
 #if defined(LINUX)
@@ -83,11 +82,6 @@ void compile_libs(Arena *arena, Paths *objs) {
   da_init(&cmd, &scratch);
 
   for (usize i = 0; i < ARRAY_LEN(claymore_lib_files); ++i) {
-    da_push(&cmd, STR(CC));
-    da_push(&cmd, STR("-c"));
-    da_extend(&cmd, ARRAY_LEN(claymore_cflags), claymore_cflags);
-
-    da_push(&cmd, STR("-o"));
     Str name = claymore_lib_files[i];
     name = str_chop_right_by_delim(&name, '/');
     name = str_chop_by_delim(&name, '.');
@@ -95,10 +89,17 @@ void compile_libs(Arena *arena, Paths *objs) {
     da_push(objs, out);
 
     if (!file_exists(out)) {
+      da_push(&cmd, STR(CC));
+      da_push(&cmd, STR("-c"));
+      da_extend(&cmd, ARRAY_LEN(claymore_cflags), claymore_cflags);
+      da_push(&cmd, STR("-O2"));
+      da_push(&cmd, STR("-DNDEBUG"));
+
+      da_push(&cmd, STR("-o"));
       da_push(&cmd, out);
       da_push(&cmd, claymore_lib_files[i]);
 
-      cebus_log_info("Building: libs");
+      cebus_log_info("Building: " STR_FMT, STR_ARG(out));
       cmd_exec(ErrPanic, cmd.len, cmd.items);
     }
     da_clear(&cmd);

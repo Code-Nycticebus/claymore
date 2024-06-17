@@ -27,11 +27,12 @@ void compile_file(Str filename) {
   da_init(&cmd, &arena);
 
   da_push(&cmd, STR(CC));
-  da_push(&cmd, STR("-o"));
 
   Str out = str_copy(filename, &arena);
   out = str_chop_right_by_delim(&out, '/');
   out = str_chop_by_delim(&out, '.');
+
+  da_push(&cmd, STR("-o"));
   da_push(&cmd, str_append(STR("sandbox/"), out, &arena));
 
   da_extend(&cmd, ARRAY_LEN(cflags), cflags);
