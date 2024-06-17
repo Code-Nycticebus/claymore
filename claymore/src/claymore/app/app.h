@@ -20,14 +20,12 @@ typedef const struct {
 
 typedef struct {
   void *data;
-  Arena arena;
   RGFW_window *window;
 } CmApp;
 
 CmApp *cm_app(void);
 CmScene *cm_app_root(void);
 RGFW_window *cm_app_window(void);
-Arena *cm_app_arena(void);
 void *cm_app_data(void);
 void *cm_app_set_data(usize size);
 double cm_app_deltatime(void);

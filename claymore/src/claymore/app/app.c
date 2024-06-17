@@ -23,12 +23,14 @@ static struct {
 CmApp *cm_app(void) { return &app.public; }
 CmScene *cm_app_root(void) { return &app.root->public; }
 RGFW_window *cm_app_window(void) { return app.public.window; }
-Arena *cm_app_arena(void) { return &app.public.arena; }
 void *cm_app_data(void) { return app.public.data; }
+
 void *cm_app_set_data(usize size) {
+  cebus_assert(app.public.data == NULL, "Trying to set app data twice");
   app.public.data = arena_calloc(&app.arena, size);
   return app.public.data;
 }
+
 double cm_app_deltatime(void) { return app.deltatime; }
 
 CmScene *cm_app_set_main(CmSceneInit init) {
