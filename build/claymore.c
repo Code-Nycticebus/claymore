@@ -7,48 +7,53 @@
 
 #include "cebus.h"
 
-#define SRC_DIR "claymore/src/"
-#define LIB_DIR "claymore/libs/"
+#ifndef CM_DIR
+#define CM_DIR "claymore"
+#endif
+
+#define CM_SRC_DIR CM_DIR "/src/"
+#define CM_LIB_DIR CM_DIR "/libs/"
+#define CM_BUILD_DIR CM_DIR "/../build/"
 
 typedef DA(Str) Paths;
 
 const Str claymore_cflags[] = {
     STR_STATIC("-std=c99"),
-    STR_STATIC("-I" SRC_DIR),
-    STR_STATIC("-I" LIB_DIR "cebus"),
-    STR_STATIC("-I" LIB_DIR "cglm/include"),
-    STR_STATIC("-I" LIB_DIR "glad/src"),
-    STR_STATIC("-I" LIB_DIR "RGFW/src"),
-    STR_STATIC("-I" LIB_DIR "stb_image/src"),
-    STR_STATIC("-I" LIB_DIR "stb_truetype/src"),
-    STR_STATIC("-I" LIB_DIR "miniaudio/src"),
+    STR_STATIC("-I" CM_SRC_DIR),
+    STR_STATIC("-I" CM_LIB_DIR "cebus"),
+    STR_STATIC("-I" CM_LIB_DIR "cglm/include"),
+    STR_STATIC("-I" CM_LIB_DIR "glad/src"),
+    STR_STATIC("-I" CM_LIB_DIR "RGFW/src"),
+    STR_STATIC("-I" CM_LIB_DIR "stb_image/src"),
+    STR_STATIC("-I" CM_LIB_DIR "stb_truetype/src"),
+    STR_STATIC("-I" CM_LIB_DIR "miniaudio/src"),
 };
 
 const Str claymore_lib_files[] = {
-    STR_STATIC(LIB_DIR "RGFW/src/RGFW.c"),
-    STR_STATIC(LIB_DIR "glad/src/glad.c"),
-    STR_STATIC(LIB_DIR "miniaudio/src/miniaudio.c"),
-    STR_STATIC(LIB_DIR "stb_image/src/stb_image.c"),
-    STR_STATIC(LIB_DIR "stb_truetype/src/stb_truetype.c"),
-    STR_STATIC("build/cebus.c"),
+    STR_STATIC(CM_LIB_DIR "RGFW/src/RGFW.c"),
+    STR_STATIC(CM_LIB_DIR "glad/src/glad.c"),
+    STR_STATIC(CM_LIB_DIR "miniaudio/src/miniaudio.c"),
+    STR_STATIC(CM_LIB_DIR "stb_image/src/stb_image.c"),
+    STR_STATIC(CM_LIB_DIR "stb_truetype/src/stb_truetype.c"),
+    STR_STATIC(CM_DIR "/../build/cebus.c"),
 };
 
 const Str claymore_files[] = {
-    STR_STATIC(SRC_DIR "claymore/app/event.c"),
-    STR_STATIC(SRC_DIR "claymore/app/camera.c"),
-    STR_STATIC(SRC_DIR "claymore/app/scene.c"),
-    STR_STATIC(SRC_DIR "claymore/app/app.c"),
-    STR_STATIC(SRC_DIR "claymore/app/sound.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/gpu.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/context.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/2D/font.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/2D/quads.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/2D/renderer2D.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/2D/circles.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/2D/sprites.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/texture.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/shaders.c"),
-    STR_STATIC(SRC_DIR "claymore/renderer/mesh.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/app/event.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/app/camera.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/app/scene.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/app/app.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/app/sound.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/gpu.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/context.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/font.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/quads.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/renderer2D.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/circles.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/sprites.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/texture.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/shaders.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/mesh.c"),
 };
 
 #if defined(LINUX)
@@ -83,12 +88,13 @@ void compile_libs(Arena *arena, Paths *objs) {
     Str name = claymore_lib_files[i];
     name = str_chop_right_by_delim(&name, '/');
     name = str_chop_by_delim(&name, '.');
-    Str out = str_format(arena, "build/obj/" STR_FMT ".o", STR_ARG(name));
+    Str out =
+        str_format(arena, CM_BUILD_DIR "/obj/" STR_FMT ".o", STR_ARG(name));
     da_push(objs, out);
 
     if (!file_exists(out)) {
       cmd_push(&cmd, STR(CC), STR("-c"));
-      cmd_push(&cmd, STR("-O2"), STR("-DNDEBUG"));
+      cmd_push(&cmd, STR("-O2"), STR("-DNDEBUG"), STR("-fPIC"));
       cmd_extend(&cmd, claymore_cflags);
 
       cmd_push(&cmd, STR("-o"), out);
@@ -108,23 +114,24 @@ void compile_claymore(void) {
   Arena arena = {0};
   Paths objs = da_new(&arena);
 
-  create_directory("build/obj");
-  file_write_str(STR("build/obj/.gitignore"), STR("*\n"), ErrPanic);
+  create_directory(CM_BUILD_DIR "obj");
+  file_write_str(STR(CM_BUILD_DIR "obj/.gitignore"), STR("*\n"), ErrPanic);
 
   compile_libs(&arena, &objs);
 
-  cebus_log_info("Building: build/lib/libclaymore.a");
+  cebus_log_info("Building: " CM_BUILD_DIR "lib/libclaymore.a");
 
   Cmd cmd = cmd_new(&arena);
 
   for (usize i = 0; i < ARRAY_LEN(claymore_files); ++i) {
-    cmd_push(&cmd, STR(CC), STR("-c"));
+    cmd_push(&cmd, STR(CC), STR("-c"), STR("-fPIC"));
     cmd_extend(&cmd, claymore_cflags);
 
     Str name = claymore_files[i];
     name = str_chop_right_by_delim(&name, '/');
     name = str_chop_by_delim(&name, '.');
-    Str out = str_format(&arena, "build/obj/" STR_FMT ".o", STR_ARG(name));
+    Str out =
+        str_format(&arena, CM_BUILD_DIR "/obj/" STR_FMT ".o", STR_ARG(name));
     cmd_push(&cmd, STR("-o"), out);
 
     da_push(&objs, out);
@@ -135,10 +142,10 @@ void compile_claymore(void) {
     da_clear(&cmd);
   }
 
-  create_directory("build/lib");
-  file_write_str(STR("build/lib/.gitignore"), STR("*\n"), ErrPanic);
+  create_directory(CM_BUILD_DIR "lib");
+  file_write_str(STR(CM_BUILD_DIR "lib/.gitignore"), STR("*\n"), ErrPanic);
 
-  cmd_push(&cmd, STR("ar"), STR("rcs"), STR("build/lib/libclaymore.a"));
+  cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_BUILD_DIR "lib/libclaymore.a"));
 
   cmd_extend_da(&cmd, &objs);
 

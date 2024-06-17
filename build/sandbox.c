@@ -13,10 +13,11 @@ const Str files[] = {
     STR_STATIC("sandbox/src/scenes/hello.c"),
     STR_STATIC("sandbox/src/scenes/benchmark-2d.c"),
     STR_STATIC("sandbox/src/scenes/test.c"),
+    STR_STATIC("sandbox/src/scenes/template.c"),
 };
 
 const Str cflags[] = {
-    STR("-Iclaymore/src"),
+    STR("-I" CM_SRC_DIR),
     STR("-Isandbox/src"),
 };
 
@@ -39,7 +40,7 @@ void compile_file(Str filename) {
   cmd_push(&cmd, filename);
   cmd_extend(&cmd, files);
 
-  cmd_push(&cmd, STR("-Lbuild/lib"), STR("-lclaymore"));
+  cmd_push(&cmd, STR("-L" CM_BUILD_DIR "/lib"), STR("-lclaymore"));
   cmd_extend(&cmd, claymore_libs);
 
   cmd_exec_da(ErrPanic, &cmd);
