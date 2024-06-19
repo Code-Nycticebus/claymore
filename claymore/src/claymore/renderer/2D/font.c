@@ -112,7 +112,36 @@ static void _cm_font_renderer_flush(void) {
   renderer->vertex_count = 0;
 }
 
+void _cm_push_char(CmFont *font, char c, Vertex *vertex, float *x, float *y) {
+  stbtt_aligned_quad q;
+  stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution, font->ttf_resoulution,
+                     c - FONT_CHAR_MIN, x, y, &q, 1);
+
+  glm_vec2_copy((vec2){q.x0, q.y0}, vertex[0].pos);
+  glm_vec2_copy((vec2){q.s0, q.t0}, vertex[0].uv);
+
+  glm_vec2_copy((vec2){q.x1, q.y0}, vertex[1].pos);
+  glm_vec2_copy((vec2){q.s1, q.t0}, vertex[1].uv);
+
+  glm_vec2_copy((vec2){q.x1, q.y1}, vertex[2].pos);
+  glm_vec2_copy((vec2){q.s1, q.t1}, vertex[2].uv);
+
+  glm_vec2_copy((vec2){q.x0, q.y1}, vertex[3].pos);
+  glm_vec2_copy((vec2){q.s0, q.t1}, vertex[3].uv);
+
+  glm_vec2_copy((vec2){q.x0, q.y0}, vertex[4].pos);
+  glm_vec2_copy((vec2){q.s0, q.t0}, vertex[4].uv);
+
+  glm_vec2_copy((vec2){q.x1, q.y1}, vertex[5].pos); // NOLINT
+  glm_vec2_copy((vec2){q.s1, q.t1}, vertex[5].uv);  // NOLINT
+
+  renderer->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
+}
+
 void cm_font(CmFont *font, const vec2 pos, Str text) {
+  if (renderer->texture_id != font->texture_id) {
+    _cm_font_renderer_flush();
+  }
   renderer->texture_id = font->texture_id;
 
   float text_y = pos[1] + font->height;
@@ -127,34 +156,16 @@ void cm_font(CmFont *font, const vec2 pos, Str text) {
         vertex = renderer->buffer;
       }
 
-      stbtt_aligned_quad q;
-      stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution,
-                         font->ttf_resoulution, text.data[i] - FONT_CHAR_MIN,
-                         &text_x, &text_y, &q, 1);
-
-      glm_vec2_copy((vec2){q.x0, q.y0}, vertex[0].pos);
-      glm_vec2_copy((vec2){q.s0, q.t0}, vertex[0].uv);
-
-      glm_vec2_copy((vec2){q.x1, q.y0}, vertex[1].pos);
-      glm_vec2_copy((vec2){q.s1, q.t0}, vertex[1].uv);
-
-      glm_vec2_copy((vec2){q.x1, q.y1}, vertex[2].pos);
-      glm_vec2_copy((vec2){q.s1, q.t1}, vertex[2].uv);
-
-      glm_vec2_copy((vec2){q.x0, q.y1}, vertex[3].pos);
-      glm_vec2_copy((vec2){q.s0, q.t1}, vertex[3].uv);
-
-      glm_vec2_copy((vec2){q.x0, q.y0}, vertex[4].pos);
-      glm_vec2_copy((vec2){q.s0, q.t0}, vertex[4].uv);
-
-      glm_vec2_copy((vec2){q.x1, q.y1}, vertex[5].pos); // NOLINT
-      glm_vec2_copy((vec2){q.s1, q.t1}, vertex[5].uv);  // NOLINT
-
-      renderer->vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
+      _cm_push_char(font, text.data[i], vertex, &text_x, &text_y);
       vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
     } else if (text.data[i] == '\n') {
       text_y += font->height;
       text_x = pos[0];
+    } else if (text.data[i] == '\t') {
+      for (usize i = 0; i < 4; ++i) {
+        _cm_push_char(font, ' ', vertex, &text_x, &text_y);
+        vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
+      }
     }
   }
 }
