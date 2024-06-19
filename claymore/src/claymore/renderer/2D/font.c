@@ -29,7 +29,7 @@ struct FontRendererData {
   CmShader shader;
 
   CmCamera2D *camera;
-  CmGpuID texture_id;
+  CmFont *font;
 
   Vertex buffer[FONT_RENDERER_VERTECIES_MAX];
   size_t vertex_count;
@@ -42,10 +42,11 @@ struct CmFont {
   stbtt_bakedchar cdata[FONT_CHAR_MAX];
   float height;
   size_t ttf_resoulution;
+  vec4 color;
 };
 
 CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height) {
-  CmFont *font_renderer = arena_calloc(gpu->arena, sizeof(CmFont));
+  CmFont *font = arena_calloc(gpu->arena, sizeof(CmFont));
 
   GLint max_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
@@ -59,11 +60,11 @@ CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height) {
   uint8_t *ttf_bitmap = arena_calloc(&temp, sizeof(uint8_t) * ttf_bitmap_size);
   stbtt_BakeFontBitmap(bytes.data, 0, height, ttf_bitmap, ttf_bitmap_resolution,
                        ttf_bitmap_resolution, FONT_CHAR_MIN, FONT_CHAR_MAX,
-                       font_renderer->cdata);
+                       font->cdata);
 
-  font_renderer->texture_id = cm_gpu_texture(gpu);
+  font->texture_id = cm_gpu_texture(gpu);
   glActiveTexture(GL_TEXTURE0 + 0);
-  glBindTexture(GL_TEXTURE_2D, font_renderer->texture_id);
+  glBindTexture(GL_TEXTURE_2D, font->texture_id);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, ttf_bitmap_resolution,
                ttf_bitmap_resolution, 0, GL_RED, GL_UNSIGNED_BYTE, ttf_bitmap);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -72,10 +73,11 @@ CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height) {
 
   arena_free(&temp);
 
-  font_renderer->height = height;
-  font_renderer->ttf_resoulution = ttf_bitmap_resolution;
+  font->height = height;
+  font->ttf_resoulution = ttf_bitmap_resolution;
+  glm_vec4_one(font->color);
 
-  return font_renderer;
+  return font;
 }
 
 CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error) {
@@ -97,9 +99,10 @@ static void _cm_font_renderer_flush(void) {
   cm_shader_set_mat4(&renderer->shader, STR("u_mvp"),
                      renderer->camera->base.vp);
   cm_shader_set_i32(&renderer->shader, STR("u_texture"), 0);
+  cm_shader_set_vec4(&renderer->shader, STR("u_color"), renderer->font->color);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, renderer->texture_id);
+  glBindTexture(GL_TEXTURE_2D, renderer->font->texture_id);
 
   glBindBuffer(GL_ARRAY_BUFFER, renderer->vbo.id);
   glBindVertexArray(renderer->vao.id);
@@ -110,6 +113,10 @@ static void _cm_font_renderer_flush(void) {
   glDrawArrays(GL_TRIANGLES, 0, renderer->vertex_count);
   glEnable(GL_DEPTH_TEST);
   renderer->vertex_count = 0;
+}
+
+void cm_font_color(CmFont *font, vec4 color) {
+  glm_vec4_copy(color, font->color);
 }
 
 void _cm_push_char(CmFont *font, char c, Vertex *vertex, float *x, float *y) {
@@ -139,10 +146,10 @@ void _cm_push_char(CmFont *font, char c, Vertex *vertex, float *x, float *y) {
 }
 
 void cm_font(CmFont *font, const vec2 pos, Str text) {
-  if (renderer->texture_id != font->texture_id) {
+  if (renderer->font && renderer->font != font) {
     _cm_font_renderer_flush();
   }
-  renderer->texture_id = font->texture_id;
+  renderer->font = font;
 
   float text_y = pos[1] + font->height;
   float text_x = pos[0];
@@ -197,8 +204,9 @@ usize cm_font_internal_init(void) {
       STR("#version 120\n"
           "varying vec2 v_uv;\n"
           "uniform sampler2D u_texture;\n"
+          "uniform vec4 u_color = vec4(1, 1, 1, 1);"
           "void main() {\n"
-          " gl_FragColor = vec4(texture2D(u_texture, v_uv).r);\n"
+          " gl_FragColor = vec4(texture2D(u_texture, v_uv).r) * u_color;\n"
           "}\n"),
       ErrDefault);
 

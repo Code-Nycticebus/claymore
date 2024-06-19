@@ -12,7 +12,7 @@ static void init(CmScene *scene) {
   HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
 
   const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
-  const float font_size = 48.f;
+  const float font_size = 72.f;
   hello->font = cm_font_from_file(&scene->gpu, font, font_size, ErrPanic);
   cm_camera2D_screen(&hello->camera);
 
@@ -24,6 +24,10 @@ static void init(CmScene *scene) {
 
 static void frame_update(CmScene *scene) {
   HelloWorld *hello = scene->data;
+
+  const float r = sinf(cm_app_time() / 1e9) * 0.5f + 0.5f;
+  const float b = cosf(cm_app_time() / 1e9) * 0.5f + 0.5f;
+  cm_font_color(hello->font, (vec4){r, 0, b, 1.f});
 
   cm_2D_begin(&hello->camera);
   { cm_font(hello->font, hello->position, label); }

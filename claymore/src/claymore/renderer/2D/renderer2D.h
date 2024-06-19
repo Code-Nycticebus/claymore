@@ -19,6 +19,7 @@ typedef struct CmFont CmFont;
 
 CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height);
 CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error);
+void cm_font_color(CmFont *font, vec4 color);
 void cm_font(CmFont *font, const vec2 pos, Str text);
 
 // INTERNAL

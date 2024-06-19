@@ -33,7 +33,7 @@ currently i'm not really working towards a goal so i decieded to create a roadma
 
 - [ ] Misc
     - [ ] custom events/signals
-    - [ ] implement font color
+    - [x] font color
     - [ ] Make sandbox to a menu
     - [ ] GUI
     - [ ] Joystick support
