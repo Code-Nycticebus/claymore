@@ -101,3 +101,24 @@ CmScene* scene_init(CmScene* parent, float radius) {
     return scene;
 }
 ```
+
+### Memory Management
+
+To allocate memory within a scene, use the scene's [arena](https://github.com/Code-Nycticebus/cebus#arenah). 
+This ensures the memory will be automatically freed when the scene is de-initialized.
+
+```c
+typedef struct {
+    int* values;
+} SceneData;
+
+static void init(CmScene* scene) {
+    // Allocate scene data
+    SceneData* data = cm_scene_set_data(scene, sizeof(SceneData));
+    // Allocate values
+    data->values = arena_calloc(&scene->arena, sizeof(int) * 3);
+    // ...
+}
+```
+
+
