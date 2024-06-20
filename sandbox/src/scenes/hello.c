@@ -26,8 +26,9 @@ static void frame_update(CmScene *scene) {
   HelloWorld *hello = scene->data;
 
   const float r = sinf(cm_app_time() / 1e9) * 0.5f + 0.5f;
+  const float g = 0.5f;
   const float b = cosf(cm_app_time() / 1e9) * 0.5f + 0.5f;
-  cm_font_color(hello->font, (vec4){r, 0, b, 1.f});
+  cm_font_color(hello->font, (vec4){r, g, b, 1.f});
 
   cm_2D_begin(&hello->camera);
   { cm_font(hello->font, hello->position, label); }
