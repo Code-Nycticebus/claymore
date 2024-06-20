@@ -5,15 +5,18 @@
 #define CC "gcc"
 #endif
 
+#define CEBUS_IMPLEMENTATION
 #include "cebus.h"
 
 #ifndef CM_DIR
-#define CM_DIR "claymore"
+#define CM_DIR "claymore/"
 #endif
 
-#define CM_SRC_DIR CM_DIR "/src/"
-#define CM_LIB_DIR CM_DIR "/libs/"
-#define CM_BUILD_DIR CM_DIR "/../build/"
+#define CM_SRC_DIR CM_DIR "src/"
+#define CM_LIB_DIR CM_DIR "libs/"
+#define CM_BUILD_DIR CM_DIR "../build/"
+
+#define CM_OUT_DIR CM_BUILD_DIR "lib/"
 
 typedef DA(Str) Paths;
 
@@ -35,7 +38,7 @@ const Str claymore_lib_files[] = {
     STR_STATIC(CM_LIB_DIR "miniaudio/src/miniaudio.c"),
     STR_STATIC(CM_LIB_DIR "stb_image/src/stb_image.c"),
     STR_STATIC(CM_LIB_DIR "stb_truetype/src/stb_truetype.c"),
-    STR_STATIC(CM_DIR "/../build/cebus.c"),
+    STR_STATIC(CM_BUILD_DIR "obj/cebus.c"),
 };
 
 const Str claymore_files[] = {
@@ -80,9 +83,17 @@ void create_directory(const char *path) {
 #endif
 }
 
+void create_cebus(void) {
+  Str content = STR("#define CEBUS_IMPLEMENTATION\n"
+                    "#include \"../cebus.h\"\n");
+  file_write_str(STR(CM_BUILD_DIR "obj/cebus.c"), content, ErrPanic);
+}
+
 void compile_libs(Arena *arena, Paths *objs) {
   Arena scratch = {0};
   Cmd cmd = cmd_new(&scratch);
+
+  create_cebus();
 
   for (usize i = 0; i < ARRAY_LEN(claymore_lib_files); ++i) {
     Str name = claymore_lib_files[i];
@@ -119,7 +130,7 @@ void compile_claymore(void) {
 
   compile_libs(&arena, &objs);
 
-  cebus_log_info("Building: " CM_BUILD_DIR "lib/libclaymore.a");
+  cebus_log_info("Building: " CM_OUT_DIR "libclaymore.a");
 
   Cmd cmd = cmd_new(&arena);
 
@@ -131,7 +142,7 @@ void compile_claymore(void) {
     name = str_chop_right_by_delim(&name, '/');
     name = str_chop_by_delim(&name, '.');
     Str out =
-        str_format(&arena, CM_BUILD_DIR "/obj/" STR_FMT ".o", STR_ARG(name));
+        str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT ".o", STR_ARG(name));
     cmd_push(&cmd, STR("-o"), out);
 
     da_push(&objs, out);
@@ -155,8 +166,6 @@ void compile_claymore(void) {
 }
 
 #ifndef CLAYMORE_INCLUDE
-#define CEBUS_IMPLEMENTATION
-#include "cebus.h"
 int main(void) { compile_claymore(); }
 #endif
 

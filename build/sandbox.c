@@ -1,12 +1,12 @@
-#define CLAYMORE_INCLUDE
-#include "claymore.c"
+#ifndef CC
+#define CC "gcc"
+#endif
 
 #define CEBUS_IMPLEMENTATION
 #include "cebus.h"
 
-#ifndef CC
-#define CC "gcc"
-#endif
+#define CLAYMORE_INCLUDE
+#include "claymore.c"
 
 const Str files[] = {
     STR_STATIC("sandbox/src/utils/fps.c"),
