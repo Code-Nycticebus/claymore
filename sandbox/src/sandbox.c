@@ -66,15 +66,10 @@ static Menu menu = {0};
 
 static bool button(Str label, const vec2 pos, const vec2 size, vec4 color) {
   RGFW_window *w = cm_app_window();
+  RGFW_vector p = RGFW_window_getMousePoint(w);
   if (glm_aabb2d_point(
-          (vec2[]){
-              {pos[0], pos[1]},
-              {pos[0] + size[0], pos[1] + size[1]},
-          },
-          (vec2){
-              w->event.point.x,
-              w->event.point.y,
-          })) {
+          (vec2[]){{pos[0], pos[1]}, {pos[0] + size[0], pos[1] + size[1]}},
+          (vec2){p.x, p.y})) {
     if (!menu.pressed && RGFW_isMousePressed(w, RGFW_mouseLeft)) {
       return true;
     }
