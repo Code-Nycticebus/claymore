@@ -18,6 +18,9 @@
 
 #define CM_OUT_DIR CM_BUILD_DIR "lib/"
 
+// Output file
+#define CM_OUTFILE CM_OUT_DIR "libclaymore.a"
+
 typedef DA(Str) Paths;
 
 const Str claymore_cflags[] = {
@@ -130,7 +133,7 @@ void compile_claymore(void) {
 
   compile_libs(&arena, &objs);
 
-  cebus_log_info("Building: " CM_OUT_DIR "libclaymore.a");
+  cebus_log_info("Building: " CM_OUTFILE);
 
   Cmd cmd = cmd_new(&arena);
 
@@ -156,7 +159,7 @@ void compile_claymore(void) {
   create_directory(CM_BUILD_DIR "lib");
   file_write_str(STR(CM_BUILD_DIR "lib/.gitignore"), STR("*\n"), ErrPanic);
 
-  cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_BUILD_DIR "lib/libclaymore.a"));
+  cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_OUTFILE));
 
   cmd_extend_da(&cmd, &objs);
 
