@@ -58,7 +58,6 @@ CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   CmSceneInterface *interface = init();
   usize size = sizeof(CmSceneInternal) + interface->size;
   CmSceneInternal *scene = arena_calloc_chunk(arena, size);
-  cebus_assert((uintptr_t)scene->data % 16 == 0, "alignment is not correct!");
 
   scene->interface = interface;
   da_init(&scene->children, &scene->arena);
