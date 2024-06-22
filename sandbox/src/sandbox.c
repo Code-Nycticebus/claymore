@@ -52,7 +52,6 @@ static const struct {
     {.label = STR_STATIC("test"), .scene = test},
     {.label = STR_STATIC("hello"), .scene = hello},
     {.label = STR_STATIC("benchmark"), .scene = benchmark},
-    {.label = STR_STATIC("template"), .scene = template},
     {.label = STR_STATIC("quit"), .scene = NULL},
 };
 
