@@ -46,8 +46,7 @@ typedef struct CmSceneInternal {
   const CmSceneInterface *interface;
   struct CmSceneInternal *parent;
   DA(struct CmSceneInternal *) children;
-  u64 _alignment; // Alignment for SIMD instructions
-  u8 data[];
+  CGLM_ALIGN_MAT u8 data[];
 } CmSceneInternal;
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, CmSceneInit init);
