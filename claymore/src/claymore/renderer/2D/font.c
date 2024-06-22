@@ -183,6 +183,7 @@ void cm_font_internal_end(void) {
   if (renderer->vertex_count) {
     _cm_font_renderer_flush();
   }
+  renderer->font = NULL;
 }
 
 usize cm_font_internal_init(void) {
