@@ -12,7 +12,7 @@ typedef struct {
 } Test;
 
 static void event(CmScene *scene, CmEvent *event) {
-  Test *test = scene->data;
+  Test *test = cm_scene_data(scene);
   CmCamera3D *camera = &test->camera;
 
   cm_event_cursor(event, {
@@ -61,7 +61,7 @@ static void event(CmScene *scene, CmEvent *event) {
 }
 
 static void init(CmScene *scene) {
-  Test *test = cm_scene_set_data(scene, sizeof(Test));
+  Test *test = cm_scene_data(scene);
 
   static const vec3 data[] = {
       // Front
@@ -295,7 +295,7 @@ static void init(CmScene *scene) {
 }
 
 static void frame_update(CmScene *scene) {
-  Test *test = scene->data;
+  Test *test = cm_scene_data(scene);
 
   cm_camera_update(&test->camera);
 
@@ -325,6 +325,7 @@ static void final(CmScene *scene) {
 
 CmSceneInterface *test(void) {
   static CmSceneInterface interface = {
+      .size = sizeof(Test),
       .init = init,
       .frame_update = frame_update,
       .event = event,

@@ -9,10 +9,11 @@
 typedef struct {
   Arena arena;
   CmGpu gpu;
-  void *data;
 } CmScene;
 
 typedef const struct {
+  usize size;
+
   void (*init)(CmScene *scene);
   void (*fixed_update)(CmScene *scene);
 
@@ -32,7 +33,7 @@ void cm_scene_delete_self(CmScene *scene);
 
 CmScene *cm_scene_parent(CmScene *scene);
 void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
-void *cm_scene_set_data(CmScene *scene, usize size);
+void *cm_scene_data(CmScene *scene);
 
 typedef DA(CmScene *) CmSceneChildren;
 const CmSceneChildren *cm_scene_children(CmScene *scene);
@@ -45,6 +46,8 @@ typedef struct CmSceneInternal {
   const CmSceneInterface *interface;
   struct CmSceneInternal *parent;
   DA(struct CmSceneInternal *) children;
+  u64 _alignment; // Alignment for SIMD instructions
+  u8 data[];
 } CmSceneInternal;
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, CmSceneInit init);

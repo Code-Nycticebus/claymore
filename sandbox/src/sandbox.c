@@ -4,10 +4,6 @@
 
 CmSceneInterface *sandbox(void);
 
-static void _init(CmScene *scene) {
-  (void)cm_scene_set_data(scene, sizeof(CmScene *));
-}
-
 static void _event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
@@ -16,7 +12,7 @@ static void _event(CmScene *scene, CmEvent *event) {
     }
   });
 
-  CmScene **overlay = scene->data;
+  CmScene **overlay = cm_scene_data(scene);
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
       if (*overlay == NULL) {
@@ -34,8 +30,8 @@ static void _event(CmScene *scene, CmEvent *event) {
 
 CmSceneInterface *app_controlls(void) {
   static CmSceneInterface interface = {
+      .size = sizeof(CmScene *),
       .event = _event,
-      .init = _init,
   };
   return &interface;
 }

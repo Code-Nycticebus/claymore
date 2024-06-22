@@ -9,7 +9,7 @@ typedef struct {
 } HelloWorld;
 
 static void init(CmScene *scene) {
-  HelloWorld *hello = cm_scene_set_data(scene, sizeof(HelloWorld));
+  HelloWorld *hello = cm_scene_data(scene);
 
   const Str font = STR_STATIC("assets/fonts/Silkscreen.ttf");
   const float font_size = 72.f;
@@ -23,7 +23,7 @@ static void init(CmScene *scene) {
 }
 
 static void frame_update(CmScene *scene) {
-  HelloWorld *hello = scene->data;
+  HelloWorld *hello = cm_scene_data(scene);
 
   const float r = sinf(cm_app_time() / 1e9) * 0.5f + 0.5f;
   const float g = 0.5f;
@@ -37,6 +37,7 @@ static void frame_update(CmScene *scene) {
 
 CmSceneInterface *hello(void) {
   static CmSceneInterface interface = {
+      .size = sizeof(HelloWorld),
       .init = init,
       .frame_update = frame_update,
   };

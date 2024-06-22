@@ -14,7 +14,7 @@ typedef struct {
 } Benchmark;
 
 static void on_event(CmScene *scene, CmEvent *event) {
-  Benchmark *benchmark = scene->data;
+  Benchmark *benchmark = cm_scene_data(scene);
 
   cm_event_scroll(event, {
     const float min_zoom = 1.F;
@@ -29,7 +29,7 @@ static void on_event(CmScene *scene, CmEvent *event) {
 }
 
 static void init(CmScene *scene) {
-  Benchmark *benchmark = cm_scene_set_data(scene, sizeof(Benchmark));
+  Benchmark *benchmark = cm_scene_data(scene);
 
   cm_camera2D_ortho(&benchmark->camera, (vec2){0}, aspect, 100.f);
 
@@ -41,7 +41,7 @@ static void init(CmScene *scene) {
 }
 
 static void frame_update(CmScene *scene) {
-  Benchmark *benchmark = scene->data;
+  Benchmark *benchmark = cm_scene_data(scene);
 
   const float fps_threshold = 60;
   double deltatime = cm_app_deltatime();
@@ -101,6 +101,7 @@ static void frame_update(CmScene *scene) {
 
 CmSceneInterface *benchmark(void) {
   static CmSceneInterface interface = {
+      .size = sizeof(Benchmark),
       .init = init,
       .frame_update = frame_update,
       .event = on_event,

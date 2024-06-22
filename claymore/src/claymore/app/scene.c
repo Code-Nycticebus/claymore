@@ -44,10 +44,9 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
   }
 }
 
-void *cm_scene_set_data(CmScene *scene, usize size) {
-  cebus_assert(scene->data == NULL, "Trying to set data twice");
-  scene->data = arena_calloc(&((CmSceneInternal *)scene)->arena, size);
-  return scene->data;
+void *cm_scene_data(CmScene *scene) {
+  CmSceneInternal *internal = (CmSceneInternal *)scene;
+  return internal->data;
 }
 
 const CmSceneChildren *cm_scene_children(CmScene *scene) {
@@ -56,8 +55,12 @@ const CmSceneChildren *cm_scene_children(CmScene *scene) {
 }
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
-  CmSceneInternal *scene = arena_calloc_chunk(arena, sizeof(CmSceneInternal));
-  scene->interface = init();
+  CmSceneInterface *interface = init();
+  usize size = sizeof(CmSceneInternal) + interface->size;
+  CmSceneInternal *scene = arena_calloc_chunk(arena, size);
+  cebus_assert((uintptr_t)scene->data % 16 == 0, "alignment is not correct!");
+
+  scene->interface = interface;
   da_init(&scene->children, &scene->arena);
   scene->public.gpu = cm_gpu_internal_init(&scene->arena);
   return scene;

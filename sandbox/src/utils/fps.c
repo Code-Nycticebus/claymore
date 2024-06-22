@@ -14,12 +14,12 @@ typedef struct {
 } Fps;
 
 static void init(CmScene *scene) {
-  Fps *fps = cm_scene_set_data(scene, sizeof(Fps));
+  Fps *fps = cm_scene_data(scene);
   cm_camera2D_screen(&fps->camera);
 }
 
 static void frame_update(CmScene *scene) {
-  Fps *fps = scene->data;
+  Fps *fps = cm_scene_data(scene);
 
   fps->time += cm_app_deltatime();
   fps->count++;
@@ -41,6 +41,7 @@ static void frame_update(CmScene *scene) {
 
 static CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
+      .size = sizeof(Fps),
       .init = init,
       .frame_update = frame_update,
   };
@@ -49,7 +50,7 @@ static CmSceneInterface *interface(void) {
 
 CmScene *fps(CmScene *parent, const vec2 position, Str font, float heigth) {
   CmScene *scene = cm_scene_push(parent, interface);
-  Fps *fps = scene->data;
+  Fps *fps = cm_scene_data(scene);
 
   fps->position[0] = position[0];
   fps->position[1] = position[1];
