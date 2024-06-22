@@ -1,24 +1,25 @@
+#ifndef __SANDBOX_BUILD_H__
+#define __SANDBOX_BUILD_H__
+
 #ifndef CC
 #define CC "gcc"
 #endif
 
-#define CEBUS_IMPLEMENTATION
 #include "cebus.h"
 
-#define CLAYMORE_INCLUDE
-#include "claymore.c"
+#define CM_DIR "../claymore/" // Relative to working directory!
+#include "../../claymore/build/claymore.h"
 
 const Str files[] = {
-    STR_STATIC("sandbox/src/utils/fps.c"),
-    STR_STATIC("sandbox/src/scenes/hello.c"),
-    STR_STATIC("sandbox/src/scenes/benchmark-2d.c"),
-    STR_STATIC("sandbox/src/scenes/test.c"),
-    STR_STATIC("sandbox/src/scenes/template.c"),
+    STR_STATIC("src/utils/fps.c"),           //
+    STR_STATIC("src/scenes/hello.c"),        //
+    STR_STATIC("src/scenes/benchmark-2d.c"), //
+    STR_STATIC("src/scenes/test.c"),         //
 };
 
 const Str cflags[] = {
-    STR("-I" CM_SRC_DIR),
-    STR("-Isandbox/src"),
+    STR_STATIC("-I" CM_SRC_DIR),
+    STR_STATIC("-Isrc"),
 };
 
 void compile_file(Str filename) {
@@ -31,8 +32,7 @@ void compile_file(Str filename) {
   Str name = filename;
   name = str_chop_right_by_delim(&name, '/');
   name = str_chop_by_delim(&name, '.');
-  Str out = str_append(STR("sandbox/"), name, &arena);
-  cmd_push(&cmd, STR("-o"), out);
+  cmd_push(&cmd, STR("-o"), name);
 
   cmd_extend(&cmd, cflags);
   cmd_extend(&cmd, claymore_cflags);
@@ -48,7 +48,4 @@ void compile_file(Str filename) {
   arena_free(&arena);
 }
 
-int main(void) {
-  compile_claymore();
-  compile_file(STR("sandbox/src/sandbox.c"));
-}
+#endif /* ifndef __SANDBOX_BUILD_H__ */

@@ -5,16 +5,15 @@
 #define CC "gcc"
 #endif
 
-#define CEBUS_IMPLEMENTATION
 #include "cebus.h"
 
 #ifndef CM_DIR
-#define CM_DIR "claymore/"
+#define CM_DIR "./"
 #endif
 
 #define CM_SRC_DIR CM_DIR "src/"
 #define CM_LIB_DIR CM_DIR "libs/"
-#define CM_BUILD_DIR CM_DIR "../build/"
+#define CM_BUILD_DIR CM_DIR "build/"
 
 #define CM_OUT_DIR CM_BUILD_DIR "lib/"
 
@@ -167,9 +166,5 @@ void compile_claymore(void) {
 
   arena_free(&arena);
 }
-
-#ifndef CLAYMORE_INCLUDE
-int main(void) { compile_claymore(); }
-#endif
 
 #endif /* !__BUILD_CLAYMORE_H__ */

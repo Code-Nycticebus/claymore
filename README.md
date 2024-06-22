@@ -23,10 +23,10 @@ On linux you need to install these dependencies:
 sudo apt install libmesa-dev xorg-dev libxrandr-dev 
 ```
 
-Build it with a c compiler:
+Build it with a c compiler. From inside the `claymore` directory:
 ```terminal
-gcc build/claymore.c
-./a.out
+gcc build/build.c -o build/build
+./build/build
 ```
 
 or build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
@@ -35,15 +35,14 @@ pybuildc -d claymore build
 ```
 
 ## Running Sandbox
-Build it with a c compiler:
+Build it with a c compiler. From inside of the `sandbox` directory:
 ```terminal
-gcc build/sandbox.c
-./a.out
+gcc build/build.c -o build/build
+./build/build
 ```
 
-Change into the `sandbox` directory and run the executable
+Run the executable:
 ```terminal
-cd sandbox
 ./sandbox
 ```
 
