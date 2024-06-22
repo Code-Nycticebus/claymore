@@ -4,7 +4,7 @@ version="0.1.0"
 
 cflags = [
   "-std=c99", 
-  "-fsanitize=address",
+  # "-fsanitize=address",
   "-Wextra",
   "-Wall",
   "-Wpedantic",
