@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 
+// Helper for checking errors
 #define _cm_check_shader(error, shader_id, gl_check, gl_get_iv, gl_get_log)    \
   {                                                                            \
     GLint result = GL_FALSE;                                                   \
@@ -21,6 +22,7 @@
     return true;                                                               \
   }
 
+// Checks error depending on the compilations step
 static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
                                    Error *error) {
   if (gl_check == GL_COMPILE_STATUS) {
@@ -32,6 +34,7 @@ static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
                      glGetProgramInfoLog);
   }
 
+  // Other compilation steps are not supported
   cebus_assert(gl_check == GL_COMPILE_STATUS || gl_check == GL_LINK_STATUS,
                "Other checks are not supported");
   return false;
@@ -39,7 +42,9 @@ static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
 
 #undef _cm_check_shader
 
+// Compiles shader based on shader type
 static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
+  // Other shader types are currently not supported
   cebus_assert((type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER),
                "Shader only supports these types for now!");
 
@@ -110,6 +115,7 @@ void cm_shader_bind(const CmShader *shader) { glUseProgram(shader->id); }
 void cm_shader_unbind(void) { glUseProgram(0); }
 
 static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
+  // Search in cache
   u64 hash = str_hash(uniform_name);
   glUseProgram(shader->id);
   for (size_t i = 0; i < shader->uniform_count; i++) {
@@ -119,22 +125,25 @@ static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   }
 
   Arena temp = {0};
-
+  // Take ownership of uniform_name
   Str name = str_copy(uniform_name, &temp);
+  // glGetUniformLocation() takes a `\0` terminated cstr
   GLint location = glGetUniformLocation(shader->id, name.data);
   if (location == -1) {
     cebus_log_error("Uniform location '" STR_FMT "' not found in shader %u",
                     STR_ARG(uniform_name), shader->id);
   }
 
+  arena_free(&temp);
+
   cebus_assert(shader->uniform_count < CM_SHADER_UNIFORM_MAX,
                "shader has to many cached uniforms");
 
+  // Cache uniform location
   shader->uniforms[shader->uniform_count].location = location;
   shader->uniforms[shader->uniform_count].hash = hash;
   shader->uniform_count++;
 
-  arena_free(&temp);
   return location;
 }
 
