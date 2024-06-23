@@ -2,12 +2,11 @@
 #define CC "gcc"
 #endif
 
-// Relative to working directory!
-#define CM_DIR "../claymore/"
-#include "../../claymore/build/claymore.h" // IWYU pragma: export
+#define CM_DIR "../claymore/" // Relative to working directory!
+#include "../claymore/build/claymore.h"
 
 int main(void) {
-  compile_claymore();
+  compile_claymore(false);
 
   Arena arena = {0};
 

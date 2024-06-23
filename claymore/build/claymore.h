@@ -124,48 +124,50 @@ void compile_libs(Arena *arena, Paths *objs) {
   arena_free(&scratch);
 }
 
-void compile_claymore(void) {
-  Arena arena = {0};
-  Paths objs = da_new(&arena);
+void compile_claymore(bool rebuild) {
+  if (rebuild || !file_exists(STR(CM_OUTFILE))) {
+    Arena arena = {0};
+    Paths objs = da_new(&arena);
 
-  create_directory(CM_BUILD_DIR "obj");
-  file_write_str(STR(CM_BUILD_DIR "obj/.gitignore"), STR("*\n"), ErrPanic);
+    create_directory(CM_BUILD_DIR "obj");
+    file_write_str(STR(CM_BUILD_DIR "obj/.gitignore"), STR("*\n"), ErrPanic);
 
-  compile_libs(&arena, &objs);
+    compile_libs(&arena, &objs);
 
-  cebus_log_info("Building: " CM_OUTFILE);
+    cebus_log_info("Building: " CM_OUTFILE);
 
-  Cmd cmd = cmd_new(&arena);
+    Cmd cmd = cmd_new(&arena);
 
-  for (usize i = 0; i < ARRAY_LEN(claymore_files); ++i) {
-    cmd_push(&cmd, STR(CC), STR("-c"), STR("-fPIC"));
-    cmd_extend(&cmd, claymore_cflags);
+    for (usize i = 0; i < ARRAY_LEN(claymore_files); ++i) {
+      cmd_push(&cmd, STR(CC), STR("-c"), STR("-fPIC"));
+      cmd_extend(&cmd, claymore_cflags);
 
-    Str name = claymore_files[i];
-    name = str_chop_right_by_delim(&name, '/');
-    name = str_chop_by_delim(&name, '.');
-    Str out =
-        str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT ".o", STR_ARG(name));
-    cmd_push(&cmd, STR("-o"), out);
+      Str name = claymore_files[i];
+      name = str_chop_right_by_delim(&name, '/');
+      name = str_chop_by_delim(&name, '.');
+      Str out =
+          str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT ".o", STR_ARG(name));
+      cmd_push(&cmd, STR("-o"), out);
 
-    da_push(&objs, out);
+      da_push(&objs, out);
 
-    cmd_push(&cmd, claymore_files[i]);
+      cmd_push(&cmd, claymore_files[i]);
+
+      cmd_exec_da(ErrPanic, &cmd);
+      da_clear(&cmd);
+    }
+
+    create_directory(CM_BUILD_DIR "lib");
+    file_write_str(STR(CM_BUILD_DIR "lib/.gitignore"), STR("*\n"), ErrPanic);
+
+    cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_OUTFILE));
+
+    cmd_extend_da(&cmd, &objs);
 
     cmd_exec_da(ErrPanic, &cmd);
-    da_clear(&cmd);
+
+    arena_free(&arena);
   }
-
-  create_directory(CM_BUILD_DIR "lib");
-  file_write_str(STR(CM_BUILD_DIR "lib/.gitignore"), STR("*\n"), ErrPanic);
-
-  cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_OUTFILE));
-
-  cmd_extend_da(&cmd, &objs);
-
-  cmd_exec_da(ErrPanic, &cmd);
-
-  arena_free(&arena);
 }
 
 void compile_file(Str filename, Paths *files, Cmd *cflags) {

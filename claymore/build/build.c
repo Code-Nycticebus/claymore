@@ -1,3 +1,3 @@
 #include "claymore.h"
 
-int main(void) { compile_claymore(); }
+int main(void) { compile_claymore(true); }
