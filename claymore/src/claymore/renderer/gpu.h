@@ -14,22 +14,22 @@ typedef enum {
   CM_DRAW_LINES = GL_LINES,
 } CmGpuDrawMode;
 
+typedef u32 CmGpuID;
+
 typedef struct {
-  u32 id;
+  CmGpuID id;
   usize len;
 } CmVbo;
 
 typedef struct {
-  u32 id;
+  CmGpuID id;
   usize count;
 } CmEbo;
 
 typedef struct {
-  u32 id;
-  u32 idx;
+  CmGpuID id;
+  CmGpuID idx;
 } CmVao;
-
-typedef u32 CmGpuID;
 
 typedef struct {
   enum {
