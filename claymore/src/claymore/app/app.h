@@ -64,6 +64,8 @@ bool cm_app_internal_init(ClaymoreConfig *config);
 bool cm_app_internal_update(void);
 void cm_app_internal_final(void);
 
+void cm_app_internal_use(CmApp *app);
+
 void cm_app_internal_event(CmEvent *event);
 
 void cm_app_internal_schedule_delete(CmScene *scene);

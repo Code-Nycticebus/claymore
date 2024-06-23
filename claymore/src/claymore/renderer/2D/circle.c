@@ -65,7 +65,7 @@ void cm_circle_internal_end(void) {
   }
 }
 
-usize cm_circle_internal_init(void) {
+void *cm_circle_internal_init(void) {
   renderer = calloc(1, sizeof(*renderer));
 
   renderer->gpu = cm_gpu_internal_init(&renderer->arena);
@@ -113,10 +113,12 @@ usize cm_circle_internal_init(void) {
           "}\n"),
       ErrPanic);
 
-  return sizeof(*renderer);
+  return renderer;
 }
 void cm_circle_internal_free(void) {
   cm_gpu_internal_free(&renderer->gpu);
   arena_free(&renderer->arena);
   free(renderer);
 }
+
+void cm_circle_internal_use(void *r) { renderer = r; }

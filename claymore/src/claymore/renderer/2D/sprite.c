@@ -22,7 +22,7 @@ typedef struct {
   float idx;
 } Vertex;
 
-struct RenderSpriteData {
+struct SpriteRenderer {
   Arena arena;
   CmGpu gpu;
 
@@ -43,7 +43,7 @@ struct RenderSpriteData {
   uint32_t indices[CM_SPRITES_INDICES_MAX];
 };
 
-static struct RenderSpriteData *renderer = NULL;
+static struct SpriteRenderer *renderer = NULL;
 
 static void cm_sprite_flush(void) {
   cm_shader_bind(&renderer->shader);
@@ -142,8 +142,8 @@ void cm_sprite_internal_end(void) {
   }
 }
 
-usize cm_sprite_internal_init(void) {
-  renderer = calloc(1, sizeof(struct RenderSpriteData));
+void *cm_sprite_internal_init(void) {
+  renderer = calloc(1, sizeof(struct SpriteRenderer));
   renderer->gpu = cm_gpu_internal_init(&renderer->arena);
 
   renderer->vbo = cm_gpu_vbo(&renderer->gpu, CM_DYNAMIC_DRAW, sizeof(Vertex),
@@ -191,7 +191,7 @@ usize cm_sprite_internal_init(void) {
   const int slots[8] = {0, 1, 2, 3, 4, 5, 6, 7};
   glUniform1iv(loc, ARRAY_LEN(slots), slots);
 
-  return sizeof(struct RenderSpriteData);
+  return renderer;
 }
 
 void cm_sprite_internal_free(void) {
@@ -199,3 +199,5 @@ void cm_sprite_internal_free(void) {
   arena_free(&renderer->arena);
   free(renderer);
 }
+
+void cm_sprite_internal_use(void *r) { renderer = r; }

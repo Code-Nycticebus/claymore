@@ -22,29 +22,47 @@ CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error);
 void cm_font_color(CmFont *font, vec4 color);
 void cm_font(CmFont *font, const vec2 pos, Str text);
 
-// INTERNAL
+/* ========= Renderer internal ========= */
 
-bool cm_2D_internal_init(void);
+typedef struct CircleRenderer CircleRenderer;
+typedef struct FontRenderer FontRenderer;
+typedef struct QuadRenderer QuadRenderer;
+typedef struct SpriteRenderer SpriteRenderer;
+
+typedef struct {
+  const CmCamera2D *camera;
+  CircleRenderer *circle;
+  QuadRenderer *quad;
+  FontRenderer *sprite;
+  SpriteRenderer *font;
+} CmRenderer2D;
+
+CmRenderer2D *cm_2D_internal_init(void);
 void cm_2D_internal_free(void);
+void cm_2D_internal_use(CmRenderer2D *r);
 
 void cm_circle_internal_begin(CmCamera2D *camera);
 void cm_circle_internal_end(void);
-usize cm_circle_internal_init(void);
+void *cm_circle_internal_init(void);
 void cm_circle_internal_free(void);
+void cm_circle_internal_use(void *r);
 
 void cm_quad_internal_begin(CmCamera2D *camera);
 void cm_quad_internal_end(void);
-usize cm_quad_internal_init(void);
+void *cm_quad_internal_init(void);
 void cm_quad_internal_free(void);
+void cm_quad_internal_use(void *r);
 
 void cm_sprite_internal_begin(CmCamera2D *camera);
 void cm_sprite_internal_end(void);
-usize cm_sprite_internal_init(void);
+void *cm_sprite_internal_init(void);
 void cm_sprite_internal_free(void);
+void cm_sprite_internal_use(void *r);
 
 void cm_font_internal_begin(CmCamera2D *camera);
 void cm_font_internal_end(void);
-usize cm_font_internal_init(void);
+void *cm_font_internal_init(void);
 void cm_font_internal_free(void);
+void cm_font_internal_use(void *r);
 
 #endif /* !__CLAYMORE_RENDERER2D_H__ */

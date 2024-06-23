@@ -17,7 +17,7 @@ typedef struct {
   vec4 color;
 } Vertex;
 
-struct RenderQuadData {
+struct QuadRenderer {
   Arena arena;
   CmGpu gpu;
 
@@ -35,7 +35,7 @@ struct RenderQuadData {
   uint32_t indices[CM_QUADS_INDICES_MAX];
 };
 
-static struct RenderQuadData *renderer = NULL;
+static struct QuadRenderer *renderer = NULL;
 
 static void cm_quad_flush(void) {
   cm_shader_bind(&renderer->shader);
@@ -106,8 +106,8 @@ void cm_quad_internal_end(void) {
   }
 }
 
-usize cm_quad_internal_init(void) {
-  renderer = calloc(1, sizeof(struct RenderQuadData));
+void *cm_quad_internal_init(void) {
+  renderer = calloc(1, sizeof(struct QuadRenderer));
   renderer->gpu = cm_gpu_internal_init(&renderer->arena);
 
   renderer->vbo = cm_gpu_vbo(&renderer->gpu, CM_DYNAMIC_DRAW, sizeof(Vertex),
@@ -144,7 +144,7 @@ usize cm_quad_internal_init(void) {
           "}\n"),
       ErrPanic);
 
-  return sizeof(struct RenderQuadData);
+  return renderer;
 }
 
 void cm_quad_internal_free(void) {
@@ -152,3 +152,5 @@ void cm_quad_internal_free(void) {
   arena_free(&renderer->arena);
   free(renderer);
 }
+
+void cm_quad_internal_use(void *r) { renderer = r; }

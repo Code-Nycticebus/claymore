@@ -25,6 +25,8 @@ typedef struct {
   // Flat scene tree
   bool update_scene_flat;
   DA(CmSceneInternal *) flat;
+
+  CmRenderer2D *renderer;
 } CmAppInternal;
 
 // Internal app instance
@@ -202,6 +204,12 @@ void cm_app_internal_final(void) {
   RGFW_window_close(app->public.window);
   arena_free(&app->arena);
   free(app);
+}
+
+void cm_app_internal_use(CmApp *a) {
+  cebus_assert(app == NULL, "Cannot use and app while another app is running!");
+  app = (CmAppInternal *)a;
+  cm_2D_internal_use(app->renderer);
 }
 
 void cm_app_internal_event(CmEvent *event) {

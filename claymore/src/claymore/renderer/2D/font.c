@@ -19,7 +19,7 @@ typedef struct {
 #define FONT_RENDERER_VERTECIES_MAX                                            \
   (FONT_RENDERER_CHAR_MAX * FONT_RENDERER_VERTECIES_PER_CHAR)
 
-struct FontRendererData {
+struct FontRenderer {
   Arena arena;
   CmGpu gpu;
 
@@ -35,7 +35,7 @@ struct FontRendererData {
   size_t vertex_count;
 };
 
-static struct FontRendererData *renderer;
+static struct FontRenderer *renderer;
 
 struct CmFont {
   u32 texture_id;
@@ -186,8 +186,8 @@ void cm_font_internal_end(void) {
   renderer->font = NULL;
 }
 
-usize cm_font_internal_init(void) {
-  renderer = calloc(1, sizeof(struct FontRendererData));
+void *cm_font_internal_init(void) {
+  renderer = calloc(1, sizeof(struct FontRenderer));
 
   renderer->gpu = cm_gpu_internal_init(&renderer->arena);
 
@@ -219,7 +219,7 @@ usize cm_font_internal_init(void) {
   cm_gpu_vao_push(&renderer->vao, 2, sizeof(Vertex), offsetof(Vertex, pos));
   cm_gpu_vao_push(&renderer->vao, 2, sizeof(Vertex), offsetof(Vertex, uv));
 
-  return sizeof(struct FontRendererData);
+  return renderer;
 }
 
 void cm_font_internal_free(void) {
@@ -227,3 +227,5 @@ void cm_font_internal_free(void) {
   arena_free(&renderer->arena);
   free(renderer);
 }
+
+void cm_font_internal_use(void *r) { renderer = r; }
