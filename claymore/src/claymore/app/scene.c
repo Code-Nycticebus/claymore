@@ -2,10 +2,7 @@
 
 #include "claymore/app/app.h"
 
-void *cm_scene_data(CmScene *scene) {
-  CmSceneInternal *internal = (CmSceneInternal *)scene;
-  return internal->data;
-}
+/* ========= App public ========= */
 
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
@@ -28,6 +25,11 @@ void cm_scene_delete(CmScene *scene) {
     }
   }
   cm_app_internal_schedule_delete(scene);
+}
+
+void *cm_scene_data(CmScene *scene) {
+  CmSceneInternal *internal = (CmSceneInternal *)scene;
+  return internal->data;
 }
 
 Str cm_scene_name(CmScene *scene) {
@@ -73,6 +75,8 @@ CmSceneDa *cm_scene_find_all(Arena *arena, CmScene *root, Str name) {
   }
   return da;
 }
+
+/* ========= App internal ========= */
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   CmSceneInterface *interface = init();
