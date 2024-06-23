@@ -30,12 +30,17 @@ typedef const struct {
 
 typedef const CmSceneInterface *(*CmSceneInit)(void);
 
+typedef DA(CmScene *) CmSceneDa;
+
 void *cm_scene_data(CmScene *scene);
 
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init);
 void cm_scene_delete(CmScene *scene);
 
 Str cm_scene_name(CmScene *scene);
+CmScene *cm_scene_parent(CmScene *scene);
+CmScene *cm_scene_child(CmScene *scene, usize idx);
+const CmSceneDa *cm_scene_children(CmScene *scene);
 
 typedef DA(CmScene *) CmSceneChildren;
 const CmSceneChildren *cm_scene_children(CmScene *scene);

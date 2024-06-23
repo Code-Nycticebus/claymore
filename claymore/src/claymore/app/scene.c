@@ -30,9 +30,9 @@ void cm_scene_delete(CmScene *scene) {
   cm_app_internal_schedule_delete(scene);
 }
 
-void cm_scene_delete_self(CmScene *scene) {
-  CmScene *parent = cm_scene_parent(scene);
-  cm_scene_delete(parent, scene);
+Str cm_scene_name(CmScene *scene) {
+  CmSceneInternal *internal = (CmSceneInternal *)scene;
+  return internal->interface->name;
 }
 
 CmScene *cm_scene_parent(CmScene *scene) {
@@ -40,16 +40,14 @@ CmScene *cm_scene_parent(CmScene *scene) {
   return &internal->parent->public;
 }
 
-void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
+CmScene *cm_scene_child(CmScene *scene, usize idx) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
-  for (usize i = 0; i < internal->children.len; i++) {
-    map(scene, &internal->children.items[i]->public);
-  }
+  return (CmScene *)internal->children.items[idx];
 }
 
-Str cm_scene_name(CmScene *scene) {
+const CmSceneDa *cm_scene_children(CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
-  return internal->interface->name;
+  return (CmSceneDa *)&internal->children;
 }
 
 const CmSceneChildren *cm_scene_children(CmScene *scene) {
