@@ -9,7 +9,7 @@ CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
   glBufferData(GL_ARRAY_BUFFER, len * s, v, type);
 
-  da_push(&b->vbo, vbo.id);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_VBO, .id = vbo.id});
   return vbo;
 }
 
@@ -32,7 +32,7 @@ CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), i, type);
 
-  da_push(&b->ebo, ebo.id);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_EBO, .id = ebo.id});
   return ebo;
 }
 
@@ -51,7 +51,7 @@ CmVao cm_gpu_vao(CmGpu *b) {
   glGenVertexArrays(1, &vao.id);
   glBindVertexArray(vao.id);
 
-  da_push(&b->vao, vao.id);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_VAO, .id = vao.id});
 
   return vao;
 }
@@ -78,34 +78,41 @@ void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
 
 CmGpuID cm_gpu_program(CmGpu *b) {
   CmGpuID program = glCreateProgram();
-  da_push(&b->program, program);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_PROGRAM, .id = program});
   return program;
 }
 
 CmGpuID cm_gpu_texture(CmGpu *b) {
   CmGpuID texture = glCreateProgram();
   glGenTextures(1, &texture);
-  da_push(&b->textures, texture);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_TEXTURE, .id = texture});
   return texture;
 }
 
 CmGpu cm_gpu_internal_init(Arena *arena) {
   CmGpu gpu = {0};
   gpu.arena = arena;
-  da_init(&gpu.vbo, arena);
-  da_init(&gpu.vao, arena);
-  da_init(&gpu.ebo, arena);
-  da_init(&gpu.program, arena);
-  da_init(&gpu.textures, arena);
+  da_init(&gpu.buffers, arena);
   return gpu;
 }
 
 void cm_gpu_internal_free(CmGpu *b) {
-  glDeleteVertexArrays(b->vao.len, b->vao.items);
-  glDeleteBuffers(b->ebo.len, b->ebo.items);
-  glDeleteBuffers(b->vbo.len, b->vbo.items);
-  for (usize i = 0; i < b->program.len; ++i) {
-    glDeleteProgram(b->program.items[i]);
+  for (usize i = 0; i < da_len(&b->buffers); ++i) {
+    CmGpuBuffer *buffer = &da_get(&b->buffers, i);
+    switch (buffer->type) {
+    case CM_GPU_EBO:
+    case CM_GPU_VBO: {
+      glDeleteBuffers(1, &buffer->id);
+    } break;
+    case CM_GPU_VAO: {
+      glDeleteVertexArrays(1, &buffer->id);
+    } break;
+    case CM_GPU_PROGRAM: {
+      glDeleteProgram(buffer->id);
+    } break;
+    case CM_GPU_TEXTURE: {
+      glDeleteTextures(1, &buffer->id);
+    } break;
+    }
   }
-  glDeleteTextures(b->textures.len, b->textures.items);
 }

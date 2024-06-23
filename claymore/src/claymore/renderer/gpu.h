@@ -32,12 +32,19 @@ typedef struct {
 typedef u32 CmGpuID;
 
 typedef struct {
+  enum {
+    CM_GPU_VBO,
+    CM_GPU_EBO,
+    CM_GPU_VAO,
+    CM_GPU_PROGRAM,
+    CM_GPU_TEXTURE,
+  } type;
+  CmGpuID id;
+} CmGpuBuffer;
+
+typedef struct {
   Arena *arena;
-  DA(CmGpuID) vbo;
-  DA(CmGpuID) ebo;
-  DA(CmGpuID) vao;
-  DA(CmGpuID) program;
-  DA(CmGpuID) textures;
+  DA(CmGpuBuffer) buffers;
 } CmGpu;
 
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
