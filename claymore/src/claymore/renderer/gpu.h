@@ -31,6 +31,7 @@ typedef struct {
   CmGpuID idx;
 } CmVao;
 
+// Buffer struct
 typedef struct {
   enum {
     CM_GPU_VBO,
@@ -38,30 +39,43 @@ typedef struct {
     CM_GPU_VAO,
     CM_GPU_PROGRAM,
     CM_GPU_TEXTURE,
-  } type;
-  CmGpuID id;
+  } type;     // Buffer type
+  CmGpuID id; // Buffer id
 } CmGpuBuffer;
 
+/* Cpu resource manager context */
 typedef struct {
-  Arena *arena;
-  DA(CmGpuBuffer) buffers;
+  Arena *arena;            // Gpu lifetime arena
+  DA(CmGpuBuffer) buffers; // Dynamic array of buffers
 } CmGpu;
 
+// Create vbo
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
+// Update vbo buffer
 void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v);
+// Draw vbo instanced
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode);
 
+// Create ebo
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i);
+// Draw in specified mode
 void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode);
+// Draw instanced in specified mode
 void cm_gpu_ebo_draw_instanced(CmEbo *ebo, usize count, CmGpuDrawMode mode);
 
+// Create vao
 CmVao cm_gpu_vao(CmGpu *b);
+// Bind vao
 void cm_gpu_vao_bind(CmVao *vao);
+// Pushing attribute
 void cm_gpu_vao_push(CmVao *vao, usize count, usize stride, usize offset);
+// Pushing attribute for instanced rendering
 void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
                           usize offset);
 
+// Create program
 CmGpuID cm_gpu_program(CmGpu *b);
+// Create texture
 CmGpuID cm_gpu_texture(CmGpu *b);
 
 CmGpu cm_gpu_internal_init(Arena *arena);
