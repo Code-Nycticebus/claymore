@@ -21,7 +21,7 @@ static void _event(CmScene *scene, CmEvent *event) {
         const float font_size = 32.f;
         *overlay = fps(scene, pos, font, font_size);
       } else {
-        cm_scene_delete(scene, *overlay);
+        cm_scene_delete(*overlay);
         *overlay = NULL;
       }
     }

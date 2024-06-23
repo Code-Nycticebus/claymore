@@ -19,17 +19,15 @@ CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   return (CmScene *)new;
 }
 
-void cm_scene_delete(CmScene *parent, CmScene *scene) {
-  CmSceneInternal *internal = (CmSceneInternal *)parent;
-  for (usize i = 0; i < internal->children.len; i++) {
-    if (da_get(&internal->children, i) == (CmSceneInternal *)scene) {
-      cm_app_internal_schedule_delete(scene);
-      da_remove(&internal->children, i);
-      return;
+void cm_scene_delete(CmScene *scene) {
+  CmSceneInternal *parent = (CmSceneInternal *)cm_scene_parent(scene);
+  for (usize i = 0; i < parent->children.len; i++) {
+    if (da_get(&parent->children, i) == (CmSceneInternal *)scene) {
+      da_remove(&parent->children, i);
+      break;
     }
   }
-  cebus_assert_debug(false, "Scene not found!");
-  UNREACHABLE();
+  cm_app_internal_schedule_delete(scene);
 }
 
 void cm_scene_delete_self(CmScene *scene) {

@@ -33,11 +33,8 @@ typedef const CmSceneInterface *(*CmSceneInit)(void);
 void *cm_scene_data(CmScene *scene);
 
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init);
-void cm_scene_delete(CmScene *parent, CmScene *scene);
-void cm_scene_delete_self(CmScene *scene);
+void cm_scene_delete(CmScene *scene);
 
-CmScene *cm_scene_parent(CmScene *scene);
-void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *));
 Str cm_scene_name(CmScene *scene);
 
 typedef DA(CmScene *) CmSceneChildren;
