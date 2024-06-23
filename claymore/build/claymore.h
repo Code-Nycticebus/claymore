@@ -5,6 +5,7 @@
 #define CC "gcc"
 #endif
 
+#define CEBUS_IMPLEMENTATION
 #include "cebus.h"
 
 #ifndef CM_DIR
@@ -161,6 +162,33 @@ void compile_claymore(void) {
   cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_OUTFILE));
 
   cmd_extend_da(&cmd, &objs);
+
+  cmd_exec_da(ErrPanic, &cmd);
+
+  arena_free(&arena);
+}
+
+void compile_file(Str filename, Paths *files, Cmd *cflags) {
+  cebus_log_info("Building: " STR_FMT, STR_ARG(filename));
+  Arena arena = {0};
+  Cmd cmd = cmd_new(&arena);
+
+  cmd_push(&cmd, STR(CC));
+
+  Str name = filename;
+  name = str_chop_right_by_delim(&name, '/');
+  name = str_chop_by_delim(&name, '.');
+  cmd_push(&cmd, STR("-o"), name);
+
+  cmd_extend_da(&cmd, cflags);
+  cmd_push(&cmd, STR_STATIC("-I" CM_SRC_DIR));
+  cmd_extend(&cmd, claymore_cflags);
+
+  cmd_push(&cmd, filename);
+  cmd_extend_da(&cmd, files);
+
+  cmd_push(&cmd, STR("-L" CM_BUILD_DIR "/lib"), STR("-lclaymore"));
+  cmd_extend(&cmd, claymore_libs);
 
   cmd_exec_da(ErrPanic, &cmd);
 
