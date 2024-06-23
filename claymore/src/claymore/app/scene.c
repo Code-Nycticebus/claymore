@@ -50,9 +50,28 @@ const CmSceneDa *cm_scene_children(CmScene *scene) {
   return (CmSceneDa *)&internal->children;
 }
 
-const CmSceneChildren *cm_scene_children(CmScene *scene) {
-  CmSceneInternal *internal = (CmSceneInternal *)scene;
-  return (CmSceneChildren *)&internal->children;
+CmScene *cm_scene_find(CmScene *root, Str name) {
+  CmSceneInternal *internal = (CmSceneInternal *)root;
+  for (usize i = 0; i < da_len(&internal->children); ++i) {
+    CmSceneInternal *scene = da_get(&internal->children, i);
+    if (str_eq(scene->interface->name, name)) {
+      return (CmScene *)scene;
+    }
+  }
+  return NULL;
+}
+
+CmSceneDa *cm_scene_find_all(Arena *arena, CmScene *root, Str name) {
+  CmSceneDa *da = arena_calloc(arena, sizeof(CmSceneDa));
+  da_init(da, arena);
+  CmSceneInternal *internal = (CmSceneInternal *)root;
+  for (usize i = 0; i < da_len(&internal->children); ++i) {
+    CmSceneInternal *scene = da_get(&internal->children, i);
+    if (str_eq(scene->interface->name, name)) {
+      da_push(da, (CmScene *)scene);
+    }
+  }
+  return da;
 }
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {

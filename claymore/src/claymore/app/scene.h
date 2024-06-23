@@ -42,8 +42,8 @@ CmScene *cm_scene_parent(CmScene *scene);
 CmScene *cm_scene_child(CmScene *scene, usize idx);
 const CmSceneDa *cm_scene_children(CmScene *scene);
 
-typedef DA(CmScene *) CmSceneChildren;
-const CmSceneChildren *cm_scene_children(CmScene *scene);
+CmScene *cm_scene_find(CmScene *root, Str name);
+CmSceneDa *cm_scene_find_all(Arena *arena, CmScene *root, Str name);
 
 // INTERNAL
 
