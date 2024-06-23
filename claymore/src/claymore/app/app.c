@@ -4,23 +4,33 @@
 #include "claymore/renderer/context.h"
 #include "sound.h"
 
+// Internal app context
 typedef struct {
+  // Public app context
   CmApp public;
+  // App lifetime arena
   Arena arena;
+  // Running state
   bool running;
+  // Timestamp of first frame
   u64 first_frame;
+  // Deltatime
   u64 last_frame;
+  double deltatime;
+  // Current root scene
   CmSceneInternal *root;
+  // Scene management
   CmSceneInternal *new_root;
   DA(CmSceneInternal *) deleted;
-
+  // Flat scene tree
   bool update_scene_flat;
   DA(CmSceneInternal *) flat;
-
-  double deltatime;
 } CmAppInternal;
 
+// Internal app instance
 static CmAppInternal *app;
+
+/* ========= App public ========= */
 
 CmApp *cm_app(void) { return &app->public; }
 
@@ -30,15 +40,11 @@ void cm_app_background(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 
 CmGpu *cm_app_gpu(void) { return &app->public.gpu; }
 
-void *cm_app_data(void) { return app->public.data; }
-void *cm_app_set_data(usize size) {
-  cebus_assert(app->public.data == NULL, "Trying to set app data twice");
-  app->public.data = arena_calloc(&app->arena, size);
-  return app->public.data;
-}
-
 CmScene *cm_app_root(void) { return &app->root->public; }
 CmScene *cm_app_set_root(CmSceneInit init) {
+  // Initalizing new root scene.
+  // For a short time there are gonna be two scenes running at the same time.
+
   app->new_root = cm_scene_internal_init(&app->arena, init);
   if (app->new_root->interface->init) {
     app->new_root->interface->init(&app->new_root->public);
@@ -56,12 +62,13 @@ void cm_app_quit(void) {
   });
 }
 
-// INTERNAL
+/* ================== App internal ================== */
 
-static void cm_app_build_flat(CmSceneInternal *root) {
+// Build flat scene tree
+static void _cm_app_build_flat_tree(CmSceneInternal *root) {
   da_extend(&app->flat, da_len(&root->children), root->children.items);
   for (usize i = 0; i < da_len(&root->children); ++i) {
-    cm_app_build_flat(da_get(&root->children, i));
+    _cm_app_build_flat_tree(da_get(&root->children, i));
   }
 }
 
@@ -71,9 +78,8 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
   app->first_frame = RGFW_getTimeNS();
   app->last_frame = app->first_frame;
 
-  app->public.window = RGFW_createWindow(
-      config->window.title,
-      RGFW_RECT(0, 0, config->window.width, config->window.height), 0);
+  RGFW_rect r = RGFW_RECT(0, 0, config->window.width, config->window.height);
+  app->public.window = RGFW_createWindow(config->window.title, r, 0);
   if (app->public.window == NULL) {
     cebus_log_error("Could not open window");
     return false;
@@ -110,6 +116,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 }
 
 bool cm_app_internal_update(void) {
+  // Complete the new root initalization
   if (app->new_root) {
     da_push(&app->deleted, app->root);
     app->root = app->new_root;
@@ -117,16 +124,18 @@ bool cm_app_internal_update(void) {
     app->update_scene_flat = true;
   }
 
+  // Delete all scheduled scenes
   while (da_len(&app->deleted)) {
     CmSceneInternal *scene = da_pop(&app->deleted);
     Arena *arena = scene->parent ? &scene->parent->arena : &app->arena;
     cm_scene_internal_final(arena, scene);
   }
 
+  // Update flat scene tree if needed
   if (app->update_scene_flat) {
     da_clear(&app->flat);
     da_push(&app->flat, app->root);
-    cm_app_build_flat(app->root);
+    _cm_app_build_flat_tree(app->root);
     app->update_scene_flat = false;
   }
 
@@ -136,12 +145,14 @@ bool cm_app_internal_update(void) {
     return false;
   }
 
+  // Deltatime
   const double ns = 1e+9;
   const u64 current_time = RGFW_getTimeNS();
   u64 dt = current_time - app->last_frame;
   app->last_frame = current_time;
   app->deltatime = dt / ns;
 
+  // Fixed Update
   const i64 fixed_interval = CM_FIXED_DELTA * ns;
   static i64 fixed_timer = 0;
   fixed_timer += dt;
@@ -160,12 +171,15 @@ bool cm_app_internal_update(void) {
 
   for (usize i = 0; i < da_len(&app->flat); ++i) {
     CmSceneInternal *scene = da_get(&app->flat, i);
+    // Pre update
     if (scene->interface->pre_update) {
       scene->interface->pre_update(&scene->public);
     }
+    // Frame update
     if (scene->interface->frame_update) {
       scene->interface->frame_update(&scene->public);
     }
+    // Post update
     if (scene->interface->post_update) {
       scene->interface->post_update(&scene->public);
     }
@@ -177,9 +191,7 @@ bool cm_app_internal_update(void) {
 
 void cm_app_internal_final(void) {
   cm_scene_internal_final(&app->arena, app->root);
-
   cm_sound_interal_shutdown();
-
   cm_2D_internal_free();
 
   RGFW_window_close(app->public.window);
