@@ -2,36 +2,12 @@
 
 #include <glad.h>
 
-static GLenum get_type(CmGpuType type) {
-  switch (type) {
-  case CM_STATIC_DRAW:
-    return GL_STATIC_DRAW;
-  case CM_DYNAMIC_DRAW:
-    return GL_DYNAMIC_DRAW;
-  }
-  cebus_assert(false, "UNREACHABLE");
-  return 0;
-}
-
-static GLenum get_mode(CmGpuDrawMode mode) {
-  switch (mode) {
-  case CM_DRAW_TRIANGLES:
-    return GL_TRIANGLES;
-  case CM_DRAW_TRIANGLE_STRIP:
-    return GL_TRIANGLE_STRIP;
-  case CM_DRAW_LINES:
-    return GL_LINES;
-  }
-  cebus_assert(false, "UNREACHABLE");
-  return 0;
-}
-
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v) {
   CmVbo vbo = {.len = len};
 
   glGenBuffers(1, &vbo.id);
   glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
-  glBufferData(GL_ARRAY_BUFFER, len * s, v, get_type(type));
+  glBufferData(GL_ARRAY_BUFFER, len * s, v, type);
 
   da_push(&b->vbo, vbo.id);
   return vbo;
@@ -46,7 +22,7 @@ void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v) {
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
   // This could be wrong idk
-  glDrawArraysInstanced(get_mode(mode), 0, count, vbo->len);
+  glDrawArraysInstanced(mode, 0, count, vbo->len);
 }
 
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
@@ -54,7 +30,7 @@ CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
 
   glGenBuffers(1, &ebo.id);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo.id);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), i, get_type(type));
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), i, type);
 
   da_push(&b->ebo, ebo.id);
   return ebo;
@@ -62,13 +38,12 @@ CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i) {
 
 void cm_gpu_ebo_draw_instanced(CmEbo *ebo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo->id);
-  glDrawElementsInstanced(get_mode(mode), ebo->count, GL_UNSIGNED_INT, NULL,
-                          count);
+  glDrawElementsInstanced(mode, ebo->count, GL_UNSIGNED_INT, NULL, count);
 }
 
 void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo->id);
-  glDrawElements(get_mode(mode), count, GL_UNSIGNED_INT, NULL);
+  glDrawElements(mode, count, GL_UNSIGNED_INT, NULL);
 }
 
 CmVao cm_gpu_vao(CmGpu *b) {

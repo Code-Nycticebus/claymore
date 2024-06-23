@@ -1,17 +1,17 @@
-#ifndef __CLAYMORE_BUFFER_H__
-#define __CLAYMORE_BUFFER_H__
+#ifndef __CLAYMORE_GPU_H__
+#define __CLAYMORE_GPU_H__
 
 #include "claymore/defines.h" // IWYU pragma: export
 
 typedef enum {
-  CM_STATIC_DRAW,
-  CM_DYNAMIC_DRAW,
+  CM_STATIC_DRAW = GL_STATIC_DRAW,
+  CM_DYNAMIC_DRAW = GL_DYNAMIC_DRAW,
 } CmGpuType;
 
 typedef enum {
-  CM_DRAW_TRIANGLES,
-  CM_DRAW_TRIANGLE_STRIP,
-  CM_DRAW_LINES,
+  CM_DRAW_TRIANGLES = GL_TRIANGLES,
+  CM_DRAW_TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+  CM_DRAW_LINES = GL_LINES,
 } CmGpuDrawMode;
 
 typedef struct {
@@ -60,4 +60,4 @@ CmGpuID cm_gpu_texture(CmGpu *b);
 CmGpu cm_gpu_internal_init(Arena *arena);
 void cm_gpu_internal_free(CmGpu *bm);
 
-#endif /* !__CLAYMORE_BUFFER_H__ */
+#endif /* !__CLAYMORE_GPU_H__ */
