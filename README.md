@@ -37,8 +37,7 @@ pybuildc -d claymore build
 ## Running Sandbox
 Build it with a c compiler. From inside of the `sandbox` directory:
 ```terminal
-gcc build/build.c -o build/build
-./build/build
+gcc build.c -o build && ./build
 ```
 
 Run the executable:
