@@ -23,20 +23,22 @@ typedef struct {
 static CmAppInternal *app;
 
 CmApp *cm_app(void) { return &app->public; }
-CmScene *cm_app_root(void) { return &app->root->public; }
+
 RGFW_window *cm_app_window(void) { return app->public.window; }
-void *cm_app_data(void) { return app->public.data; }
+
+void cm_app_background(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
+
 CmGpu *cm_app_gpu(void) { return &app->public.gpu; }
 
+void *cm_app_data(void) { return app->public.data; }
 void *cm_app_set_data(usize size) {
   cebus_assert(app->public.data == NULL, "Trying to set app data twice");
   app->public.data = arena_calloc(&app->arena, size);
   return app->public.data;
 }
 
-double cm_app_deltatime(void) { return app->deltatime; }
-
-CmScene *cm_app_set_main(CmSceneInit init) {
+CmScene *cm_app_root(void) { return &app->root->public; }
+CmScene *cm_app_set_root(CmSceneInit init) {
   app->new_root = cm_scene_internal_init(&app->arena, init);
   if (app->new_root->interface->init) {
     app->new_root->interface->init(&app->new_root->public);
@@ -44,6 +46,7 @@ CmScene *cm_app_set_main(CmSceneInit init) {
   return (CmScene *)app->new_root;
 }
 
+double cm_app_deltatime(void) { return app->deltatime; }
 u64 cm_app_time(void) { return RGFW_getTimeNS() - app->first_frame; }
 
 void cm_app_quit(void) {
@@ -52,8 +55,6 @@ void cm_app_quit(void) {
       .event = {{0}},
   });
 }
-
-void cm_app_background(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 
 // INTERNAL
 

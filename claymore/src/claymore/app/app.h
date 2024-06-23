@@ -25,16 +25,23 @@ typedef struct {
 } CmApp;
 
 CmApp *cm_app(void);
-CmScene *cm_app_root(void);
+
 RGFW_window *cm_app_window(void);
+
+void cm_app_background(const vec3 color);
+
+CmGpu *cm_app_gpu(void);
+
 void *cm_app_data(void);
 void *cm_app_set_data(usize size);
-double cm_app_deltatime(void);
 
-CmScene *cm_app_set_main(CmSceneInit init);
+CmScene *cm_app_root(void);
+CmScene *cm_app_set_root(CmSceneInit init);
+
+double cm_app_deltatime(void);
 u64 cm_app_time(void);
+
 void cm_app_quit(void);
-void cm_app_background(const vec3 color);
 
 // INTERNAL
 

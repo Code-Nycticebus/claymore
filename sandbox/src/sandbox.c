@@ -7,7 +7,7 @@ CmSceneInterface *sandbox(void);
 static void _event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
-      cm_app_set_main(sandbox);
+      cm_app_set_root(sandbox);
       event->handled = true;
     }
   });
@@ -129,7 +129,7 @@ static void frame_update(CmScene *scene) {
           RGFW_isPressedI(w, RGFW_1 + i) ||
           (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
         if (buttons[i].scene) {
-          CmScene *m = cm_app_set_main(buttons[i].scene);
+          CmScene *m = cm_app_set_root(buttons[i].scene);
           cm_scene_push(m, app_controlls);
         } else {
           cm_app_quit();
