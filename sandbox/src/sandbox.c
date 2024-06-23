@@ -4,6 +4,10 @@
 
 CmSceneInterface *sandbox(void);
 
+typedef struct {
+  bool overlay;
+} SandboxControlls;
+
 static void _event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_Escape) {
@@ -12,17 +16,19 @@ static void _event(CmScene *scene, CmEvent *event) {
     }
   });
 
-  CmScene **overlay = cm_scene_data(scene);
+  SandboxControlls *controlls = cm_scene_data(scene);
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
-      if (*overlay == NULL) {
+      if (!controlls->overlay) {
         const vec2 pos = {10, 0};
         const Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
         const float font_size = 32.f;
-        *overlay = fps(scene, pos, font, font_size);
+        fps(scene, pos, font, font_size);
+        controlls->overlay = true;
       } else {
-        cm_scene_delete(*overlay);
-        *overlay = NULL;
+        CmScene *overlay = cm_scene_find(scene, STR("Fps"));
+        cm_scene_delete(overlay);
+        controlls->overlay = false;
       }
     }
   });
@@ -30,7 +36,7 @@ static void _event(CmScene *scene, CmEvent *event) {
 
 CmSceneInterface *app_controlls(void) {
   static CmSceneInterface interface = {
-      .size = sizeof(CmScene *),
+      .size = sizeof(SandboxControlls),
       .event = _event,
   };
   return &interface;
