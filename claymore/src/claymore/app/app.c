@@ -104,7 +104,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 
   da_init(&app->deleted, &app->arena);
 
-  cm_2D_internal_init();
+  app->renderer = cm_2D_internal_init();
 
   app->root = cm_scene_internal_init(&app->arena, config->root);
   if (!app->root->interface->init) {
