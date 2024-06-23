@@ -31,6 +31,7 @@ static void event(CmScene* scene, CmEvent* event) {
 
 CmSceneInterface *scene_interface(void) {
   static CmSceneInterface interface = {
+      .size = 0,
       .init = init,
       .fixed_update = fixed_update,
       .frame_update = frame_update,
@@ -43,8 +44,8 @@ CmSceneInterface *scene_interface(void) {
 
 ### Scene Structure
 
-You can define a scene that uses custom data. Allocate data with `cm_scene_set_data()`. 
-Then you can access `->data` from the scene.
+You can define a scene that uses custom data. Allocate data by providing the interface with a size. 
+Then you can access the data using `cm_scene_data(scene)`.
 
 ```c
 typedef struct {
@@ -53,8 +54,8 @@ typedef struct {
 } SceneData;
 
 static void init(CmScene* scene) {
-    // Allocate data
-    SceneData* data = cm_scene_set_data(scene, sizeof(SceneData));
+    // Access data
+    SceneData* data = cm_scene_data(scene);
     // Initialize the data
     data->radius = 100.f;
     cm_camera2D_screen(&data->camera);
@@ -62,12 +63,21 @@ static void init(CmScene* scene) {
 
 static void frame_update(CmScene* scene, double deltatime) {
     // Access data
-    SceneData* data = scene->data;
+    SceneData* data = cm_scene_data(scene);
 
     // Render data
     cm_2D_begin(&data->camera);
     cm_circle((vec2){0, 0}, data->radius, (vec4){1, 0, 0, 1});
     cm_2D_end();
+}
+
+CmSceneInterface *scene_interface(void) {
+  static CmSceneInterface interface = {
+      .size = sizeof(SceneData),
+      .init = init,
+      .frame_update = frame_update,
+  };
+  return &interface;
 }
 
 // ...
@@ -93,7 +103,7 @@ You define a function that pushes the scene onto the parent and then initializes
 ```c
 CmScene* scene_init(CmScene* parent, float radius) {
     CmScene* scene = cm_scene_push(parent, scene_interface);
-    SceneData* data = scene->data;
+    SceneData* data = cm_scene_data(scene);
 
     // Initialize data based on parameters
     data->radius = radius;
@@ -113,8 +123,8 @@ typedef struct {
 } SceneData;
 
 static void init(CmScene* scene) {
-    // Allocate scene data
-    SceneData* data = cm_scene_set_data(scene, sizeof(SceneData));
+    // Access scene data
+    SceneData* data = cm_scene_data(scene, sizeof(SceneData));
     // Allocate values
     data->values = arena_calloc(&scene->arena, sizeof(int) * 3);
     // ...
