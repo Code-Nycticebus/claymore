@@ -119,10 +119,6 @@ bool cm_platform_context_init(RGFW_window *window) {
   glViewport(0, 0, window->r.w, window->r.h);
 
 #ifdef CLAYMORE_DEBUG
-  // Logs info
-  cebus_log_info("OpenGl %s", glGetString(GL_VERSION));
-  cebus_log_info("GPU: %s", glGetString(GL_RENDERER));
-  cebus_log_info("GLSL: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
   // Debug
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback((GLDEBUGPROC)cm_debug_message_callback, NULL);

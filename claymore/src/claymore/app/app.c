@@ -85,13 +85,18 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
     return false;
   }
 
-  if (!cm_sound_internal_init()) {
-    cebus_log_error("Could not initialize sound engine");
-    return false;
-  }
-
   if (!cm_platform_context_init(app->public.window)) {
     cebus_log_error("Could not initialize context");
+    return false;
+  }
+#ifdef CLAYMORE_DEBUG
+  cebus_log_info("OpenGl %s", glGetString(GL_VERSION));
+  cebus_log_info("GPU: %s", glGetString(GL_RENDERER));
+  cebus_log_info("GLSL: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+#endif
+
+  if (!cm_sound_internal_init()) {
+    cebus_log_error("Could not initialize sound engine");
     return false;
   }
 
