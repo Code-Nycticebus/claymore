@@ -91,7 +91,7 @@ CmShader cm_shader_from_memory(CmGpu *gpu, Str vs, Str fs, Error *e) {
 
   _cm_shader_check_error(program.id, GL_LINK_STATUS, e);
   error_propagate(e, {
-    glDeleteProgram(da_pop(&gpu->program));
+    glDeleteProgram(da_pop(&gpu->buffers).id);
     program = (CmShader){0};
     goto defer;
   });
