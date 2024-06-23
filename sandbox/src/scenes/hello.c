@@ -37,7 +37,7 @@ static void frame_update(CmScene *scene) {
 
 CmSceneInterface *hello(void) {
   static CmSceneInterface interface = {
-      .size = sizeof(HelloWorld),
+      CM_SCENE(HelloWorld),
       .init = init,
       .frame_update = frame_update,
   };

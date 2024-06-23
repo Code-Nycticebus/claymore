@@ -101,7 +101,7 @@ static void frame_update(CmScene *scene) {
 
 CmSceneInterface *benchmark(void) {
   static CmSceneInterface interface = {
-      .size = sizeof(Benchmark),
+      CM_SCENE(Benchmark),
       .init = init,
       .frame_update = frame_update,
       .event = on_event,

@@ -7,6 +7,10 @@ You define a custom scene by implementing an interface with five functions: `ini
 You can name these functions however you like, and they can also be `NULL` if not needed. 
 
 ```c
+typedef struct {
+    // ...
+} SceneData;
+
 static void init(CmScene* scene) {
     // Runs once when the scene is initialized
 }
@@ -31,8 +35,7 @@ static void event(CmScene* scene, CmEvent* event) {
 
 CmSceneInterface *scene_interface(void) {
   static CmSceneInterface interface = {
-      .size = 0,
-      .init = init,
+      CM_SCENE(SceneData),
       .fixed_update = fixed_update,
       .frame_update = frame_update,
       .final = final,
@@ -73,7 +76,7 @@ static void frame_update(CmScene* scene, double deltatime) {
 
 CmSceneInterface *scene_interface(void) {
   static CmSceneInterface interface = {
-      .size = sizeof(SceneData),
+      CM_SCENE(SceneData),
       .init = init,
       .frame_update = frame_update,
   };

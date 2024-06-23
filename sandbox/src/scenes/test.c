@@ -325,8 +325,8 @@ static void final(CmScene *scene) {
 
 CmSceneInterface *test(void) {
   static CmSceneInterface interface = {
-      .size = sizeof(Test),
-      .init = init,
+      CM_SCENE(Test), // Scene name
+      .init = init,   // init
       .frame_update = frame_update,
       .event = event,
       .final = final,

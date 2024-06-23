@@ -2,6 +2,11 @@
 
 #include "claymore/app/app.h"
 
+void *cm_scene_data(CmScene *scene) {
+  CmSceneInternal *internal = (CmSceneInternal *)scene;
+  return internal->data;
+}
+
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
   CmSceneInternal *new = cm_scene_internal_init(&internal->arena, init);
@@ -44,9 +49,9 @@ void cm_scene_map_children(CmScene *scene, void (*map)(CmScene *, CmScene *)) {
   }
 }
 
-void *cm_scene_data(CmScene *scene) {
+Str cm_scene_name(CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
-  return internal->data;
+  return internal->interface->name;
 }
 
 const CmSceneChildren *cm_scene_children(CmScene *scene) {
