@@ -9,6 +9,8 @@ void _cm_camera_update(CmCameraBase *camera) {
   }
 }
 
+/* ========= 2D camera ========= */
+
 void cm_camera2D_screen(CmCamera2D *camera) {
   RGFW_window *w = cm_app_window();
   glm_ortho(0, w->r.w, w->r.h, 0, 1.f / 100.f, 100.f, camera->base.projection);
@@ -37,6 +39,8 @@ void cm_camera2D_ortho(CmCamera2D *camera, vec2 pos, float aspect, float zoom) {
   camera->base.dirty = true;
   cm_camera_update(camera);
 }
+
+/* ========= 3D camera ========= */
 
 void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
                              vec3 lookat, float aspect) {
