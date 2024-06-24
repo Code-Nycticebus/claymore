@@ -6,17 +6,25 @@
 #include "claymore/app/event.h"
 #include "claymore/renderer/gpu.h"
 
-// Public scene context
+/* Public Scene Data
+ *  - Public data mostly for resource management within a scene,
+ *    including memory (arena) and GPU resources (gpu).
+ * */
 typedef struct {
-  Arena arena; // Scene lifetime arena
-  CmGpu gpu;   // Scene lifetime gpu resource
+  Arena arena;
+  CmGpu gpu;
 } CmScene;
 
 // Helper to initialize a scene interface with its name and size
 #define CM_SCENE(T) .name = STR_STATIC(#T), .size = sizeof(T)
 
-// Scene interface vtable and metadata
+/* Scene Interface:
+ *  - 'name' and 'size' store metadata about the scene type.
+ *  - Function pointers for scene lifecycle events (init, updates, event
+ *    handling, finalization).
+ */
 typedef const struct {
+  // Metadata
   Str name;
   usize size;
 
@@ -64,7 +72,10 @@ void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name);
 
 /* ========= App internal ========= */
 
-// Internal scene context
+/* Internal Scene Context (CmSceneInternal)
+ *  - Internal state of a scene, including user-specific data and private data
+ *    for managing lifecycle, resources, and hierarchy.
+ */
 typedef struct CmSceneInternal {
   CmScene public;                        // Public scene context
   Arena arena;                           // Scene lifetime arena
