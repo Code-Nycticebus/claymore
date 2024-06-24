@@ -1,33 +1,7 @@
 #include "app.h"
 
-#include "claymore/renderer/2D/renderer2D.h"
 #include "claymore/renderer/context.h"
 #include "sound.h"
-
-// Internal app context
-typedef struct {
-  // Public app context
-  CmApp public;
-  // App lifetime arena
-  Arena arena;
-  // Running state
-  bool running;
-  // Timestamp of first frame
-  u64 first_frame;
-  // Deltatime
-  u64 last_frame;
-  double deltatime;
-  // Current root scene
-  CmSceneInternal *root;
-  // Scene management
-  CmSceneInternal *new_root;
-  DA(CmSceneInternal *) deleted;
-  // Flat scene tree
-  bool update_scene_flat;
-  DA(CmSceneInternal *) flat;
-
-  CmRenderer2D *renderer;
-} CmAppInternal;
 
 // Internal app instance
 static CmAppInternal *app;
@@ -134,6 +108,7 @@ bool cm_app_internal_update(void) {
   // Delete all scheduled scenes
   while (da_len(&app->deleted)) {
     CmSceneInternal *scene = da_pop(&app->deleted);
+    // If there is no parent the scene was the root scene
     Arena *arena = scene->parent ? &scene->parent->arena : &app->arena;
     cm_scene_internal_final(arena, scene);
   }
@@ -174,6 +149,7 @@ bool cm_app_internal_update(void) {
     fixed_timer -= fixed_interval;
   }
 
+  // Rendering
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (usize i = 0; i < da_len(&app->flat); ++i) {
@@ -210,6 +186,7 @@ void cm_app_internal_use(CmApp *a) {
   cebus_assert(app == NULL, "Cannot use and app while another app is running!");
   app = (CmAppInternal *)a;
   cm_2D_internal_use(app->renderer);
+  cm_platform_context_init(app->public.window);
 }
 
 void cm_app_internal_event(CmEvent *event) {

@@ -49,6 +49,7 @@ typedef const struct {
 // Typedef for scene interface initialization function
 typedef const CmSceneInterface *(*CmSceneInit)(void);
 
+// Typedef for scene dynamic array
 typedef DA(CmScene *) CmSceneDa;
 
 /* ========= App public ========= */
