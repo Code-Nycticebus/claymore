@@ -34,7 +34,7 @@ void cm_event_internal_poll_events(RGFW_window *window) {
               },
       });
       glm_vec2_copy(pos, last_pos);
-    } else if (event->type == RGFW_windowAttribsChange) {
+    } else if (event->type == RGFW_windowResized) {
       glViewport(0, 0, window->r.w, window->r.h);
       cm_event_emit((CmEvent){
           .type = CM_EVENT_RESIZE,
@@ -87,11 +87,8 @@ void cm_event_internal_poll_events(RGFW_window *window) {
                       },
               },
       });
-    } else if (event->type == RGFW_focusIn || event->type == RGFW_focusOut) {
-      // TODO implement event
     } else {
-      cebus_log_error("EVENT %d", event->type);
-      NOT_IMPLEMENTED();
+      cebus_log_error("event (%d) not implemented", event->type);
     }
   }
 }
