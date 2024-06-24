@@ -16,21 +16,6 @@ typedef enum {
 
 typedef u32 CmGpuID;
 
-typedef struct {
-  CmGpuID id;
-  usize len;
-} CmVbo;
-
-typedef struct {
-  CmGpuID id;
-  usize count;
-} CmEbo;
-
-typedef struct {
-  CmGpuID id;
-  CmGpuID idx;
-} CmVao;
-
 // Buffer struct
 typedef struct {
   enum {
@@ -46,8 +31,14 @@ typedef struct {
 /* Cpu resource manager context */
 typedef struct {
   Arena *arena;            // Gpu lifetime arena
-  DA(CmGpuBuffer) buffers; // Dynamic array of buffers
+  DA(CmGpuBuffer) buffers; // Dynamic array of buffer id's
 } CmGpu;
+
+/* Vertex buffer object */
+typedef struct {
+  CmGpuID id;
+  usize len;
+} CmVbo;
 
 // Create vbo
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
@@ -56,12 +47,24 @@ void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v);
 // Draw vbo instanced
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode);
 
+/* Element buffer object */
+typedef struct {
+  CmGpuID id;
+  usize count;
+} CmEbo;
+
 // Create ebo
 CmEbo cm_gpu_ebo(CmGpu *b, CmGpuType type, usize count, const u32 *i);
 // Draw in specified mode
 void cm_gpu_ebo_draw(CmEbo *ebo, usize count, CmGpuDrawMode mode);
 // Draw instanced in specified mode
 void cm_gpu_ebo_draw_instanced(CmEbo *ebo, usize count, CmGpuDrawMode mode);
+
+/* Vertex attribute object */
+typedef struct {
+  CmGpuID id;
+  usize idx;
+} CmVao;
 
 // Create vao
 CmVao cm_gpu_vao(CmGpu *b);
@@ -77,6 +80,8 @@ void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
 CmGpuID cm_gpu_program(CmGpu *b);
 // Create texture
 CmGpuID cm_gpu_texture(CmGpu *b);
+
+/* ========= App internal ========= */
 
 CmGpu cm_gpu_internal_init(Arena *arena);
 void cm_gpu_internal_free(CmGpu *bm);
