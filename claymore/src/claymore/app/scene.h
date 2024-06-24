@@ -60,7 +60,7 @@ const CmSceneDa *cm_scene_children(CmScene *scene);
 // Find first occurence of scene
 CmScene *cm_scene_find(CmScene *root, Str name);
 // Find all occurences of scene
-CmSceneDa *cm_scene_find_all(Arena *arena, CmScene *root, Str name);
+void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name);
 
 /* ========= App internal ========= */
 

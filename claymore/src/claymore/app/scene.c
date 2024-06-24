@@ -63,17 +63,14 @@ CmScene *cm_scene_find(CmScene *root, Str name) {
   return NULL;
 }
 
-CmSceneDa *cm_scene_find_all(Arena *arena, CmScene *root, Str name) {
-  CmSceneDa *da = arena_calloc(arena, sizeof(CmSceneDa));
-  da_init(da, arena);
+void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name) {
   CmSceneInternal *internal = (CmSceneInternal *)root;
   for (usize i = 0; i < da_len(&internal->children); ++i) {
     CmSceneInternal *scene = da_get(&internal->children, i);
     if (str_eq(scene->interface->name, name)) {
-      da_push(da, (CmScene *)scene);
+      da_push(out, (CmScene *)scene);
     }
   }
-  return da;
 }
 
 /* ========= App internal ========= */
