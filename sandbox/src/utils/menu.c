@@ -5,6 +5,7 @@ typedef struct {
   bool pressed;
   usize idx;
   usize selected;
+  usize max;
   CmFont *font;
   vec2 size;
   vec2 anchor;
@@ -17,14 +18,11 @@ static void event(CmScene *scene, CmEvent *event) {
   Menu *menu = cm_scene_data(scene);
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed) {
-      if (key->code == RGFW_Escape) {
-        cm_app_quit();
-      }
       if (key->code == RGFW_Up || key->code == RGFW_k) {
-        menu->selected = glm_max(menu->selected - 1, 1);
+        menu->selected = glm_clamp(menu->selected - 1, 1, menu->max);
       }
       if (key->code == RGFW_Down || key->code == RGFW_j) {
-        menu->selected = glm_max(menu->selected + 1, 1);
+        menu->selected = glm_clamp(menu->selected + 1, 1, menu->max);
       }
     }
   });
@@ -43,34 +41,27 @@ static void init(CmScene *scene) {
   menu->margin = 10.f;
 }
 
-static void pre_update(CmScene *scene) {
+static void frame_update(CmScene *scene) {
   Menu *menu = cm_scene_data(scene);
 
   glm_vec2_copy(menu->anchor, menu->pos);
   menu->idx = 0;
+
   cm_2D_begin(&menu->camera);
-}
-
-static void frame_update(CmScene *scene) {
-  Menu *menu = cm_scene_data(scene);
   menu->update(scene);
-}
-
-static void post_update(CmScene *scene) {
-  Menu *menu = cm_scene_data(scene);
   cm_2D_end();
 
   RGFW_window *w = cm_app_window();
-  menu->pressed = RGFW_isMousePressed(w, RGFW_mouseLeft);
+  menu->pressed =
+      RGFW_isMousePressed(w, RGFW_mouseLeft) || RGFW_isPressedI(w, RGFW_Return);
+  menu->max = menu->idx;
 }
 
 CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
       CM_SCENE(Menu),
       .init = init,
-      .pre_update = pre_update,
       .frame_update = frame_update,
-      .post_update = post_update,
       .event = event,
   };
   return &interface;
@@ -106,13 +97,14 @@ bool button(CmScene *scene, Str label) {
       pressed = true;
     }
     selected = true;
+    menu->selected = 0;
   }
 
   if (RGFW_isPressedI(w, RGFW_1 + menu->idx - 1)) {
     menu->selected = menu->idx;
   }
 
-  if (selected && RGFW_isPressedI(w, RGFW_Return)) {
+  if (!menu->pressed && selected && RGFW_isPressedI(w, RGFW_Return)) {
     pressed = true;
   }
 

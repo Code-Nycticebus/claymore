@@ -35,16 +35,17 @@ CmSceneInterface *app_controlls(void) {
   return &interface;
 }
 
+CmSceneInterface *benchmark(void);
+CmSceneInterface *counter(void);
 CmSceneInterface *test(void);
 CmSceneInterface *hello(void);
-CmSceneInterface *benchmark(void);
-CmSceneInterface *template(void);
 
 static const struct {
   Str label;
   CmSceneInit scene;
 } buttons[] = {
     {.label = STR_STATIC("benchmark"), .scene = benchmark},
+    {.label = STR_STATIC("counter"), .scene = counter},
     {.label = STR_STATIC("hello"), .scene = hello},
     {.label = STR_STATIC("test"), .scene = test},
 };
@@ -62,6 +63,17 @@ static void menu_update(CmScene *scene) {
   }
 }
 
+static void event(CmScene *scene, CmEvent *event) {
+  (void)scene;
+  cm_event_key(event, {
+    if (key->action == RGFW_keyPressed) {
+      if (key->code == RGFW_Escape) {
+        cm_app_quit();
+      }
+    }
+  });
+}
+
 static void init(CmScene *scene) {
   const float width = 250.f;
 
@@ -76,6 +88,7 @@ static void init(CmScene *scene) {
 CmSceneInterface *sandbox(void) {
   static CmSceneInterface interface = {
       .init = init,
+      .event = event,
   };
   return &interface;
 }

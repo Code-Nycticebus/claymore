@@ -13,8 +13,9 @@ int main(void) {
   Paths files = da_new(&arena);
   cmd_push(&files, STR_STATIC("src/utils/fps.c"));
   cmd_push(&files, STR_STATIC("src/utils/menu.c"));
-  cmd_push(&files, STR_STATIC("src/scenes/hello.c"));
   cmd_push(&files, STR_STATIC("src/scenes/benchmark-2d.c"));
+  cmd_push(&files, STR_STATIC("src/scenes/counter.c"));
+  cmd_push(&files, STR_STATIC("src/scenes/hello.c"));
   cmd_push(&files, STR_STATIC("src/scenes/test.c"));
 
   Cmd cflags = cmd_new(&arena);
