@@ -4,63 +4,78 @@
 
 void cm_event_emit(CmEvent event) { cm_app_internal_event(&event); }
 
-void cm_event_internal_poll_events(RGFW_window *window) {
+void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
   while (RGFW_window_checkEvent(window)) {
     RGFW_Event *event = &window->event;
+
+    // quit
     if (event->type == RGFW_quit) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_QUIT,
           .event = {{0}},
       });
-    } else if (event->type == RGFW_keyPressed ||
-               event->type == RGFW_keyReleased) {
+      continue;
+    }
+
+    // key pressed
+    if (event->type == RGFW_keyPressed || event->type == RGFW_keyReleased) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_KEY,
           .event.key =
               {
+                  .key = str_from_cstr(window->event.keyName),
                   .code = window->event.keyCode,
                   .action = window->event.type,
+                  .lock = window->event.lockState,
               },
       });
-    } else if (event->type == RGFW_mousePosChanged) {
+      continue;
+    }
+
+    // cursor
+    if (event->type == RGFW_mousePosChanged) {
       vec2 pos = {event->point.x, event->point.y};
       static vec2 last_pos = {0};
       cm_event_emit((CmEvent){
           .type = CM_EVENT_CURSOR,
           .event.cursor =
               {
-                  .dir = {last_pos[0] - pos[0], last_pos[1] - pos[1]},
-                  .pos = {pos[0], pos[1]},
+                  .direction = {last_pos[0] - pos[0], last_pos[1] - pos[1]},
+                  .position = {pos[0], pos[1]},
               },
       });
       glm_vec2_copy(pos, last_pos);
-    } else if (event->type == RGFW_windowResized) {
-      glViewport(0, 0, window->r.w, window->r.h);
+      continue;
+    }
+
+    // scroll
+    if (event->button == RGFW_mouseScrollUp ||
+        event->button == RGFW_mouseScrollDown) {
       cm_event_emit((CmEvent){
-          .type = CM_EVENT_RESIZE,
-          .event.resize = {.size = {window->r.w, window->r.h}},
+          .type = CM_EVENT_SCROLL,
+          .event.scroll = {.offset = {0, event->scroll}},
       });
-    } else if (event->type == RGFW_mouseButtonPressed ||
-               event->type == RGFW_mouseButtonReleased) {
-      if (event->button == RGFW_mouseScrollUp ||
-          event->button == RGFW_mouseScrollDown) {
-        cm_event_emit((CmEvent){
-            .type = CM_EVENT_SCROLL,
-            .event.scroll = {.offset = {0, event->scroll}},
-        });
-      } else {
-        cm_event_emit((CmEvent){
-            .type = CM_EVENT_MOUSE,
-            .event.mouse =
-                {
-                    .action = event->type,
-                    .button = event->button,
-                    .pos = {event->point.x, event->point.y},
-                },
-        });
-      }
-    } else if (event->type == RGFW_jsButtonPressed ||
-               event->type == RGFW_jsButtonReleased) {
+      continue;
+    }
+
+    // mouse
+    if (event->type == RGFW_mouseButtonPressed ||
+        event->type == RGFW_mouseButtonReleased) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_MOUSE,
+          .event.mouse =
+              {
+                  .action = event->type,
+                  .button = event->button,
+                  .position = {event->point.x, event->point.y},
+              },
+      });
+      continue;
+    }
+
+    // controller buttons
+    if (event->type == RGFW_jsButtonPressed ||
+        event->type == RGFW_jsButtonReleased) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_CONTROLLER,
           .event.controller =
@@ -72,23 +87,60 @@ void cm_event_internal_poll_events(RGFW_window *window) {
                           {event->axis[0].x, event->axis[0].y},
                           {event->axis[1].x, event->axis[1].y},
                       },
+                  .controller = event->joystick,
               },
       });
-    } else if (event->type == RGFW_jsAxisMove) {
+      continue;
+    }
+
+    // controller joystick
+    if (event->type == RGFW_jsAxisMove) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_JOYSTICK,
           .event.joystick =
               {
-                  .joystick = event->joystick,
+                  .controller = event->joystick,
                   .axis =
                       {
                           {event->axis[0].x, event->axis[0].y},
                           {event->axis[1].x, event->axis[1].y},
                       },
+                  .button = event->button,
               },
       });
-    } else {
-      cebus_log_error("event (%d) not implemented", event->type);
+      continue;
     }
+
+    // resize
+    if (event->type == RGFW_windowResized) {
+      glViewport(0, 0, window->r.w, window->r.h);
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_RESIZE,
+          .event.resize = {.size = {window->r.w, window->r.h}},
+      });
+      continue;
+    }
+
+    // drop init
+    if (event->type == RGFW_dnd_init) {
+      continue; // ignore
+    }
+
+    // drop
+    if (event->type == RGFW_dnd) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_DROP,
+          .event.drop =
+              {
+                  .position = {event->point.x, event->point.y},
+                  .count = event->droppedFilesCount,
+                  .files = event->droppedFiles,
+              },
+      });
+      continue;
+    }
+
+    // event not handled yet
+    cebus_log_error("event (%d) not implemented", event->type);
   }
 }
