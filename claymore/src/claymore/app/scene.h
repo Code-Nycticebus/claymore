@@ -6,6 +6,8 @@
 #include "claymore/app/event.h"
 #include "claymore/renderer/gpu.h"
 
+/* ========= Scene Public ========= */
+
 /* Public Scene Data
  *  - Public data mostly for resource management within a scene,
  *    including memory (arena) and GPU resources (gpu).
@@ -52,8 +54,6 @@ typedef const CmSceneInterface *(*CmSceneInit)(void);
 // Typedef for scene dynamic array
 typedef DA(CmScene *) CmSceneDa;
 
-/* ========= App public ========= */
-
 // Adds child to parent scene
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init);
 // Deletes itself from the scene tree
@@ -71,7 +71,7 @@ CmScene *cm_scene_find(CmScene *root, Str name);
 // Find all occurences of scene
 void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name);
 
-/* ========= App internal ========= */
+/* ========= Scene internal ========= */
 
 /* Internal Scene Context (CmSceneInternal)
  *  - Internal state of a scene, including user-specific data and private data
