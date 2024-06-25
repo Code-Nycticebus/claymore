@@ -2,6 +2,8 @@
 
 #include <glad.h>
 
+/* ========= gpu public ========= */
+
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v) {
   CmVbo vbo = {.len = len};
 
@@ -88,6 +90,8 @@ CmGpuID cm_gpu_texture(CmGpu *b) {
   da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_TEXTURE, .id = texture});
   return texture;
 }
+
+/* ========= gpu internal ========= */
 
 CmGpu cm_gpu_internal_init(Arena *arena) {
   CmGpu gpu = {0};

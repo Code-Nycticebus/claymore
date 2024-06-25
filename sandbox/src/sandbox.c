@@ -157,7 +157,13 @@ CmSceneInterface *sandbox(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = 720, .height = 420, .title = "Sandbox"},
+      .window =
+          {
+              .width = 720,
+              .height = 420,
+              .title = "Sandbox",
+              .args = RGFW_ALLOW_DND,
+          },
       .root = sandbox,
   };
   return &config;

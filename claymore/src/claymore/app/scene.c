@@ -2,7 +2,7 @@
 
 #include "claymore/app/app.h"
 
-/* ========= App public ========= */
+/* ========= scene public ========= */
 
 CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
@@ -73,7 +73,7 @@ void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name) {
   }
 }
 
-/* ========= App internal ========= */
+/* ========= scene internal ========= */
 
 CmSceneInternal *cm_scene_internal_init(Arena *arena, const CmSceneInit init) {
   CmSceneInterface *interface = init();

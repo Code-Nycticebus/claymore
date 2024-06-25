@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-// Helper for checking errors
+// helper for checking errors
 #define _cm_check_shader(error, shader_id, gl_check, gl_get_iv, gl_get_log)    \
   {                                                                            \
     GLint result = GL_FALSE;                                                   \
@@ -22,7 +22,7 @@
     return true;                                                               \
   }
 
-// Checks error depending on the compilations step
+// checks error depending on the compilations step
 static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
                                    Error *error) {
   if (gl_check == GL_COMPILE_STATUS) {
@@ -34,7 +34,7 @@ static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
                      glGetProgramInfoLog);
   }
 
-  // Other compilation steps are not supported
+  // other compilation steps are not supported
   cebus_assert(gl_check == GL_COMPILE_STATUS || gl_check == GL_LINK_STATUS,
                "Other checks are not supported");
   return false;
@@ -42,9 +42,9 @@ static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
 
 #undef _cm_check_shader
 
-// Compiles shader based on shader type
+// compiles shader based on shader type
 static GLuint _cm_compile_shader(Str shader_src, GLenum type, Error *error) {
-  // Other shader types are currently not supported
+  // other shader types are currently not supported
   cebus_assert((type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER),
                "Shader only supports these types for now!");
 
@@ -125,7 +125,7 @@ static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   }
 
   Arena temp = {0};
-  // Take ownership of uniform_name
+  // take ownership of uniform_name
   Str name = str_copy(uniform_name, &temp);
   // glGetUniformLocation() takes a `\0` terminated cstr
   GLint location = glGetUniformLocation(shader->id, name.data);
@@ -139,7 +139,7 @@ static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   cebus_assert(shader->uniform_count < CM_SHADER_UNIFORM_MAX,
                "shader has to many cached uniforms");
 
-  // Cache uniform location
+  // cache uniform location
   shader->uniforms[shader->uniform_count].location = location;
   shader->uniforms[shader->uniform_count].hash = hash;
   shader->uniform_count++;

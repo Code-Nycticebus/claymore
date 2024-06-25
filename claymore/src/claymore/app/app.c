@@ -3,10 +3,10 @@
 #include "claymore/renderer/context.h"
 #include "sound.h"
 
-// Internal app instance
+// internal app instance
 static CmAppInternal *app;
 
-/* ========= App public ========= */
+/* ========= app public ========= */
 
 CmApp *cm_app(void) { return &app->public; }
 
@@ -18,8 +18,8 @@ CmGpu *cm_app_gpu(void) { return &app->public.gpu; }
 
 CmScene *cm_app_root(void) { return &app->root->public; }
 CmScene *cm_app_set_root(CmSceneInit init) {
-  // Initalizing new root scene.
-  // For a short time there are gonna be two scenes in memory at the same time.
+  // initalizing new root scene.
+  // for a short time there are gonna be two scenes in memory at the same time.
 
   app->new_root = cm_scene_internal_init(&app->arena, init);
   if (app->new_root->interface->init) {
@@ -38,9 +38,9 @@ void cm_app_quit(void) {
   });
 }
 
-/* ================== App internal ================== */
+/* ================== app internal ================== */
 
-// Build flat scene tree
+// build flat scene tree
 static void _cm_app_build_flat_tree(CmSceneInternal *root) {
   da_extend(&app->flat, da_len(&root->children), root->children.items);
   for (usize i = 0; i < da_len(&root->children); ++i) {
@@ -98,7 +98,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 }
 
 bool cm_app_internal_update(void) {
-  // Complete the new root initalization
+  // complete the new root initalization
   if (app->new_root) {
     da_push(&app->deleted, app->root);
     app->root = app->new_root;
@@ -106,15 +106,15 @@ bool cm_app_internal_update(void) {
     app->update_scene_flat = true;
   }
 
-  // Delete all scheduled scenes
+  // delete all scheduled scenes
   while (da_len(&app->deleted)) {
     CmSceneInternal *scene = da_pop(&app->deleted);
-    // If there is no parent the scene was the root scene
+    // if there is no parent the scene was the root scene
     Arena *arena = scene->parent ? &scene->parent->arena : &app->arena;
     cm_scene_internal_final(arena, scene);
   }
 
-  // Update flat scene tree if needed
+  // update flat scene tree if needed
   if (app->update_scene_flat) {
     da_clear(&app->flat);
     da_push(&app->flat, app->root);
@@ -128,14 +128,14 @@ bool cm_app_internal_update(void) {
     return false;
   }
 
-  // Deltatime
+  // deltatime
   const double ns = 1e+9;
   const u64 current_time = RGFW_getTimeNS();
   u64 dt = current_time - app->last_frame;
   app->last_frame = current_time;
   app->deltatime = dt / ns;
 
-  // Fixed Update
+  // fixed Update
   const i64 fixed_interval = CM_FIXED_DELTA * ns;
   static i64 fixed_timer = 0;
   fixed_timer += dt;
@@ -150,20 +150,20 @@ bool cm_app_internal_update(void) {
     fixed_timer -= fixed_interval;
   }
 
-  // Rendering
+  // rendering
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (usize i = 0; i < da_len(&app->flat); ++i) {
     CmSceneInternal *scene = da_get(&app->flat, i);
-    // Pre update
+    // pre update
     if (scene->interface->pre_update) {
       scene->interface->pre_update(&scene->public);
     }
-    // Frame update
+    // frame update
     if (scene->interface->frame_update) {
       scene->interface->frame_update(&scene->public);
     }
-    // Post update
+    // post update
     if (scene->interface->post_update) {
       scene->interface->post_update(&scene->public);
     }

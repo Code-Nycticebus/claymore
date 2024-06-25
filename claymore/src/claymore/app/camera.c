@@ -2,6 +2,8 @@
 
 #include "app.h"
 
+/* ========= camera base ========= */
+
 void _cm_camera_update(CmCameraBase *camera) {
   if (camera->dirty == true) {
     camera->dirty = false;

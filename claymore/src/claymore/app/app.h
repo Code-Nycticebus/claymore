@@ -8,7 +8,7 @@
 #include "claymore/renderer/2D/renderer2D.h"
 #include "scene.h"
 
-// Fixed update frequenzy (50hz)
+// fixed update frequenzy (50hz)
 #define CM_FIXED_DELTA 0.02f
 
 /* App Config (ClaymoreConfig)
@@ -17,12 +17,12 @@
  */
 typedef const struct {
   struct {
-    const char *title;
-    usize width;
-    usize height;
-    u16 args;
-  } window;         // Window config
-  CmSceneInit root; // Function pointer to scene initializer function
+    const char *title; // window title
+    usize width;       // width
+    usize height;      // height
+    u16 args;          // optional arguments (RGFW.h:247)
+  } window;            // window config
+  CmSceneInit root;    // function pointer to scene initializer function
 } ClaymoreConfig;
 
 /* App Context (CmApp)
@@ -30,65 +30,65 @@ typedef const struct {
  * context.
  */
 typedef struct {
-  CmGpu gpu;           // App lifetime gpu resources
-  Arena arena;         // App lifetime arena
-  RGFW_window *window; // Window context
+  CmGpu gpu;           // app lifetime gpu resources
+  Arena arena;         // app lifetime arena
+  RGFW_window *window; // window context
 } CmApp;
 
-/* ========= App public ========= */
+/* ========= app public ========= */
 
-// Gets app context
+// gets app context
 CmApp *cm_app(void);
 
-// Get window context
+// get window context
 RGFW_window *cm_app_window(void);
 
-// Sets the app background color
+// sets the app background color
 void cm_app_background(const vec3 color);
 
-// Returns app gpu context
+// returns app gpu context
 CmGpu *cm_app_gpu(void);
 
-// Returns the user data pointer
+// returns the user data pointer
 void *cm_app_data(void);
-// Sets the user data pointer and allocates memory of given size
+// sets the user data pointer and allocates memory of given size
 void *cm_app_set_data(usize size);
 
-// Gets root scene
+// gets root scene
 CmScene *cm_app_root(void);
-// Sets root scene
+// sets root scene
 CmScene *cm_app_set_root(CmSceneInit init);
 
-// Gets deltatime
+// gets deltatime
 double cm_app_deltatime(void);
-// Gets time the app is running
+// gets time the app is running
 u64 cm_app_time(void);
 
-// Quit the app
+// quit the app
 void cm_app_quit(void);
 
-/* ========= App internal ========= */
+/* ========= app internal ========= */
 
 /* Internal App Context (CmAppInternal)
  *  - Internal state and management for the app, including public context,
  *    memory management, and scene handling.
- */
+ * */
 typedef struct {
-  CmApp public; // Public app context
-  Arena arena;  // App lifetime arena
-  bool running; // Running state
+  CmApp public; // public app context
+  Arena arena;  // app lifetime arena
+  bool running; // eunning state
 
-  u64 first_frame; // Timestamp of first frame
+  u64 first_frame; // timestamp of first frame
 
-  u64 last_frame;   // Timestamp of last frame
-  double deltatime; // Deltatime
+  u64 last_frame;   // timestamp of last frame
+  double deltatime; // deltatime
 
-  CmSceneInternal *root;         // Current root scene
-  CmSceneInternal *new_root;     // Scheduled new scene
-  DA(CmSceneInternal *) deleted; // Scheduled to delete scenes
+  CmSceneInternal *root;         // current root scene
+  CmSceneInternal *new_root;     // scheduled new scene
+  DA(CmSceneInternal *) deleted; // scheduled to delete scenes
 
-  bool update_scene_flat;     // If update is needed
-  DA(CmSceneInternal *) flat; // Flat scene tree
+  bool update_scene_flat;     // if update is needed
+  DA(CmSceneInternal *) flat; // flat scene tree
 
   CmRenderer2D *renderer; // 2D renderer context
 } CmAppInternal;

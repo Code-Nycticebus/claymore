@@ -11,7 +11,7 @@
 typedef struct {
   u32 id; // program id
 
-  // Not finalized way of caching uniform locations
+  // caching uniform locations (not finalized)
   usize uniform_count;
   struct {
     u64 hash;
@@ -19,17 +19,17 @@ typedef struct {
   } uniforms[CM_SHADER_UNIFORM_MAX];
 } CmShader;
 
-// Initalizes shader from two source files
+// initalizes shader from two source files
 CmShader cm_shader_from_file(CmGpu *gpu, Str vs, Str fs, Error *e);
-// Initalizes shader from a string in memory
+// initalizes shader from a string in memory
 CmShader cm_shader_from_memory(CmGpu *gpu, Str vs, Str fs, Error *e);
 
-// Binds shader
+// binds shader
 void cm_shader_bind(const CmShader *shader);
-// Unbinds shader
+// unbinds shader
 void cm_shader_unbind(void);
 
-// Uniform setters
+// uniform setters
 
 void cm_shader_set_mat4(CmShader *shader, Str uniform_name, mat4 mat);
 void cm_shader_set_vec2(CmShader *shader, Str uniform_name, vec2 vec);
