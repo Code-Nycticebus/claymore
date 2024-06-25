@@ -76,7 +76,7 @@ void cm_app_quit(void);
 typedef struct {
   CmApp public; // public app context
   Arena arena;  // app lifetime arena
-  bool running; // eunning state
+  bool running; // running state
 
   u64 first_frame; // timestamp of first frame
 

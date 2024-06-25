@@ -97,10 +97,7 @@ static void event(CmScene *scene, CmEvent *event) {
     }
   });
 
-  cm_event_resize(event, {
-    (void)resize;
-    cm_camera2D_screen(&menu.camera);
-  });
+  cm_event_resize(event, { cm_camera2D_screen(&menu.camera); });
 }
 
 static void init(CmScene *scene) {

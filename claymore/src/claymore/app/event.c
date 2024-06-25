@@ -140,6 +140,28 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
       continue;
     }
 
+    // focus
+    if (event->type == RGFW_focusIn || event->type == RGFW_focusOut) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_FOCUS,
+          .event.focus = {.in_focus = (event->type == RGFW_focusIn)},
+      });
+      continue;
+    }
+
+    // move
+    if (event->type == RGFW_windowMoved) {
+      cm_event_emit((CmEvent){
+          .type = CM_EVENT_MOVE,
+          .event.move =
+              {
+                  .position = {window->r.x, window->r.y},
+                  .size = {window->r.w, window->r.h},
+              },
+      });
+      continue;
+    }
+
     // event not handled yet
     cebus_log_error("event (%d) not implemented", event->type);
   }

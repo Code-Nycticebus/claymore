@@ -63,6 +63,17 @@ typedef struct {
   char (*files)[RGFW_MAX_PATH]; // file paths
 } CmEventDrop;
 
+// window focus
+typedef struct {
+  bool in_focus; // if window is in focus
+} CmEventFocus;
+
+// window move
+typedef struct {
+  vec2 position; // new position
+  vec2 size;     // current size
+} CmEventMove;
+
 typedef enum {
   CM_EVENT_QUIT,
   CM_EVENT_KEY,
@@ -73,6 +84,8 @@ typedef enum {
   CM_EVENT_JOYSTICK,
   CM_EVENT_RESIZE,
   CM_EVENT_DROP,
+  CM_EVENT_FOCUS,
+  CM_EVENT_MOVE,
 } CmEventType;
 
 typedef union {
@@ -85,6 +98,8 @@ typedef union {
   CmEventJoystick joystick;
   CmEventResize resize;
   CmEventDrop drop;
+  CmEventFocus focus;
+  CmEventMove move;
 } CmEventData;
 
 /* `CmEvent` is a tagged union. It has a tag to identify and
@@ -136,6 +151,12 @@ void cm_event_emit(CmEvent event);
 // drop
 #define cm_event_drop(e, ...)                                                  \
   _cm_event(e, drop, CmEventDrop, CM_EVENT_DROP, __VA_ARGS__)
+// focus
+#define cm_event_focus(e, ...)                                                 \
+  _cm_event(e, focus, CmEventFocus, CM_EVENT_FOCUS, __VA_ARGS__)
+// move
+#define cm_event_move(e, ...)                                                  \
+  _cm_event(e, move, CmEventMove, CM_EVENT_MOVE, __VA_ARGS__)
 
 /* ========= event internal ========= */
 
