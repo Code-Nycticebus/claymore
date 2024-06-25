@@ -92,6 +92,8 @@ bool button(CmScene *scene, Str label) {
   vec4 color = {.25f, .25f, .25f, 1};
   menu->idx++;
 
+  bool pressed = false;
+
   bool selected = menu->idx == menu->selected;
 
   if (glm_aabb2d_point(
@@ -101,7 +103,7 @@ bool button(CmScene *scene, Str label) {
           },
           (vec2){w->event.point.x, w->event.point.y})) {
     if (!menu->pressed && RGFW_isMousePressed(w, RGFW_mouseLeft)) {
-      return true;
+      pressed = true;
     }
     selected = true;
   }
@@ -111,7 +113,7 @@ bool button(CmScene *scene, Str label) {
   }
 
   if (selected && RGFW_isPressedI(w, RGFW_Return)) {
-    return true;
+    pressed = true;
   }
 
   if (selected) {
@@ -121,7 +123,6 @@ bool button(CmScene *scene, Str label) {
   cm_quad(menu->pos, menu->size, 0, color);
   const float padding = 20.f;
   cm_font(menu->font, (vec2){menu->pos[0] + padding, menu->pos[1]}, label);
-
   menu->pos[1] += menu->size[1] + menu->margin;
-  return false;
+  return pressed;
 }
