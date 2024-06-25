@@ -19,7 +19,7 @@ CmGpu *cm_app_gpu(void) { return &app->public.gpu; }
 CmScene *cm_app_root(void) { return &app->root->public; }
 CmScene *cm_app_set_root(CmSceneInit init) {
   // Initalizing new root scene.
-  // For a short time there are gonna be two scenes running at the same time.
+  // For a short time there are gonna be two scenes in memory at the same time.
 
   app->new_root = cm_scene_internal_init(&app->arena, init);
   if (app->new_root->interface->init) {
@@ -55,7 +55,8 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
   app->last_frame = app->first_frame;
 
   RGFW_rect r = RGFW_RECT(0, 0, config->window.width, config->window.height);
-  app->public.window = RGFW_createWindow(config->window.title, r, 0);
+  app->public.window =
+      RGFW_createWindow(config->window.title, r, config->window.args);
   if (app->public.window == NULL) {
     cebus_log_error("Could not open window");
     return false;

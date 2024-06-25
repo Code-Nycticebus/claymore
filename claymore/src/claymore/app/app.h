@@ -20,6 +20,7 @@ typedef const struct {
     const char *title;
     usize width;
     usize height;
+    u16 args;
   } window;         // Window config
   CmSceneInit root; // Function pointer to scene initializer function
 } ClaymoreConfig;
