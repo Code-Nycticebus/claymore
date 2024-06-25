@@ -159,10 +159,18 @@ bool cm_app_internal_update(void) {
     if (scene->interface->pre_update) {
       scene->interface->pre_update(&scene->public);
     }
+  }
+
+  for (usize i = 0; i < da_len(&app->flat); ++i) {
+    CmSceneInternal *scene = da_get(&app->flat, i);
     // frame update
     if (scene->interface->frame_update) {
       scene->interface->frame_update(&scene->public);
     }
+  }
+
+  for (usize i = 0; i < da_len(&app->flat); ++i) {
+    CmSceneInternal *scene = da_get(&app->flat, i);
     // post update
     if (scene->interface->post_update) {
       scene->interface->post_update(&scene->public);
