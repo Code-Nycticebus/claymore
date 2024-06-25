@@ -58,9 +58,9 @@ typedef struct {
 
 // file drop event
 typedef struct {
-  vec2 position;                      // drop position
-  size_t count;                       // number of files
-  const char (*files)[RGFW_MAX_PATH]; // file paths
+  vec2 position;                // drop position
+  size_t count;                 // number of files
+  char (*files)[RGFW_MAX_PATH]; // file paths
 } CmEventDrop;
 
 typedef enum {
