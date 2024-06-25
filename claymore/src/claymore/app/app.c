@@ -153,25 +153,25 @@ bool cm_app_internal_update(void) {
   // rendering
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // pre update
   for (usize i = 0; i < da_len(&app->flat); ++i) {
     CmSceneInternal *scene = da_get(&app->flat, i);
-    // pre update
     if (scene->interface->pre_update) {
       scene->interface->pre_update(&scene->public);
     }
   }
 
+  // frame update
   for (usize i = 0; i < da_len(&app->flat); ++i) {
     CmSceneInternal *scene = da_get(&app->flat, i);
-    // frame update
     if (scene->interface->frame_update) {
       scene->interface->frame_update(&scene->public);
     }
   }
 
+  // post update
   for (usize i = 0; i < da_len(&app->flat); ++i) {
     CmSceneInternal *scene = da_get(&app->flat, i);
-    // post update
     if (scene->interface->post_update) {
       scene->interface->post_update(&scene->public);
     }
