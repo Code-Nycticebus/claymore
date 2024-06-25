@@ -88,6 +88,12 @@ static void event(CmScene *scene, CmEvent *event) {
       if (key->code == RGFW_Down || key->code == RGFW_j) {
         menu.selected = glm_clamp(menu.selected + 1, 1, ARRAY_LEN(buttons));
       }
+
+      for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
+        if (key->code == RGFW_1 + i) {
+          menu.selected = i + 1;
+        }
+      }
     }
   });
 
@@ -124,7 +130,6 @@ static void frame_update(CmScene *scene) {
         glm_vec4_scale(color, 2, color);
       }
       if (button(buttons[i].label, pos, button_size, color) ||
-          RGFW_isPressedI(w, RGFW_1 + i) ||
           (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
         if (buttons[i].scene) {
           CmScene *m = cm_app_set_root(buttons[i].scene);
