@@ -1,6 +1,7 @@
 #include "claymore/entrypoint.h"
 
 #include "utils/fps.h"
+#include "utils/menu.h"
 
 CmSceneInterface *sandbox(void);
 
@@ -46,108 +47,35 @@ static const struct {
     {.label = STR_STATIC("benchmark"), .scene = benchmark},
     {.label = STR_STATIC("hello"), .scene = hello},
     {.label = STR_STATIC("test"), .scene = test},
-    {.label = STR_STATIC("quit"), .scene = NULL},
 };
 
-typedef struct {
-  CmCamera2D camera;
-  bool pressed;
-  usize selected;
-  CmFont *font;
-} Menu;
-static Menu menu = {0};
-
-static bool button(Str label, const vec2 pos, const vec2 size, vec4 color) {
-  RGFW_window *w = cm_app_window();
-
-  if (glm_aabb2d_point(
-          (vec2[]){{pos[0], pos[1]}, {pos[0] + size[0], pos[1] + size[1]}},
-          (vec2){w->event.point.x, w->event.point.y})) {
-    if (!menu.pressed && RGFW_isMousePressed(w, RGFW_mouseLeft)) {
-      return true;
+static void menu_update(CmScene *scene) {
+  for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
+    if (button(scene, buttons[i].label)) {
+      CmScene *m = cm_app_set_root(buttons[i].scene);
+      cm_scene_push(m, app_controlls);
     }
-    glm_vec4_scale(color, 2, color);
   }
 
-  cm_quad(pos, size, 0, color);
-  const float padding = 20.f;
-  cm_font(menu.font, (vec2){pos[0] + padding, pos[1]}, label);
-  return false;
-}
-
-static void event(CmScene *scene, CmEvent *event) {
-  (void)scene;
-  cm_event_key(event, {
-    if (key->action == RGFW_keyPressed) {
-      if (key->code == RGFW_Escape) {
-        cm_app_quit();
-      }
-      if (key->code == RGFW_Up || key->code == RGFW_k) {
-        menu.selected = glm_clamp(menu.selected - 1, 1, ARRAY_LEN(buttons));
-      }
-      if (key->code == RGFW_Down || key->code == RGFW_j) {
-        menu.selected = glm_clamp(menu.selected + 1, 1, ARRAY_LEN(buttons));
-      }
-
-      for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
-        if (key->code == RGFW_1 + i) {
-          menu.selected = i + 1;
-        }
-      }
-    }
-  });
-
-  cm_event_resize(event, { cm_camera2D_screen(&menu.camera); });
+  if (button(scene, STR("quit"))) {
+    cm_app_quit();
+  }
 }
 
 static void init(CmScene *scene) {
-  cm_camera2D_screen(&menu.camera);
+  const float width = 250.f;
 
-  Str font = STR("assets/fonts/Ubuntu.ttf");
-  const float height = 24.f;
-  menu.font = cm_font_from_file(&scene->gpu, font, height, ErrPanic);
+  const vec3 bg = {.1f, .1f, .1f};
+  cm_app_background(bg);
 
-  const vec3 bg_color = {0.05f, 0.05f, 0.05f};
-  cm_app_background(bg_color);
-}
-
-static void frame_update(CmScene *scene) {
-  (void)scene;
   RGFW_window *w = cm_app_window();
-
-  cm_2D_begin(&menu.camera);
-  {
-    const vec2 button_size = {300, 35};
-    vec2 pos = {w->r.w / (float)2 - button_size[0] / 2, 50.f};
-    const float margin = 10.f;
-
-    for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
-      vec4 color = {.2f, .2f, .2f, 1};
-      if (menu.selected == i + 1) {
-        glm_vec4_scale(color, 2, color);
-      }
-      if (button(buttons[i].label, pos, button_size, color) ||
-          (menu.selected == i + 1 && RGFW_isPressedI(w, RGFW_Return))) {
-        if (buttons[i].scene) {
-          CmScene *m = cm_app_set_root(buttons[i].scene);
-          cm_scene_push(m, app_controlls);
-        } else {
-          cm_app_quit();
-        }
-      }
-      pos[1] += button_size[1] + margin;
-    }
-  }
-  cm_2D_end();
-
-  menu.pressed = RGFW_isMousePressed(w, RGFW_mouseLeft);
+  const float y = 50.f;
+  menu_init(scene, (vec2){w->r.w / 2 - width / 2, y}, width, menu_update);
 }
 
 CmSceneInterface *sandbox(void) {
   static CmSceneInterface interface = {
       .init = init,
-      .event = event,
-      .frame_update = frame_update,
   };
   return &interface;
 }
