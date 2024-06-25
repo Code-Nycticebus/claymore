@@ -43,9 +43,9 @@ static const struct {
   Str label;
   CmSceneInit scene;
 } buttons[] = {
-    {.label = STR_STATIC("test"), .scene = test},
-    {.label = STR_STATIC("hello"), .scene = hello},
     {.label = STR_STATIC("benchmark"), .scene = benchmark},
+    {.label = STR_STATIC("hello"), .scene = hello},
+    {.label = STR_STATIC("test"), .scene = test},
     {.label = STR_STATIC("quit"), .scene = NULL},
 };
 
@@ -157,13 +157,7 @@ CmSceneInterface *sandbox(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window =
-          {
-              .width = 720,
-              .height = 420,
-              .title = "Sandbox",
-              .args = RGFW_ALLOW_DND,
-          },
+      .window = {.width = 720, .height = 420, .title = "Sandbox"},
       .root = sandbox,
   };
   return &config;
