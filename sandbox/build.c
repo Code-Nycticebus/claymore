@@ -6,7 +6,7 @@
 #include "../claymore/build/claymore.h"
 
 int main(void) {
-  compile_claymore(false);
+  compile_claymore(true);
 
   Arena arena = {0};
 
