@@ -34,14 +34,8 @@ typedef const struct {
   void (*init)(CmScene *scene);
   // function pointer for fixed updates (e.g., physics)
   void (*fixed_update)(CmScene *scene);
-
   // function pointer for frame updates (e.g., rendering)
   void (*frame_update)(CmScene *scene);
-  // function pointer for pre-update processing
-  void (*pre_update)(CmScene *scene);
-  // function pointer for post-update processing
-  void (*post_update)(CmScene *scene);
-
   // function pointer for finalization (cleanup)
   void (*final)(CmScene *scene);
   // function pointer for handling events
