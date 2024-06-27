@@ -12,6 +12,7 @@ typedef struct {
   vec2 pos;
   float margin;
   Update update;
+  bool hovering;
 } Menu;
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -46,6 +47,7 @@ static void frame_update(CmScene *scene) {
 
   glm_vec2_copy(menu->anchor, menu->pos);
   menu->idx = 0;
+  menu->hovering = false;
 
   cm_2D_begin(&menu->camera);
   menu->update(scene);
@@ -55,14 +57,24 @@ static void frame_update(CmScene *scene) {
   menu->pressed =
       RGFW_isMousePressed(w, RGFW_mouseLeft) || RGFW_isPressedI(w, RGFW_Return);
   menu->max = menu->idx;
+
+  if (menu->hovering) {
+    RGFW_window_setMouseStandard(w, RGFW_MOUSE_POINTING_HAND);
+  } else {
+    RGFW_window_setMouseDefault(w);
+  }
+}
+
+static void final(CmScene *scene) {
+  (void)scene;
+  RGFW_window *w = cm_app_window();
+  RGFW_window_setMouseDefault(w);
 }
 
 CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
-      CM_SCENE(Menu),
-      .init = init,
-      .frame_update = frame_update,
-      .event = event,
+      CM_SCENE(Menu), .init = init,   .frame_update = frame_update,
+      .event = event, .final = final,
   };
   return &interface;
 }
@@ -98,6 +110,7 @@ bool button(CmScene *scene, Str label) {
     }
     selected = true;
     menu->selected = 0;
+    menu->hovering = true;
   }
 
   if (RGFW_isPressedI(w, RGFW_1 + menu->idx - 1)) {
