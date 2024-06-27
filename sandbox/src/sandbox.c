@@ -1,7 +1,7 @@
 #include "claymore/entrypoint.h"
 
 #include "utils/fps.h"
-#include "utils/menu.h"
+#include "utils/gui.h"
 
 CmSceneInterface *sandbox(void);
 
@@ -50,7 +50,7 @@ static const struct {
     {.label = STR_STATIC("test"), .scene = test},
 };
 
-static void menu_update(CmScene *scene) {
+static void gui_update(CmScene *scene) {
   for (usize i = 0; i < ARRAY_LEN(buttons); ++i) {
     if (button(scene, buttons[i].label)) {
       CmScene *m = cm_app_set_root(buttons[i].scene);
@@ -82,7 +82,7 @@ static void init(CmScene *scene) {
 
   RGFW_window *w = cm_app_window();
   const float y = 50.f;
-  menu_init(scene, (vec2){w->r.w / 2 - width / 2, y}, width, menu_update);
+  gui_init(scene, (vec2){w->r.w / 2 - width / 2, y}, width, gui_update);
 }
 
 CmSceneInterface *sandbox(void) {

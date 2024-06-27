@@ -1,6 +1,6 @@
 #include "claymore.h"
 
-#include "utils/menu.h"
+#include "utils/gui.h"
 
 typedef struct {
   CmCamera2D camera;
@@ -43,7 +43,7 @@ CmSceneInterface *_counter(void) {
   return &interface;
 }
 
-static void menu_update(CmScene *scene) {
+static void gui_update(CmScene *scene) {
   Counter *counter = cm_scene_data(cm_scene_child(cm_scene_parent(scene), 0));
   if (button(scene, STR("+"))) {
     counter->i++;
@@ -57,7 +57,7 @@ static void test_init(CmScene *scene) {
   const float width = 50.f;
 
   cm_scene_push(scene, _counter);
-  menu_init(scene, (vec2){25, 25}, width, menu_update);
+  gui_init(scene, (vec2){25, 25}, width, gui_update);
 }
 
 CmSceneInterface *counter(void) {
