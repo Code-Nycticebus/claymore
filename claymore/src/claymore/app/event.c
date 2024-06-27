@@ -12,7 +12,7 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
     if (event->type == RGFW_quit) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_QUIT,
-          .event = {{0}},
+          .event.quit = {.code = 0},
       });
       continue;
     }
@@ -23,7 +23,6 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
           .type = CM_EVENT_KEY,
           .event.key =
               {
-                  .key = str_from_cstr(window->event.keyName),
                   .code = window->event.keyCode,
                   .action = window->event.type,
                   .lock = window->event.lockState,

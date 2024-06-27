@@ -12,10 +12,9 @@ typedef struct {
 
 // key pressed or released event
 typedef struct {
-  Str key;    // key as a string
-  u32 code;   // key code
-  u32 action; // press or release
-  u32 lock;   // lockstate
+  RGFW_Key code; // key code
+  u32 action;    // press or release
+  u32 lock;      // lockstate
 } CmEventKey;
 
 // scroll event

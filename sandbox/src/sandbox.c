@@ -59,7 +59,7 @@ static void menu_update(CmScene *scene) {
   }
 
   if (button(scene, STR("quit"))) {
-    cm_app_quit();
+    cm_app_quit(0);
   }
 }
 
@@ -68,7 +68,7 @@ static void event(CmScene *scene, CmEvent *event) {
   cm_event_key(event, {
     if (key->action == RGFW_keyPressed) {
       if (key->code == RGFW_Escape) {
-        cm_app_quit();
+        cm_app_quit(0);
       }
     }
   });

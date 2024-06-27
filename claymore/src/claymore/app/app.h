@@ -64,8 +64,8 @@ double cm_app_deltatime(void);
 // gets time the app is running
 u64 cm_app_time(void);
 
-// quit the app
-void cm_app_quit(void);
+// quit the app with an exit code
+void cm_app_quit(i32 code);
 
 /* ========= app internal ========= */
 

@@ -31,10 +31,10 @@ CmScene *cm_app_set_root(CmSceneInit init) {
 double cm_app_deltatime(void) { return app->deltatime; }
 u64 cm_app_time(void) { return RGFW_getTimeNS() - app->first_frame; }
 
-void cm_app_quit(void) {
+void cm_app_quit(i32 code) {
   cm_event_emit((CmEvent){
       .type = CM_EVENT_QUIT,
-      .event = {{0}},
+      .event.quit = {.code = code},
   });
 }
 
