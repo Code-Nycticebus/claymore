@@ -42,6 +42,8 @@ CmApp *cm_app(void);
 
 // get window context
 RGFW_window *cm_app_window(void);
+// get window aspect ratio
+float cm_app_aspect(void);
 
 // sets the app background color
 void cm_app_background(const vec3 color);

@@ -12,6 +12,11 @@ CmApp *cm_app(void) { return &app->public; }
 
 RGFW_window *cm_app_window(void) { return app->public.window; }
 
+float cm_app_aspect(void) {
+  RGFW_window *w = app->public.window;
+  return (float)w->r.w / (float)w->r.h;
+}
+
 void cm_app_background(const vec3 color) { glClearColor(VEC3_ARG(color), 1); }
 
 CmGpu *cm_app_gpu(void) { return &app->public.gpu; }
