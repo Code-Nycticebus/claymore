@@ -1,7 +1,5 @@
 #include "claymore.h"
 
-CmSceneInterface *sandbox(void);
-
 typedef struct {
   CmCamera2D camera;
 } Test;

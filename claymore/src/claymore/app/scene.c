@@ -12,7 +12,6 @@ CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
     new->interface->init(&new->public);
   }
   da_push(&internal->children, new);
-  cm_app_internal_schedule_build();
   return (CmScene *)new;
 }
 

@@ -30,14 +30,21 @@ typedef const struct {
   Str name;
   usize size;
 
-  // function pointer for scene initialization
+  // scene initialization
   void (*init)(CmScene *scene);
-  // function pointer for fixed updates (e.g., physics)
+  // fixed updates (e.g., physics)
   void (*fixed_update)(CmScene *scene);
-  // function pointer for frame updates (e.g., rendering)
+
+  // pre updates
+  void (*pre_update)(CmScene *scene);
+  // frame updates (e.g., rendering)
   void (*frame_update)(CmScene *scene);
-  // function pointer for finalization (cleanup)
+  // post updates
+  void (*post_update)(CmScene *scene);
+
+  // scene finalization
   void (*final)(CmScene *scene);
+
   // function pointer for handling events
   void (*event)(CmScene *scene, CmEvent *event);
 } CmSceneInterface;

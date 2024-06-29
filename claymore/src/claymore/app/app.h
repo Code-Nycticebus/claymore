@@ -89,9 +89,6 @@ typedef struct {
   CmSceneInternal *new_root;     // scheduled new scene
   DA(CmSceneInternal *) deleted; // scheduled to delete scenes
 
-  bool update_scene_flat;     // if update is needed
-  DA(CmSceneInternal *) flat; // flat scene tree
-
   CmRenderer2D *renderer; // 2D renderer context
 } CmAppInternal;
 
@@ -104,6 +101,5 @@ void cm_app_internal_use(CmApp *app);
 void cm_app_internal_event(CmEvent *event);
 
 void cm_app_internal_schedule_delete(CmScene *scene);
-void cm_app_internal_schedule_build(void);
 
 #endif /* !__CLAYMORE_APP_H__ */

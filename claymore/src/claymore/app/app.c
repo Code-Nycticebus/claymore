@@ -45,11 +45,27 @@ void cm_app_quit(i32 code) {
 
 /* ================== app internal ================== */
 
-// build flat scene tree
-static void _cm_app_build_flat_tree(CmSceneInternal *root) {
-  da_extend(&app->flat, da_len(&root->children), root->children.items);
+static void _cm_app_scene_fixed_update(CmSceneInternal *root) {
+  if (root->interface->fixed_update) {
+    root->interface->fixed_update(&root->public);
+  }
   for (usize i = 0; i < da_len(&root->children); ++i) {
-    _cm_app_build_flat_tree(da_get(&root->children, i));
+    _cm_app_scene_fixed_update(da_get(&root->children, i));
+  }
+}
+
+static void _cm_app_scene_frame_update(CmSceneInternal *root) {
+  if (root->interface->pre_update) {
+    root->interface->pre_update(&root->public);
+  }
+  if (root->interface->frame_update) {
+    root->interface->frame_update(&root->public);
+  }
+  for (usize i = 0; i < da_len(&root->children); ++i) {
+    _cm_app_scene_frame_update(da_get(&root->children, i));
+  }
+  if (root->interface->post_update) {
+    root->interface->post_update(&root->public);
   }
 }
 
@@ -94,9 +110,6 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
 
   app->public.gpu = cm_gpu_internal_init(&app->arena);
 
-  da_init(&app->flat, &app->arena);
-  app->update_scene_flat = true;
-
   app->root->interface->init(&app->root->public);
   app->running = true;
   return true;
@@ -108,7 +121,6 @@ bool cm_app_internal_update(void) {
     da_push(&app->deleted, app->root);
     app->root = app->new_root;
     app->new_root = NULL;
-    app->update_scene_flat = true;
   }
 
   // delete all scheduled scenes
@@ -117,14 +129,6 @@ bool cm_app_internal_update(void) {
     // if there is no parent the scene was the root scene
     Arena *arena = scene->parent ? &scene->parent->arena : &app->arena;
     cm_scene_internal_final(arena, scene);
-  }
-
-  // update flat scene tree if needed
-  if (app->update_scene_flat) {
-    da_clear(&app->flat);
-    da_push(&app->flat, app->root);
-    _cm_app_build_flat_tree(app->root);
-    app->update_scene_flat = false;
   }
 
   cm_event_internal_poll_events(app->public.window);
@@ -145,26 +149,14 @@ bool cm_app_internal_update(void) {
   static i64 fixed_timer = 0;
   fixed_timer += dt;
   while (fixed_interval <= fixed_timer) {
-    for (usize i = 0; i < da_len(&app->flat); ++i) {
-      CmSceneInternal *scene = da_get(&app->flat, i);
-      if (scene->interface->fixed_update) {
-        scene->interface->fixed_update(&scene->public);
-      }
-    }
-
+    _cm_app_scene_fixed_update(app->root);
     fixed_timer -= fixed_interval;
   }
 
   // rendering
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // frame update
-  for (usize i = 0; i < da_len(&app->flat); ++i) {
-    CmSceneInternal *scene = da_get(&app->flat, i);
-    if (scene->interface->frame_update) {
-      scene->interface->frame_update(&scene->public);
-    }
-  }
+  _cm_app_scene_frame_update(app->root);
 
   RGFW_window_swapBuffers(app->public.window);
   return true;
@@ -196,7 +188,4 @@ void cm_app_internal_event(CmEvent *event) {
 
 void cm_app_internal_schedule_delete(CmScene *scene) {
   da_push(&app->deleted, (CmSceneInternal *)scene);
-  app->update_scene_flat = true;
 }
-
-void cm_app_internal_schedule_build(void) { app->update_scene_flat = true; }
