@@ -9,11 +9,11 @@
  *  - Base camera struct that every camera needs.
  * */
 typedef struct {
-  bool dirty;      // If view projection matrix needs to be updated
-  vec3 position;   // Camera position
-  mat4 view;       // View matrix
-  mat4 projection; // Projection matrix
-  mat4 vp;         // Projection * View
+  bool dirty;      // if view projection matrix needs to be updated
+  vec3 position;   // camera position
+  mat4 view;       // view matrix
+  mat4 projection; // projection matrix
+  mat4 vp;         // projection * view
 } CmCameraBase;
 
 // base camera methods
@@ -26,8 +26,9 @@ void _cm_camera_update(CmCameraBase *camera);
 /* ========= camera 2D ========= */
 
 typedef struct {
-  CmCameraBase base; // Camera base
-  float zoom;        // Current zoom
+  CmCameraBase base; // inherits the base camera properties
+  float aspect;      // aspect ratio
+  float zoom;        // current zoom
 } CmCamera2D;
 
 // initalizes camera bound to screen dimensions (UI, ...)
@@ -35,14 +36,21 @@ void cm_camera2D_screen(CmCamera2D *camera);
 // initalizes an orthogonal camera view
 void cm_camera2D_ortho(CmCamera2D *camera, vec2 pos, float aspect, float zoom);
 
+// set position
+void cm_camera2D_set_position(CmCamera2D *camera, vec2 position);
+// move camera into the direction
+void cm_camera2D_move(CmCamera2D *camera, vec2 direction);
+// set zoom of orthogonal camera
+void cm_camera2D_set_zoom(CmCamera2D *camera, float zoom);
+
 /* ========= camera 3D ========= */
 
 typedef struct {
-  CmCameraBase base; // Inherits the base camera properties
-  vec3 lookat;       // Point where camera is looking at
-  vec3 up;           // Up direction of the camera
-  float fov;         // Field of view
-  float aspect;      // Aspect ratio
+  CmCameraBase base; // inherits the base camera properties
+  vec3 lookat;       // point where camera is looking at
+  vec3 up;           // up direction of the camera
+  float fov;         // field of view
+  float aspect;      // aspect ratio
 } CmCamera3D;
 
 // initalizes 3D perspective camera

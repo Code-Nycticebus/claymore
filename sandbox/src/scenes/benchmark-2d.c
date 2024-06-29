@@ -17,14 +17,10 @@ static void on_event(CmScene *scene, CmEvent *event) {
   Benchmark *benchmark = cm_scene_data(scene);
 
   cm_event_scroll(event, {
-    const float min_zoom = 1.F;
     const float scroll_speed = 10.F;
     float zoom = benchmark->camera.zoom;
-    zoom = glm_max(zoom - scroll->offset[1] * (zoom / scroll_speed), min_zoom);
-    glm_ortho(-aspect * zoom, aspect * zoom, zoom, -zoom, .1f, 100.f,
-              benchmark->camera.base.projection);
-    benchmark->camera.zoom = zoom;
-    cm_camera_update(&benchmark->camera);
+    zoom = zoom - scroll->offset[1] * (zoom / scroll_speed);
+    cm_camera2D_set_zoom(&benchmark->camera, zoom);
   });
 }
 
@@ -48,7 +44,7 @@ static void frame_update(CmScene *scene) {
   const float fps = 1 / deltatime;
   benchmark->grid += fps > fps_threshold ? 1 : benchmark->grid > 0 ? -1 : 0;
 
-  vec3 dir = {0};
+  vec2 dir = {0};
 
   RGFW_window *window = cm_app_window();
   if (RGFW_isPressedI(window, RGFW_w)) {
@@ -65,13 +61,9 @@ static void frame_update(CmScene *scene) {
   }
 
   const float zoom = benchmark->camera.zoom / 100;
-  glm_vec2_scale(dir, deltatime * zoom, dir);
-  glm_vec3_add(benchmark->camera.base.position, dir,
-               benchmark->camera.base.position);
-
-  glm_mat4_identity(benchmark->camera.base.view);
-  glm_translate(benchmark->camera.base.view, benchmark->camera.base.position);
-  benchmark->camera.base.dirty = true;
+  glm_vec2_scale(dir, zoom, dir);
+  glm_vec2_scale(dir, deltatime, dir);
+  cm_camera2D_move(&benchmark->camera, dir);
 
   cm_2D_begin(&benchmark->camera);
   {

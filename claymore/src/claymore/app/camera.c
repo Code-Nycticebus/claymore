@@ -15,6 +15,9 @@ void _cm_camera_update(CmCameraBase *camera) {
 
 void cm_camera2D_screen(CmCamera2D *camera) {
   RGFW_window *w = cm_app_window();
+
+  camera->zoom = 0.f;
+  camera->aspect = 0.f;
   glm_ortho(0, w->r.w, w->r.h, 0, 1.f / 100.f, 100.f, camera->base.projection);
 
   glm_mat4_identity(camera->base.view);
@@ -37,9 +40,42 @@ void cm_camera2D_ortho(CmCamera2D *camera, vec2 pos, float aspect, float zoom) {
   glm_vec3_copy(position, camera->base.position);
 
   camera->zoom = zoom;
+  camera->aspect = aspect;
 
   camera->base.dirty = true;
   cm_camera_update(camera);
+}
+
+void cm_camera2D_set_position(CmCamera2D *camera, vec2 position) {
+  vec3 p = {position[0], position[1], 0};
+  glm_vec3_copy(p, camera->base.position);
+
+  glm_mat4_identity(camera->base.view);
+  glm_translate(camera->base.view, camera->base.position);
+
+  camera->base.dirty = true;
+}
+
+void cm_camera2D_move(CmCamera2D *camera, vec2 direction) {
+  vec3 d = {direction[0], direction[1], 0};
+  glm_vec3_add(camera->base.position, d, camera->base.position);
+
+  glm_mat4_identity(camera->base.view);
+  glm_translate(camera->base.view, camera->base.position);
+
+  camera->base.dirty = true;
+}
+
+void cm_camera2D_set_zoom(CmCamera2D *camera, float zoom) {
+  cebus_assert_warn(camera->zoom, "changing zoom of screen camera2D");
+  zoom = glm_max(zoom, 1.f / 100.f);
+  const float x = camera->aspect * zoom;
+  const float y = zoom;
+  glm_ortho(-x, x, y, -y, 1.f / 100.f, 100.f, camera->base.projection);
+
+  camera->zoom = zoom;
+
+  camera->base.dirty = true;
 }
 
 /* ========= 3D camera ========= */
