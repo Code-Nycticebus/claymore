@@ -46,7 +46,9 @@ typedef struct {
 CmVbo cm_gpu_vbo(CmGpu *b, CmGpuType type, usize s, usize len, const float *v);
 // update vbo buffer
 void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v);
-// draw vbo instanced
+// draws the entire vbo
+void cm_gpu_vbo_draw(CmVbo *vbo, CmGpuDrawMode mode);
+// draws entire vbo many times
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode);
 
 /* element buffer object */

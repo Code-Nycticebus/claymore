@@ -19,12 +19,15 @@ void cm_sprite(CmTexture2D *texture, const vec2 pos, const vec2 size,
 void cm_font_color(CmFont *font, vec4 color);
 void cm_font(CmFont *font, const vec2 pos, Str text);
 
+void cm_line(const vec2 from, const vec2 to);
+
 /* ========= Renderer internal ========= */
 
 typedef struct CircleRenderer CircleRenderer;
-typedef struct FontRenderer FontRenderer;
 typedef struct QuadRenderer QuadRenderer;
 typedef struct SpriteRenderer SpriteRenderer;
+typedef struct FontRenderer FontRenderer;
+typedef struct LineRenderer LineRenderer;
 
 typedef struct {
   const CmCamera2D *camera;
@@ -32,6 +35,7 @@ typedef struct {
   QuadRenderer *quad;
   FontRenderer *sprite;
   SpriteRenderer *font;
+  LineRenderer *line;
 } CmRenderer2D;
 
 CmRenderer2D *cm_2D_internal_init(void);
@@ -61,5 +65,11 @@ void cm_font_internal_end(void);
 void *cm_font_internal_init(void);
 void cm_font_internal_free(void);
 void cm_font_internal_use(void *r);
+
+void cm_line_internal_begin(CmCamera2D *camera);
+void cm_line_internal_end(void);
+void *cm_line_internal_init(void);
+void cm_line_internal_free(void);
+void cm_line_internal_use(void *r);
 
 #endif /* !__CLAYMORE_RENDERER2D_H__ */

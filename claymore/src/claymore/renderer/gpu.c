@@ -21,6 +21,11 @@ void cm_gpu_vbo_update(CmVbo *vbo, usize s, usize len, const float *v) {
   vbo->len = len;
 }
 
+void cm_gpu_vbo_draw(CmVbo *vbo, CmGpuDrawMode mode) {
+  glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
+  glDrawArrays(mode, 0, vbo->len);
+}
+
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
   // This could be wrong idk

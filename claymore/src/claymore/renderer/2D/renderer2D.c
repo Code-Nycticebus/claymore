@@ -16,6 +16,7 @@ void cm_2D_begin(CmCamera2D *camera) {
   cm_circle_internal_begin(camera);
   cm_sprite_internal_begin(camera);
   cm_font_internal_begin(camera);
+  cm_line_internal_begin(camera);
 }
 
 void cm_2D_end(void) {
@@ -29,6 +30,7 @@ void cm_2D_end(void) {
   cm_circle_internal_end();
   cm_sprite_internal_end();
   cm_font_internal_end();
+  cm_line_internal_end();
 }
 
 void cm_2D_internal_use(CmRenderer2D *r) {
@@ -37,6 +39,7 @@ void cm_2D_internal_use(CmRenderer2D *r) {
   cm_quad_internal_use(renderer->quad);
   cm_sprite_internal_use(renderer->sprite);
   cm_font_internal_use(renderer->font);
+  cm_line_internal_use(renderer->font);
 }
 
 CmRenderer2D *cm_2D_internal_init(void) {
@@ -46,6 +49,7 @@ CmRenderer2D *cm_2D_internal_init(void) {
   renderer->circle = cm_circle_internal_init();
   renderer->sprite = cm_sprite_internal_init();
   renderer->font = cm_font_internal_init();
+  renderer->line = cm_line_internal_init();
 
   return renderer;
 }
@@ -55,6 +59,7 @@ void cm_2D_internal_free(void) {
   cm_circle_internal_free();
   cm_sprite_internal_free();
   cm_font_internal_free();
+  cm_line_internal_free();
 
   free(renderer);
 }
