@@ -5,7 +5,7 @@
 
 #include "RGFW.h"
 
-#include "claymore/renderer/2D/renderer2D.h"
+#include "claymore/renderer/renderer2D.h"
 #include "scene.h"
 
 // fixed update frequenzy (50hz)

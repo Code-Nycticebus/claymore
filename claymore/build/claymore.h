@@ -54,12 +54,7 @@ const Str claymore_files[] = {
     STR_STATIC(CM_SRC_DIR "claymore/renderer/gpu.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/context.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/mesh.c"),
-
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/font.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/quad.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/renderer2D.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/circle.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/sprite.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/renderer2D.c"),
 
     STR_STATIC(CM_SRC_DIR "claymore/assets/texture.c"),
     STR_STATIC(CM_SRC_DIR "claymore/assets/shaders.c"),
