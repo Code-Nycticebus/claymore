@@ -11,11 +11,13 @@
 #include "claymore/app/scene.h"
 #include "claymore/app/sound.h"
 
+#include "claymore/assets/font.h"
+#include "claymore/assets/shaders.h"
+#include "claymore/assets/texture.h"
+
 #include "claymore/renderer/2D/renderer2D.h"
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/mesh.h"
-#include "claymore/renderer/shaders.h"
-#include "claymore/renderer/texture.h"
 
 // IWYU pragma: end_exports
 

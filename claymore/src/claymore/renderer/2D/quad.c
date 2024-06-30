@@ -1,7 +1,7 @@
 #include "renderer2D.h"
 
+#include "claymore/assets/shaders.h"
 #include "claymore/renderer/gpu.h"
-#include "claymore/renderer/shaders.h"
 
 #include <stdlib.h>
 

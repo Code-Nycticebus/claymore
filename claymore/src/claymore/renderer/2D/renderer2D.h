@@ -3,8 +3,9 @@
 
 #include "claymore/app/camera.h"
 #include "claymore/defines.h" // IWYU pragma: export
-#include "claymore/renderer/gpu.h"
-#include "claymore/renderer/texture.h"
+
+#include "claymore/assets/font.h"
+#include "claymore/assets/texture.h"
 
 void cm_2D_begin(CmCamera2D *camera);
 void cm_2D_end(void);
@@ -15,10 +16,6 @@ void cm_quad(const vec2 pos, const vec2 size, float rotation, const vec4 color);
 void cm_sprite(CmTexture2D *texture, const vec2 pos, const vec2 size,
                float rotation, const vec2 uv, const vec2 uv_size);
 
-typedef struct CmFont CmFont;
-
-CmFont *cm_font_from_bytes(CmGpu *gpu, Bytes bytes, float height);
-CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error);
 void cm_font_color(CmFont *font, vec4 color);
 void cm_font(CmFont *font, const vec2 pos, Str text);
 

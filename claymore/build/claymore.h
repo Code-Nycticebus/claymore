@@ -50,16 +50,20 @@ const Str claymore_files[] = {
     STR_STATIC(CM_SRC_DIR "claymore/app/scene.c"),
     STR_STATIC(CM_SRC_DIR "claymore/app/app.c"),
     STR_STATIC(CM_SRC_DIR "claymore/app/sound.c"),
+
     STR_STATIC(CM_SRC_DIR "claymore/renderer/gpu.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/context.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/mesh.c"),
+
     STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/font.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/quad.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/renderer2D.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/circle.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/2D/sprite.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/texture.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/shaders.c"),
-    STR_STATIC(CM_SRC_DIR "claymore/renderer/mesh.c"),
+
+    STR_STATIC(CM_SRC_DIR "claymore/assets/texture.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/assets/shaders.c"),
+    STR_STATIC(CM_SRC_DIR "claymore/assets/font.c"),
 };
 
 #if defined(LINUX)
@@ -146,7 +150,8 @@ void compile_claymore(bool rebuild) {
       name = str_chop_right_by_delim(&name, '/');
       name = str_chop_by_delim(&name, '.');
       Str out =
-          str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT ".o", STR_ARG(name));
+          str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT "_%" USIZE_FMT ".o",
+                     STR_ARG(name), i);
       cmd_push(&cmd, STR("-o"), out);
 
       da_push(&objs, out);
