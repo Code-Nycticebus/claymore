@@ -127,6 +127,7 @@ bool cm_app_internal_update(void) {
   while (da_len(&app->deleted)) {
     CmSceneInternal *scene = da_pop(&app->deleted);
     // if there is no parent the scene was the root scene
+    // deallocate from app arena
     Arena *arena = scene->parent ? &scene->parent->arena : &app->arena;
     cm_scene_internal_final(arena, scene);
   }
@@ -172,10 +173,11 @@ void cm_app_internal_final(void) {
   free(app);
 }
 
-void cm_app_internal_use(CmApp *a) {
-  cebus_assert(app == NULL, "Cannot use and app while another app is running!");
-  app = (CmAppInternal *)a;
-  cm_2D_internal_use(app->renderer);
+void cm_app_internal_set_context(CmApp *new_app) {
+  cebus_assert(app == NULL, "cannot use and app while another app is running!");
+  cebus_assert(new_app != NULL, "new app is not initialized");
+  app = (CmAppInternal *)new_app;
+  cm_2D_internal_set_context(app->renderer);
   cm_platform_context_init(app->public.window);
 }
 

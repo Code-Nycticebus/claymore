@@ -17,8 +17,8 @@ void cm_quad(const vec2 pos, const vec2 size, float rotation, const vec4 color);
 void cm_sprite(CmTexture2D *texture, const vec2 pos, const vec2 size,
                float rotation, const vec2 uv, const vec2 uv_size);
 
-void cm_font_color(CmFont *font, vec4 color);
 void cm_font(CmFont *font, const vec2 pos, Str text);
+void cm_font_color(CmFont *font, vec4 color);
 
 void cm_line(const vec2 from, const vec2 to);
 
@@ -28,6 +28,7 @@ typedef struct CmRenderer2D CmRenderer2D;
 
 CmRenderer2D *cm_2D_internal_init(void);
 void cm_2D_internal_free(void);
-void cm_2D_internal_use(CmRenderer2D *r);
+// set the renderer context
+void cm_2D_internal_set_context(CmRenderer2D *r);
 
 #endif /* !__CLAYMORE_RENDERER2D_H__ */

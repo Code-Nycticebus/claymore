@@ -124,67 +124,7 @@ static CmRenderer2D *r;
 
 /* ============= quad renderer ============= */
 
-static void cm_quad_flush(void) {
-  cm_shader_bind(&r->quad.shader);
-  cm_shader_set_mat4(&r->quad.shader, STR("u_mvp"), r->camera->base.vp);
-
-  cm_gpu_vbo_update(&r->quad.vbo, sizeof(QuadVertex), r->quad.vertices_count,
-                    (float *)r->quad.data);
-
-  cm_gpu_vao_bind(&r->quad.vao);
-  glDisable(GL_DEPTH_TEST);
-  cm_gpu_ebo_draw(&r->quad.ebo, r->quad.indices_count, CM_DRAW_TRIANGLES);
-  glEnable(GL_DEPTH_TEST);
-
-  r->quad.indices_count = 0;
-  r->quad.vertices_count = 0;
-}
-
-void cm_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) {
-  if (!(r->quad.vertices_count < CM_QUADS_VERTICES_MAX)) {
-    cm_quad_flush();
-  }
-
-  // For safety i still assert
-  cebus_assert_debug(r->quad.vertices_count < CM_QUADS_VERTICES_MAX, "");
-  cebus_assert_debug(r->quad.indices_count < CM_QUADS_INDICES_MAX, "");
-
-  float cos_theta = 1;
-  float sin_theta = 0;
-  if (rotation != 0) {
-    cos_theta = cosf(rotation);
-    sin_theta = sinf(rotation);
-  }
-
-  vec2 quad[CM_QUADS_VERTICES] = {
-      {0, 0},
-      {s[0], 0},
-      {s[0], s[1]},
-      {0, s[1]},
-  };
-  QuadVertex *vertices = &r->quad.data[r->quad.vertices_count];
-  for (int i = 0; i < CM_QUADS_VERTICES; ++i) {
-    if (rotation != 0) {
-      const float x = quad[i][0];
-      const float y = quad[i][1];
-      quad[i][0] = x * cos_theta - y * sin_theta;
-      quad[i][1] = x * sin_theta + y * cos_theta;
-    }
-
-    vertices[i].pos[0] = quad[i][0] + pos[0];
-    vertices[i].pos[1] = quad[i][1] + pos[1];
-
-    vertices[i].color[0] = color[0];
-    vertices[i].color[1] = color[1];
-    vertices[i].color[2] = color[2];
-    vertices[i].color[3] = color[3];
-  }
-
-  r->quad.vertices_count += CM_QUADS_VERTICES;
-  r->quad.indices_count += CM_QUADS_INDICES;
-}
-
-static void cm_quad_internal_init(void) {
+static void _cm_quad_internal_init(void) {
   r->quad.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(QuadVertex),
                            CM_QUADS_VERTICES_MAX, (float *)&r->quad.data);
 
@@ -222,9 +162,71 @@ static void cm_quad_internal_init(void) {
       ErrPanic);
 }
 
+static void _cm_quad_flush(void) {
+  cm_shader_bind(&r->quad.shader);
+  cm_shader_set_mat4(&r->quad.shader, STR("u_mvp"), r->camera->base.vp);
+
+  cm_gpu_vbo_update(&r->quad.vbo, sizeof(QuadVertex), r->quad.vertices_count,
+                    (float *)r->quad.data);
+
+  cm_gpu_vao_bind(&r->quad.vao);
+
+  cm_gpu_ebo_draw(&r->quad.ebo, r->quad.indices_count, CM_DRAW_TRIANGLES);
+
+  r->quad.indices_count = 0;
+  r->quad.vertices_count = 0;
+}
+
+void cm_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) {
+  // flush if buffer full
+  if (!(r->quad.vertices_count < CM_QUADS_VERTICES_MAX)) {
+    _cm_quad_flush();
+  }
+
+  // For safety i still assert
+  cebus_assert_debug(r->quad.vertices_count < CM_QUADS_VERTICES_MAX, "");
+  cebus_assert_debug(r->quad.indices_count < CM_QUADS_INDICES_MAX, "");
+
+  // cache cos_theta and sin_theta
+  // its the same for every vertex
+  float cos_theta = 1;
+  float sin_theta = 0;
+  if (rotation != 0) {
+    cos_theta = cosf(rotation);
+    sin_theta = sinf(rotation);
+  }
+
+  vec2 quad[CM_QUADS_VERTICES] = {
+      {0, 0},
+      {s[0], 0},
+      {s[0], s[1]},
+      {0, s[1]},
+  };
+  QuadVertex *vertices = &r->quad.data[r->quad.vertices_count];
+  for (int i = 0; i < CM_QUADS_VERTICES; ++i) {
+    if (rotation != 0) {
+      const float x = quad[i][0];
+      const float y = quad[i][1];
+      quad[i][0] = x * cos_theta - y * sin_theta;
+      quad[i][1] = x * sin_theta + y * cos_theta;
+    }
+
+    vertices[i].pos[0] = quad[i][0] + pos[0];
+    vertices[i].pos[1] = quad[i][1] + pos[1];
+
+    vertices[i].color[0] = color[0];
+    vertices[i].color[1] = color[1];
+    vertices[i].color[2] = color[2];
+    vertices[i].color[3] = color[3];
+  }
+
+  r->quad.vertices_count += CM_QUADS_VERTICES;
+  r->quad.indices_count += CM_QUADS_INDICES;
+}
+
 /* ============= circle renderer ============= */
 
-static void cm_circle_internal_init(void) {
+static void _cm_circle_internal_init(void) {
   r->circle.vbo =
       cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(r->circle.vertices[0]),
                  CM_CIRCLES_MAX, NULL);
@@ -276,9 +278,8 @@ static void _cm_circle_flush(void) {
   cm_gpu_vao_bind(&r->circle.vao);
   cm_gpu_vbo_update(&r->circle.vbo, sizeof(CircleVertex),
                     r->circle.vertex_count, (float *)r->circle.vertices);
-  glDisable(GL_DEPTH_TEST);
+
   cm_gpu_vbo_draw_instanced(&r->circle.vbo, 4, CM_DRAW_TRIANGLE_STRIP);
-  glEnable(GL_DEPTH_TEST);
 
   r->circle.vertex_count = 0;
 }
@@ -302,94 +303,7 @@ void cm_circle(const vec2 pos, const vec2 radius, const vec4 color) {
 
 /* ============= sprite renderer ============= */
 
-static void cm_sprite_flush(void) {
-  cm_shader_bind(&r->sprite.shader);
-  cm_shader_set_mat4(&r->sprite.shader, STR("u_mvp"), r->camera->base.vp);
-
-  for (usize i = 0; i < r->sprite.texture_idx; i++) {
-    cm_texture_bind(r->sprite.texture[i], i);
-  }
-
-  cm_gpu_vbo_update(&r->sprite.vbo, sizeof(SpriteVertex),
-                    r->sprite.vertices_count, (float *)r->sprite.data);
-
-  cm_gpu_vao_bind(&r->sprite.vao);
-
-  glDisable(GL_DEPTH_TEST);
-  cm_gpu_ebo_draw(&r->sprite.ebo, r->sprite.indices_count, CM_DRAW_TRIANGLES);
-  glEnable(GL_DEPTH_TEST);
-
-  r->sprite.indices_count = 0;
-  r->sprite.vertices_count = 0;
-
-  r->sprite.texture_idx = 0;
-}
-
-static usize _cm_sprite_push_texture(CmTexture2D *texture) {
-  if (CM_TEXTURE_SLOTS <= r->sprite.texture_idx) {
-    cm_sprite_flush();
-  }
-
-  for (usize i = 0; i < r->sprite.texture_idx; i++) {
-    if (texture == r->sprite.texture[i]) {
-      return i;
-    }
-  }
-  r->sprite.texture[r->sprite.texture_idx++] = texture;
-  return r->sprite.texture_idx - 1;
-}
-
-void cm_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
-               float rotation, const vec2 uv, const vec2 uv_size) {
-  usize idx = _cm_sprite_push_texture(texture);
-
-  if (!(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX)) {
-    cm_sprite_flush();
-  }
-
-  // For safety i still assert
-  cebus_assert_debug(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX, "");
-  cebus_assert_debug(r->sprite.indices_count < CM_SPRITES_INDICES_MAX, "");
-
-  float cos_theta = 1;
-  float sin_theta = 0;
-  if (rotation != 0) {
-    cos_theta = cosf(rotation);
-    sin_theta = sinf(rotation);
-  }
-
-  struct {
-    vec2 size;
-    vec2 uv;
-  } sprite[CM_SPRITES_VERTICES] = {
-      {{0, 0}, {uv[0], uv[1]}},
-      {{size[0], 0}, {uv[0] + uv_size[0], uv[1]}},
-      {{size[0], size[1]}, {uv[0] + uv_size[0], uv[1] + uv_size[1]}},
-      {{0, size[1]}, {uv[0], uv[1] + uv_size[1]}},
-  };
-  SpriteVertex *vertices = &r->sprite.data[r->sprite.vertices_count];
-  for (int i = 0; i < CM_SPRITES_VERTICES; ++i) {
-    if (rotation != 0.f) {
-      const float x = sprite[i].size[0];
-      const float y = sprite[i].size[1];
-      sprite[i].size[0] = x * cos_theta - y * sin_theta;
-      sprite[i].size[1] = x * sin_theta + y * cos_theta;
-    }
-
-    vertices[i].pos[0] = sprite[i].size[0] + position[0];
-    vertices[i].pos[1] = sprite[i].size[1] + position[1];
-
-    vertices[i].uv[0] = sprite[i].uv[0];
-    vertices[i].uv[1] = sprite[i].uv[1];
-
-    vertices[i].idx = idx;
-  }
-
-  r->sprite.vertices_count += CM_SPRITES_VERTICES;
-  r->sprite.indices_count += CM_SPRITES_INDICES;
-}
-
-static void cm_sprite_internal_init(void) {
+static void _cm_sprite_internal_init(void) {
   r->sprite.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(SpriteVertex),
                              CM_SPRITES_VERTICES_MAX, (float *)&r->sprite.data);
 
@@ -439,43 +353,96 @@ static void cm_sprite_internal_init(void) {
   glUniform1iv(loc, ARRAY_LEN(slots), slots);
 }
 
-/* ============= line renderer ============= */
+static void _cm_sprite_flush(void) {
+  cm_shader_bind(&r->sprite.shader);
+  cm_shader_set_mat4(&r->sprite.shader, STR("u_mvp"), r->camera->base.vp);
 
-static void cm_line_flush(void) {
-  cm_shader_bind(&r->line.shader);
-  cm_shader_set_mat4(&r->line.shader, STR("u_mvp"), r->camera->base.vp);
+  for (usize i = 0; i < r->sprite.texture_idx; i++) {
+    cm_texture_bind(r->sprite.texture[i], i);
+  }
 
-  cm_gpu_vbo_update(&r->line.vbo, sizeof(LineVertex), r->line.vertices_count,
-                    (float *)r->line.data);
+  cm_gpu_vbo_update(&r->sprite.vbo, sizeof(SpriteVertex),
+                    r->sprite.vertices_count, (float *)r->sprite.data);
 
-  cm_gpu_vao_bind(&r->line.vao);
-  cm_gpu_vbo_draw(&r->line.vbo, CM_DRAW_LINES);
+  cm_gpu_vao_bind(&r->sprite.vao);
 
-  r->line.vertices_count = 0;
+  cm_gpu_ebo_draw(&r->sprite.ebo, r->sprite.indices_count, CM_DRAW_TRIANGLES);
+
+  r->sprite.indices_count = 0;
+  r->sprite.vertices_count = 0;
+
+  r->sprite.texture_idx = 0;
 }
 
-void cm_line(const vec2 from, const vec2 to) {
-  if (!(r->line.vertices_count < CM_LINES_VERTICES_MAX)) {
-    cm_line_flush();
+static usize _cm_sprite_push_texture(CmTexture2D *texture) {
+  if (CM_TEXTURE_SLOTS <= r->sprite.texture_idx) {
+    _cm_sprite_flush();
+  }
+
+  for (usize i = 0; i < r->sprite.texture_idx; i++) {
+    if (texture == r->sprite.texture[i]) {
+      return i;
+    }
+  }
+  r->sprite.texture[r->sprite.texture_idx++] = texture;
+  return r->sprite.texture_idx - 1;
+}
+
+void cm_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
+               float rotation, const vec2 uv, const vec2 uv_size) {
+  usize idx = _cm_sprite_push_texture(texture);
+
+  if (!(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX)) {
+    _cm_sprite_flush();
   }
 
   // For safety i still assert
-  cebus_assert_debug(r->line.vertices_count < CM_LINES_VERTICES_MAX, "");
+  cebus_assert_debug(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX, "");
+  cebus_assert_debug(r->sprite.indices_count < CM_SPRITES_INDICES_MAX, "");
 
-  LineVertex *vertices = &r->line.data[r->line.vertices_count];
+  // cache the cos_theta and sin_theta
+  // its the same for every vertex
+  float cos_theta = 1;
+  float sin_theta = 0;
+  if (rotation != 0) {
+    cos_theta = cosf(rotation);
+    sin_theta = sinf(rotation);
+  }
 
-  vertices[0].pos[0] = from[0];
-  vertices[0].pos[1] = from[1];
+  struct {
+    vec2 size;
+    vec2 uv;
+  } sprite[CM_SPRITES_VERTICES] = {
+      {{0, 0}, {uv[0], uv[1]}},
+      {{size[0], 0}, {uv[0] + uv_size[0], uv[1]}},
+      {{size[0], size[1]}, {uv[0] + uv_size[0], uv[1] + uv_size[1]}},
+      {{0, size[1]}, {uv[0], uv[1] + uv_size[1]}},
+  };
+  SpriteVertex *vertices = &r->sprite.data[r->sprite.vertices_count];
+  for (int i = 0; i < CM_SPRITES_VERTICES; ++i) {
+    if (rotation != 0.f) {
+      const float x = sprite[i].size[0];
+      const float y = sprite[i].size[1];
+      sprite[i].size[0] = x * cos_theta - y * sin_theta;
+      sprite[i].size[1] = x * sin_theta + y * cos_theta;
+    }
 
-  vertices[1].pos[0] = to[0];
-  vertices[1].pos[1] = to[1];
+    vertices[i].pos[0] = sprite[i].size[0] + position[0];
+    vertices[i].pos[1] = sprite[i].size[1] + position[1];
 
-  r->line.vertices_count += CM_LINES_VERTICES;
+    vertices[i].uv[0] = sprite[i].uv[0];
+    vertices[i].uv[1] = sprite[i].uv[1];
+
+    vertices[i].idx = idx;
+  }
+
+  r->sprite.vertices_count += CM_SPRITES_VERTICES;
+  r->sprite.indices_count += CM_SPRITES_INDICES;
 }
 
-void cm_line_internal_end(void) {}
+/* ============= line renderer ============= */
 
-static void cm_line_internal_init(void) {
+static void _cm_line_internal_init(void) {
   r->line.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(LineVertex),
                            CM_LINES_VERTICES_MAX, (float *)&r->line.data);
 
@@ -500,7 +467,69 @@ static void cm_line_internal_init(void) {
       ErrPanic);
 }
 
+static void _cm_line_flush(void) {
+  cm_shader_bind(&r->line.shader);
+  cm_shader_set_mat4(&r->line.shader, STR("u_mvp"), r->camera->base.vp);
+
+  cm_gpu_vbo_update(&r->line.vbo, sizeof(LineVertex), r->line.vertices_count,
+                    (float *)r->line.data);
+
+  cm_gpu_vao_bind(&r->line.vao);
+  cm_gpu_vbo_draw(&r->line.vbo, CM_DRAW_LINES);
+
+  r->line.vertices_count = 0;
+}
+
+void cm_line(const vec2 from, const vec2 to) {
+  if (!(r->line.vertices_count < CM_LINES_VERTICES_MAX)) {
+    _cm_line_flush();
+  }
+
+  // For safety i still assert
+  cebus_assert_debug(r->line.vertices_count < CM_LINES_VERTICES_MAX, "");
+
+  LineVertex *vertices = &r->line.data[r->line.vertices_count];
+
+  vertices[0].pos[0] = from[0];
+  vertices[0].pos[1] = from[1];
+
+  vertices[1].pos[0] = to[0];
+  vertices[1].pos[1] = to[1];
+
+  r->line.vertices_count += CM_LINES_VERTICES;
+}
+
 /* ============= font renderer ============= */
+
+static void _cm_font_internal_init(void) {
+  r->font.shader = cm_shader_from_memory(
+      &r->gpu,
+      STR("#version 120\n"
+          "attribute vec2 a_pos;\n"
+          "attribute vec2 a_uv;\n"
+          "varying vec2 v_uv;\n"
+          "uniform mat4 u_mvp;\n"
+          "void main() {\n"
+          "  gl_Position = u_mvp * vec4(a_pos.xy, 0, 1.0);\n"
+          "  v_uv = a_uv;\n"
+          "}\n"),
+      STR("#version 120\n"
+          "varying vec2 v_uv;\n"
+          "uniform sampler2D u_texture;\n"
+          "uniform vec4 u_color = vec4(1, 1, 1, 1);"
+          "void main() {\n"
+          " gl_FragColor = vec4(texture2D(u_texture, v_uv).r) * u_color;\n"
+          "}\n"),
+      ErrDefault);
+
+  r->font.vbo = cm_gpu_vbo(
+      &r->gpu, CM_DYNAMIC_DRAW, sizeof(Vertex),
+      FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX, NULL);
+
+  r->font.vao = cm_gpu_vao(&r->gpu);
+  cm_gpu_vao_push(&r->font.vao, 2, sizeof(Vertex), offsetof(Vertex, pos));
+  cm_gpu_vao_push(&r->font.vao, 2, sizeof(Vertex), offsetof(Vertex, uv));
+}
 
 static void _cm_font_renderer_flush(void) {
   cm_shader_bind(&r->font.shader);
@@ -516,45 +545,48 @@ static void _cm_font_renderer_flush(void) {
 
   cm_gpu_vbo_update(&r->font.vbo, sizeof(Vertex), r->font.vertex_count,
                     (float *)r->font.buffer);
-  glDisable(GL_DEPTH_TEST);
-  glDrawArrays(GL_TRIANGLES, 0, r->font.vertex_count);
-  glEnable(GL_DEPTH_TEST);
-  r->font.vertex_count = 0;
 
+  glDrawArrays(GL_TRIANGLES, 0, r->font.vertex_count);
+
+  r->font.vertex_count = 0;
   r->font.font = NULL;
 }
 
-void cm_font_color(CmFont *font, vec4 color) {
-  glm_vec4_copy(color, font->color);
-}
-
-void _cm_push_char(CmFont *font, char c, Vertex *vertex, float *x, float *y) {
+static void _cm_push_char(CmFont *font, char c, Vertex *v, float *x, float *y) {
   stbtt_aligned_quad q;
   stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution, font->ttf_resoulution,
                      c - FONT_CHAR_MIN, x, y, &q, 1);
 
-  glm_vec2_copy((vec2){q.x0, q.y0}, vertex[0].pos);
-  glm_vec2_copy((vec2){q.s0, q.t0}, vertex[0].uv);
+  usize idx = 0;
+  glm_vec2_copy((vec2){q.x0, q.y0}, v[idx].pos);
+  glm_vec2_copy((vec2){q.s0, q.t0}, v[idx].uv);
+  idx++;
 
-  glm_vec2_copy((vec2){q.x1, q.y0}, vertex[1].pos);
-  glm_vec2_copy((vec2){q.s1, q.t0}, vertex[1].uv);
+  glm_vec2_copy((vec2){q.x1, q.y0}, v[idx].pos);
+  glm_vec2_copy((vec2){q.s1, q.t0}, v[idx].uv);
+  idx++;
 
-  glm_vec2_copy((vec2){q.x1, q.y1}, vertex[2].pos);
-  glm_vec2_copy((vec2){q.s1, q.t1}, vertex[2].uv);
+  glm_vec2_copy((vec2){q.x1, q.y1}, v[idx].pos);
+  glm_vec2_copy((vec2){q.s1, q.t1}, v[idx].uv);
+  idx++;
 
-  glm_vec2_copy((vec2){q.x0, q.y1}, vertex[3].pos);
-  glm_vec2_copy((vec2){q.s0, q.t1}, vertex[3].uv);
+  glm_vec2_copy((vec2){q.x0, q.y1}, v[idx].pos);
+  glm_vec2_copy((vec2){q.s0, q.t1}, v[idx].uv);
+  idx++;
 
-  glm_vec2_copy((vec2){q.x0, q.y0}, vertex[4].pos);
-  glm_vec2_copy((vec2){q.s0, q.t0}, vertex[4].uv);
+  glm_vec2_copy((vec2){q.x0, q.y0}, v[idx].pos);
+  glm_vec2_copy((vec2){q.s0, q.t0}, v[idx].uv);
+  idx++;
 
-  glm_vec2_copy((vec2){q.x1, q.y1}, vertex[5].pos); // NOLINT
-  glm_vec2_copy((vec2){q.s1, q.t1}, vertex[5].uv);  // NOLINT
+  glm_vec2_copy((vec2){q.x1, q.y1}, v[idx].pos);
+  glm_vec2_copy((vec2){q.s1, q.t1}, v[idx].uv);
+  idx++;
 
   r->font.vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
 }
 
 void cm_font(CmFont *font, const vec2 pos, Str text) {
+  // if font passed not the same as last font.
   if (r->font.font && r->font.font != font) {
     _cm_font_renderer_flush();
   }
@@ -586,36 +618,8 @@ void cm_font(CmFont *font, const vec2 pos, Str text) {
   }
 }
 
-void cm_font_internal_end(void) {}
-
-static void cm_font_internal_init(void) {
-  r->font.shader = cm_shader_from_memory(
-      &r->gpu,
-      STR("#version 120\n"
-          "attribute vec2 a_pos;\n"
-          "attribute vec2 a_uv;\n"
-          "varying vec2 v_uv;\n"
-          "uniform mat4 u_mvp;\n"
-          "void main() {\n"
-          "  gl_Position = u_mvp * vec4(a_pos.xy, 0, 1.0);\n"
-          "  v_uv = a_uv;\n"
-          "}\n"),
-      STR("#version 120\n"
-          "varying vec2 v_uv;\n"
-          "uniform sampler2D u_texture;\n"
-          "uniform vec4 u_color = vec4(1, 1, 1, 1);"
-          "void main() {\n"
-          " gl_FragColor = vec4(texture2D(u_texture, v_uv).r) * u_color;\n"
-          "}\n"),
-      ErrDefault);
-
-  r->font.vbo = cm_gpu_vbo(
-      &r->gpu, CM_DYNAMIC_DRAW, sizeof(Vertex),
-      FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX, NULL);
-
-  r->font.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->font.vao, 2, sizeof(Vertex), offsetof(Vertex, pos));
-  cm_gpu_vao_push(&r->font.vao, 2, sizeof(Vertex), offsetof(Vertex, uv));
+void cm_font_color(CmFont *font, vec4 color) {
+  glm_vec4_copy(color, font->color);
 }
 
 /* ============= renderer 2D ============= */
@@ -630,6 +634,8 @@ void cm_2D_begin(CmCamera2D *camera) {
   }
   r->camera = camera;
   cm_camera_update(camera);
+
+  glDisable(GL_DEPTH_TEST);
 }
 
 void cm_2D_end(void) {
@@ -640,7 +646,7 @@ void cm_2D_end(void) {
   }
 
   if (r->quad.vertices_count) {
-    cm_quad_flush();
+    _cm_quad_flush();
   }
 
   if (r->circle.vertex_count) {
@@ -648,11 +654,11 @@ void cm_2D_end(void) {
   }
 
   if (r->sprite.vertices_count) {
-    cm_sprite_flush();
+    _cm_sprite_flush();
   }
 
   if (r->line.vertices_count) {
-    cm_line_flush();
+    _cm_line_flush();
   }
 
   if (r->font.vertex_count) {
@@ -660,10 +666,12 @@ void cm_2D_end(void) {
   }
 
   r->camera = NULL;
+  glEnable(GL_DEPTH_TEST);
 }
 
-void cm_2D_internal_use(CmRenderer2D *renderer) {
-  //
+void cm_2D_internal_set_context(CmRenderer2D *renderer) {
+  cebus_assert(renderer, "renderer was not initialized");
+  cebus_assert(r == NULL, "can not have two initialized renderers");
   r = renderer;
 }
 
@@ -671,11 +679,11 @@ CmRenderer2D *cm_2D_internal_init(void) {
   r = calloc(1, sizeof(CmRenderer2D));
   r->gpu = cm_gpu_internal_init(&r->arena);
 
-  cm_quad_internal_init();
-  cm_circle_internal_init();
-  cm_sprite_internal_init();
-  cm_line_internal_init();
-  cm_font_internal_init();
+  _cm_quad_internal_init();
+  _cm_circle_internal_init();
+  _cm_sprite_internal_init();
+  _cm_line_internal_init();
+  _cm_font_internal_init();
 
   return r;
 }

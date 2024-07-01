@@ -96,7 +96,8 @@ bool cm_app_internal_init(ClaymoreConfig *config);
 bool cm_app_internal_update(void);
 void cm_app_internal_final(void);
 
-void cm_app_internal_use(CmApp *app);
+// sets app context to an already initialized app.
+void cm_app_internal_set_context(CmApp *app);
 
 void cm_app_internal_event(CmEvent *event);
 
