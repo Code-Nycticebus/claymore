@@ -89,17 +89,17 @@ CmShader cm_shader_from_memory(CmGpu *gpu, Str vs, Str fs, Error *e) {
   fs_id = _cm_compile_shader(fs, GL_FRAGMENT_SHADER, e);
   error_propagate(e, { goto defer; });
 
-  program.id = cm_gpu_program(gpu);
-  glAttachShader(program.id, vs_id);
-  glAttachShader(program.id, fs_id);
-  glLinkProgram(program.id);
+  CmGpuID id = cm_gpu_program(gpu);
+  glAttachShader(id, vs_id);
+  glAttachShader(id, fs_id);
+  glLinkProgram(id);
 
-  _cm_shader_check_error(program.id, GL_LINK_STATUS, e);
+  _cm_shader_check_error(id, GL_LINK_STATUS, e);
   error_propagate(e, {
     glDeleteProgram(da_pop(&gpu->buffers).id);
-    program = (CmShader){0};
     goto defer;
   });
+  program.id = id;
 
 defer:
   if (vs_id) {

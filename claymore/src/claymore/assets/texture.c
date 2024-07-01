@@ -46,9 +46,8 @@ CmTexture2D cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
   texture = cm_texture_from_memory(gpu, width, height, texture_buffer,
                                    CM_TEXTURE_RGBA);
 
-  stbi_image_free(texture_buffer);
-
 defer:
+  stbi_image_free(texture_buffer);
   arena_free(&temp);
   return texture;
 }
