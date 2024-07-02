@@ -15,12 +15,12 @@ static void init(CmScene* scene) {
     // Runs once when the scene is initialized
 }
 
-static void fixed_update(CmScene* scene, double deltatime) {
+static void fixed_update(CmScene* scene) {
     // Runs an update in a fixed interval
     // Do your physics updates here
 }
 
-static void frame_update(CmScene* scene, double deltatime) {
+static void frame_update(CmScene* scene) {
     // Runs every frame
     // Do your rendering here
 }
@@ -33,7 +33,7 @@ static void event(CmScene* scene, CmEvent* event) {
     // Runs on event
 }
 
-CmSceneInterface *scene_interface(void) {
+static CmSceneInterface *scene_interface(void) {
   static CmSceneInterface interface = {
       CM_SCENE(SceneData),
       .fixed_update = fixed_update,
@@ -64,7 +64,7 @@ static void init(CmScene* scene) {
     cm_camera2D_screen(&data->camera);
 }
 
-static void frame_update(CmScene* scene, double deltatime) {
+static void frame_update(CmScene* scene) {
     // Access data
     SceneData* data = cm_scene_data(scene);
 

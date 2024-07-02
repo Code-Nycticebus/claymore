@@ -74,7 +74,7 @@ Include `claymore/entrypoint.h` in only one  `.c` file. In this file, implement 
 ```c
 #include <claymore/entrypoint.h>
 
-static ClaymoreConfig *claymore_init(void) {
+ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
       .window = {.width = 720, .height = 420, .title = "Claymore"},
       .root = scene_interface,
