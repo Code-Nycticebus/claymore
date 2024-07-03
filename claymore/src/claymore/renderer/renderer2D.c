@@ -18,7 +18,7 @@ typedef struct {
 #define CM_CIRCLES_MAX 1000
 typedef struct {
   vec2 p;
-  vec2 r;
+  float r;
   vec4 c;
 } CircleVertex;
 
@@ -48,7 +48,7 @@ typedef struct {
 typedef struct {
   vec2 pos;
   vec2 uv;
-} Vertex;
+} FontVertex;
 
 struct CmRenderer2D {
   CmCamera2D *camera;
@@ -115,7 +115,7 @@ struct CmRenderer2D {
 
     CmFont *font;
 
-    Vertex buffer[FONT_RENDERER_VERTECIES_MAX];
+    FontVertex buffer[FONT_RENDERER_VERTECIES_MAX];
     size_t vertex_count;
   } font;
 };
@@ -234,7 +234,7 @@ static void _cm_circle_internal_init(void) {
   r->circle.vao = cm_gpu_vao(&r->gpu);
   cm_gpu_vao_instanced(&r->circle.vao, 1, 2, sizeof(CircleVertex),
                        offsetof(CircleVertex, p));
-  cm_gpu_vao_instanced(&r->circle.vao, 1, 2, sizeof(CircleVertex),
+  cm_gpu_vao_instanced(&r->circle.vao, 1, 1, sizeof(CircleVertex),
                        offsetof(CircleVertex, r));
   cm_gpu_vao_instanced(&r->circle.vao, 1, 4, sizeof(CircleVertex),
                        offsetof(CircleVertex, c));
@@ -243,7 +243,7 @@ static void _cm_circle_internal_init(void) {
       &r->gpu,
       STR("#version 430 core\n"
           "layout (location = 0) in vec2 a_pos;\n"
-          "layout (location = 1) in vec2 a_radius;\n"
+          "layout (location = 1) in float a_radius;\n"
           "layout (location = 2) in vec4 a_color;\n"
           "uniform mat4 u_mvp;\n"
           "out vec2 v_uv;\n"
@@ -284,15 +284,14 @@ static void _cm_circle_flush(void) {
   r->circle.vertex_count = 0;
 }
 
-void cm_circle(const vec2 pos, const vec2 radius, const vec4 color) {
+void cm_circle(const vec2 pos, float radius, const vec4 color) {
   if (!(r->circle.vertex_count < CM_CIRCLES_MAX)) {
     _cm_circle_flush();
   }
 
   r->circle.vertices[r->circle.vertex_count].p[0] = pos[0];
   r->circle.vertices[r->circle.vertex_count].p[1] = pos[1];
-  r->circle.vertices[r->circle.vertex_count].r[0] = radius[0];
-  r->circle.vertices[r->circle.vertex_count].r[1] = radius[1];
+  r->circle.vertices[r->circle.vertex_count].r = radius;
   r->circle.vertices[r->circle.vertex_count].c[0] = color[0];
   r->circle.vertices[r->circle.vertex_count].c[1] = color[1];
   r->circle.vertices[r->circle.vertex_count].c[2] = color[2];
@@ -523,12 +522,14 @@ static void _cm_font_internal_init(void) {
       ErrDefault);
 
   r->font.vbo = cm_gpu_vbo(
-      &r->gpu, CM_DYNAMIC_DRAW, sizeof(Vertex),
+      &r->gpu, CM_DYNAMIC_DRAW, sizeof(FontVertex),
       FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX, NULL);
 
   r->font.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->font.vao, 2, sizeof(Vertex), offsetof(Vertex, pos));
-  cm_gpu_vao_push(&r->font.vao, 2, sizeof(Vertex), offsetof(Vertex, uv));
+  cm_gpu_vao_push(&r->font.vao, 2, sizeof(FontVertex),
+                  offsetof(FontVertex, pos));
+  cm_gpu_vao_push(&r->font.vao, 2, sizeof(FontVertex),
+                  offsetof(FontVertex, uv));
 }
 
 static void _cm_font_renderer_flush(void) {
@@ -543,7 +544,7 @@ static void _cm_font_renderer_flush(void) {
   glBindBuffer(GL_ARRAY_BUFFER, r->font.vbo.id);
   glBindVertexArray(r->font.vao.id);
 
-  cm_gpu_vbo_update(&r->font.vbo, sizeof(Vertex), r->font.vertex_count,
+  cm_gpu_vbo_update(&r->font.vbo, sizeof(FontVertex), r->font.vertex_count,
                     (float *)r->font.buffer);
 
   glDrawArrays(GL_TRIANGLES, 0, r->font.vertex_count);
@@ -552,7 +553,8 @@ static void _cm_font_renderer_flush(void) {
   r->font.font = NULL;
 }
 
-static void _cm_push_char(CmFont *font, char c, Vertex *v, float *x, float *y) {
+static void _cm_push_char(CmFont *font, char c, FontVertex *v, float *x,
+                          float *y) {
   stbtt_aligned_quad q;
   stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution, font->ttf_resoulution,
                      c - FONT_CHAR_MIN, x, y, &q, 1);
@@ -594,7 +596,7 @@ void cm_font(CmFont *font, const vec2 pos, Str text) {
 
   float text_y = pos[1] + font->height;
   float text_x = pos[0];
-  Vertex *vertex = &r->font.buffer[r->font.vertex_count];
+  FontVertex *vertex = &r->font.buffer[r->font.vertex_count];
   for (size_t i = 0; i < text.len; i++) {
     if (FONT_CHAR_MIN <= text.data[i] &&
         text.data[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {

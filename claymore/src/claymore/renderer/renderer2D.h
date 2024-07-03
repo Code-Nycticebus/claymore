@@ -11,7 +11,7 @@
 void cm_2D_begin(CmCamera2D *camera);
 void cm_2D_end(void);
 
-void cm_circle(const vec2 pos, const vec2 radius, const vec4 color);
+void cm_circle(const vec2 pos, float radius, const vec4 color);
 void cm_quad(const vec2 pos, const vec2 size, float rotation, const vec4 color);
 
 void cm_sprite(CmTexture2D *texture, const vec2 pos, const vec2 size,
