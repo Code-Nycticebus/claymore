@@ -74,7 +74,7 @@ static void frame_update(CmScene *scene) {
     for (usize i = 0; i < benchmark->grid; i++) {
       for (usize j = 0; j < benchmark->grid; j++) {
         const vec2 pos = {i * size, j * size};
-        cm_quad(pos, (vec2){size, size}, r, quad_color);
+        cm_2D_quad(pos, (vec2){size, size}, r, quad_color);
       }
     }
   }
@@ -85,8 +85,8 @@ static void frame_update(CmScene *scene) {
     char buffer[20];
     usize s =
         snprintf(buffer, 20, "%8" U64_FMT, benchmark->grid * benchmark->grid);
-    cm_font(benchmark->font, (vec2){window->r.w - 16 * 9, 0},
-            str_from_parts(s, buffer));
+    cm_2D_text(benchmark->font, (vec2){window->r.w - 16 * 9, 0},
+               str_from_parts(s, buffer));
   }
   cm_2D_end();
 }

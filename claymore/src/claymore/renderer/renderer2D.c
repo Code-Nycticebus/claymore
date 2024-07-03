@@ -41,10 +41,10 @@ typedef struct {
   vec2 pos;
 } LineVertex;
 
-#define FONT_RENDERER_CHAR_MAX 1000
-#define FONT_RENDERER_VERTECIES_PER_CHAR 6
-#define FONT_RENDERER_VERTECIES_MAX                                            \
-  (FONT_RENDERER_CHAR_MAX * FONT_RENDERER_VERTECIES_PER_CHAR)
+#define TEXT_RENDERER_CHAR_MAX 1000
+#define TEXT_RENDERER_VERTECIES_PER_CHAR 6
+#define TEXT_RENDERER_VERTECIES_MAX                                            \
+  (TEXT_RENDERER_CHAR_MAX * TEXT_RENDERER_VERTECIES_PER_CHAR)
 typedef struct {
   vec2 pos;
   vec2 uv;
@@ -72,6 +72,7 @@ struct CmRenderer2D {
 
   struct CircleRenderer {
     CmShader shader;
+
     CmVbo vbo;
     CmVao vao;
 
@@ -107,17 +108,17 @@ struct CmRenderer2D {
     LineVertex data[CM_LINES_VERTICES_MAX];
   } line;
 
-  struct FontRenderer {
+  struct TextRenderer {
+    CmShader shader;
+
     CmVbo vbo;
     CmVao vao;
 
-    CmShader shader;
-
     CmFont *font;
 
-    FontVertex buffer[FONT_RENDERER_VERTECIES_MAX];
+    FontVertex buffer[TEXT_RENDERER_VERTECIES_MAX];
     size_t vertex_count;
-  } font;
+  } text;
 };
 
 static CmRenderer2D *r;
@@ -177,7 +178,8 @@ static void _cm_quad_flush(void) {
   r->quad.vertices_count = 0;
 }
 
-void cm_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) {
+void cm_2D_quad(const vec2 pos, const vec2 s, float rotation,
+                const vec4 color) {
   // flush if buffer full
   if (!(r->quad.vertices_count < CM_QUADS_VERTICES_MAX)) {
     _cm_quad_flush();
@@ -284,7 +286,7 @@ static void _cm_circle_flush(void) {
   r->circle.vertex_count = 0;
 }
 
-void cm_circle(const vec2 pos, float radius, const vec4 color) {
+void cm_2D_circle(const vec2 pos, float radius, const vec4 color) {
   if (!(r->circle.vertex_count < CM_CIRCLES_MAX)) {
     _cm_circle_flush();
   }
@@ -395,7 +397,7 @@ void cm_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
     _cm_sprite_flush();
   }
 
-  // For safety i still assert
+  // for safety i still assert
   cebus_assert_debug(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX, "");
   cebus_assert_debug(r->sprite.indices_count < CM_SPRITES_INDICES_MAX, "");
 
@@ -479,7 +481,7 @@ static void _cm_line_flush(void) {
   r->line.vertices_count = 0;
 }
 
-void cm_line(const vec2 from, const vec2 to) {
+void cm_2D_line(const vec2 from, const vec2 to) {
   if (!(r->line.vertices_count < CM_LINES_VERTICES_MAX)) {
     _cm_line_flush();
   }
@@ -500,8 +502,8 @@ void cm_line(const vec2 from, const vec2 to) {
 
 /* ============= font renderer ============= */
 
-static void _cm_font_internal_init(void) {
-  r->font.shader = cm_shader_from_memory(
+static void _cm_text_internal_init(void) {
+  r->text.shader = cm_shader_from_memory(
       &r->gpu,
       STR("#version 120\n"
           "attribute vec2 a_pos;\n"
@@ -521,36 +523,36 @@ static void _cm_font_internal_init(void) {
           "}\n"),
       ErrDefault);
 
-  r->font.vbo = cm_gpu_vbo(
+  r->text.vbo = cm_gpu_vbo(
       &r->gpu, CM_DYNAMIC_DRAW, sizeof(FontVertex),
-      FONT_RENDERER_VERTECIES_PER_CHAR * FONT_RENDERER_CHAR_MAX, NULL);
+      TEXT_RENDERER_VERTECIES_PER_CHAR * TEXT_RENDERER_CHAR_MAX, NULL);
 
-  r->font.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->font.vao, 2, sizeof(FontVertex),
+  r->text.vao = cm_gpu_vao(&r->gpu);
+  cm_gpu_vao_push(&r->text.vao, 2, sizeof(FontVertex),
                   offsetof(FontVertex, pos));
-  cm_gpu_vao_push(&r->font.vao, 2, sizeof(FontVertex),
+  cm_gpu_vao_push(&r->text.vao, 2, sizeof(FontVertex),
                   offsetof(FontVertex, uv));
 }
 
-static void _cm_font_renderer_flush(void) {
-  cm_shader_bind(&r->font.shader);
-  cm_shader_set_mat4(&r->font.shader, STR("u_mvp"), r->camera->base.vp);
-  cm_shader_set_i32(&r->font.shader, STR("u_texture"), 0);
-  cm_shader_set_vec4(&r->font.shader, STR("u_color"), r->font.font->color);
+static void _cm_text_renderer_flush(void) {
+  cm_shader_bind(&r->text.shader);
+  cm_shader_set_mat4(&r->text.shader, STR("u_mvp"), r->camera->base.vp);
+  cm_shader_set_i32(&r->text.shader, STR("u_texture"), 0);
+  cm_shader_set_vec4(&r->text.shader, STR("u_color"), r->text.font->color);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, r->font.font->texture_id);
+  glBindTexture(GL_TEXTURE_2D, r->text.font->texture_id);
 
-  glBindBuffer(GL_ARRAY_BUFFER, r->font.vbo.id);
-  glBindVertexArray(r->font.vao.id);
+  glBindBuffer(GL_ARRAY_BUFFER, r->text.vbo.id);
+  glBindVertexArray(r->text.vao.id);
 
-  cm_gpu_vbo_update(&r->font.vbo, sizeof(FontVertex), r->font.vertex_count,
-                    (float *)r->font.buffer);
+  cm_gpu_vbo_update(&r->text.vbo, sizeof(FontVertex), r->text.vertex_count,
+                    (float *)r->text.buffer);
 
-  glDrawArrays(GL_TRIANGLES, 0, r->font.vertex_count);
+  glDrawArrays(GL_TRIANGLES, 0, r->text.vertex_count);
 
-  r->font.vertex_count = 0;
-  r->font.font = NULL;
+  r->text.vertex_count = 0;
+  r->text.font = NULL;
 }
 
 static void _cm_push_char(CmFont *font, char c, FontVertex *v, float *x,
@@ -584,44 +586,40 @@ static void _cm_push_char(CmFont *font, char c, FontVertex *v, float *x,
   glm_vec2_copy((vec2){q.s1, q.t1}, v[idx].uv);
   idx++;
 
-  r->font.vertex_count += FONT_RENDERER_VERTECIES_PER_CHAR;
+  r->text.vertex_count += TEXT_RENDERER_VERTECIES_PER_CHAR;
 }
 
-void cm_font(CmFont *font, const vec2 pos, Str text) {
+void cm_2D_text(CmFont *font, const vec2 pos, Str text) {
   // if font passed not the same as last font.
-  if (r->font.font && r->font.font != font) {
-    _cm_font_renderer_flush();
+  if (r->text.font && r->text.font != font) {
+    _cm_text_renderer_flush();
   }
-  r->font.font = font;
+  r->text.font = font;
 
   float text_y = pos[1] + font->height;
   float text_x = pos[0];
-  FontVertex *vertex = &r->font.buffer[r->font.vertex_count];
+  FontVertex *vertex = &r->text.buffer[r->text.vertex_count];
   for (size_t i = 0; i < text.len; i++) {
     if (FONT_CHAR_MIN <= text.data[i] &&
         text.data[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
 
-      if (!(r->font.vertex_count < FONT_RENDERER_VERTECIES_MAX)) {
-        _cm_font_renderer_flush();
-        vertex = r->font.buffer;
+      if (!(r->text.vertex_count < TEXT_RENDERER_VERTECIES_MAX)) {
+        _cm_text_renderer_flush();
+        vertex = r->text.buffer;
       }
 
       _cm_push_char(font, text.data[i], vertex, &text_x, &text_y);
-      vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
+      vertex += TEXT_RENDERER_VERTECIES_PER_CHAR;
     } else if (text.data[i] == '\n') {
       text_y += font->height;
       text_x = pos[0];
     } else if (text.data[i] == '\t') {
       for (usize i = 0; i < 4; ++i) {
         _cm_push_char(font, ' ', vertex, &text_x, &text_y);
-        vertex += FONT_RENDERER_VERTECIES_PER_CHAR;
+        vertex += TEXT_RENDERER_VERTECIES_PER_CHAR;
       }
     }
   }
-}
-
-void cm_font_color(CmFont *font, vec4 color) {
-  glm_vec4_copy(color, font->color);
 }
 
 /* ============= renderer 2D ============= */
@@ -663,8 +661,8 @@ void cm_2D_end(void) {
     _cm_line_flush();
   }
 
-  if (r->font.vertex_count) {
-    _cm_font_renderer_flush();
+  if (r->text.vertex_count) {
+    _cm_text_renderer_flush();
   }
 
   r->camera = NULL;
@@ -685,7 +683,7 @@ CmRenderer2D *cm_2D_internal_init(void) {
   _cm_circle_internal_init();
   _cm_sprite_internal_init();
   _cm_line_internal_init();
-  _cm_font_internal_init();
+  _cm_text_internal_init();
 
   return r;
 }

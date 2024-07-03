@@ -35,7 +35,7 @@ static void frame_update(CmScene *scene) {
   }
 
   cm_2D_begin(&fps->camera);
-  cm_font(fps->font, fps->position, fps->label);
+  cm_2D_text(fps->font, fps->position, fps->label);
   cm_2D_end();
 }
 

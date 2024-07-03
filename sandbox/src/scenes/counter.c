@@ -28,7 +28,7 @@ static void frame_update(CmScene *scene) {
   Counter *counter = cm_scene_data(scene);
   cm_2D_begin(&counter->camera);
   Str label = str_format(&scene->arena, "%*d", 4, counter->i);
-  cm_font(counter->font, counter->pos, label);
+  cm_2D_text(counter->font, counter->pos, label);
   cm_2D_end();
 
   arena_reset(&scene->arena);

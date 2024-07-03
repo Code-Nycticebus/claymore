@@ -50,3 +50,7 @@ defer:
   arena_free(&temp);
   return font;
 }
+
+void cm_font_color(CmFont *font, vec4 color) {
+  glm_vec4_copy(color, font->color);
+}

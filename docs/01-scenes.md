@@ -70,7 +70,7 @@ static void frame_update(CmScene* scene) {
 
     // Render data
     cm_2D_begin(&data->camera);
-    cm_circle((vec2){0, 0}, data->radius, (vec4){1, 0, 0, 1});
+    cm_2D_circle((vec2){0, 0}, data->radius, (vec4){1, 0, 0, 1});
     cm_2D_end();
 }
 

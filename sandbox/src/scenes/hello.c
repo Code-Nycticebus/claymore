@@ -31,7 +31,7 @@ static void frame_update(CmScene *scene) {
   cm_font_color(hello->font, (vec4){r, g, b, 1.f});
 
   cm_2D_begin(&hello->camera);
-  { cm_font(hello->font, hello->position, label); }
+  { cm_2D_text(hello->font, hello->position, label); }
   cm_2D_end();
 }
 
