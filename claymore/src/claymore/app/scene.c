@@ -20,10 +20,13 @@ void cm_scene_delete(CmScene *scene) {
   for (usize i = 0; i < parent->children.len; i++) {
     if (da_get(&parent->children, i) == (CmSceneInternal *)scene) {
       da_remove(&parent->children, i);
-      break;
+      cm_app_internal_schedule_delete(scene);
+      return;
     }
   }
-  cm_app_internal_schedule_delete(scene);
+
+  cebus_log_fatal("trying to delete scene that is not in the scene tree");
+  UNREACHABLE();
 }
 
 void *cm_scene_data(CmScene *scene) {
