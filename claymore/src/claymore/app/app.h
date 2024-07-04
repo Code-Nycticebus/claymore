@@ -80,6 +80,8 @@ typedef struct {
   Arena arena;  // app lifetime arena
   bool running; // running state
 
+  void *data; // user data
+
   u64 first_frame; // timestamp of first frame
 
   u64 last_frame;   // timestamp of last frame

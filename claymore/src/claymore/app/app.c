@@ -33,6 +33,17 @@ CmScene *cm_app_set_root(CmSceneInit init) {
   return (CmScene *)app->new_root;
 }
 
+void *cm_app_data(void) {
+  cebus_assert(app->data, "app data was never set");
+  return app->data;
+}
+
+void *cm_app_set_data(usize size) {
+  cebus_assert(app->data == NULL, "Trying to set app data twice!");
+  app->data = arena_calloc(&app->arena, size);
+  return app->data;
+}
+
 double cm_app_deltatime(void) { return app->deltatime; }
 u64 cm_app_time(void) { return RGFW_getTimeNS() - app->first_frame; }
 
