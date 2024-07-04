@@ -8,6 +8,7 @@
 typedef enum {
   CM_TEXTURE_R,
   CM_TEXTURE_RGBA,
+  CM_TEXTURE_RGB,
 } CmTextureFormat;
 
 typedef struct {

@@ -20,6 +20,12 @@ static const struct {
             .format = GL_RGBA,
             .type = GL_UNSIGNED_BYTE,
         },
+    [CM_TEXTURE_RGB] =
+        {
+            .internal = GL_RGB,
+            .format = GL_RGB,
+            .type = GL_UNSIGNED_BYTE,
+        },
 
 };
 
