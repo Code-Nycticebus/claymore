@@ -96,6 +96,26 @@ CmGpuID cm_gpu_texture(CmGpu *b) {
   return texture;
 }
 
+CmGpuID cm_gpu_fbo(CmGpu *b) {
+  CmGpuID id;
+  glGenFramebuffers(1, &id);
+  glBindFramebuffer(GL_FRAMEBUFFER, id);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_FBO, .id = id});
+  return id;
+}
+
+void cm_gpu_fbo_bind(CmGpuID fbo) { glBindFramebuffer(GL_FRAMEBUFFER, fbo); }
+
+CmGpuID cm_gpu_rbo(CmGpu *b) {
+  CmGpuID id;
+  glGenRenderbuffers(1, &id);
+  glBindRenderbuffer(GL_RENDERBUFFER, id);
+  da_push(&b->buffers, (CmGpuBuffer){.type = CM_GPU_RBO, .id = id});
+  return id;
+}
+
+void cm_gpu_rbo_bind(CmGpuID rbo) { glBindRenderbuffer(GL_RENDERBUFFER, rbo); }
+
 /* ========= gpu internal ========= */
 
 CmGpu cm_gpu_internal_init(Arena *arena) {
@@ -121,6 +141,12 @@ void cm_gpu_internal_free(CmGpu *b) {
     } break;
     case CM_GPU_TEXTURE: {
       glDeleteTextures(1, &buffer->id);
+    } break;
+    case CM_GPU_FBO: {
+      glDeleteFramebuffers(1, &buffer->id);
+    } break;
+    case CM_GPU_RBO: {
+      glDeleteRenderbuffers(1, &buffer->id);
     } break;
     }
   }

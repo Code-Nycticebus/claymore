@@ -16,7 +16,7 @@ typedef enum {
   CM_DRAW_LINES = GL_LINES,
 } CmGpuDrawMode;
 
-typedef u32 CmGpuID;
+typedef GLuint CmGpuID;
 
 // buffer struct
 typedef struct {
@@ -26,6 +26,8 @@ typedef struct {
     CM_GPU_VAO,
     CM_GPU_PROGRAM,
     CM_GPU_TEXTURE,
+    CM_GPU_FBO,
+    CM_GPU_RBO,
   } type;     // buffer type
   CmGpuID id; // buffer id
 } CmGpuBuffer;
@@ -84,6 +86,15 @@ void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
 CmGpuID cm_gpu_program(CmGpu *b);
 // create texture
 CmGpuID cm_gpu_texture(CmGpu *b);
+
+// create framebuffer
+CmGpuID cm_gpu_fbo(CmGpu *b);
+// bind framebuffer
+void cm_gpu_fbo_bind(CmGpuID fbo);
+// create renderbuffer
+CmGpuID cm_gpu_rbo(CmGpu *b);
+// bind renderbuffer
+void cm_gpu_rbo_bind(CmGpuID rbo);
 
 /* ========= gpu internal ========= */
 
