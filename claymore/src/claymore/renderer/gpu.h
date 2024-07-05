@@ -86,6 +86,8 @@ void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
 CmGpuID cm_gpu_program(CmGpu *b);
 // create texture
 CmGpuID cm_gpu_texture(CmGpu *b);
+// bind texture
+void cm_gpu_texture_bind(CmGpuID texture, usize slot);
 
 // create framebuffer
 CmGpuID cm_gpu_fbo(CmGpu *b);

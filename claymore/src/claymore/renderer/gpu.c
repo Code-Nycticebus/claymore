@@ -96,6 +96,11 @@ CmGpuID cm_gpu_texture(CmGpu *b) {
   return texture;
 }
 
+void cm_gpu_texture_bind(CmGpuID texture, usize slot) {
+  glActiveTexture(GL_TEXTURE0 + slot);
+  glBindTexture(GL_TEXTURE_2D, texture);
+}
+
 CmGpuID cm_gpu_fbo(CmGpu *b) {
   CmGpuID id;
   glGenFramebuffers(1, &id);
