@@ -22,6 +22,11 @@ static void on_event(CmScene *scene, CmEvent *event) {
     zoom = zoom - scroll->offset[1] * (zoom / scroll_speed);
     cm_camera2D_set_zoom(&benchmark->camera, zoom);
   });
+
+  cm_event_resize(event, {
+    cm_camera2D_screen(&benchmark->overlay);
+    cm_camera2D_set_aspect(&benchmark->camera, cm_app_aspect());
+  });
 }
 
 static void init(CmScene *scene) {
