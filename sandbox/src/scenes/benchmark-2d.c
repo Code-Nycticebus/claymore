@@ -1,4 +1,5 @@
 #include "claymore.h"
+#include "claymore/app/camera.h"
 
 #define HEIGTH 420
 #define WIDTH 720
@@ -52,16 +53,16 @@ static void frame_update(CmScene *scene) {
   vec2 dir = {0};
 
   RGFW_window *window = cm_app_window();
-  if (RGFW_isPressedI(window, RGFW_w)) {
+  if (RGFW_isPressed(window, RGFW_w)) {
     dir[1] = speed;
   }
-  if (RGFW_isPressedI(window, RGFW_s)) {
+  if (RGFW_isPressed(window, RGFW_s)) {
     dir[1] = -speed;
   }
-  if (RGFW_isPressedI(window, RGFW_a)) {
+  if (RGFW_isPressed(window, RGFW_a)) {
     dir[0] = speed;
   }
-  if (RGFW_isPressedI(window, RGFW_d)) {
+  if (RGFW_isPressed(window, RGFW_d)) {
     dir[0] = -speed;
   }
 

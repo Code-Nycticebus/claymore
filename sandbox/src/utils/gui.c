@@ -55,7 +55,7 @@ static void frame_update(CmScene *scene) {
 
   RGFW_window *w = cm_app_window();
   gui->pressed =
-      RGFW_isMousePressed(w, RGFW_mouseLeft) || RGFW_isPressedI(w, RGFW_Return);
+      RGFW_isMousePressed(w, RGFW_mouseLeft) || RGFW_isPressed(w, RGFW_Return);
   gui->max = gui->idx;
 
   if (gui->hovering) {
@@ -116,11 +116,11 @@ bool button(CmScene *scene, Str label) {
     gui->hovering = true;
   }
 
-  if (RGFW_isPressedI(w, RGFW_1 + gui->idx - 1)) {
+  if (RGFW_isPressed(w, RGFW_1 + gui->idx - 1)) {
     gui->selected = gui->idx;
   }
 
-  if (!gui->pressed && selected && RGFW_isPressedI(w, RGFW_Return)) {
+  if (!gui->pressed && selected && RGFW_isPressed(w, RGFW_Return)) {
     pressed = true;
   }
 
