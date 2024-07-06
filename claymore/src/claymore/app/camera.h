@@ -42,6 +42,8 @@ void cm_camera2D_set_position(CmCamera2D *camera, vec2 position);
 void cm_camera2D_move(CmCamera2D *camera, vec2 direction);
 // set zoom of orthogonal camera
 void cm_camera2D_set_zoom(CmCamera2D *camera, float zoom);
+// set aspect of orthogonal camera
+void cm_camera2D_set_aspect(CmCamera2D *camera, float aspect);
 
 /* ========= camera 3D ========= */
 

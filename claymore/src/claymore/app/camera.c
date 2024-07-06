@@ -78,6 +78,17 @@ void cm_camera2D_set_zoom(CmCamera2D *camera, float zoom) {
   camera->base.dirty = true;
 }
 
+void cm_camera2D_set_aspect(CmCamera2D *camera, float aspect) {
+  cebus_assert_warn(camera->zoom, "changing zoom of screen camera2D");
+  const float x = aspect * camera->zoom;
+  const float y = camera->zoom;
+  glm_ortho(-x, x, y, -y, 1.f / 100.f, 100.f, camera->base.projection);
+
+  camera->aspect = aspect;
+
+  camera->base.dirty = true;
+}
+
 /* ========= 3D camera ========= */
 
 void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
