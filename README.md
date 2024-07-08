@@ -18,12 +18,13 @@ On linux you need to install these dependencies:
 sudo apt install libmesa-dev xorg-dev libxrandr-dev 
 ```
 
-First clone the repo:
+First clone and enter the repo:
 ```terminal
 git clone --recursive https://github.com/Code-Nycticebus/claymore
+cd claymore
 ```
 
-Build it with a c compiler. From inside the `claymore` directory:
+Build it with a c compiler. From inside the `claymore` directory, compile the build system. you can even:
 ```terminal
 cd claymore
 gcc build/build.c -o build/build
