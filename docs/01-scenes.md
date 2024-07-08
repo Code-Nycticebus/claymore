@@ -134,4 +134,17 @@ static void init(CmScene* scene) {
 }
 ```
 
+### Ressource Management
+
+You pass an `CmGpu` instance to every function that takes up ressources on the gpu. The gpu ressource will be freed after a scene is deinitialized.
+
+```c
+static void init(CmScene* scene) {
+    // Access scene data
+    SceneData* data = cm_scene_data(scene, sizeof(SceneData));
+    // Create texture
+    data->texture = cm_texture_from_file(&scene->gpu, STR("assets/texture.png"), ErrPanic);
+    // ...
+}
+```
 
