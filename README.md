@@ -13,18 +13,19 @@ A C Game Engine
 - [cebus](https://github.com/Code-Nycticebus/cebus): My own core C library.
 
 ## Building Claymore
-First clone the repo:
-```terminal
-git clone --recursive https://github.com/Code-Nycticebus/claymore
-```
-
 On linux you need to install these dependencies:
 ```terminal
 sudo apt install libmesa-dev xorg-dev libxrandr-dev 
 ```
 
+First clone the repo:
+```terminal
+git clone --recursive https://github.com/Code-Nycticebus/claymore
+```
+
 Build it with a c compiler. From inside the `claymore` directory:
 ```terminal
+cd claymore
 gcc build/build.c -o build/build
 ./build/build
 ```
