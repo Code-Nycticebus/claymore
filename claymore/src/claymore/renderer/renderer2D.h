@@ -21,7 +21,7 @@ void cm_2D_quad(const vec2 pos, const vec2 size, float rotation,
 
 // draws a sprite (textured quad) using the specified texture, position, size,
 // rotation, and UV coordinates
-void cm_2D_sprite(CmTexture2D *texture, const vec2 pos, const vec2 size,
+void cm_2D_sprite(CmTexture *texture, const vec2 pos, const vec2 size,
                   float rotation, const vec2 uv, const vec2 uv_size);
 
 // renders text at the specified position using the given font and text string

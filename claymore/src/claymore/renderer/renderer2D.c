@@ -84,7 +84,7 @@ struct CmRenderer2D {
     CmShader shader;
 
     usize texture_idx;
-    CmTexture2D *texture[CM_TEXTURE_SLOTS];
+    CmTexture *texture[CM_TEXTURE_SLOTS];
 
     CmVbo vbo;
     CmVao vao;
@@ -375,7 +375,7 @@ static void _cm_sprite_flush(void) {
   r->sprite.texture_idx = 0;
 }
 
-static usize _cm_sprite_push_texture(CmTexture2D *texture) {
+static usize _cm_sprite_push_texture(CmTexture *texture) {
   if (CM_TEXTURE_SLOTS <= r->sprite.texture_idx) {
     _cm_sprite_flush();
   }
@@ -389,7 +389,7 @@ static usize _cm_sprite_push_texture(CmTexture2D *texture) {
   return r->sprite.texture_idx - 1;
 }
 
-void cm_2D_sprite(CmTexture2D *texture, const vec2 position, const vec2 size,
+void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size,
                   float rotation, const vec2 uv, const vec2 uv_size) {
   usize idx = _cm_sprite_push_texture(texture);
 

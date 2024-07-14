@@ -29,8 +29,8 @@ static const struct {
 
 };
 
-CmTexture2D cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
-  CmTexture2D texture = {0};
+CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
+  CmTexture texture = {0};
   Arena temp = {0};
 
   Str path = str_copy(filename, &temp);
@@ -58,9 +58,9 @@ defer:
   return texture;
 }
 
-CmTexture2D cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
-                                   const void *data, CmTextureFormat format) {
-  CmTexture2D texture = {
+CmTexture cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
+                                 const void *data, CmTextureFormat format) {
+  CmTexture texture = {
       .id = 0,
       .width = width,
       .height = height,
@@ -83,7 +83,7 @@ CmTexture2D cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
   return texture;
 }
 
-void cm_texture_bind(CmTexture2D *texture, uint32_t slot) {
+void cm_texture_bind(CmTexture *texture, uint32_t slot) {
   glActiveTexture(GL_TEXTURE0 + slot);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 }
