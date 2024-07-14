@@ -2,15 +2,15 @@
 
 #include "claymore/renderer/gpu.h"
 
-CmMesh cm_mesh_create(CmGpu *b, usize count, const vec3 *vertices) {
+CmMesh cm_mesh_create(CmGpu *b, usize count, vec3 *vertices) {
   CmMesh mesh = {0};
   mesh.count = 1;
   mesh.buffer = b;
 
+  mesh.vao = cm_gpu_vao(b);
   mesh.vbo =
       cm_gpu_vbo(b, CM_STATIC_DRAW, sizeof(vec3), count, &vertices[0][0]);
 
-  mesh.vao = cm_gpu_vao(b);
   cm_gpu_vao_push(&mesh.vao, 3, sizeof(vec3), 0);
 
   return mesh;
@@ -41,7 +41,7 @@ CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
   return vbo;
 }
 
-CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v) {
+CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, vec2 *v) {
   cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
   CmVbo vbo =
@@ -50,7 +50,7 @@ CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, const vec2 *v) {
   return vbo;
 }
 
-CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, const vec2 *v) {
+CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, vec2 *v) {
   cebus_assert(mesh->count == 1 || mesh->count == count,
                "This would result in a crash");
   mesh->count = count;
@@ -71,7 +71,7 @@ CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
   return vbo;
 }
 
-CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, const vec3 *v) {
+CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, vec3 *v) {
   cebus_assert(mesh->count == 1 || mesh->count == count,
                "This would result in a crash");
   mesh->count = count;
