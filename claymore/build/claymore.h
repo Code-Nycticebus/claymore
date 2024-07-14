@@ -51,6 +51,7 @@ const Str claymore_files[] = {
     STR_STATIC(CM_SRC_DIR "claymore/app/app.c"),
     STR_STATIC(CM_SRC_DIR "claymore/app/sound.c"),
 
+    STR_STATIC(CM_SRC_DIR "claymore/renderer/framebuffer.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/gpu.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/context.c"),
     STR_STATIC(CM_SRC_DIR "claymore/renderer/mesh.c"),

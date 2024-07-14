@@ -15,6 +15,7 @@
 #include "claymore/assets/shaders.h"
 #include "claymore/assets/texture.h"
 
+#include "claymore/renderer/framebuffer.h"
 #include "claymore/renderer/gpu.h"
 #include "claymore/renderer/mesh.h"
 #include "claymore/renderer/renderer2D.h"
