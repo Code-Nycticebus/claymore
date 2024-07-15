@@ -10,6 +10,8 @@ typedef struct {
 
   usize size[2];
 
+  GLbitfield mask;
+
   CmGpuID color;
   CmGpuID depth;
   CmGpuID stencil;

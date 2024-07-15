@@ -8,6 +8,7 @@ CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth) {
 }
 
 CmGpuID cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
+  cebus_assert(fb->color == 0, "color attachment was already set");
   cm_gpu_fbo_bind(fb->fbo);
   glGenTextures(1, &fb->color);
   glBindTexture(GL_TEXTURE_2D, fb->color);
@@ -21,11 +22,15 @@ CmGpuID cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          fb->color, 0);
   cm_gpu_fbo_bind(0);
+
+  fb->mask |= GL_COLOR_BUFFER_BIT;
   return fb->color;
 }
 
 void cm_framebuffer_begin(CmFramebuffer *fb) {
+  cebus_assert_debug(fb->mask, "framebuffer mask was never set");
   cm_gpu_fbo_bind(fb->fbo);
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(fb->mask);
 }
+
 void cm_framebuffer_end(void) { cm_gpu_fbo_bind(0); }

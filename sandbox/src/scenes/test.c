@@ -69,7 +69,7 @@ static void frame_update(CmScene *scene) {
   cm_2D_begin(&test->camera);
   cm_2D_quad((vec2){10, 30}, (vec2){100, 100}, 0, (vec4){0.7, 0.2, 0.2, 1});
   cm_2D_quad((vec2){310, 90}, (vec2){100, 100}, 0, (vec4){0.25, 0.25, 0.8, 1});
-  cm_2D_quad((vec2){120, 160}, (vec2){100, 100}, 0, (vec4){0.3, 0.7, 0.2, 1});
+  cm_2D_circle((vec2){140, 260}, 50, (vec4){0.3, 0.7, 0.2, 1});
 
   cm_2D_line((vec2){0, 0}, (vec2){100, 50});
   cm_2D_line((vec2){100, 150}, (vec2){200, 330});

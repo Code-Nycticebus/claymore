@@ -28,7 +28,6 @@ void cm_gpu_vbo_draw(CmVbo *vbo, CmGpuDrawMode mode) {
 
 void cm_gpu_vbo_draw_instanced(CmVbo *vbo, usize count, CmGpuDrawMode mode) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo->id);
-  // This could be wrong idk
   glDrawArraysInstanced(mode, 0, vbo->len, count);
 }
 
