@@ -281,7 +281,7 @@ static void _cm_circle_flush(void) {
   cm_gpu_vbo_update(&r->circle.vbo, sizeof(CircleVertex),
                     r->circle.vertex_count, (float *)r->circle.vertices);
 
-  cm_gpu_vbo_draw_instanced(&r->circle.vbo, 4, CM_DRAW_TRIANGLE_STRIP);
+  glDrawArraysInstanced(CM_DRAW_TRIANGLE_STRIP, 0, 4, r->circle.vbo.len);
 
   r->circle.vertex_count = 0;
 }
