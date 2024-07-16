@@ -72,11 +72,10 @@ static void init(CmScene *scene) {
 
 static void frame_update(CmScene *scene) {
   Test *test = cm_scene_data(scene);
-  (void)test;
 
   cm_framebuffer_begin(&test->fb);
-
   cm_2D_begin(&test->camera);
+
   cm_2D_quad((vec2){10, 30}, (vec2){100, 100}, 0, (vec4){0.7, 0.2, 0.2, 1});
   cm_2D_quad((vec2){310, 90}, (vec2){100, 100}, 0, (vec4){0.25, 0.25, 0.8, 1});
   cm_2D_circle((vec2){140, 260}, 50, (vec4){0.3, 0.7, 0.2, 1});
