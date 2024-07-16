@@ -58,10 +58,10 @@ static void init(CmScene *scene) {
           "in vec2 v_pos;\n"
           "struct LightSource { vec2 pos; float strength; float radius; };\n"
           "uniform LightSource light;\n"
-          "float calc_light(vec2 pixel_pos) {"
-          "   float d = light.strength - distance(light.pos, pixel_pos);"
-          "   return (d + light.radius) / light.strength;"
-          "}"
+          "float calc_light(vec2 pixel_pos) {\n"
+          "   float d = light.strength - distance(light.pos, pixel_pos);\n"
+          "   return (d + light.radius) / light.strength;\n"
+          "}\n"
           "uniform sampler2D u_sampler;\n"
           "void main() {\n"
           "  f_color = texture(u_sampler, v_uv);\n"
@@ -92,7 +92,7 @@ static void frame_update(CmScene *scene) {
 
   RGFW_vector m = RGFW_window_getMousePoint(cm_app_window());
   cm_shader_set_vec2(&test->shader, STR("light.pos"), (vec2){m.x, m.y});
-  cm_shader_set_f32(&test->shader, STR("light.radius"), 5.f);
+  cm_shader_set_f32(&test->shader, STR("light.radius"), 20.f);
   cm_shader_set_f32(&test->shader, STR("light.strength"), 450.f);
 
   glActiveTexture(GL_TEXTURE0);
