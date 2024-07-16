@@ -46,17 +46,26 @@ static void init(CmScene *scene) {
           "layout (location = 1) in vec2 a_uv;\n"
           "uniform mat4 u_mvp;\n"
           "out vec2 v_uv;\n"
+          "out vec2 v_pos;\n"
           "void main() {\n"
           "  gl_Position = u_mvp * vec4(a_pos.xyz, 1.0);\n"
+          "  v_pos = a_pos.xy;"
           "  v_uv = a_uv;\n"
           "}\n"),
       STR("#version 430 core\n"
           "out vec4 f_color;\n"
           "in vec2 v_uv;\n"
+          "in vec2 v_pos;\n"
+          "struct LightSource { vec2 pos; float strength; float radius; };\n"
+          "uniform LightSource light;\n"
+          "float calc_light(vec2 pixel_pos) {"
+          "   float d = light.strength - distance(light.pos, pixel_pos);"
+          "   return (d + light.radius) / light.strength;"
+          "}"
           "uniform sampler2D u_sampler;\n"
           "void main() {\n"
           "  f_color = texture(u_sampler, v_uv);\n"
-          "  f_color.a *= 0.25;\n"
+          "  f_color *= calc_light(v_pos);\n"
           "}\n"),
       ErrPanic);
 }
@@ -66,6 +75,7 @@ static void frame_update(CmScene *scene) {
   (void)test;
 
   cm_framebuffer_begin(&test->fb);
+
   cm_2D_begin(&test->camera);
   cm_2D_quad((vec2){10, 30}, (vec2){100, 100}, 0, (vec4){0.7, 0.2, 0.2, 1});
   cm_2D_quad((vec2){310, 90}, (vec2){100, 100}, 0, (vec4){0.25, 0.25, 0.8, 1});
@@ -79,6 +89,11 @@ static void frame_update(CmScene *scene) {
 
   cm_shader_bind(&test->shader);
   cm_shader_set_mat4(&test->shader, STR("u_mvp"), cm_camera_vp(&test->camera));
+
+  RGFW_vector m = RGFW_window_getMousePoint(cm_app_window());
+  cm_shader_set_vec2(&test->shader, STR("light.pos"), (vec2){m.x, m.y});
+  cm_shader_set_f32(&test->shader, STR("light.radius"), 5.f);
+  cm_shader_set_f32(&test->shader, STR("light.strength"), 450.f);
 
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, test->fb.color);

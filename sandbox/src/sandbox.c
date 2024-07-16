@@ -77,9 +77,6 @@ static void event(CmScene *scene, CmEvent *event) {
 static void init(CmScene *scene) {
   const float width = 250.f;
 
-  const vec3 bg = {.1f, .1f, .1f};
-  cm_app_background(bg);
-
   RGFW_window *w = cm_app_window();
   const float y = 50.f;
   gui_init(scene, (vec2){w->r.w / 2 - width / 2, y}, width, gui_update);
