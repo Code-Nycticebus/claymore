@@ -5,16 +5,10 @@
 
 typedef struct {
   CmGpu *gpu;
-
   CmGpuID fbo;
-
   usize size[2];
-
   GLbitfield mask;
-
-  CmGpuID color;
-  CmGpuID depth;
-  CmGpuID stencil;
+  usize attachment_count;
 } CmFramebuffer;
 
 CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth);

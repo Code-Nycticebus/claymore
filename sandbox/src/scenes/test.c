@@ -3,6 +3,7 @@
 typedef struct {
   CmCamera2D camera;
   CmFramebuffer fb;
+  CmGpuID texture;
   CmMesh mesh;
   CmShader shader;
 } Test;
@@ -13,7 +14,7 @@ static void init(CmScene *scene) {
 
   RGFW_window *win = cm_app_window();
   test->fb = cm_framebuffer_create(&scene->gpu, win->r.w, win->r.h);
-  cm_framebuffer_attach_texture_color(&test->fb);
+  test->texture = cm_framebuffer_attach_texture_color(&test->fb);
 
   const float w = win->r.w;
   const float h = win->r.h;
@@ -95,7 +96,7 @@ static void frame_update(CmScene *scene) {
   cm_shader_set_f32(&test->shader, STR("light.strength"), 450.f);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, test->fb.color);
+  glBindTexture(GL_TEXTURE_2D, test->texture);
 
   cm_mesh_draw(&test->mesh, CM_DRAW_TRIANGLES);
 }
