@@ -6,15 +6,15 @@ typedef struct {
   CmGpuID texture;
   CmMesh mesh;
   CmShader shader;
-} Test;
+} Framebuffer;
 
 static void init(CmScene *scene) {
-  Test *test = cm_scene_data(scene);
-  cm_camera2D_screen(&test->camera);
+  Framebuffer *fb = cm_scene_data(scene);
+  cm_camera2D_screen(&fb->camera);
 
   RGFW_window *win = cm_app_window();
-  test->fb = cm_framebuffer_create(&scene->gpu, win->r.w, win->r.h);
-  test->texture = cm_framebuffer_attach_texture_color(&test->fb);
+  fb->fb = cm_framebuffer_create(&scene->gpu, win->r.w, win->r.h);
+  fb->texture = cm_framebuffer_attach_texture_color(&fb->fb);
 
   const float w = win->r.w;
   const float h = win->r.h;
@@ -37,10 +37,10 @@ static void init(CmScene *scene) {
       {1, 0}, // tex bottom right
       {0, 0}, // tex bottom left
   };
-  test->mesh = cm_mesh_create(&scene->gpu, ARRAY_LEN(quad), quad);
-  cm_mesh_attach_vec2(&test->mesh, ARRAY_LEN(uv), uv);
+  fb->mesh = cm_mesh_create(&scene->gpu, ARRAY_LEN(quad), quad);
+  cm_mesh_attach_vec2(&fb->mesh, ARRAY_LEN(uv), uv);
 
-  test->shader = cm_shader_from_memory(
+  fb->shader = cm_shader_from_memory(
       &scene->gpu,
       STR("#version 430 core\n"
           "layout (location = 0) in vec3 a_pos;\n"
@@ -72,10 +72,10 @@ static void init(CmScene *scene) {
 }
 
 static void frame_update(CmScene *scene) {
-  Test *test = cm_scene_data(scene);
+  Framebuffer *fb = cm_scene_data(scene);
 
-  cm_framebuffer_begin(&test->fb);
-  cm_2D_begin(&test->camera);
+  cm_framebuffer_begin(&fb->fb);
+  cm_2D_begin(&fb->camera);
 
   cm_2D_quad((vec2){10, 30}, (vec2){100, 100}, 0, (vec4){0.7, 0.2, 0.2, 1});
   cm_2D_quad((vec2){310, 90}, (vec2){100, 100}, 0, (vec4){0.25, 0.25, 0.8, 1});
@@ -87,23 +87,23 @@ static void frame_update(CmScene *scene) {
   cm_2D_end();
   cm_framebuffer_end();
 
-  cm_shader_bind(&test->shader);
-  cm_shader_set_mat4(&test->shader, STR("u_mvp"), cm_camera_vp(&test->camera));
+  cm_shader_bind(&fb->shader);
+  cm_shader_set_mat4(&fb->shader, STR("u_mvp"), cm_camera_vp(&fb->camera));
 
   RGFW_vector m = RGFW_window_getMousePoint(cm_app_window());
-  cm_shader_set_vec2(&test->shader, STR("light.pos"), (vec2){m.x, m.y});
-  cm_shader_set_f32(&test->shader, STR("light.radius"), 20.f);
-  cm_shader_set_f32(&test->shader, STR("light.strength"), 450.f);
+  cm_shader_set_vec2(&fb->shader, STR("light.pos"), (vec2){m.x, m.y});
+  cm_shader_set_f32(&fb->shader, STR("light.radius"), 20.f);
+  cm_shader_set_f32(&fb->shader, STR("light.strength"), 450.f);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, test->texture);
+  glBindTexture(GL_TEXTURE_2D, fb->texture);
 
-  cm_mesh_draw(&test->mesh, CM_DRAW_TRIANGLES);
+  cm_mesh_draw(&fb->mesh, CM_DRAW_TRIANGLES);
 }
 
-CmSceneInterface *test(void) {
+CmSceneInterface *framebuffer(void) {
   static CmSceneInterface interface = {
-      CM_SCENE(Test),
+      CM_SCENE(Framebuffer),
       .init = init,
       .frame_update = frame_update,
   };

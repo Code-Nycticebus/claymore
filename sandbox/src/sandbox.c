@@ -37,7 +37,7 @@ CmSceneInterface *app_controlls(void) {
 
 CmSceneInterface *benchmark(void);
 CmSceneInterface *counter(void);
-CmSceneInterface *test(void);
+CmSceneInterface *framebuffer(void);
 CmSceneInterface *hello(void);
 
 static const struct {
@@ -47,7 +47,7 @@ static const struct {
     {.label = STR_STATIC("benchmark"), .scene = benchmark},
     {.label = STR_STATIC("counter"), .scene = counter},
     {.label = STR_STATIC("hello"), .scene = hello},
-    {.label = STR_STATIC("test"), .scene = test},
+    {.label = STR_STATIC("framebuffer"), .scene = framebuffer},
 };
 
 static void gui_update(CmScene *scene) {
