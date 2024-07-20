@@ -178,7 +178,8 @@ static void _cm_quad_flush(void) {
   r->quad.vertices_count = 0;
 }
 
-void cm_2D_quad(const vec2 pos, const vec2 s, float r, const vec4 color) {
+void cm_2D_quad(const vec2 pos, const vec2 s, float rotation,
+                const vec4 color) {
   // flush if buffer full
   if (!(r->quad.vertices_count < CM_QUADS_VERTICES_MAX)) {
     _cm_quad_flush();
@@ -388,8 +389,8 @@ static usize _cm_sprite_push_texture(CmTexture *texture) {
   return r->sprite.texture_idx - 1;
 }
 
-void cm_2D_sprite(CmTexture *texture, const vec2 pos, const vec2 size, float r,
-                  const vec2 uv, const vec2 uv_size) {
+void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size,
+                  float rotation, const vec2 uv, const vec2 uv_size) {
   usize idx = _cm_sprite_push_texture(texture);
 
   if (!(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX)) {
