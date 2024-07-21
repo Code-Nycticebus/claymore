@@ -39,8 +39,7 @@ CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
   int32_t bpp;
 
   // stbi_set_flip_vertically_on_load(false);
-  unsigned char *texture_buffer =
-      stbi_load(path.data, &width, &height, &bpp, 4);
+  u8 *texture_buffer = stbi_load(path.data, &width, &height, &bpp, 4);
   const char *fail = stbi_failure_reason();
   if (!texture_buffer || fail) {
     error_emit(error, -1, "Failed to load texture: " STR_FMT ": %s",
@@ -59,7 +58,7 @@ defer:
 }
 
 CmTexture cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
-                                 const void *data, CmTextureFormat format) {
+                                 const u8 *data, CmTextureFormat format) {
   CmTexture texture = {
       .id = 0,
       .width = width,
