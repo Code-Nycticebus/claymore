@@ -5,6 +5,7 @@ typedef struct {
   CmFramebuffer fb;
   CmGpuID texture;
   CmMesh mesh;
+  CmTexture sprite;
   CmShader shader;
 } Framebuffer;
 
