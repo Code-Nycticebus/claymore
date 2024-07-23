@@ -16,7 +16,7 @@ int main(void) {
   cmd_push(&files, STR_STATIC("src/scenes/benchmark-2d.c"));
   cmd_push(&files, STR_STATIC("src/scenes/counter.c"));
   cmd_push(&files, STR_STATIC("src/scenes/hello.c"));
-  cmd_push(&files, STR_STATIC("src/scenes/test.c"));
+  cmd_push(&files, STR_STATIC("src/scenes/framebuffer.c"));
 
   Cmd cflags = cmd_new(&arena);
   cmd_push(&cflags, STR_STATIC("-Isrc"));
