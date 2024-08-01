@@ -48,8 +48,7 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
     }
 
     // scroll
-    if (event->button == RGFW_mouseScrollUp ||
-        event->button == RGFW_mouseScrollDown) {
+    if (event->button == RGFW_mouseScrollUp || event->button == RGFW_mouseScrollDown) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_SCROLL,
           .event.scroll = {.offset = {0, event->scroll}},
@@ -58,8 +57,7 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
     }
 
     // mouse
-    if (event->type == RGFW_mouseButtonPressed ||
-        event->type == RGFW_mouseButtonReleased) {
+    if (event->type == RGFW_mouseButtonPressed || event->type == RGFW_mouseButtonReleased) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_MOUSE,
           .event.mouse =
@@ -73,8 +71,7 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
     }
 
     // controller buttons
-    if (event->type == RGFW_jsButtonPressed ||
-        event->type == RGFW_jsButtonReleased) {
+    if (event->type == RGFW_jsButtonPressed || event->type == RGFW_jsButtonReleased) {
       cm_event_emit((CmEvent){
           .type = CM_EVENT_CONTROLLER,
           .event.controller =

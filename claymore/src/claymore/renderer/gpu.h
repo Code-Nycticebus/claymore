@@ -79,8 +79,7 @@ void cm_gpu_vao_bind(CmVao *vao);
 // pushing attribute
 void cm_gpu_vao_push(CmVao *vao, usize count, usize stride, usize offset);
 // pushing attribute for instanced rendering
-void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
-                          usize offset);
+void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride, usize offset);
 
 // create program
 CmGpuID cm_gpu_program(CmGpu *b);

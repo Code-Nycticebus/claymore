@@ -89,10 +89,8 @@ static void frame_update(CmScene *scene) {
   cm_2D_begin(&benchmark->overlay);
   {
     char buffer[20];
-    usize s =
-        snprintf(buffer, 20, "%8" U64_FMT, benchmark->grid * benchmark->grid);
-    cm_2D_text(benchmark->font, (vec2){window->r.w - 16 * 9, 0},
-               str_from_parts(s, buffer));
+    usize s = snprintf(buffer, 20, "%8" U64_FMT, benchmark->grid * benchmark->grid);
+    cm_2D_text(benchmark->font, (vec2){window->r.w - 16 * 9, 0}, str_from_parts(s, buffer));
   }
   cm_2D_end();
 }

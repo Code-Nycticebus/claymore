@@ -42,14 +42,12 @@ CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
   u8 *texture_buffer = stbi_load(path.data, &width, &height, &bpp, 4);
   const char *fail = stbi_failure_reason();
   if (!texture_buffer || fail) {
-    error_emit(error, -1, "Failed to load texture: " STR_FMT ": %s",
-               STR_ARG(filename), fail);
+    error_emit(error, -1, "Failed to load texture: " STR_FMT ": %s", STR_ARG(filename), fail);
     goto defer;
   }
   cebus_assert(bpp == 4, "Pixel format not supported!");
 
-  texture = cm_texture_from_memory(gpu, width, height, texture_buffer,
-                                   CM_TEXTURE_RGBA);
+  texture = cm_texture_from_memory(gpu, width, height, texture_buffer, CM_TEXTURE_RGBA);
 
 defer:
   stbi_image_free(texture_buffer);
@@ -57,8 +55,8 @@ defer:
   return texture;
 }
 
-CmTexture cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
-                                 const u8 *data, CmTextureFormat format) {
+CmTexture cm_texture_from_memory(CmGpu *gpu, usize width, usize height, const u8 *data,
+                                 CmTextureFormat format) {
   CmTexture texture = {
       .id = 0,
       .width = width,
@@ -74,9 +72,8 @@ CmTexture cm_texture_from_memory(CmGpu *gpu, usize width, usize height,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, TextureFormat[format].internal, texture.width,
-               texture.height, 0, TextureFormat[format].format,
-               TextureFormat[format].type, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, TextureFormat[format].internal, texture.width, texture.height, 0,
+               TextureFormat[format].format, TextureFormat[format].type, data);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   return texture;

@@ -5,33 +5,30 @@
 #include <stdio.h>
 
 // helper for checking errors
-#define _cm_check_shader(error, shader_id, gl_check, gl_get_iv, gl_get_log)    \
-  {                                                                            \
-    GLint result = GL_FALSE;                                                   \
-    GLsizei lenght = 0;                                                        \
-    gl_get_iv(shader_id, gl_check, &result);                                   \
-    gl_get_iv(shader_id, GL_INFO_LOG_LENGTH, &lenght);                         \
-    if (lenght > 0) {                                                          \
-      char *err_msg = calloc(sizeof(char), lenght);                            \
-      gl_get_log(shader_id, lenght, NULL, err_msg);                            \
-      err_msg[lenght - 2] = '\0';                                              \
-      error_emit(error, -1, "%s", err_msg);                                    \
-      free(err_msg);                                                           \
-      return false;                                                            \
-    }                                                                          \
-    return true;                                                               \
+#define _cm_check_shader(error, shader_id, gl_check, gl_get_iv, gl_get_log)                        \
+  {                                                                                                \
+    GLint result = GL_FALSE;                                                                       \
+    GLsizei lenght = 0;                                                                            \
+    gl_get_iv(shader_id, gl_check, &result);                                                       \
+    gl_get_iv(shader_id, GL_INFO_LOG_LENGTH, &lenght);                                             \
+    if (lenght > 0) {                                                                              \
+      char *err_msg = calloc(sizeof(char), lenght);                                                \
+      gl_get_log(shader_id, lenght, NULL, err_msg);                                                \
+      err_msg[lenght - 2] = '\0';                                                                  \
+      error_emit(error, -1, "%s", err_msg);                                                        \
+      free(err_msg);                                                                               \
+      return false;                                                                                \
+    }                                                                                              \
+    return true;                                                                                   \
   }
 
 // checks error depending on the compilations step
-static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check,
-                                   Error *error) {
+static bool _cm_shader_check_error(GLuint shader_id, GLenum gl_check, Error *error) {
   if (gl_check == GL_COMPILE_STATUS) {
-    _cm_check_shader(error, shader_id, gl_check, glGetShaderiv,
-                     glGetShaderInfoLog);
+    _cm_check_shader(error, shader_id, gl_check, glGetShaderiv, glGetShaderInfoLog);
   }
   if (gl_check == GL_LINK_STATUS) {
-    _cm_check_shader(error, shader_id, gl_check, glGetProgramiv,
-                     glGetProgramInfoLog);
+    _cm_check_shader(error, shader_id, gl_check, glGetProgramiv, glGetProgramInfoLog);
   }
 
   // other compilation steps are not supported
@@ -130,14 +127,13 @@ static i32 _cm_shader_get_uniform_location(CmShader *shader, Str uniform_name) {
   // glGetUniformLocation() takes a `\0` terminated cstr
   GLint location = glGetUniformLocation(shader->id, name.data);
   if (location == -1) {
-    cebus_log_error("Uniform location '" STR_FMT "' not found in shader %u",
-                    STR_ARG(uniform_name), shader->id);
+    cebus_log_error("Uniform location '" STR_FMT "' not found in shader %u", STR_ARG(uniform_name),
+                    shader->id);
   }
 
   arena_free(&temp);
 
-  cebus_assert(shader->uniform_count < CM_SHADER_UNIFORM_MAX,
-               "shader has to many cached uniforms");
+  cebus_assert(shader->uniform_count < CM_SHADER_UNIFORM_MAX, "shader has to many cached uniforms");
 
   // cache uniform location
   shader->uniforms[shader->uniform_count].location = location;

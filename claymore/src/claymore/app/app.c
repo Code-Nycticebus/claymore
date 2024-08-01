@@ -87,8 +87,7 @@ bool cm_app_internal_init(ClaymoreConfig *config) {
   app->last_frame = app->first_frame;
 
   RGFW_rect r = RGFW_RECT(0, 0, config->window.width, config->window.height);
-  app->public.window =
-      RGFW_createWindow(config->window.title, r, config->window.args);
+  app->public.window = RGFW_createWindow(config->window.title, r, config->window.args);
   if (app->public.window == NULL) {
     cebus_log_error("Could not open window");
     return false;

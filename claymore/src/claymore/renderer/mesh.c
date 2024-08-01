@@ -8,8 +8,7 @@ CmMesh cm_mesh_create(CmGpu *b, usize count, vec3 *vertices) {
   mesh.buffer = b;
 
   mesh.vao = cm_gpu_vao(b);
-  mesh.vbo =
-      cm_gpu_vbo(b, CM_STATIC_DRAW, sizeof(vec3), count, &vertices[0][0]);
+  mesh.vbo = cm_gpu_vbo(b, CM_STATIC_DRAW, sizeof(vec3), count, &vertices[0][0]);
 
   cm_gpu_vao_push(&mesh.vao, 3, sizeof(vec3), 0);
 
@@ -24,19 +23,16 @@ void cm_mesh_attach_ebo(CmMesh *mesh, usize count, const u32 *indices) {
 CmVbo cm_mesh_attach_f32(CmMesh *mesh, usize count, const f32 *v) {
   cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
   cm_gpu_vao_push(&mesh->vao, 1, sizeof(f32), 0);
   return vbo;
 }
 
 CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
-  cebus_assert(mesh->count == 1 || mesh->count == count,
-               "This would result in a crash");
+  cebus_assert(mesh->count == 1 || mesh->count == count, "This would result in a crash");
   mesh->count = count;
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(float), count, &v[0]);
   cm_gpu_vao_instanced(&mesh->vao, 1, 1, sizeof(f32), 0);
   return vbo;
 }
@@ -44,19 +40,16 @@ CmVbo cm_mesh_attach_f32_instanced(CmMesh *mesh, usize count, const f32 *v) {
 CmVbo cm_mesh_attach_vec2(CmMesh *mesh, usize count, vec2 *v) {
   cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
   cm_gpu_vao_push(&mesh->vao, 2, sizeof(vec2), 0);
   return vbo;
 }
 
 CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, vec2 *v) {
-  cebus_assert(mesh->count == 1 || mesh->count == count,
-               "This would result in a crash");
+  cebus_assert(mesh->count == 1 || mesh->count == count, "This would result in a crash");
   mesh->count = count;
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec2), count, &v[0][0]);
 
   cm_gpu_vao_instanced(&mesh->vao, 1, 2, sizeof(vec2), 0);
   return vbo;
@@ -65,19 +58,16 @@ CmVbo cm_mesh_attach_vec2_instanced(CmMesh *mesh, usize count, vec2 *v) {
 CmVbo cm_mesh_attach_vec3(CmMesh *mesh, usize count, const vec3 *v) {
   cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
   cm_gpu_vao_push(&mesh->vao, 3, sizeof(vec3), 0);
   return vbo;
 }
 
 CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, vec3 *v) {
-  cebus_assert(mesh->count == 1 || mesh->count == count,
-               "This would result in a crash");
+  cebus_assert(mesh->count == 1 || mesh->count == count, "This would result in a crash");
   mesh->count = count;
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec3), count, &v[0][0]);
 
   cm_gpu_vao_instanced(&mesh->vao, 1, 3, sizeof(vec3), 0);
   return vbo;
@@ -86,27 +76,23 @@ CmVbo cm_mesh_attach_vec3_instanced(CmMesh *mesh, usize count, vec3 *v) {
 CmVbo cm_mesh_attach_vec4(CmMesh *mesh, usize count, vec4 *v) {
   cebus_assert(mesh->vbo.len == count, "This would result in a crash");
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4), count, &v[0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4), count, &v[0][0]);
   cm_gpu_vao_push(&mesh->vao, 3, sizeof(vec4), 0);
   return vbo;
 }
 
 CmVbo cm_mesh_attach_vec4_instanced(CmMesh *mesh, usize count, vec4 *v) {
-  cebus_assert(mesh->count == 1 || mesh->count == count,
-               "This would result in a crash");
+  cebus_assert(mesh->count == 1 || mesh->count == count, "This would result in a crash");
   mesh->count = count;
 
-  CmVbo vbo =
-      cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4), count, &v[0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(vec4), count, &v[0][0]);
 
   cm_gpu_vao_instanced(&mesh->vao, 1, 3, sizeof(vec4), 0);
   return vbo;
 }
 
 CmVbo cm_mesh_attach_mat4_instanced(CmMesh *mesh, size_t count, mat4 *m) {
-  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(mat4), count,
-                         &m[0][0][0]);
+  CmVbo vbo = cm_gpu_vbo(mesh->buffer, CM_DYNAMIC_DRAW, sizeof(mat4), count, &m[0][0][0]);
 
   mesh->count = count;
   cm_gpu_vao_bind(&mesh->vao);

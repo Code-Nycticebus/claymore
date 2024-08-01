@@ -72,8 +72,7 @@ void cm_gpu_vao_push(CmVao *vao, usize count, usize stride, usize offset) {
   vao->idx++;
 }
 
-void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride,
-                          usize offset) {
+void cm_gpu_vao_instanced(CmVao *vao, usize instance, usize count, usize stride, usize offset) {
   glBindVertexArray(vao->id);
   glEnableVertexAttribArray(vao->idx);
   glVertexAttribPointer(vao->idx, count, GL_FLOAT, GL_FALSE, stride,

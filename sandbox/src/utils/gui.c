@@ -54,8 +54,7 @@ static void frame_update(CmScene *scene) {
   cm_2D_end();
 
   RGFW_window *w = cm_app_window();
-  gui->pressed =
-      RGFW_isMousePressed(w, RGFW_mouseLeft) || RGFW_isPressed(w, RGFW_Return);
+  gui->pressed = RGFW_isMousePressed(w, RGFW_mouseLeft) || RGFW_isPressed(w, RGFW_Return);
   gui->max = gui->idx;
 
   if (gui->hovering) {

@@ -91,14 +91,13 @@ void cm_camera2D_set_aspect(CmCamera2D *camera, float aspect) {
 
 /* ========= 3D camera ========= */
 
-void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
-                             vec3 lookat, float aspect) {
+void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov, vec3 lookat,
+                             float aspect) {
   glm_vec3_copy(position, camera->base.position);
   glm_vec3_copy((vec3){0, 1, 0}, camera->up);
   glm_vec3_copy(lookat, camera->lookat);
 
-  glm_perspective(glm_rad(fov), aspect, 1.f / 100.f, 100.f,
-                  camera->base.projection);
+  glm_perspective(glm_rad(fov), aspect, 1.f / 100.f, 100.f, camera->base.projection);
   glm_lookat(position, lookat, camera->up, camera->base.view);
 
   camera->fov = fov;

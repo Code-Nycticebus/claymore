@@ -56,8 +56,8 @@ typedef struct {
 } CmCamera3D;
 
 // initalizes 3D perspective camera
-void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov,
-                             vec3 lookat, float aspect);
+void cm_camera3D_perspective(CmCamera3D *camera, vec3 position, float fov, vec3 lookat,
+                             float aspect);
 // changes camera position
 void cm_camera3D_position(CmCamera3D *camera, vec3 position);
 

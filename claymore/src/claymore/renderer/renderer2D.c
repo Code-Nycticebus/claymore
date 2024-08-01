@@ -43,8 +43,7 @@ typedef struct {
 
 #define TEXT_RENDERER_CHAR_MAX 1000
 #define TEXT_RENDERER_VERTECIES_PER_CHAR 6
-#define TEXT_RENDERER_VERTECIES_MAX                                            \
-  (TEXT_RENDERER_CHAR_MAX * TEXT_RENDERER_VERTECIES_PER_CHAR)
+#define TEXT_RENDERER_VERTECIES_MAX (TEXT_RENDERER_CHAR_MAX * TEXT_RENDERER_VERTECIES_PER_CHAR)
 typedef struct {
   vec2 pos;
   vec2 uv;
@@ -126,41 +125,37 @@ static CmRenderer2D *r;
 /* ============= quad renderer ============= */
 
 static void _cm_quad_internal_init(void) {
-  r->quad.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(QuadVertex),
-                           CM_QUADS_VERTICES_MAX, (float *)&r->quad.data);
+  r->quad.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(QuadVertex), CM_QUADS_VERTICES_MAX,
+                           (float *)&r->quad.data);
 
   r->quad.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->quad.vao, 2, sizeof(QuadVertex),
-                  offsetof(QuadVertex, pos));
-  cm_gpu_vao_push(&r->quad.vao, 4, sizeof(QuadVertex),
-                  offsetof(QuadVertex, color));
+  cm_gpu_vao_push(&r->quad.vao, 2, sizeof(QuadVertex), offsetof(QuadVertex, pos));
+  cm_gpu_vao_push(&r->quad.vao, 4, sizeof(QuadVertex), offsetof(QuadVertex, color));
 
   u32 indices[CM_QUADS_INDICES] = {0, 1, 3, 1, 2, 3};
   for (size_t i = 0; i < CM_QUADS_INDICES_MAX; ++i) {
     r->quad.indices[i] = indices[i % CM_QUADS_INDICES];
     r->quad.indices[i] += (CM_QUADS_VERTICES * (i / CM_QUADS_INDICES));
   }
-  r->quad.ebo = cm_gpu_ebo(&r->gpu, CM_STATIC_DRAW, CM_QUADS_INDICES_MAX,
-                           r->quad.indices);
+  r->quad.ebo = cm_gpu_ebo(&r->gpu, CM_STATIC_DRAW, CM_QUADS_INDICES_MAX, r->quad.indices);
 
-  r->quad.shader = cm_shader_from_memory(
-      &r->gpu,
-      STR("#version 330 core\n"
-          "layout (location = 0) in vec2 a_pos;\n"
-          "layout (location = 1) in vec4 a_color;\n"
-          "uniform mat4 u_mvp;\n"
-          "out vec4 v_color;\n"
-          "void main() {\n"
-          "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
-          "  v_color = a_color;\n"
-          "}\n"),
-      STR("#version 330 core\n"
-          "in vec4 v_color;\n"
-          "out vec4 f_color;\n"
-          "void main() {\n"
-          "  f_color = v_color;\n"
-          "}\n"),
-      ErrPanic);
+  r->quad.shader = cm_shader_from_memory(&r->gpu,
+                                         STR("#version 330 core\n"
+                                             "layout (location = 0) in vec2 a_pos;\n"
+                                             "layout (location = 1) in vec4 a_color;\n"
+                                             "uniform mat4 u_mvp;\n"
+                                             "out vec4 v_color;\n"
+                                             "void main() {\n"
+                                             "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
+                                             "  v_color = a_color;\n"
+                                             "}\n"),
+                                         STR("#version 330 core\n"
+                                             "in vec4 v_color;\n"
+                                             "out vec4 f_color;\n"
+                                             "void main() {\n"
+                                             "  f_color = v_color;\n"
+                                             "}\n"),
+                                         ErrPanic);
 }
 
 static void _cm_quad_flush(void) {
@@ -178,8 +173,7 @@ static void _cm_quad_flush(void) {
   r->quad.vertices_count = 0;
 }
 
-void cm_2D_quad(const vec2 pos, const vec2 s, float rotation,
-                const vec4 color) {
+void cm_2D_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) {
   // flush if buffer full
   if (!(r->quad.vertices_count < CM_QUADS_VERTICES_MAX)) {
     _cm_quad_flush();
@@ -230,47 +224,43 @@ void cm_2D_quad(const vec2 pos, const vec2 s, float rotation,
 
 static void _cm_circle_internal_init(void) {
   r->circle.vbo =
-      cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(r->circle.vertices[0]),
-                 CM_CIRCLES_MAX, NULL);
+      cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(r->circle.vertices[0]), CM_CIRCLES_MAX, NULL);
 
   r->circle.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_instanced(&r->circle.vao, 1, 2, sizeof(CircleVertex),
-                       offsetof(CircleVertex, p));
-  cm_gpu_vao_instanced(&r->circle.vao, 1, 1, sizeof(CircleVertex),
-                       offsetof(CircleVertex, r));
-  cm_gpu_vao_instanced(&r->circle.vao, 1, 4, sizeof(CircleVertex),
-                       offsetof(CircleVertex, c));
+  cm_gpu_vao_instanced(&r->circle.vao, 1, 2, sizeof(CircleVertex), offsetof(CircleVertex, p));
+  cm_gpu_vao_instanced(&r->circle.vao, 1, 1, sizeof(CircleVertex), offsetof(CircleVertex, r));
+  cm_gpu_vao_instanced(&r->circle.vao, 1, 4, sizeof(CircleVertex), offsetof(CircleVertex, c));
 
-  r->circle.shader = cm_shader_from_memory(
-      &r->gpu,
-      STR("#version 430 core\n"
-          "layout (location = 0) in vec2 a_pos;\n"
-          "layout (location = 1) in float a_radius;\n"
-          "layout (location = 2) in vec4 a_color;\n"
-          "uniform mat4 u_mvp;\n"
-          "out vec2 v_uv;\n"
-          "out vec4 v_color;\n"
-          "void main() {\n"
-          "  v_uv = vec2(gl_VertexID >> 0 & 1, gl_VertexID >> 1 & 1);\n"
-          "  v_uv = 2 * v_uv - vec2(1.0, 1.0);\n"
-          "  gl_Position = u_mvp * vec4(\n"
-          "     a_pos + a_radius * v_uv,\n"
-          "     0,\n"
-          "     1);\n"
-          "  v_color = a_color;"
-          "}\n"),
-      STR("#version 430 core\n"
-          "in vec2 v_uv;\n"
-          "in vec4 v_color;\n"
-          "out vec4 f_color;\n"
-          "void main() {\n"
-          "  if (length(v_uv) < 1.0) {\n"
-          "    f_color = v_color;\n"
-          "  } else {\n"
-          "    f_color = vec4(0, 0, 0, 0);\n"
-          "  }\n"
-          "}\n"),
-      ErrPanic);
+  r->circle.shader =
+      cm_shader_from_memory(&r->gpu,
+                            STR("#version 430 core\n"
+                                "layout (location = 0) in vec2 a_pos;\n"
+                                "layout (location = 1) in float a_radius;\n"
+                                "layout (location = 2) in vec4 a_color;\n"
+                                "uniform mat4 u_mvp;\n"
+                                "out vec2 v_uv;\n"
+                                "out vec4 v_color;\n"
+                                "void main() {\n"
+                                "  v_uv = vec2(gl_VertexID >> 0 & 1, gl_VertexID >> 1 & 1);\n"
+                                "  v_uv = 2 * v_uv - vec2(1.0, 1.0);\n"
+                                "  gl_Position = u_mvp * vec4(\n"
+                                "     a_pos + a_radius * v_uv,\n"
+                                "     0,\n"
+                                "     1);\n"
+                                "  v_color = a_color;"
+                                "}\n"),
+                            STR("#version 430 core\n"
+                                "in vec2 v_uv;\n"
+                                "in vec4 v_color;\n"
+                                "out vec4 f_color;\n"
+                                "void main() {\n"
+                                "  if (length(v_uv) < 1.0) {\n"
+                                "    f_color = v_color;\n"
+                                "  } else {\n"
+                                "    f_color = vec4(0, 0, 0, 0);\n"
+                                "  }\n"
+                                "}\n"),
+                            ErrPanic);
 }
 
 static void _cm_circle_flush(void) {
@@ -278,8 +268,8 @@ static void _cm_circle_flush(void) {
   cm_shader_set_mat4(&r->circle.shader, STR("u_mvp"), cm_camera_vp(r->camera));
 
   cm_gpu_vao_bind(&r->circle.vao);
-  cm_gpu_vbo_update(&r->circle.vbo, sizeof(CircleVertex),
-                    r->circle.vertex_count, (float *)r->circle.vertices);
+  cm_gpu_vbo_update(&r->circle.vbo, sizeof(CircleVertex), r->circle.vertex_count,
+                    (float *)r->circle.vertices);
 
   glDrawArraysInstanced(CM_DRAW_TRIANGLE_STRIP, 0, 4, r->circle.vbo.len);
 
@@ -309,44 +299,39 @@ static void _cm_sprite_internal_init(void) {
                              CM_SPRITES_VERTICES_MAX, (float *)&r->sprite.data);
 
   r->sprite.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->sprite.vao, 2, sizeof(SpriteVertex),
-                  offsetof(SpriteVertex, pos));
-  cm_gpu_vao_push(&r->sprite.vao, 2, sizeof(SpriteVertex),
-                  offsetof(SpriteVertex, uv));
-  cm_gpu_vao_push(&r->sprite.vao, 1, sizeof(SpriteVertex),
-                  offsetof(SpriteVertex, idx));
+  cm_gpu_vao_push(&r->sprite.vao, 2, sizeof(SpriteVertex), offsetof(SpriteVertex, pos));
+  cm_gpu_vao_push(&r->sprite.vao, 2, sizeof(SpriteVertex), offsetof(SpriteVertex, uv));
+  cm_gpu_vao_push(&r->sprite.vao, 1, sizeof(SpriteVertex), offsetof(SpriteVertex, idx));
 
   u32 indices[CM_SPRITES_INDICES] = {0, 1, 3, 1, 2, 3};
   for (size_t i = 0; i < CM_SPRITES_INDICES_MAX; ++i) {
     r->sprite.indices[i] = indices[i % CM_SPRITES_INDICES];
     r->sprite.indices[i] += (CM_SPRITES_VERTICES * (i / CM_SPRITES_INDICES));
   }
-  r->sprite.ebo = cm_gpu_ebo(&r->gpu, CM_STATIC_DRAW, CM_SPRITES_INDICES_MAX,
-                             r->sprite.indices);
+  r->sprite.ebo = cm_gpu_ebo(&r->gpu, CM_STATIC_DRAW, CM_SPRITES_INDICES_MAX, r->sprite.indices);
 
-  r->sprite.shader = cm_shader_from_memory(
-      &r->gpu,
-      STR("#version 430 core\n"
-          "layout (location = 0) in vec2 a_pos;\n"
-          "layout (location = 1) in vec2 a_uv;\n"
-          "layout (location = 2) in float a_idx;\n"
-          "uniform mat4 u_mvp;\n"
-          "out vec2 v_uv;\n"
-          "flat out int v_idx;\n"
-          "void main() {\n"
-          "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
-          "  v_uv = a_uv;\n"
-          "  v_idx = int(a_idx);\n"
-          "}\n"),
-      STR("#version 430 core\n"
-          "in vec2 v_uv;\n"
-          "out vec4 f_color;\n"
-          "flat in int v_idx;\n"
-          "uniform sampler2D u_sampler[8];\n"
-          "void main() {\n"
-          "  f_color = texture(u_sampler[v_idx], v_uv);\n"
-          "}\n"),
-      ErrPanic);
+  r->sprite.shader = cm_shader_from_memory(&r->gpu,
+                                           STR("#version 430 core\n"
+                                               "layout (location = 0) in vec2 a_pos;\n"
+                                               "layout (location = 1) in vec2 a_uv;\n"
+                                               "layout (location = 2) in float a_idx;\n"
+                                               "uniform mat4 u_mvp;\n"
+                                               "out vec2 v_uv;\n"
+                                               "flat out int v_idx;\n"
+                                               "void main() {\n"
+                                               "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
+                                               "  v_uv = a_uv;\n"
+                                               "  v_idx = int(a_idx);\n"
+                                               "}\n"),
+                                           STR("#version 430 core\n"
+                                               "in vec2 v_uv;\n"
+                                               "out vec4 f_color;\n"
+                                               "flat in int v_idx;\n"
+                                               "uniform sampler2D u_sampler[8];\n"
+                                               "void main() {\n"
+                                               "  f_color = texture(u_sampler[v_idx], v_uv);\n"
+                                               "}\n"),
+                                           ErrPanic);
 
   cm_shader_bind(&r->sprite.shader);
   u32 loc = glGetUniformLocation(r->sprite.shader.id, "u_sampler");
@@ -362,8 +347,8 @@ static void _cm_sprite_flush(void) {
     cm_texture_bind(r->sprite.texture[i], i);
   }
 
-  cm_gpu_vbo_update(&r->sprite.vbo, sizeof(SpriteVertex),
-                    r->sprite.vertices_count, (float *)r->sprite.data);
+  cm_gpu_vbo_update(&r->sprite.vbo, sizeof(SpriteVertex), r->sprite.vertices_count,
+                    (float *)r->sprite.data);
 
   cm_gpu_vao_bind(&r->sprite.vao);
 
@@ -389,8 +374,8 @@ static usize _cm_sprite_push_texture(CmTexture *texture) {
   return r->sprite.texture_idx - 1;
 }
 
-void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size,
-                  float rotation, const vec2 uv, const vec2 uv_size) {
+void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size, float rotation,
+                  const vec2 uv, const vec2 uv_size) {
   usize idx = _cm_sprite_push_texture(texture);
 
   if (!(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX)) {
@@ -444,28 +429,26 @@ void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size,
 /* ============= line renderer ============= */
 
 static void _cm_line_internal_init(void) {
-  r->line.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(LineVertex),
-                           CM_LINES_VERTICES_MAX, (float *)&r->line.data);
+  r->line.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(LineVertex), CM_LINES_VERTICES_MAX,
+                           (float *)&r->line.data);
 
   r->line.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->line.vao, 2, sizeof(LineVertex),
-                  offsetof(LineVertex, pos));
+  cm_gpu_vao_push(&r->line.vao, 2, sizeof(LineVertex), offsetof(LineVertex, pos));
 
-  r->line.shader = cm_shader_from_memory(
-      &r->gpu,
-      STR("#version 330 core\n"
-          "layout (location = 0) in vec2 a_pos;\n"
-          "uniform mat4 u_mvp;\n"
-          "void main() {\n"
-          "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
-          "}\n"),
-      STR("#version 330 core\n"
-          "uniform vec4 u_color = vec4(1, 1, 1, 1);\n"
-          "out vec4 f_color;\n"
-          "void main() {\n"
-          "  f_color = u_color;\n"
-          "}\n"),
-      ErrPanic);
+  r->line.shader = cm_shader_from_memory(&r->gpu,
+                                         STR("#version 330 core\n"
+                                             "layout (location = 0) in vec2 a_pos;\n"
+                                             "uniform mat4 u_mvp;\n"
+                                             "void main() {\n"
+                                             "  gl_Position = u_mvp * vec4(a_pos.xy, 0.0, 1.0);\n"
+                                             "}\n"),
+                                         STR("#version 330 core\n"
+                                             "uniform vec4 u_color = vec4(1, 1, 1, 1);\n"
+                                             "out vec4 f_color;\n"
+                                             "void main() {\n"
+                                             "  f_color = u_color;\n"
+                                             "}\n"),
+                                         ErrPanic);
 }
 
 static void _cm_line_flush(void) {
@@ -503,35 +486,32 @@ void cm_2D_line(const vec2 from, const vec2 to) {
 /* ============= font renderer ============= */
 
 static void _cm_text_internal_init(void) {
-  r->text.shader = cm_shader_from_memory(
-      &r->gpu,
-      STR("#version 120\n"
-          "attribute vec2 a_pos;\n"
-          "attribute vec2 a_uv;\n"
-          "varying vec2 v_uv;\n"
-          "uniform mat4 u_mvp;\n"
-          "void main() {\n"
-          "  gl_Position = u_mvp * vec4(a_pos.xy, 0, 1.0);\n"
-          "  v_uv = a_uv;\n"
-          "}\n"),
-      STR("#version 120\n"
-          "varying vec2 v_uv;\n"
-          "uniform sampler2D u_texture;\n"
-          "uniform vec4 u_color = vec4(1, 1, 1, 1);"
-          "void main() {\n"
-          " gl_FragColor = vec4(texture2D(u_texture, v_uv).r) * u_color;\n"
-          "}\n"),
-      ErrDefault);
+  r->text.shader =
+      cm_shader_from_memory(&r->gpu,
+                            STR("#version 120\n"
+                                "attribute vec2 a_pos;\n"
+                                "attribute vec2 a_uv;\n"
+                                "varying vec2 v_uv;\n"
+                                "uniform mat4 u_mvp;\n"
+                                "void main() {\n"
+                                "  gl_Position = u_mvp * vec4(a_pos.xy, 0, 1.0);\n"
+                                "  v_uv = a_uv;\n"
+                                "}\n"),
+                            STR("#version 120\n"
+                                "varying vec2 v_uv;\n"
+                                "uniform sampler2D u_texture;\n"
+                                "uniform vec4 u_color = vec4(1, 1, 1, 1);"
+                                "void main() {\n"
+                                " gl_FragColor = vec4(texture2D(u_texture, v_uv).r) * u_color;\n"
+                                "}\n"),
+                            ErrDefault);
 
-  r->text.vbo = cm_gpu_vbo(
-      &r->gpu, CM_DYNAMIC_DRAW, sizeof(FontVertex),
-      TEXT_RENDERER_VERTECIES_PER_CHAR * TEXT_RENDERER_CHAR_MAX, NULL);
+  r->text.vbo = cm_gpu_vbo(&r->gpu, CM_DYNAMIC_DRAW, sizeof(FontVertex),
+                           TEXT_RENDERER_VERTECIES_PER_CHAR * TEXT_RENDERER_CHAR_MAX, NULL);
 
   r->text.vao = cm_gpu_vao(&r->gpu);
-  cm_gpu_vao_push(&r->text.vao, 2, sizeof(FontVertex),
-                  offsetof(FontVertex, pos));
-  cm_gpu_vao_push(&r->text.vao, 2, sizeof(FontVertex),
-                  offsetof(FontVertex, uv));
+  cm_gpu_vao_push(&r->text.vao, 2, sizeof(FontVertex), offsetof(FontVertex, pos));
+  cm_gpu_vao_push(&r->text.vao, 2, sizeof(FontVertex), offsetof(FontVertex, uv));
 }
 
 static void _cm_text_renderer_flush(void) {
@@ -555,11 +535,10 @@ static void _cm_text_renderer_flush(void) {
   r->text.font = NULL;
 }
 
-static void _cm_push_char(CmFont *font, char c, FontVertex *v, float *x,
-                          float *y) {
+static void _cm_push_char(CmFont *font, char c, FontVertex *v, float *x, float *y) {
   stbtt_aligned_quad q;
-  stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution, font->ttf_resoulution,
-                     c - FONT_CHAR_MIN, x, y, &q, 1);
+  stbtt_GetBakedQuad(font->cdata, font->ttf_resoulution, font->ttf_resoulution, c - FONT_CHAR_MIN,
+                     x, y, &q, 1);
 
   usize idx = 0;
   glm_vec2_copy((vec2){q.x0, q.y0}, v[idx].pos);
@@ -600,8 +579,7 @@ void cm_2D_text(CmFont *font, const vec2 pos, Str text) {
   float text_x = pos[0];
   FontVertex *vertex = &r->text.buffer[r->text.vertex_count];
   for (size_t i = 0; i < text.len; i++) {
-    if (FONT_CHAR_MIN <= text.data[i] &&
-        text.data[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
+    if (FONT_CHAR_MIN <= text.data[i] && text.data[i] < FONT_CHAR_MIN + FONT_CHAR_MAX - 1) {
 
       if (!(r->text.vertex_count < TEXT_RENDERER_VERTECIES_MAX)) {
         _cm_text_renderer_flush();
@@ -626,10 +604,9 @@ void cm_2D_text(CmFont *font, const vec2 pos, Str text) {
 
 void cm_2D_begin(CmCamera2D *camera) {
   if (r->camera != NULL && r->camera != camera) {
-    cebus_log_error(
-        FILE_LOCATION_FMT
-        ": 'cm_2D_begin()' was called twice before 'cm_2D_end()' was called",
-        FILE_LOCATION_ARG_CURRENT);
+    cebus_log_error(FILE_LOCATION_FMT
+                    ": 'cm_2D_begin()' was called twice before 'cm_2D_end()' was called",
+                    FILE_LOCATION_ARG_CURRENT);
     DEBUGBREAK();
   }
   r->camera = camera;
@@ -670,7 +647,7 @@ void cm_2D_end(void) {
 }
 
 void cm_2D_internal_set_context(CmRenderer2D *renderer) {
-  cebus_assert(renderer, "renderer was not initialized");
+  cebus_assert(renderer != NULL, "renderer was not initialized");
   cebus_assert(r == NULL, "can not have two initialized renderers");
   r = renderer;
 }

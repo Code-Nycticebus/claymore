@@ -9,9 +9,7 @@ static ma_engine engine;
 // TODO: volume controll
 // TOOD: 3d sound
 
-void cm_sound_play(const char *filename) {
-  ma_engine_play_sound(&engine, filename, NULL);
-}
+void cm_sound_play(const char *filename) { ma_engine_play_sound(&engine, filename, NULL); }
 
 bool cm_sound_internal_init(void) {
   ma_result result;

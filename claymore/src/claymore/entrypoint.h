@@ -8,9 +8,8 @@
 #if defined(WINDOWS) && !defined(CLAYMORE_DEBUG)
 #pragma comment(linker, "/subsystem:windows")
 #include <windows.h>
-#define main(...)                                                              \
-  WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,                 \
-                 LPSTR lpCmdLine, int nCmdShow)
+#define main(...)                                                                                  \
+  WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #endif
 
 // User defined
