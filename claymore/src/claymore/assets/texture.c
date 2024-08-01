@@ -72,6 +72,7 @@ CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat form
       .id = 0,
       .width = format.w,
       .height = format.w,
+      .bpp = format.bpp,
   };
 
   texture.id = cm_gpu_texture(gpu);

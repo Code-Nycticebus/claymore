@@ -16,6 +16,7 @@ typedef struct {
   u32 id;
   u32 width;
   u32 height;
+  u32 bpp;
 } CmTexture;
 
 CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error);
