@@ -102,8 +102,7 @@ void compile_libs(Arena *arena, Paths *objs) {
     Str name = claymore_lib_files[i];
     name = str_chop_right_by_delim(&name, '/');
     name = str_chop_by_delim(&name, '.');
-    Str out =
-        str_format(arena, CM_BUILD_DIR "/obj/" STR_FMT ".o", STR_ARG(name));
+    Str out = str_format(arena, CM_BUILD_DIR "/obj/" STR_FMT ".o", STR_ARG(name));
     da_push(objs, out);
 
     if (!file_exists(out)) {
@@ -146,8 +145,7 @@ void compile_claymore(bool rebuild) {
       name = str_chop_right_by_delim(&name, '/');
       name = str_chop_by_delim(&name, '.');
       Str out =
-          str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT "_%" USIZE_FMT ".o",
-                     STR_ARG(name), i);
+          str_format(&arena, CM_BUILD_DIR "obj/" STR_FMT "_%" USIZE_FMT ".o", STR_ARG(name), i);
       cmd_push(&cmd, STR("-o"), out);
 
       da_push(&objs, out);
