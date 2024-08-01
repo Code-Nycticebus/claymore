@@ -17,6 +17,7 @@ CmScene *cm_scene_push(CmScene *scene, CmSceneInit init) {
 
 void cm_scene_delete(CmScene *scene) {
   CmSceneInternal *parent = (CmSceneInternal *)cm_scene_parent(scene);
+  cebus_assert(parent != NULL, "trying to delete a root scene");
   for (usize i = 0; i < parent->children.len; i++) {
     if (da_get(&parent->children, i) == (CmSceneInternal *)scene) {
       da_remove(&parent->children, i);
