@@ -173,7 +173,7 @@ static void _cm_quad_flush(void) {
   r->quad.vertices_count = 0;
 }
 
-void cm_2D_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) {
+static void _cm_2D_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) {
   // flush if buffer full
   if (!(r->quad.vertices_count < CM_QUADS_VERTICES_MAX)) {
     _cm_quad_flush();
@@ -218,6 +218,14 @@ void cm_2D_quad(const vec2 pos, const vec2 s, float rotation, const vec4 color) 
 
   r->quad.vertices_count += CM_QUADS_VERTICES;
   r->quad.indices_count += CM_QUADS_INDICES;
+}
+
+void cm_2D_quad(const vec2 pos, const vec2 s, const vec4 color) {
+  _cm_2D_quad(pos, s, 0, color); // default rotation
+}
+
+void cm_2D_quad_rotated(const vec2 pos, const vec2 s, float r, const vec4 color) {
+  _cm_2D_quad(pos, s, r, color);
 }
 
 /* ============= circle renderer ============= */
@@ -374,8 +382,8 @@ static usize _cm_sprite_push_texture(CmTexture *texture) {
   return r->sprite.texture_idx - 1;
 }
 
-void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size, float rotation,
-                  const vec2 uv, const vec2 uv_size) {
+void _cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size, float rotation,
+                   const vec2 uv, const vec2 uv_size) {
   usize idx = _cm_sprite_push_texture(texture);
 
   if (!(r->sprite.vertices_count < CM_SPRITES_VERTICES_MAX)) {
@@ -424,6 +432,18 @@ void cm_2D_sprite(CmTexture *texture, const vec2 position, const vec2 size, floa
 
   r->sprite.vertices_count += CM_SPRITES_VERTICES;
   r->sprite.indices_count += CM_SPRITES_INDICES;
+}
+
+// sprite
+void cm_2D_sprite(CmTexture *texture, const vec2 pos, const vec2 size) {
+  _cm_2D_sprite(texture, pos, size, 0, (vec2){0, 0}, (vec2){1, 1});
+}
+void cm_2D_sprite_rotated(CmTexture *texture, const vec2 pos, const vec2 size, float r) {
+  _cm_2D_sprite(texture, pos, size, r, (vec2){0, 0}, (vec2){1, 1});
+}
+void cm_2D_sprite_uv(CmTexture *texture, const vec2 pos, const vec2 size, const vec2 uv,
+                     const vec2 uv_size) {
+  _cm_2D_sprite(texture, pos, size, 0, uv, uv_size);
 }
 
 /* ============= line renderer ============= */

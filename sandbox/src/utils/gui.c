@@ -127,7 +127,7 @@ bool button(CmScene *scene, Str label) {
     glm_vec4_scale(color, 2, color);
   }
 
-  cm_2D_quad(gui->pos, gui->size, 0, color);
+  cm_2D_quad(gui->pos, gui->size, color);
   const float padding = 20.f;
   cm_2D_text(gui->font, (vec2){gui->pos[0] + padding, gui->pos[1]}, label);
   gui->pos[1] += gui->size[1] + gui->margin;

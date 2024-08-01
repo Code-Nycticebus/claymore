@@ -80,7 +80,7 @@ static void frame_update(CmScene *scene) {
     for (usize i = 0; i < benchmark->grid; i++) {
       for (usize j = 0; j < benchmark->grid; j++) {
         const vec2 pos = {i * size, j * size};
-        cm_2D_quad(pos, (vec2){size, size}, r, quad_color);
+        cm_2D_quad_rotated(pos, (vec2){size, size}, r, quad_color);
       }
     }
   }

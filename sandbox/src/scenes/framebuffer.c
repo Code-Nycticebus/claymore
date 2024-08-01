@@ -14,10 +14,10 @@ static void init(CmScene *scene) {
   cm_camera2D_screen(&fb->camera);
 
   static u8 data[] = {
-      255, 1, 1,   255, //
-      1,   1, 255, 255, //
-      1,   1, 255, 255, //
-      255, 1, 1,   255, //
+      0,   255, 255, //
+      255, 0,   255, //
+      255, 0,   255, //
+      0,   255, 255, //
   };
   fb->sprite = cm_texture_from_bytes(&scene->gpu, (u8 *)data,
                                      (CmTextureFormat){
@@ -91,11 +91,11 @@ static void frame_update(CmScene *scene) {
   cm_framebuffer_begin(&fb->fb);
   cm_2D_begin(&fb->camera);
 
-  cm_2D_quad((vec2){10, 30}, (vec2){100, 100}, 0, (vec4){0.7, 0.2, 0.2, 1});
-  cm_2D_quad((vec2){310, 90}, (vec2){100, 100}, 0, (vec4){0.25, 0.25, 0.8, 1});
+  cm_2D_quad((vec2){10, 30}, (vec2){100, 100}, (vec4){0.7, 0.2, 0.2, 1});
+  cm_2D_quad((vec2){310, 90}, (vec2){100, 100}, (vec4){0.25, 0.25, 0.8, 1});
   cm_2D_circle((vec2){140, 260}, 50, (vec4){0.3, 0.7, 0.2, 1});
 
-  cm_2D_sprite(&fb->sprite, (vec2){410, 250}, (vec2){100, 100}, 0, (vec2){0}, (vec2){1, 1});
+  cm_2D_sprite(&fb->sprite, (vec2){410, 250}, (vec2){150, 150});
 
   cm_2D_line((vec2){0, 0}, (vec2){100, 50});
   cm_2D_line((vec2){100, 150}, (vec2){200, 330});
