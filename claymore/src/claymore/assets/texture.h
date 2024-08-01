@@ -5,21 +5,21 @@
 
 #include "claymore/renderer/gpu.h"
 
-typedef enum {
-  CM_TEXTURE_R,
-  CM_TEXTURE_RGBA,
-  CM_TEXTURE_RGB,
+typedef struct {
+  u32 w, h;
+  u32 bpp;
+  GLenum wrap;
+  GLenum mag;
 } CmTextureFormat;
 
 typedef struct {
   u32 id;
-  usize width;
-  usize height;
+  u32 width;
+  u32 height;
 } CmTexture;
 
 CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error);
-CmTexture cm_texture_from_memory(CmGpu *gpu, usize w, usize h, const u8 *data,
-                                 CmTextureFormat format);
+CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat format);
 
 void cm_texture_bind(CmTexture *texture, uint32_t slot);
 void cm_texture_unbind(uint32_t slot);

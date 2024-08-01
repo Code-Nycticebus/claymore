@@ -19,7 +19,8 @@ static void init(CmScene *scene) {
       1,   1, 255, 255, //
       255, 1, 1,   255, //
   };
-  fb->sprite = cm_texture_from_memory(&scene->gpu, 2, 2, data, CM_TEXTURE_RGBA);
+  fb->sprite = cm_texture_from_bytes(
+      &scene->gpu, data, (CmTextureFormat){.w = 2, .h = 2, .bpp = 4, .mag = GL_NEAREST});
 
   RGFW_window *win = cm_app_window();
   fb->fb = cm_framebuffer_create(&scene->gpu, win->r.w, win->r.h);
