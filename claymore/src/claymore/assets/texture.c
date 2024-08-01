@@ -10,30 +10,30 @@ typedef struct {
 } TextureInternalFormat;
 
 static const TextureInternalFormat TextureFormat[] = {
-    [1] =
-        {
-            .internal = GL_R8,
-            .format = GL_RED,
-            .type = GL_UNSIGNED_BYTE,
-        },
-    [2] =
-        {
-            .internal = GL_RG8,
-            .format = GL_RG,
-            .type = GL_UNSIGNED_BYTE,
-        },
-    [3] =
-        {
-            .internal = GL_RGB8,
-            .format = GL_RGB,
-            .type = GL_UNSIGNED_BYTE,
-        },
-    [4] =
-        {
-            .internal = GL_RGBA8,
-            .format = GL_RGBA,
-            .type = GL_UNSIGNED_BYTE,
-        },
+    [1] = /* bpp */
+    {
+        .internal = GL_R8,
+        .format = GL_RED,
+        .type = GL_UNSIGNED_BYTE,
+    },
+    [2] = /* bpp */
+    {
+        .internal = GL_RG8,
+        .format = GL_RG,
+        .type = GL_UNSIGNED_BYTE,
+    },
+    [3] = /* bpp */
+    {
+        .internal = GL_RGB8,
+        .format = GL_RGB,
+        .type = GL_UNSIGNED_BYTE,
+    },
+    [4] = /* bpp */
+    {
+        .internal = GL_RGBA8,
+        .format = GL_RGBA,
+        .type = GL_UNSIGNED_BYTE,
+    },
 
 };
 
@@ -76,6 +76,11 @@ CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat form
 
   texture.id = cm_gpu_texture(gpu);
   glBindTexture(GL_TEXTURE_2D, texture.id);
+
+  const usize width = format.w * format.bpp;
+  if (width % 4) {
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  }
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   if (format.mag) {
