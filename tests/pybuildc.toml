@@ -1,0 +1,20 @@
+[pybuildc]
+name = "tests"
+cflags = [
+    "-Werror",
+    "-Wall",
+    "-Wextra",
+    "-Wmissing-declarations",
+    "-Wmissing-include-dirs",
+    "-Wmissing-prototypes",
+    "-Wshadow",
+    "-Wconversion",
+    "-Wstrict-prototypes",
+    "-pedantic",
+]
+
+[libs]
+claymore={dir="../claymore", type="pybuildc"}
+
+[exe]
+tests="src/tests.c"
