@@ -3,7 +3,7 @@
 typedef struct {
   CmCamera2D camera;
   CmFramebuffer fb;
-  CmGpuID texture;
+  CmTexture texture;
   CmMesh mesh;
   CmTexture sprite;
   CmShader shader;
@@ -102,6 +102,8 @@ static void frame_update(CmScene *scene) {
 
   cm_2D_end();
   cm_framebuffer_end();
+
+  cm_texture_bind(&fb->texture, 0);
 
   cm_shader_bind(&fb->shader);
   cm_shader_set_mat4(&fb->shader, STR("u_mvp"), cm_camera_vp(&fb->camera));

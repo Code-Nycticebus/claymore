@@ -1,6 +1,7 @@
 #ifndef __CLAYMORE_FRAMEBUFFER_H__
 #define __CLAYMORE_FRAMEBUFFER_H__
 
+#include "claymore/assets/texture.h"
 #include "claymore/renderer/gpu.h"
 
 typedef struct {
@@ -12,7 +13,7 @@ typedef struct {
 } CmFramebuffer;
 
 CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth);
-CmGpuID cm_framebuffer_attach_texture_color(CmFramebuffer *fb);
+CmTexture cm_framebuffer_attach_texture_color(CmFramebuffer *fb);
 
 void cm_framebuffer_begin(CmFramebuffer *fb);
 void cm_framebuffer_end(void);

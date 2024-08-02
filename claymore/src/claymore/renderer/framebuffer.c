@@ -7,25 +7,18 @@ CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth) {
   return fb;
 }
 
-CmGpuID cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
+CmTexture cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
   cm_gpu_fbo_bind(fb->fbo);
 
-  CmGpuID id;
-  glGenTextures(1, &id);
-  glBindTexture(GL_TEXTURE_2D, id);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fb->size[0], fb->size[1], 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               NULL);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  CmTexture texture = cm_texture_from_bytes(
+      fb->gpu, NULL, (CmTextureFormat){.bpp = 4, .w = fb->size[0], .h = fb->size[1]});
 
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + fb->attachment_count++,
-                         GL_TEXTURE_2D, id, 0);
+                         GL_TEXTURE_2D, texture.id, 0);
   cm_gpu_fbo_bind(0);
 
   fb->mask |= GL_COLOR_BUFFER_BIT;
-  return id;
+  return texture;
 }
 
 void cm_framebuffer_begin(CmFramebuffer *fb) {

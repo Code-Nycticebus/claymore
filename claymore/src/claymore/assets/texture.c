@@ -9,7 +9,7 @@ typedef struct {
   GLenum type;
 } TextureInternalFormat;
 
-static const TextureInternalFormat TextureFormat[] = {
+static const TextureInternalFormat texture_format[] = {
     [1] = /* bpp */
     {
         .internal = GL_R8,
@@ -94,11 +94,19 @@ CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat form
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format.wrap);
   }
 
-  const TextureInternalFormat f = TextureFormat[format.bpp];
-  glTexImage2D(GL_TEXTURE_2D, 0, f.internal, format.w, format.w, 0, f.format, f.type, data);
+  const TextureInternalFormat f = texture_format[format.bpp];
+  glTexImage2D(GL_TEXTURE_2D, 0, f.internal, format.w, format.h, 0, f.format, f.type, data);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   return texture;
+}
+
+Bytes cm_texture_read_bytes(CmTexture *texture, Arena *arena) {
+  const usize size = texture->width * texture->height * texture->bpp;
+  void *data = arena_alloc(arena, size);
+  const TextureInternalFormat format = texture_format[texture->bpp];
+  glGetTexImage(GL_TEXTURE_2D, 0, format.format, format.type, data);
+  return bytes_from_parts(size, data);
 }
 
 void cm_texture_bind(CmTexture *texture, uint32_t slot) {

@@ -22,6 +22,8 @@ typedef struct {
 CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error);
 CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat format);
 
+Bytes cm_texture_read_bytes(CmTexture *texture, Arena *arena);
+
 void cm_texture_bind(CmTexture *texture, uint32_t slot);
 void cm_texture_unbind(uint32_t slot);
 
