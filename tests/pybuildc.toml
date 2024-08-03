@@ -1,6 +1,7 @@
 [pybuildc]
 name = "tests"
 cflags = [
+  # "-fsanitize=address",
     "-Werror",
     "-Wall",
     "-Wextra",

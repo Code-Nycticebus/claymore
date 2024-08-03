@@ -3,6 +3,6 @@
 
 #include "claymore.h"
 
-CmScene *first(CmScene *parent);
+CmSceneInterface *first(void);
 
 #endif /* __TESTS_H__ */

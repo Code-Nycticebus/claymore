@@ -1,10 +1,8 @@
 #include "tests/tests.h"
 #include "claymore/entrypoint.h"
+#include "utils/test.h"
 
-static void init(CmScene *scene) {
-  (void)scene;
-  first(scene);
-}
+static void init(CmScene *scene) { test_init(scene, first); }
 
 static CmSceneInterface *tests(void) {
   static CmSceneInterface interface = {
