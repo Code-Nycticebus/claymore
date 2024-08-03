@@ -27,20 +27,18 @@ static void post_update(CmScene *scene) {
   cm_texture_bind(&test->frame, 0);
 
   Bytes data = cm_texture_read_bytes(&test->frame, &scene->arena);
-  cebus_log("%x %x %x", data.data[0], data.data[1], data.data[2]);
 
   CmScene *child = cm_scene_child(scene, 0);
-  Str filename =
-      str_join(STR(""), 3, (Str[]){STR("gen/"), cm_scene_name(child), STR(".test")}, &scene->arena);
+  Str name = cm_scene_name(child);
+  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(name));
 
   if (file_exists(filename)) {
     Bytes test_data = file_read_bytes(filename, &scene->arena, ErrPanic);
     if (bytes_eq(test_data, data)) {
-      cebus_log("SUCC");
       file_write_bytes(filename, data, ErrPanic);
-      cm_app_quit(0);
+      cm_app_quit(TESTS_OK);
     } else {
-      cebus_log("FAIL");
+      cm_app_quit(TESTS_ERR);
     }
   }
 
@@ -59,7 +57,6 @@ static CmSceneInterface *interface(void) {
 
 CmScene *test_init(CmScene *parent, CmSceneInit test_scene) {
   CmScene *scene = cm_scene_push(parent, interface);
-
   cm_scene_push(scene, test_scene);
 
   return scene;
