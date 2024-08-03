@@ -43,8 +43,8 @@ static void frame_update(CmScene *scene) {
 
 static CmSceneInterface *tests(void) {
   static CmSceneInterface interface = {
+      CM_SCENE(TestSuite),
       .init = init,
-      .event = event,
       .frame_update = frame_update,
   };
   return &interface;
