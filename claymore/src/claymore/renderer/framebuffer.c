@@ -1,7 +1,9 @@
 #include "framebuffer.h"
 
+#include "claymore/app/app.h"
+
 // TODO: very hacky
-static CmGpuID current = 0;
+static CmFramebuffer *current = NULL;
 
 CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth) {
   CmFramebuffer fb = {.gpu = gpu, .size = {width, heigth}};
@@ -27,12 +29,21 @@ CmTexture cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
 void cm_framebuffer_begin(CmFramebuffer *fb) {
   cebus_assert_debug(fb->mask, "framebuffer mask was never set");
   fb->last = current;
-  current = fb->fbo;
+  current = fb;
   cm_gpu_fbo_bind(fb->fbo);
+  glViewport(0, 0, fb->size[0], current->size[1]);
   glClear(fb->mask);
 }
 
 void cm_framebuffer_end(CmFramebuffer *fb) {
+  cebus_assert(current == fb, "trying to end nested framebuffer");
   current = fb->last;
-  cm_gpu_fbo_bind(fb->last);
+  if (current == NULL) {
+    cm_gpu_fbo_bind(0);
+    RGFW_window *w = cm_app_window();
+    glViewport(0, 0, w->r.w, w->r.h);
+  } else {
+    cm_gpu_fbo_bind(current->fbo);
+    glViewport(0, 0, current->size[0], current->size[1]);
+  }
 }

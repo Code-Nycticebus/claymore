@@ -4,10 +4,10 @@
 #include "claymore/assets/texture.h"
 #include "claymore/renderer/gpu.h"
 
-typedef struct {
+typedef struct CmFramebuffer {
   CmGpu *gpu;
   CmGpuID fbo;
-  CmGpuID last;
+  struct CmFramebuffer *last;
   usize size[2];
   GLbitfield mask;
   usize attachment_count;

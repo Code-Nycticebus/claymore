@@ -16,7 +16,7 @@ static CmSceneInterface *root(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = WIDHT, .height = HEIGHT, .title = "DISPLAY"},
+      .window = {.width = WIDHT * 4, .height = HEIGHT * 4, .title = "DISPLAY"},
       .root = root,
   };
   return &config;
