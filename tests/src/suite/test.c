@@ -8,15 +8,15 @@ typedef struct {
   CmFramebuffer fb;
   CmTexture frame;
   Error *error;
-} Writer;
+} TestCase;
 
 static void pre_update(CmScene *scene) {
-  Writer *test = cm_scene_data(scene);
+  TestCase *test = cm_scene_data(scene);
   cm_framebuffer_begin(&test->fb);
 }
 
 static void post_update(CmScene *scene) {
-  Writer *test = cm_scene_data(scene);
+  TestCase *test = cm_scene_data(scene);
   cm_framebuffer_end(&test->fb);
   cm_texture_bind(&test->frame, 0);
 
@@ -47,7 +47,7 @@ defer:
 
 static CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
-      CM_SCENE(Writer),
+      CM_SCENE(TestCase),
       .pre_update = pre_update,
       .post_update = post_update,
   };
@@ -57,7 +57,7 @@ static CmSceneInterface *interface(void) {
 CmScene *test_init(CmScene *parent, u32 width, u32 height, Error *error, CmSceneInit test_scene) {
   CmScene *scene = cm_scene_push(parent, interface);
   cm_scene_push(scene, test_scene);
-  Writer *test = cm_scene_data(scene);
+  TestCase *test = cm_scene_data(scene);
   test->error = error;
 
   Str type = cm_scene_type(cm_scene_child(scene, 0));
