@@ -20,3 +20,4 @@ claymore={dir="../claymore", type="pybuildc"}
 
 [exe]
 tests="src/tests.c"
+display="src/display.c"
