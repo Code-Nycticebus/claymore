@@ -108,13 +108,10 @@ static void frame_update(CmScene *scene) {
   cm_shader_bind(&fb->shader);
   cm_shader_set_mat4(&fb->shader, STR("u_mvp"), cm_camera_vp(&fb->camera));
 
-  RGFW_vector m = RGFW_window_getMousePoint(cm_app_window());
+  RGFW_point m = RGFW_window_getMousePoint(cm_app_window());
   cm_shader_set_vec2(&fb->shader, STR("light.pos"), (vec2){m.x, m.y});
   cm_shader_set_f32(&fb->shader, STR("light.radius"), 20.f);
   cm_shader_set_f32(&fb->shader, STR("light.strength"), 450.f);
-
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, fb->texture);
 
   cm_mesh_draw(&fb->mesh, CM_DRAW_TRIANGLES);
 }
