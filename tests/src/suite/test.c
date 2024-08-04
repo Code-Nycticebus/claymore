@@ -46,6 +46,7 @@ static void post_update(CmScene *scene) {
     cm_scene_delete(scene);
   } else {
     error_emit(test->error, TESTS_FAILED, "Test '" STR_FMT "' failed", STR_ARG(name));
+    goto defer;
   }
 
 defer:

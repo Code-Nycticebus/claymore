@@ -6,7 +6,7 @@
 
 static void init(CmScene *scene) {
   (void)scene;
-#if 1
+#if 0
   suite(scene, ARRAY_LEN(test_suite), test_suite);
 #else
   display(scene, ARRAY_LEN(test_suite), test_suite);

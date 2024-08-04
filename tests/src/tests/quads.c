@@ -14,8 +14,8 @@ static void frame_update(CmScene *scene) {
 
   cm_2D_begin(&first->camera);
 
-  cm_2D_quad((vec2){0, 0}, (vec2){100, 100.f}, (vec4){0.7f, 0.2f, 0.2f, 1});
-  cm_2D_quad((vec2){310, 90}, (vec2){100, 100.f}, (vec4){0.25f, 0.25f, 0.8f, 1});
+  cm_2D_quad((vec2){20, 20}, (vec2){20, 20}, (vec4){0.7f, 0.2f, 0.2f, 1});
+  cm_2D_quad_rotated((vec2){50, 40}, (vec2){20, 20}, glm_rad(45), (vec4){0.25f, 0.25f, 0.8f, 1});
 
   cm_2D_end();
 }

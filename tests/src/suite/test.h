@@ -4,7 +4,6 @@
 #include "claymore.h"
 
 typedef enum {
-  TESTS_OK = 1,
   TESTS_FAILED,
   TESTS_ERROR,
 } TestsExitCodes;

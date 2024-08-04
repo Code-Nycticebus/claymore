@@ -31,9 +31,13 @@ static void post_update(CmScene *scene) {
 
   CmScene *child = cm_scene_child(scene, 0);
   Str name = cm_scene_name(child);
-  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(name));
 
+  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(name));
   file_write_bytes(filename, u64_to_le_bytes(bytes_hash(data), &scene->arena), ErrPanic);
+
+  Str outfile = str_format(&scene->arena, "gen/" STR_FMT ".png", STR_ARG(name));
+  stbi_write_png(outfile.data, (i32)test->frame.width, (i32)test->frame.height,
+                 (i32)test->frame.bpp, data.data, (i32)(test->frame.width * test->frame.bpp));
 
   arena_reset(&scene->arena);
   cm_scene_delete(scene);
