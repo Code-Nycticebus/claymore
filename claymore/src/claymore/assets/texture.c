@@ -83,15 +83,23 @@ CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat form
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   }
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  if (format.mag) {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, format.mag);
+  /* set default GL_LINEAR instead of GL_NEAREST_MIPMAP_LINEAR */
+  if (format.filter.min) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, format.filter.min);
+  } else {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  }
+  /* keep default GL_LINEAR */
+  if (format.filter.mag) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, format.filter.mag);
   }
 
   /* keep default GL_REPEAT */
-  if (format.wrap) {
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format.wrap);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format.wrap);
+  if (format.wrap.s) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format.wrap.s);
+  }
+  if (format.wrap.t) {
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format.wrap.t);
   }
 
   const TextureInternalFormat f = texture_format[format.bpp];

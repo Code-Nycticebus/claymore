@@ -8,8 +8,16 @@
 typedef struct {
   u32 w, h;
   u32 bpp;
-  GLenum wrap;
-  GLenum mag;
+
+  struct {
+    GLenum mag;
+    GLenum min;
+  } filter;
+
+  struct {
+    GLenum s;
+    GLenum t;
+  } wrap;
 } CmTextureFormat;
 
 typedef struct {

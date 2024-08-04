@@ -25,7 +25,7 @@ static void init(CmScene *scene) {
                                          .w = 2,
                                          .h = 2,
                                          .bpp = 3,
-                                         .mag = GL_NEAREST,
+                                         .filter.mag = GL_NEAREST,
                                      });
   fb->fb = cm_framebuffer_create(&scene->gpu, WIDHT, HEIGHT);
   fb->texture = cm_framebuffer_attach_texture_color(&fb->fb);
