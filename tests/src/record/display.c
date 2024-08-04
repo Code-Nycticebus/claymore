@@ -1,5 +1,4 @@
-#include "display.h"
-#include "writer.h"
+#include "record.h"
 
 typedef struct {
   u32 idx;
@@ -16,6 +15,7 @@ static void event(CmScene *scene, CmEvent *event) {
         cm_app_quit(0);
         break;
       }
+
       if (key->code == RGFW_Right) {
         cm_scene_delete(cm_scene_child(scene, 0));
         display->idx = display->idx < display->test_count - 1 ? display->idx + 1 : 0;
@@ -40,7 +40,7 @@ static void init(CmScene *scene) {
 static void frame_update(CmScene *scene) {
   TestDisplay *display = cm_scene_data(scene);
   if (cm_scene_children(scene)->len == 0) {
-    cm_scene_push(scene, display->tests[display->idx]);
+    player_push(scene, display->w, display->h, display->tests[display->idx]);
   }
 }
 

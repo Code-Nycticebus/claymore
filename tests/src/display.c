@@ -1,7 +1,7 @@
 #include "claymore/entrypoint.h"
 
 #include "cases/cases.h"
-#include "record/display.h"
+#include "record/record.h"
 
 static void init(CmScene *scene) {
   display(scene, WIDHT, HEIGHT, ARRAY_LEN(test_cases), test_cases);

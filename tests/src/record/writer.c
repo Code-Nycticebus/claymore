@@ -1,4 +1,4 @@
-#include "writer.h"
+#include "record.h"
 
 #include "stb_image_write.h"
 #include <stb_image.h>
