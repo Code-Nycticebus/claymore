@@ -3,6 +3,12 @@
 
 #include "claymore.h"
 
-CmSceneInterface *first(void);
+CmSceneInterface *circles(void);
+CmSceneInterface *quads(void);
+
+static const CmSceneInit test_suite[] = {
+    circles,
+    quads,
+};
 
 #endif /* __TESTS_H__ */
