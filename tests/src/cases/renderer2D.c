@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "cases.h"
 
 typedef struct {
   CmCamera2D camera;

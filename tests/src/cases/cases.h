@@ -9,7 +9,7 @@
 CmSceneInterface *renderer2D(void);
 CmSceneInterface *framebuffer(void);
 
-static const CmSceneInit test_suite[] = {
+static const CmSceneInit test_cases[] = {
     renderer2D,
     framebuffer,
 };

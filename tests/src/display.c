@@ -1,10 +1,10 @@
 #include "claymore/entrypoint.h"
-#include "tests/tests.h"
 
+#include "cases/cases.h"
 #include "record/display.h"
 
 static void init(CmScene *scene) {
-  display(scene, WIDHT, HEIGHT, ARRAY_LEN(test_suite), test_suite);
+  display(scene, WIDHT, HEIGHT, ARRAY_LEN(test_cases), test_cases);
 }
 
 static CmSceneInterface *root(void) {
