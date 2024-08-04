@@ -6,12 +6,12 @@
 #define WIDHT 80
 #define HEIGHT 80
 
-CmSceneInterface *circles(void);
-CmSceneInterface *quads(void);
+CmSceneInterface *renderer2D(void);
+CmSceneInterface *framebuffer(void);
 
 static const CmSceneInit test_suite[] = {
-    circles,
-    quads,
+    renderer2D,
+    framebuffer,
 };
 
 #endif /* __TESTS_H__ */
