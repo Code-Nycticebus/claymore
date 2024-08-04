@@ -1,10 +1,11 @@
 #include "display.h"
-#include "utils/writer.h"
+#include "writer.h"
 
 typedef struct {
   u32 idx;
   u32 test_count;
   const CmSceneInit *tests;
+  FILE *record_file;
 } TestDisplay;
 
 static void event(CmScene *scene, CmEvent *event) {
@@ -25,7 +26,7 @@ static void event(CmScene *scene, CmEvent *event) {
       }
       if (key->code == RGFW_Return) {
         cebus_log_info("SAVE");
-        writer_push(scene, ErrDefault, suite->tests[suite->idx]);
+        writer_push(scene, suite->record_file, suite->tests[suite->idx]);
       }
     }
   });

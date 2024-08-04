@@ -1,6 +1,6 @@
 #include "suite.h"
 
-#include "utils/test.h"
+#include "test.h"
 
 typedef struct {
   Error error;

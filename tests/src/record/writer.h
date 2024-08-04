@@ -3,6 +3,6 @@
 
 #include "claymore.h"
 
-CmScene *writer_push(CmScene *parent, Error *error, CmSceneInit scene);
+CmScene *writer_push(CmScene *parent, FILE *file, CmSceneInit scene);
 
 #endif /* __TEST_H__ */

@@ -1,12 +1,12 @@
 #include "tests/tests.h"
 #include "claymore/entrypoint.h"
 
-#include "utils/display.h"
-#include "utils/suite.h"
+#include "record/display.h"
+#include "suite/suite.h"
 
 static void init(CmScene *scene) {
   (void)scene;
-#if 0
+#if 1
   suite(scene, ARRAY_LEN(test_suite), test_suite);
 #else
   display(scene, ARRAY_LEN(test_suite), test_suite);
