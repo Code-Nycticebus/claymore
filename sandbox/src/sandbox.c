@@ -14,15 +14,17 @@ static void _event(CmScene *scene, CmEvent *event) {
   });
 
   cm_event_key(event, {
-    if (key->action == RGFW_keyPressed && key->code == RGFW_F1) {
-      CmScene *f = cm_scene_find(scene, STR("Fps"));
-      if (f == NULL) {
-        const vec2 pos = {10, 0};
-        const Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
-        const float font_size = 32.f;
-        fps(scene, pos, font, font_size);
-      } else {
-        cm_scene_delete(f);
+    if (key->action == RGFW_keyPressed) {
+      if (key->code == RGFW_F1) {
+        CmScene *f = cm_scene_find(scene, STR("Fps"));
+        if (f == NULL) {
+          const vec2 pos = {10, 0};
+          const Str font = STR_STATIC("assets/fonts/Ubuntu.ttf");
+          const float font_size = 24.f;
+          fps(scene, pos, font, font_size);
+        } else {
+          cm_scene_delete(f);
+        }
       }
     }
   });
@@ -30,6 +32,7 @@ static void _event(CmScene *scene, CmEvent *event) {
 
 CmSceneInterface *app_controlls(void) {
   static CmSceneInterface interface = {
+      .type = STR_STATIC("Controlls"),
       .event = _event,
   };
   return &interface;

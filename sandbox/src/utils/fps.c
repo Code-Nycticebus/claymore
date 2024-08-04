@@ -1,7 +1,5 @@
 #include "fps.h"
 
-#define SIZE 40
-
 typedef struct {
   CmFont *font;
   CmCamera2D camera;
@@ -9,7 +7,6 @@ typedef struct {
   double time;
   double deltas;
   u32 count;
-  char buffer[SIZE];
   Str label;
 } Fps;
 
@@ -25,10 +22,11 @@ static void frame_update(CmScene *scene) {
   fps->count++;
   const double interval = .1f;
   if (interval <= fps->time) {
+    arena_reset(&scene->arena);
+
     const float a = fps->time / fps->count;
     const float ms = a * 1000;
-    usize len = snprintf(fps->buffer, SIZE, "FPS: %.0f, % 3.2f ms", 1 / a, ms);
-    fps->label = str_from_parts(len, fps->buffer);
+    fps->label = str_format(&scene->arena, "FPS: %.0f, % 3.2f ms", 1 / a, ms);
 
     fps->time = 0;
     fps->count = 0;
