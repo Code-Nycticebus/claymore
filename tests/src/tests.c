@@ -7,9 +7,9 @@
 static void init(CmScene *scene) {
   (void)scene;
 #if 0
-  suite(scene, ARRAY_LEN(test_suite), test_suite);
+  suite(scene, WIDHT, HEIGHT, ARRAY_LEN(test_suite), test_suite);
 #else
-  display(scene, ARRAY_LEN(test_suite), test_suite);
+  display(scene, WIDHT, HEIGHT, ARRAY_LEN(test_suite), test_suite);
 #endif
 }
 
@@ -22,7 +22,7 @@ static CmSceneInterface *tests(void) {
 
 ClaymoreConfig *claymore_init(void) {
   static ClaymoreConfig config = {
-      .window = {.width = 100, .height = 100, .title = "TESTS"},
+      .window = {.width = WIDHT, .height = HEIGHT, .title = "TESTS"},
       .root = tests,
   };
   return &config;

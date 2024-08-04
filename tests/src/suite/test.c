@@ -10,14 +10,6 @@ typedef struct {
   Error *error;
 } Writer;
 
-static void init(CmScene *scene) {
-  Writer *test = cm_scene_data(scene);
-
-  RGFW_window *win = cm_app_window();
-  test->fb = cm_framebuffer_create(&scene->gpu, (usize)win->r.w, (usize)win->r.h);
-  test->frame = cm_framebuffer_attach_texture_color(&test->fb);
-}
-
 static void pre_update(CmScene *scene) {
   Writer *test = cm_scene_data(scene);
   cm_framebuffer_begin(&test->fb);
@@ -56,14 +48,13 @@ defer:
 static CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
       CM_SCENE(Writer),
-      .init = init,
       .pre_update = pre_update,
       .post_update = post_update,
   };
   return &interface;
 }
 
-CmScene *test_init(CmScene *parent, Error *error, CmSceneInit test_scene) {
+CmScene *test_init(CmScene *parent, u32 width, u32 height, Error *error, CmSceneInit test_scene) {
   CmScene *scene = cm_scene_push(parent, interface);
   cm_scene_push(scene, test_scene);
   Writer *test = cm_scene_data(scene);
@@ -71,5 +62,9 @@ CmScene *test_init(CmScene *parent, Error *error, CmSceneInit test_scene) {
 
   Str name = cm_scene_name(cm_scene_child(scene, 0));
   cebus_log_info("TESTING: " STR_FMT, STR_ARG(name));
+
+  test->fb = cm_framebuffer_create(&scene->gpu, width, height);
+  test->frame = cm_framebuffer_attach_texture_color(&test->fb);
+
   return scene;
 }

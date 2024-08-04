@@ -6,16 +6,7 @@
 typedef struct {
   CmFramebuffer fb;
   CmTexture frame;
-  FILE *file;
 } Writer;
-
-static void init(CmScene *scene) {
-  Writer *writer = cm_scene_data(scene);
-
-  RGFW_window *win = cm_app_window();
-  writer->fb = cm_framebuffer_create(&scene->gpu, (usize)win->r.w, (usize)win->r.h);
-  writer->frame = cm_framebuffer_attach_texture_color(&writer->fb);
-}
 
 static void pre_update(CmScene *scene) {
   Writer *test = cm_scene_data(scene);
@@ -36,6 +27,7 @@ static void post_update(CmScene *scene) {
   file_write_bytes(filename, u64_to_le_bytes(bytes_hash(data), &scene->arena), ErrPanic);
 
   Str outfile = str_format(&scene->arena, "gen/" STR_FMT ".png", STR_ARG(name));
+  stbi_flip_vertically_on_write(true);
   stbi_write_png(outfile.data, (i32)test->frame.width, (i32)test->frame.height,
                  (i32)test->frame.bpp, data.data, (i32)(test->frame.width * test->frame.bpp));
 
@@ -46,17 +38,19 @@ static void post_update(CmScene *scene) {
 static CmSceneInterface *interface(void) {
   static CmSceneInterface interface = {
       CM_SCENE(Writer),
-      .init = init,
       .pre_update = pre_update,
       .post_update = post_update,
   };
   return &interface;
 }
 
-CmScene *writer_push(CmScene *parent, FILE *file, CmSceneInit test_scene) {
+CmScene *writer_push(CmScene *parent, u32 width, u32 height, CmSceneInit test_scene) {
   CmScene *scene = cm_scene_push(parent, interface);
   cm_scene_push(scene, test_scene);
-  Writer *test = cm_scene_data(scene);
-  test->file = file;
+  Writer *writer = cm_scene_data(scene);
+
+  writer->fb = cm_framebuffer_create(&scene->gpu, width, height);
+  writer->frame = cm_framebuffer_attach_texture_color(&writer->fb);
+
   return scene;
 }

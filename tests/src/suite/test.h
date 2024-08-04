@@ -8,6 +8,6 @@ typedef enum {
   TESTS_ERROR,
 } TestsExitCodes;
 
-CmScene *test_init(CmScene *parent, Error *error, CmSceneInit scene);
+CmScene *test_init(CmScene *parent, u32 width, u32 height, Error *error, CmSceneInit scene);
 
 #endif /* __TEST_H__ */

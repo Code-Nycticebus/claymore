@@ -7,6 +7,7 @@ typedef struct {
   u32 idx;
   u32 test_count;
   const CmSceneInit *tests;
+  u32 w, h;
 } TestDisplay;
 
 static void init(CmScene *scene) {
@@ -20,7 +21,7 @@ static void frame_update(CmScene *scene) {
 
   if (suite->idx < suite->test_count) {
     if (cm_scene_children(scene)->len == 0) {
-      test_init(scene, &suite->error, suite->tests[suite->idx++]);
+      test_init(scene, suite->w, suite->h, &suite->error, suite->tests[suite->idx++]);
     }
   } else {
     cebus_log_info("ALL TESTS SUCCESSFULL");
@@ -46,12 +47,15 @@ static CmSceneInterface *interface(void) {
   return &interface;
 }
 
-CmScene *suite(CmScene *parent, u32 test_count, const CmSceneInit *tests) {
+CmScene *suite(CmScene *parent, u32 width, u32 height, u32 test_count, const CmSceneInit *tests) {
   CmScene *scene = cm_scene_push(parent, interface);
   TestDisplay *suite = cm_scene_data(scene);
 
   suite->test_count = test_count;
   suite->tests = tests;
+
+  suite->w = width;
+  suite->h = height;
 
   return scene;
 }

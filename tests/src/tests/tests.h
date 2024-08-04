@@ -3,6 +3,9 @@
 
 #include "claymore.h"
 
+#define WIDHT 80
+#define HEIGHT 80
+
 CmSceneInterface *circles(void);
 CmSceneInterface *quads(void);
 
