@@ -105,9 +105,9 @@ static void frame_update(CmScene *scene) {
   cm_shader_bind(&fb->shader);
   cm_shader_set_mat4(&fb->shader, STR("u_mvp"), cm_camera_vp(&fb->camera));
 
-  cm_shader_set_vec2(&fb->shader, STR("light.pos"), (vec2){-0.1f, 0.1f});
-  cm_shader_set_f32(&fb->shader, STR("light.radius"), 20.f);
-  cm_shader_set_f32(&fb->shader, STR("light.strength"), 100.f);
+  cm_shader_set_vec2(&fb->shader, STR("light.pos"), (vec2){-30.f, -55.f});
+  cm_shader_set_f32(&fb->shader, STR("light.radius"), 50.f);
+  cm_shader_set_f32(&fb->shader, STR("light.strength"), 250.f);
 
   cm_mesh_draw(&fb->mesh, CM_DRAW_TRIANGLES);
 }
