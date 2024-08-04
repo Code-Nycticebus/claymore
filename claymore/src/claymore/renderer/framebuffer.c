@@ -1,5 +1,8 @@
 #include "framebuffer.h"
 
+// TODO: very hacky
+static CmGpuID current = 0;
+
 CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth) {
   CmFramebuffer fb = {.gpu = gpu, .size = {width, heigth}};
   fb.fbo = cm_gpu_fbo(gpu);
@@ -23,8 +26,13 @@ CmTexture cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
 
 void cm_framebuffer_begin(CmFramebuffer *fb) {
   cebus_assert_debug(fb->mask, "framebuffer mask was never set");
+  fb->last = current;
+  current = fb->fbo;
   cm_gpu_fbo_bind(fb->fbo);
   glClear(fb->mask);
 }
 
-void cm_framebuffer_end(void) { cm_gpu_fbo_bind(0); }
+void cm_framebuffer_end(CmFramebuffer *fb) {
+  current = fb->last;
+  cm_gpu_fbo_bind(fb->last);
+}

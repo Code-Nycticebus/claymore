@@ -101,7 +101,7 @@ static void frame_update(CmScene *scene) {
   cm_2D_line((vec2){100, 150}, (vec2){200, 330});
 
   cm_2D_end();
-  cm_framebuffer_end();
+  cm_framebuffer_end(&fb->fb);
 
   cm_texture_bind(&fb->texture, 0);
 

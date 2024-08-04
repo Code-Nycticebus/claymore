@@ -15,7 +15,7 @@ static void pre_update(CmScene *scene) {
 
 static void post_update(CmScene *scene) {
   Writer *test = cm_scene_data(scene);
-  cm_framebuffer_end();
+  cm_framebuffer_end(&test->fb);
   cm_texture_bind(&test->frame, 0);
 
   Bytes data = cm_texture_read_bytes(&test->frame, &scene->arena);

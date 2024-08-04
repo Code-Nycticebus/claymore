@@ -7,6 +7,7 @@
 typedef struct {
   CmGpu *gpu;
   CmGpuID fbo;
+  CmGpuID last;
   usize size[2];
   GLbitfield mask;
   usize attachment_count;
@@ -16,6 +17,6 @@ CmFramebuffer cm_framebuffer_create(CmGpu *gpu, usize width, usize heigth);
 CmTexture cm_framebuffer_attach_texture_color(CmFramebuffer *fb);
 
 void cm_framebuffer_begin(CmFramebuffer *fb);
-void cm_framebuffer_end(void);
+void cm_framebuffer_end(CmFramebuffer *fb);
 
 #endif /* __CLAYMORE_FRAMEBUFFER_H__ */
