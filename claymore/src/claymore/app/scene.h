@@ -18,7 +18,7 @@ typedef struct {
 } CmScene;
 
 // helper to initialize a scene interface with its name and size
-#define CM_SCENE(T) .name = STR_STATIC(#T), .size = sizeof(T)
+#define CM_SCENE(T) .type = STR_STATIC(#T), .size = sizeof(T)
 
 /* Scene Interface:
  *  - 'name' and 'size' store metadata about the scene type.
@@ -27,7 +27,7 @@ typedef struct {
  * */
 typedef const struct {
   // Metadata
-  Str name;
+  Str type;
   usize size;
 
   // scene initialization
@@ -62,15 +62,18 @@ void cm_scene_delete(CmScene *scene);
 
 // getters
 void *cm_scene_data(CmScene *scene);
-Str cm_scene_name(CmScene *scene);
+Str cm_scene_type(CmScene *scene);
+bool cm_scene_is_type(CmScene *scene, Str type);
 CmScene *cm_scene_parent(CmScene *scene);
 CmScene *cm_scene_child(CmScene *scene, usize idx);
 const CmSceneDa *cm_scene_children(CmScene *scene);
 
 // find first occurence of scene
-CmScene *cm_scene_find(CmScene *root, Str name);
+CmScene *cm_scene_find(CmScene *root, Str type);
+// find first occurence in parents
+CmScene *cm_scene_find_parent(CmScene *root, Str type);
 // find all occurences of scene
-void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name);
+void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str type);
 
 /* ========= scene internal ========= */
 

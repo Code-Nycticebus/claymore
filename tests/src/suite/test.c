@@ -23,12 +23,12 @@ static void post_update(CmScene *scene) {
   Bytes data = cm_texture_read_bytes(&test->frame, &scene->arena);
 
   CmScene *child = cm_scene_child(scene, 0);
-  Str name = cm_scene_name(child);
-  cebus_assert(0 < name.len, "name needs to be longer");
-  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(name));
+  Str type = cm_scene_type(child);
+  cebus_assert(0 < type.len, "name needs to be longer");
+  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(type));
 
   if (!file_exists(filename)) {
-    error_emit(test->error, TESTS_ERROR, "Test file does not exist: '" STR_FMT "'", STR_ARG(name));
+    error_emit(test->error, TESTS_ERROR, "Test file does not exist: '" STR_FMT "'", STR_ARG(type));
     goto defer;
   }
 
@@ -37,7 +37,7 @@ static void post_update(CmScene *scene) {
   if (expected_data_hash == bytes_hash(data)) {
     cm_scene_delete(scene);
   } else {
-    error_emit(test->error, TESTS_FAILED, "Test '" STR_FMT "' failed", STR_ARG(name));
+    error_emit(test->error, TESTS_FAILED, "Test '" STR_FMT "' failed", STR_ARG(type));
     goto defer;
   }
 
@@ -60,8 +60,8 @@ CmScene *test_init(CmScene *parent, u32 width, u32 height, Error *error, CmScene
   Writer *test = cm_scene_data(scene);
   test->error = error;
 
-  Str name = cm_scene_name(cm_scene_child(scene, 0));
-  cebus_log_info("TESTING: " STR_FMT, STR_ARG(name));
+  Str type = cm_scene_type(cm_scene_child(scene, 0));
+  cebus_log_info("TESTING: " STR_FMT, STR_ARG(type));
 
   test->fb = cm_framebuffer_create(&scene->gpu, width, height);
   test->frame = cm_framebuffer_attach_texture_color(&test->fb);

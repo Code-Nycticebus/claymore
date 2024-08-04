@@ -21,12 +21,12 @@ static void post_update(CmScene *scene) {
   Bytes data = cm_texture_read_bytes(&test->frame, &scene->arena);
 
   CmScene *child = cm_scene_child(scene, 0);
-  Str name = cm_scene_name(child);
+  Str type = cm_scene_type(child);
 
-  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(name));
+  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(type));
   file_write_bytes(filename, u64_to_le_bytes(bytes_hash(data), &scene->arena), ErrPanic);
 
-  Str outfile = str_format(&scene->arena, "gen/" STR_FMT ".png", STR_ARG(name));
+  Str outfile = str_format(&scene->arena, "gen/" STR_FMT ".png", STR_ARG(type));
   stbi_flip_vertically_on_write(true);
   stbi_write_png(outfile.data, (i32)test->frame.width, (i32)test->frame.height,
                  (i32)test->frame.bpp, data.data, (i32)(test->frame.width * test->frame.bpp));

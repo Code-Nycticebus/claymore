@@ -35,9 +35,14 @@ void *cm_scene_data(CmScene *scene) {
   return internal->data;
 }
 
-Str cm_scene_name(CmScene *scene) {
+Str cm_scene_type(CmScene *scene) {
   CmSceneInternal *internal = (CmSceneInternal *)scene;
-  return internal->interface->name;
+  return internal->interface->type;
+}
+
+bool cm_scene_is_type(CmScene *scene, Str type) {
+  CmSceneInternal *internal = (CmSceneInternal *)scene;
+  return str_eq(internal->interface->type, type);
 }
 
 CmScene *cm_scene_parent(CmScene *scene) {
@@ -55,22 +60,33 @@ const CmSceneDa *cm_scene_children(CmScene *scene) {
   return (CmSceneDa *)&internal->children;
 }
 
-CmScene *cm_scene_find(CmScene *root, Str name) {
+CmScene *cm_scene_find(CmScene *root, Str type) {
   CmSceneInternal *internal = (CmSceneInternal *)root;
   for (usize i = 0; i < da_len(&internal->children); ++i) {
     CmSceneInternal *scene = da_get(&internal->children, i);
-    if (str_eq(scene->interface->name, name)) {
+    if (str_eq(scene->interface->type, type)) {
       return (CmScene *)scene;
     }
   }
   return NULL;
 }
 
-void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str name) {
+CmScene *cm_scene_find_parent(CmScene *root, Str type) {
+  CmScene *parent = cm_scene_parent(root);
+  if (parent == NULL) {
+    return NULL;
+  }
+  if (cm_scene_is_type(parent, type)) {
+    return parent;
+  }
+  return cm_scene_find_parent(parent, type);
+}
+
+void cm_scene_find_all(CmSceneDa *out, CmScene *root, Str type) {
   CmSceneInternal *internal = (CmSceneInternal *)root;
   for (usize i = 0; i < da_len(&internal->children); ++i) {
     CmSceneInternal *scene = da_get(&internal->children, i);
-    if (str_eq(scene->interface->name, name)) {
+    if (str_eq(scene->interface->type, type)) {
       da_push(out, (CmScene *)scene);
     }
   }
