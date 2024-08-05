@@ -24,7 +24,7 @@ static void init(CmScene *scene) {
                                          .w = 2,
                                          .h = 2,
                                          .bpp = 3,
-                                         .mag = GL_NEAREST,
+                                         .filter.mag = GL_NEAREST,
                                      });
   RGFW_window *win = cm_app_window();
   fb->fb = cm_framebuffer_create(&scene->gpu, win->r.w, win->r.h);
