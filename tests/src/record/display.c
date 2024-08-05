@@ -16,11 +16,19 @@ static void event(CmScene *scene, CmEvent *event) {
         break;
       }
 
-      if (key->code == RGFW_Right) {
+      for (u32 i = 0; i < 9; i++) {
+        if (key->code == RGFW_0 + i) {
+          cm_scene_delete(cm_scene_child(scene, 0));
+          display->idx = u32_clamp(0, display->test_count - 1, i - 1);
+          break;
+        }
+      }
+
+      if (key->code == RGFW_Right || key->code == RGFW_l) {
         cm_scene_delete(cm_scene_child(scene, 0));
         display->idx = display->idx < display->test_count - 1 ? display->idx + 1 : 0;
       }
-      if (key->code == RGFW_Left) {
+      if (key->code == RGFW_Left || key->code == RGFW_h) {
         cm_scene_delete(cm_scene_child(scene, 0));
         display->idx = display->idx == 0 ? display->test_count - 1 : display->idx - 1;
       }
