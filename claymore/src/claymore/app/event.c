@@ -159,6 +159,6 @@ void cm_event_internal_poll_events(RGFW_window *window) { // NOLINT
     }
 
     // event not handled yet
-    cebus_log_error("event (%d) not implemented", event->type);
+    cebus_log_warning("event (%d) not implemented", event->type);
   }
 }
