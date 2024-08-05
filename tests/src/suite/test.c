@@ -1,4 +1,4 @@
-#include "test.h"
+#include "suite.h"
 
 #include "stb_image_write.h"
 #include <stb_image.h>

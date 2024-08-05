@@ -1,7 +1,5 @@
 #include "suite.h"
 
-#include "test.h"
-
 typedef struct {
   Error error;
   u32 idx;

@@ -37,9 +37,8 @@ static CmSceneInterface *interface(void) {
 
 CmScene *player_push(CmScene *parent, u32 width, u32 height, CmSceneInit test_scene) {
   CmScene *scene = cm_scene_push(parent, interface);
-  CmScene *play = cm_scene_push(scene, test_scene);
-  Str name = cm_scene_type(play);
-  cebus_log_debug("LOAD: " STR_FMT, STR_ARG(name));
+  cm_scene_push(scene, test_scene);
+
   Player *writer = cm_scene_data(scene);
 
   writer->fb = cm_framebuffer_create(&scene->gpu, width, height);
