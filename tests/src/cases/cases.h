@@ -6,12 +6,12 @@
 #define WIDHT 80
 #define HEIGHT 80
 
-CmSceneInterface *renderer2D(void);
 CmSceneInterface *framebuffer(void);
+CmSceneInterface *renderer2D(void);
 
 static const CmSceneInit test_cases[] = {
-    renderer2D,
     framebuffer,
+    renderer2D,
 };
 
 #endif /* __TESTS_H__ */
