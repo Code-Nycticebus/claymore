@@ -27,12 +27,12 @@ static void post_update(CmScene *scene) {
   cebus_assert(0 < type.len, "name needs to be longer");
   Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(type));
 
-  if (!file_exists(filename)) {
+  if (!fs_exists(filename)) {
     error_emit(test->error, TESTS_ERROR, "Test file does not exist: '" STR_FMT "'", STR_ARG(type));
     goto defer;
   }
 
-  Bytes test_data = file_read_bytes(filename, &scene->arena, ErrPanic);
+  Bytes test_data = fs_file_read_bytes(filename, &scene->arena, ErrPanic);
   u64 expected_data_hash = u64_from_le_bytes(test_data);
   if (expected_data_hash == bytes_hash(data)) {
     cm_scene_delete(scene);

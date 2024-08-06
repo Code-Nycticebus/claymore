@@ -39,7 +39,7 @@ CmFont *cm_font_from_file(CmGpu *gpu, Str path, float height, Error *error) {
   CmFont *font = NULL;
   Arena temp = {0};
 
-  Bytes ttf_buffer = file_read_bytes(path, &temp, error);
+  Bytes ttf_buffer = fs_file_read_bytes(path, &temp, error);
   error_propagate(error, { goto defer; });
 
   font = cm_font_from_bytes(gpu, ttf_buffer, height);

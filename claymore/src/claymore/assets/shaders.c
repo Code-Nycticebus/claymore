@@ -61,10 +61,10 @@ CmShader cm_shader_from_file(CmGpu *gpu, Str vs, Str fs, Error *e) {
   CmShader program = {0};
   Arena temp = {0};
 
-  Str vs_content = file_read_str(vs, &temp, e);
+  Str vs_content = fs_file_read_str(vs, &temp, e);
   error_propagate(e, { goto defer; });
 
-  Str fs_content = file_read_str(fs, &temp, e);
+  Str fs_content = fs_file_read_str(fs, &temp, e);
   error_propagate(e, { goto defer; });
 
   program = cm_shader_from_memory(gpu, vs_content, fs_content, e);

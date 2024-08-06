@@ -23,8 +23,8 @@ static void post_update(CmScene *scene) {
   CmScene *child = cm_scene_child(scene, 0);
   Str type = cm_scene_type(child);
 
-  Str filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(type));
-  file_write_bytes(filename, u64_to_le_bytes(bytes_hash(data), &scene->arena), ErrPanic);
+  Path filename = str_format(&scene->arena, "gen/" STR_FMT ".test", STR_ARG(type));
+  fs_file_write_bytes(filename, u64_to_le_bytes(bytes_hash(data), &scene->arena), ErrPanic);
 
   Str outfile = str_format(&scene->arena, "gen/" STR_FMT ".png", STR_ARG(type));
   stbi_flip_vertically_on_write(true);

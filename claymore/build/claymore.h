@@ -89,7 +89,7 @@ void create_directory(const char *path) {
 void create_cebus(void) {
   Str content = STR("#define CEBUS_IMPLEMENTATION\n"
                     "#include \"../cebus.h\"\n");
-  file_write_str(STR(CM_BUILD_DIR "obj/cebus.c"), content, ErrPanic);
+  fs_file_write_str(STR(CM_BUILD_DIR "obj/cebus.c"), content, ErrPanic);
 }
 
 void compile_libs(Arena *arena, Paths *objs) {
@@ -105,7 +105,7 @@ void compile_libs(Arena *arena, Paths *objs) {
     Str out = str_format(arena, CM_BUILD_DIR "/obj/" STR_FMT ".o", STR_ARG(name));
     da_push(objs, out);
 
-    if (!file_exists(out)) {
+    if (!fs_exists(out)) {
       cmd_push(&cmd, STR(CC), STR("-c"));
       cmd_push(&cmd, STR("-O2"), STR("-DNDEBUG"), STR("-fPIC"));
       cmd_extend(&cmd, claymore_cflags);
@@ -124,12 +124,12 @@ void compile_libs(Arena *arena, Paths *objs) {
 }
 
 void compile_claymore(bool rebuild) {
-  if (rebuild || !file_exists(STR(CM_OUTFILE))) {
+  if (rebuild || !fs_exists(STR(CM_OUTFILE))) {
     Arena arena = {0};
     Paths objs = da_new(&arena);
 
     create_directory(CM_BUILD_DIR "obj");
-    file_write_str(STR(CM_BUILD_DIR "obj/.gitignore"), STR("*\n"), ErrPanic);
+    fs_file_write_str(STR(CM_BUILD_DIR "obj/.gitignore"), STR("*\n"), ErrPanic);
 
     compile_libs(&arena, &objs);
 
@@ -157,7 +157,7 @@ void compile_claymore(bool rebuild) {
     }
 
     create_directory(CM_BUILD_DIR "lib");
-    file_write_str(STR(CM_BUILD_DIR "lib/.gitignore"), STR("*\n"), ErrPanic);
+    fs_file_write_str(STR(CM_BUILD_DIR "lib/.gitignore"), STR("*\n"), ErrPanic);
 
     cmd_push(&cmd, STR("ar"), STR("rcs"), STR(CM_OUTFILE));
 
