@@ -98,7 +98,7 @@ static void APIENTRY cm_debug_message_callback(GLenum source, GLenum type, GLuin
 #endif
 
 bool cm_platform_context_init(RGFW_window *window) {
-  RGFW_setGLVersion(4, 3);
+  RGFW_setGLVersion(RGFW_GL_CORE, 4, 3);
 
   RGFW_window_makeCurrent(window);
 
