@@ -1,3 +1,3 @@
-#include "claymore.h"
+#include "cebus.c"
 
-int main(void) { compile_claymore(true); }
+int main(void) { cebus_log("Hello world"); }
