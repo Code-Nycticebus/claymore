@@ -1,27 +1,13 @@
-#ifndef CC
-#define CC "gcc"
-#endif
+#define CM_DIR "../claymore/"
+#include "../claymore/build/claymore.c"
 
-#define CM_DIR "../claymore/" // Relative to working directory!
-#include "../claymore/build/claymore.h"
-
-int main(void) {
-  compile_claymore(true);
-
+int main(int argc, const char **argv) {
+  (void)argc;
   Arena arena = {0};
-
-  Paths files = da_new(&arena);
-  cmd_push(&files, STR_STATIC("src/utils/fps.c"));
-  cmd_push(&files, STR_STATIC("src/utils/gui.c"));
-  cmd_push(&files, STR_STATIC("src/scenes/benchmark-2d.c"));
-  cmd_push(&files, STR_STATIC("src/scenes/counter.c"));
-  cmd_push(&files, STR_STATIC("src/scenes/hello.c"));
-  cmd_push(&files, STR_STATIC("src/scenes/framebuffer.c"));
-
-  Cmd cflags = cmd_new(&arena);
-  cmd_push(&cflags, STR_STATIC("-Isrc"));
-
-  compile_file(STR("src/sandbox.c"), &files, &cflags);
-
+  Path exe = path_stem(str_from_cstr(argv[0]));
+  claymore_project_build(exe, PATH("."), /* rebuild = */ true);
+  Cmd cmd = cmd_new(&arena);
+  cmd_push(&cmd, str_format(&arena, "./" STR_FMT, STR_ARG(exe)));
+  cmd_exec_da(ErrPanic, &cmd);
   arena_free(&arena);
 }

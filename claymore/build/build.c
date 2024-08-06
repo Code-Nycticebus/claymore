@@ -1,3 +1,3 @@
-#include "cebus.c"
+#include "claymore.c"
 
-int main(void) { cebus_log("Hello world"); }
+int main(void) { claymore_build(/* rebuild = */ true); }
