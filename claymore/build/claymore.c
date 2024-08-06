@@ -180,8 +180,6 @@ void claymore_project_build(Path exe, Path directory, bool rebuild) {
   claymore_collect_links(&cmd);
 
   cebus_log_info("EXE: " STR_FMT, STR_ARG(outfile));
-  Str content = str_join(STR(" "), cmd.len, cmd.items, &arena);
-  cebus_log_debug(STR_FMT, STR_ARG(content));
   cmd_exec_da(ErrPanic, &cmd);
   arena_free(&arena);
 }
