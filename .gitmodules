@@ -1,8 +1,0 @@
-[submodule "claymore/libs/cebus"]
-	path = claymore/libs/cebus
-	url = https://github.com/Code-Nycticebus/cebus
-  ignore = all
-[submodule "claymore/libs/cglm"]
-	path = claymore/libs/cglm
-	url = https://github.com/recp/cglm.git
-  ignore = all
