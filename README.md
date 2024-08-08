@@ -27,8 +27,7 @@ cd claymore
 Build it with a c compiler. From inside the `claymore` directory, compile the build system. you can even:
 ```terminal
 cd claymore
-gcc build/build.c -o build/build
-./build/build
+gcc build/build.c && ./a.out
 ```
 
 or build it with [pybuildc](https://github.com/Code-Nycticebus/pybuildc):
