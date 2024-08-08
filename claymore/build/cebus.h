@@ -85,22 +85,19 @@ MSVC.
 #elif defined(__ARM_ARCH_6T2_) || defined(__ARM_ARCH_6T2_)
 #define ARM6T2
 #define CEBUS_ARCHITECTURE "ARM6T2"
-#elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) ||                   \
-    defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) ||                    \
-    defined(__ARM_ARCH_6ZK__)
+#elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || defined(__ARM_ARCH_6K__) ||           \
+    defined(__ARM_ARCH_6Z__) || defined(__ARM_ARCH_6ZK__)
 #define ARM6
 #define CEBUS_ARCHITECTURE "ARM6"
-#elif defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) ||                   \
-    defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) ||                    \
-    defined(__ARM_ARCH_7S__)
+#elif defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) ||           \
+    defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
 #define ARM7
 #define CEBUS_ARCHITECTURE "ARM7"
-#elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) ||                  \
-    defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
+#elif defined(__ARM_ARCH_7A__) || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) ||          \
+    defined(__ARM_ARCH_7S__)
 #define ARM7A
 #define CEBUS_ARCHITECTURE "ARM7A"
-#elif defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) ||                  \
-    defined(__ARM_ARCH_7S__)
+#elif defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) || defined(__ARM_ARCH_7S__)
 #define ARM7R
 #define CEBUS_ARCHITECTURE "ARM7R"
 #elif defined(__ARM_ARCH_7M__)
@@ -118,9 +115,8 @@ MSVC.
 #elif defined(__sh__)
 #define SUPERH
 #define CEBUS_ARCHITECTURE "SUPERH"
-#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) ||  \
-    defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) ||            \
-    defined(_ARCH_PPC)
+#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) ||                      \
+    defined(__POWERPC__) || defined(__ppc__) || defined(__PPC__) || defined(_ARCH_PPC)
 #define POWERPC
 #define CEBUS_ARCHITECTURE "POWERPC"
 #elif defined(__PPC64__) || defined(__ppc64__) || defined(_ARCH_PPC64)
@@ -178,8 +174,7 @@ MSVC.
 
 ////////////////////////////////////////////////////////////////////////////
 /* Byte-Order */
-#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) &&                \
-    defined(__ORDER_LITTLE_ENDIAN__)
+#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
 
 #define ENDIAN_LITTLE __ORDER_LITTLE_ENDIAN__
 #define ENDIAN_BIG __ORDER_BIG_ENDIAN__
@@ -255,7 +250,7 @@ typedef struct {
 #define FILE_LOCATION_FMT "%s:%d: %s()"
 #define FILE_LOCATION_ARG(fl) (fl).file, (fl).line, (fl).function
 #define FILE_LOCATION_ARG_CURRENT __FILE__, __LINE__, __func__
-#define FILE_LOCATION_CURRENT                                                  \
+#define FILE_LOCATION_CURRENT                                                                      \
   (FileLocation) { __FILE__, __LINE__, __func__ }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -371,12 +366,12 @@ typedef double f64;
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define BYTES(...)                                                             \
-  (Bytes) {                                                                    \
-    sizeof((const u8[]){__VA_ARGS__}), (const u8[]) { __VA_ARGS__ }            \
+#define BYTES(...)                                                                                 \
+  (Bytes) {                                                                                        \
+    sizeof((const u8[]){__VA_ARGS__}), (const u8[]) { __VA_ARGS__ }                                \
   }
 
-#define BYTES_STR(s)                                                           \
+#define BYTES_STR(s)                                                                               \
   (Bytes) { sizeof(s) - 1, (const u8 *)(s) }
 
 typedef struct {
@@ -617,20 +612,19 @@ NORETURN int raise(int);
 
 #if defined(NDEBUG)
 #if defined(GCC) || defined(CLANG) || defined(MINGW32) || defined(MINGW64)
-#define UNREACHABLE()                                                          \
-  __builtin_unreachable();                                                     \
+#define UNREACHABLE()                                                                              \
+  __builtin_unreachable();                                                                         \
   abort()
 #elif defined(MSVC)
-#define UNREACHABLE()                                                          \
-  __assume(0);                                                                 \
+#define UNREACHABLE()                                                                              \
+  __assume(0);                                                                                     \
   abort()
 #else
 #define UNREACHABLE() abort()
 #endif
 #else
-#define UNREACHABLE()                                                          \
-  cebus_log_error("UNREACHABLE: " FILE_LOCATION_FMT,                           \
-                  FILE_LOCATION_ARG_CURRENT);                                  \
+#define UNREACHABLE()                                                                              \
+  cebus_log_error("UNREACHABLE: " FILE_LOCATION_FMT, FILE_LOCATION_ARG_CURRENT);                   \
   abort()
 #endif
 
@@ -639,48 +633,47 @@ NORETURN int raise(int);
 #if defined(NDEBUG)
 #define NOT_IMPLEMENTED() abort()
 #else
-#define NOT_IMPLEMENTED()                                                      \
-  cebus_log_error("NOT IMPLEMENTED: " FILE_LOCATION_FMT,                       \
-                  FILE_LOCATION_ARG_CURRENT);                                  \
+#define NOT_IMPLEMENTED()                                                                          \
+  cebus_log_error("NOT IMPLEMENTED: " FILE_LOCATION_FMT, FILE_LOCATION_ARG_CURRENT);               \
   abort()
 #endif
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define _cebus_assert_print(level, expr, ...)                                  \
-  cebus_log_level(level, FILE_LOCATION_FMT, FILE_LOCATION_ARG_CURRENT);        \
-  cebus_log_level(level, "  Assertion '%s' failed", expr);                     \
+#define _cebus_assert_print(level, expr, ...)                                                      \
+  cebus_log_level(level, FILE_LOCATION_FMT, FILE_LOCATION_ARG_CURRENT);                            \
+  cebus_log_level(level, "  Assertion '%s' failed", expr);                                         \
   cebus_log_level(level, "  Description: "__VA_ARGS__)
 
-#define cebus_assert(expression, ...)                                          \
-  do {                                                                         \
-    if (!(expression)) {                                                       \
-      _cebus_assert_print(CEBUS_LOG_ERROR, #expression, __VA_ARGS__);          \
-      DEBUGBREAK();                                                            \
-    }                                                                          \
+#define cebus_assert(expression, ...)                                                              \
+  do {                                                                                             \
+    if (!(expression)) {                                                                           \
+      _cebus_assert_print(CEBUS_LOG_ERROR, #expression, __VA_ARGS__);                              \
+      DEBUGBREAK();                                                                                \
+    }                                                                                              \
   } while (0)
 
-#define cebus_assert_return(expression, ret)                                   \
-  do {                                                                         \
-    if (!(expression)) {                                                       \
-      return ret;                                                              \
-    }                                                                          \
+#define cebus_assert_return(expression, ret)                                                       \
+  do {                                                                                             \
+    if (!(expression)) {                                                                           \
+      return ret;                                                                                  \
+    }                                                                                              \
   } while (0)
 
-#define cebus_assert_warn(expression, ...)                                     \
-  do {                                                                         \
-    if (!(expression)) {                                                       \
-      _cebus_assert_print(CEBUS_LOG_WARNING, #expression, __VA_ARGS__);        \
-    }                                                                          \
+#define cebus_assert_warn(expression, ...)                                                         \
+  do {                                                                                             \
+    if (!(expression)) {                                                                           \
+      _cebus_assert_print(CEBUS_LOG_WARNING, #expression, __VA_ARGS__);                            \
+    }                                                                                              \
   } while (0)
 
 #ifndef NDEBUG
-#define cebus_assert_debug(expression, ...)                                    \
-  do {                                                                         \
-    if (!(expression)) {                                                       \
-      _cebus_assert_print(CEBUS_LOG_DEBUG, #expression, __VA_ARGS__);          \
-      DEBUGBREAK();                                                            \
-    }                                                                          \
+#define cebus_assert_debug(expression, ...)                                                        \
+  do {                                                                                             \
+    if (!(expression)) {                                                                           \
+      _cebus_assert_print(CEBUS_LOG_DEBUG, #expression, __VA_ARGS__);                              \
+      DEBUGBREAK();                                                                                \
+    }                                                                                              \
   } while (0)
 #else
 #define cebus_assert_debug(...)
@@ -775,12 +768,12 @@ destination.
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#define DA(T)                                                                  \
-  struct {                                                                     \
-    usize cap;                                                                 \
-    usize len;                                                                 \
-    Arena *arena;                                                              \
-    T *items;                                                                  \
+#define DA(T)                                                                                      \
+  struct {                                                                                         \
+    usize cap;                                                                                     \
+    usize len;                                                                                     \
+    Arena *arena;                                                                                  \
+    T *items;                                                                                      \
   }
 
 #define da_first(list) (list)->items[0]
@@ -794,170 +787,171 @@ destination.
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#define da_new(_arena)                                                         \
-  { .arena = (_arena), .items = NULL, }
+#define da_new(_arena)                                                                             \
+  {                                                                                                \
+      .arena = (_arena),                                                                           \
+      .items = NULL,                                                                               \
+  }
 
 // depricated
-#define da_init(list, _arena)                                                  \
-  do {                                                                         \
-    (list)->len = 0;                                                           \
-    (list)->cap = 0;                                                           \
-    (list)->arena = _arena;                                                    \
-    (list)->items = NULL;                                                      \
+#define da_init(list, _arena)                                                                      \
+  do {                                                                                             \
+    (list)->len = 0;                                                                               \
+    (list)->cap = 0;                                                                               \
+    (list)->arena = _arena;                                                                        \
+    (list)->items = NULL;                                                                          \
   } while (0)
 
-#define da_init_list(list, _arena, count, array)                               \
-  do {                                                                         \
-    (list)->len = count;                                                       \
-    (list)->cap = 0;                                                           \
-    (list)->arena = _arena;                                                    \
-    (list)->items = NULL;                                                      \
-    da_resize(list, count);                                                    \
-    for (usize __e_i = 0; __e_i < (count); __e_i++) {                          \
-      (list)->items[__e_i] = (array)[__e_i];                                   \
-    }                                                                          \
+#define da_init_list(list, _arena, count, array)                                                   \
+  do {                                                                                             \
+    (list)->len = count;                                                                           \
+    (list)->cap = 0;                                                                               \
+    (list)->arena = _arena;                                                                        \
+    (list)->items = NULL;                                                                          \
+    da_resize(list, count);                                                                        \
+    for (usize __e_i = 0; __e_i < (count); __e_i++) {                                              \
+      (list)->items[__e_i] = (array)[__e_i];                                                       \
+    }                                                                                              \
   } while (0)
 
-#define da_init_static(list, _arena, ...)                                      \
-  do {                                                                         \
-    da_init_list(list, _arena, ARRAY_LEN((__VA_ARGS__)), (__VA_ARGS__));       \
+#define da_init_static(list, _arena, ...)                                                          \
+  do {                                                                                             \
+    da_init_list(list, _arena, ARRAY_LEN((__VA_ARGS__)), (__VA_ARGS__));                           \
   } while (0)
 
-#define da_copy(src, dest)                                                     \
-  do {                                                                         \
-    da_resize((dest), (src)->len);                                             \
-    for (usize __c_i = 0; __c_i < (src)->len; __c_i++) {                       \
-      (dest)->items[__c_i] = (src)->items[__c_i];                              \
-    }                                                                          \
-    (dest)->len = (src)->len;                                                  \
-  } while (0)
-
-///////////////////////////////////////////////////////////////////////////////
-
-#define da_resize(list, size)                                                  \
-  do {                                                                         \
-    if (size < (list)->cap) {                                                  \
-      break;                                                                   \
-    }                                                                          \
-    (list)->cap = size;                                                        \
-    (list)->items = arena_realloc_chunk((list)->arena, (list)->items,          \
-                                        (list)->cap * sizeof(*(list)->items)); \
-  } while (0)
-
-#define da_reserve(list, size)                                                 \
-  do {                                                                         \
-    const usize __rs = da_len(list) + size;                                    \
-    if (__rs < (list)->cap) {                                                  \
-      break;                                                                   \
-    }                                                                          \
-    usize __ns = (list)->cap == 0 ? 5 : (list)->cap;                           \
-    while (__ns < __rs) {                                                      \
-      __ns *= 2;                                                               \
-    }                                                                          \
-    da_resize(list, __ns);                                                     \
+#define da_copy(src, dest)                                                                         \
+  do {                                                                                             \
+    da_resize((dest), (src)->len);                                                                 \
+    for (usize __c_i = 0; __c_i < (src)->len; __c_i++) {                                           \
+      (dest)->items[__c_i] = (src)->items[__c_i];                                                  \
+    }                                                                                              \
+    (dest)->len = (src)->len;                                                                      \
   } while (0)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#define da_push(list, ...)                                                     \
-  do {                                                                         \
-    da_reserve((list), 1);                                                     \
-    da_get(list, da_len(list)++) = (__VA_ARGS__);                              \
+#define da_resize(list, size)                                                                      \
+  do {                                                                                             \
+    if (size < (list)->cap) {                                                                      \
+      break;                                                                                       \
+    }                                                                                              \
+    (list)->cap = size;                                                                            \
+    (list)->items =                                                                                \
+        arena_realloc_chunk((list)->arena, (list)->items, (list)->cap * sizeof(*(list)->items));   \
   } while (0)
 
-#define da_extend(list, count, ...)                                            \
-  do {                                                                         \
-    da_reserve((list), (count));                                               \
-    for (usize __e_i = 0; __e_i < (count); __e_i++) {                          \
-      da_get(list, da_len(list) + __e_i) = (__VA_ARGS__)[__e_i];               \
-    }                                                                          \
-    (list)->len += count;                                                      \
-  } while (0)
-
-#define da_insert(list, value, idx)                                            \
-  do {                                                                         \
-    da_reserve(list, 1);                                                       \
-    for (usize __r_i = idx + 1; __r_i < da_len(list) + 1; __r_i++) {           \
-      da_get(list, __r_i) = da_get(list, __r_i - 1);                           \
-    }                                                                          \
-    da_get(list, idx) = value;                                                 \
-    da_len(list)++;                                                            \
-  } while (0)
-
-#define da_remove(list, idx)                                                   \
-  do {                                                                         \
-    for (usize __r_i = idx + 1; __r_i < da_len(list); __r_i++) {               \
-      da_get(list, __r_i - 1) = da_get(list, __r_i);                           \
-    }                                                                          \
-    da_len(list)--;                                                            \
+#define da_reserve(list, size)                                                                     \
+  do {                                                                                             \
+    const usize __rs = da_len(list) + size;                                                        \
+    if (__rs < (list)->cap) {                                                                      \
+      break;                                                                                       \
+    }                                                                                              \
+    usize __ns = (list)->cap == 0 ? 5 : (list)->cap;                                               \
+    while (__ns < __rs) {                                                                          \
+      __ns *= 2;                                                                                   \
+    }                                                                                              \
+    da_resize(list, __ns);                                                                         \
   } while (0)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#define da_map(src, dest, map)                                                 \
-  do {                                                                         \
-    da_reserve((dest), da_len(src));                                           \
-    for (usize __m_i = 0; __m_i < da_len(src); __m_i++) {                      \
-      da_get(dest, __m_i) = map(da_get(src, __m_i));                           \
-    }                                                                          \
-    da_len(dest) = da_len(src);                                                \
+#define da_push(list, ...)                                                                         \
+  do {                                                                                             \
+    da_reserve((list), 1);                                                                         \
+    da_get(list, da_len(list)++) = (__VA_ARGS__);                                                  \
   } while (0)
 
-#define da_map_ctx(src, dest, map, ctx)                                        \
-  do {                                                                         \
-    da_reserve((dest), da_len(src));                                           \
-    for (usize __m_i = 0; __m_i < da_len(src); __m_i++) {                      \
-      da_get(dest, __m_i) = map(ctx, da_get(src, __m_i));                      \
-    }                                                                          \
-    da_len(dest) = da_len(src);                                                \
+#define da_extend(list, count, ...)                                                                \
+  do {                                                                                             \
+    da_reserve((list), (count));                                                                   \
+    for (usize __e_i = 0; __e_i < (count); __e_i++) {                                              \
+      da_get(list, da_len(list) + __e_i) = (__VA_ARGS__)[__e_i];                                   \
+    }                                                                                              \
+    (list)->len += count;                                                                          \
   } while (0)
 
-#define da_filter(src, dest, filter)                                           \
-  do {                                                                         \
-    da_reserve((dest), da_len(src));                                           \
-    usize __f_count = 0;                                                       \
-    for (usize __f_i = 0; __f_i < da_len(src); __f_i++) {                      \
-      if (filter(da_get(src, __f_i))) {                                        \
-        da_get(dest, __f_count++) = da_get(src, __f_i);                        \
-      }                                                                        \
-    }                                                                          \
-    da_len(dest) = __f_count;                                                  \
+#define da_insert(list, value, idx)                                                                \
+  do {                                                                                             \
+    da_reserve(list, 1);                                                                           \
+    for (usize __r_i = idx + 1; __r_i < da_len(list) + 1; __r_i++) {                               \
+      da_get(list, __r_i) = da_get(list, __r_i - 1);                                               \
+    }                                                                                              \
+    da_get(list, idx) = value;                                                                     \
+    da_len(list)++;                                                                                \
   } while (0)
 
-#define da_filter_ctx(src, dest, filter, ctx)                                  \
-  do {                                                                         \
-    da_reserve((dest), da_len(src));                                           \
-    usize __f_count = 0;                                                       \
-    for (usize __f_i = 0; __f_i < da_len(src); __f_i++) {                      \
-      if (filter((ctx), da_get(src, __f_i))) {                                 \
-        da_get(dest, __f_count++) = da_get(src, __f_i);                        \
-      }                                                                        \
-    }                                                                          \
-    da_len(dest) = __f_count;                                                  \
+#define da_remove(list, idx)                                                                       \
+  do {                                                                                             \
+    for (usize __r_i = idx + 1; __r_i < da_len(list); __r_i++) {                                   \
+      da_get(list, __r_i - 1) = da_get(list, __r_i);                                               \
+    }                                                                                              \
+    da_len(list)--;                                                                                \
   } while (0)
 
-#define da_sort(src, dest, sort)                                               \
-  do {                                                                         \
-    da_reserve((dest), da_len(src));                                           \
-    quicksort(&da_get(src, 0), &da_get(dest, 0), sizeof(da_get(src, 0)),       \
-              da_len(src), sort);                                              \
+///////////////////////////////////////////////////////////////////////////////
+
+#define da_map(src, dest, map)                                                                     \
+  do {                                                                                             \
+    da_reserve((dest), da_len(src));                                                               \
+    for (usize __m_i = 0; __m_i < da_len(src); __m_i++) {                                          \
+      da_get(dest, __m_i) = map(da_get(src, __m_i));                                               \
+    }                                                                                              \
+    da_len(dest) = da_len(src);                                                                    \
   } while (0)
 
-#define da_sort_ctx(src, dest, sort, ctx)                                      \
-  do {                                                                         \
-    da_reserve((dest), da_len(src));                                           \
-    quicksort_ctx((src)->items, (dest)->items, sizeof(da_get(src, 0)),         \
-                  da_len(src), sort, ctx);                                     \
+#define da_map_ctx(src, dest, map, ctx)                                                            \
+  do {                                                                                             \
+    da_reserve((dest), da_len(src));                                                               \
+    for (usize __m_i = 0; __m_i < da_len(src); __m_i++) {                                          \
+      da_get(dest, __m_i) = map(ctx, da_get(src, __m_i));                                          \
+    }                                                                                              \
+    da_len(dest) = da_len(src);                                                                    \
   } while (0)
 
-#define da_reverse(list)                                                       \
-  do {                                                                         \
-    da_reserve((list), 1);                                                     \
-    for (usize __r_i = 0; __r_i < (list)->len - __r_i - 1; __r_i++) {          \
-      da_get(list, da_len(list)) = da_get(list, __r_i);                        \
-      da_get(list, __r_i) = da_get(list, da_len(list) - __r_i - 1);            \
-      da_get(list, da_len(list) - __r_i - 1) = da_get(list, da_len(list));     \
-    }                                                                          \
+#define da_filter(src, dest, filter)                                                               \
+  do {                                                                                             \
+    da_reserve((dest), da_len(src));                                                               \
+    usize __f_count = 0;                                                                           \
+    for (usize __f_i = 0; __f_i < da_len(src); __f_i++) {                                          \
+      if (filter(da_get(src, __f_i))) {                                                            \
+        da_get(dest, __f_count++) = da_get(src, __f_i);                                            \
+      }                                                                                            \
+    }                                                                                              \
+    da_len(dest) = __f_count;                                                                      \
+  } while (0)
+
+#define da_filter_ctx(src, dest, filter, ctx)                                                      \
+  do {                                                                                             \
+    da_reserve((dest), da_len(src));                                                               \
+    usize __f_count = 0;                                                                           \
+    for (usize __f_i = 0; __f_i < da_len(src); __f_i++) {                                          \
+      if (filter((ctx), da_get(src, __f_i))) {                                                     \
+        da_get(dest, __f_count++) = da_get(src, __f_i);                                            \
+      }                                                                                            \
+    }                                                                                              \
+    da_len(dest) = __f_count;                                                                      \
+  } while (0)
+
+#define da_sort(src, dest, sort)                                                                   \
+  do {                                                                                             \
+    da_reserve((dest), da_len(src));                                                               \
+    quicksort(&da_get(src, 0), &da_get(dest, 0), sizeof(da_get(src, 0)), da_len(src), sort);       \
+  } while (0)
+
+#define da_sort_ctx(src, dest, sort, ctx)                                                          \
+  do {                                                                                             \
+    da_reserve((dest), da_len(src));                                                               \
+    quicksort_ctx((src)->items, (dest)->items, sizeof(da_get(src, 0)), da_len(src), sort, ctx);    \
+  } while (0)
+
+#define da_reverse(list)                                                                           \
+  do {                                                                                             \
+    da_reserve((list), 1);                                                                         \
+    for (usize __r_i = 0; __r_i < (list)->len - __r_i - 1; __r_i++) {                              \
+      da_get(list, da_len(list)) = da_get(list, __r_i);                                            \
+      da_get(list, __r_i) = da_get(list, da_len(list) - __r_i - 1);                                \
+      da_get(list, da_len(list) - __r_i - 1) = da_get(list, da_len(list));                         \
+    }                                                                                              \
   } while (0)
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1345,43 +1339,42 @@ typedef struct {
   ErrorInfo *info;
 } Error;
 
-#define ErrNew                                                                 \
-  ((Error){                                                                    \
-      .failure = false,                                                        \
-      .panic_on_emit = false,                                                  \
-      .location = FILE_LOCATION_CURRENT,                                       \
-      .arena = {0},                                                            \
+#define ErrNew                                                                                     \
+  ((Error){                                                                                        \
+      .failure = false,                                                                            \
+      .panic_on_emit = false,                                                                      \
+      .location = FILE_LOCATION_CURRENT,                                                           \
+      .arena = {0},                                                                                \
   })
 
-#define ErrPanic                                                               \
-  ((Error[]){{                                                                 \
-      .failure = false,                                                        \
-      .panic_on_emit = true,                                                   \
-      .location = FILE_LOCATION_CURRENT,                                       \
-      .arena = {0},                                                            \
+#define ErrPanic                                                                                   \
+  ((Error[]){{                                                                                     \
+      .failure = false,                                                                            \
+      .panic_on_emit = true,                                                                       \
+      .location = FILE_LOCATION_CURRENT,                                                           \
+      .arena = {0},                                                                                \
   }})
 
 #define ErrDefault ((Error *)NULL)
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define error_emit(E, code, ...)                                               \
-  _error_internal_emit(E, code, FILE_LOCATION_CURRENT, __VA_ARGS__);
+#define error_emit(E, code, ...) _error_internal_emit(E, code, FILE_LOCATION_CURRENT, __VA_ARGS__);
 
-#define error_context(E, ...)                                                  \
-  if (_error_internal_occured(E)) {                                            \
-    Error *__error_context__ = (E);                                            \
-    __VA_ARGS__                                                                \
-    if ((E)->failure) {                                                        \
-      _error_internal_panic(E);                                                \
-    }                                                                          \
+#define error_context(E, ...)                                                                      \
+  if (_error_internal_occured(E)) {                                                                \
+    Error *__error_context__ = (E);                                                                \
+    __VA_ARGS__                                                                                    \
+    if ((E)->failure) {                                                                            \
+      _error_internal_panic(E);                                                                    \
+    }                                                                                              \
   }
 
-#define error_propagate(E, ...)                                                \
-  if (_error_internal_occured(E)) {                                            \
-    Error *__error_context__ = (E);                                            \
-    error_add_location();                                                      \
-    __VA_ARGS__                                                                \
+#define error_propagate(E, ...)                                                                    \
+  if (_error_internal_occured(E)) {                                                                \
+    Error *__error_context__ = (E);                                                                \
+    error_add_location();                                                                          \
+    __VA_ARGS__                                                                                    \
   }
 
 #define error_panic() _error_internal_panic(__error_context__)
@@ -1390,20 +1383,16 @@ typedef struct {
 #define error_msg() (__error_context__->info->msg)
 #define error_code(T) ((T)__error_context__->info->code)
 
-#define error_set_code(code)                                                   \
-  _error_internal_set_code(__error_context__, (i64)code)
-#define error_set_msg(...)                                                     \
-  _error_internal_set_msg(__error_context__, __VA_ARGS__)
+#define error_set_code(code) _error_internal_set_code(__error_context__, (i64)code)
+#define error_set_msg(...) _error_internal_set_msg(__error_context__, __VA_ARGS__)
 
-#define error_add_location(...)                                                \
+#define error_add_location(...)                                                                    \
   _error_internal_add_location(__error_context__, FILE_LOCATION_CURRENT)
-#define error_add_note(...)                                                    \
-  _error_internal_add_note(__error_context__, __VA_ARGS__)
+#define error_add_note(...) _error_internal_add_note(__error_context__, __VA_ARGS__)
 
 ////////////////////////////////////////////////////////////////////////////
 
-void FMT(4) _error_internal_emit(Error *err, i32 code, FileLocation location,
-                                 const char *fmt, ...);
+void FMT(4) _error_internal_emit(Error *err, i32 code, FileLocation location, const char *fmt, ...);
 bool _error_internal_occured(Error *err);
 void NORETURN _error_internal_panic(Error *err);
 void _error_internal_except(Error *err);
@@ -1505,14 +1494,13 @@ that takes an additional context parameter.
 ////////////////////////////////////////////////////////////////////////////
 
 /* Sort an array with a function */
-void quicksort(const void *src, void *dest, usize size, usize nelem,
-               CompareFn compare);
+void quicksort(const void *src, void *dest, usize size, usize nelem, CompareFn compare);
 
 ////////////////////////////////////////////////////////////////////////////
 
 /* Sort an array with a function that also takes a context */
-void quicksort_ctx(const void *src, void *dest, usize size, usize nelem,
-                   CompareCtxFn compare, const void *ctx);
+void quicksort_ctx(const void *src, void *dest, usize size, usize nelem, CompareCtxFn compare,
+                   const void *ctx);
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -1582,10 +1570,8 @@ void cmd_exec(Error *error, size_t argc, Str *argv);
 typedef DA(Str) Cmd;
 
 #define cmd_new(arena) da_new(arena)
-#define cmd_push(cmd, ...)                                                     \
-  da_extend(cmd, ARRAY_LEN((Str[]){__VA_ARGS__}), (Str[]){__VA_ARGS__})
-#define cmd_extend(cmd, ...)                                                   \
-  da_extend(cmd, ARRAY_LEN(__VA_ARGS__), (__VA_ARGS__))
+#define cmd_push(cmd, ...) da_extend(cmd, ARRAY_LEN((Str[]){__VA_ARGS__}), (Str[]){__VA_ARGS__})
+#define cmd_extend(cmd, ...) da_extend(cmd, ARRAY_LEN(__VA_ARGS__), (__VA_ARGS__))
 #define cmd_extend_da(cmd, da) da_extend(cmd, (da)->len, (da)->items)
 
 void cmd_exec_da(Error *error, const Cmd *cmd);
@@ -2037,16 +2023,16 @@ These functions are available for `f32` and `f64`.
 
 // #include "cebus/core/defines.h"
 
-#define FLOAT_DECL(T)                                                          \
-  CONST_FN bool T##_eq(T a, T b);                                              \
-  CONST_FN bool T##_eq_eps(T a, T b, T epsilon);                               \
-  CONST_FN bool T##_isnan(T value);                                            \
-  CONST_FN T T##_abs(T value);                                                 \
-  CONST_FN T T##_min(T a, T b);                                                \
-  CONST_FN T T##_max(T a, T b);                                                \
-  CONST_FN T T##_clamp(T min, T max, T value);                                 \
-  CONST_FN T T##_lerp(T min, T max, T value);                                  \
-  CONST_FN T T##_rad(T deg);                                                   \
+#define FLOAT_DECL(T)                                                                              \
+  CONST_FN bool T##_eq(T a, T b);                                                                  \
+  CONST_FN bool T##_eq_eps(T a, T b, T epsilon);                                                   \
+  CONST_FN bool T##_isnan(T value);                                                                \
+  CONST_FN T T##_abs(T value);                                                                     \
+  CONST_FN T T##_min(T a, T b);                                                                    \
+  CONST_FN T T##_max(T a, T b);                                                                    \
+  CONST_FN T T##_clamp(T min, T max, T value);                                                     \
+  CONST_FN T T##_lerp(T min, T max, T value);                                                      \
+  CONST_FN T T##_rad(T deg);                                                                       \
   CONST_FN T T##_deg(T rad);
 
 FLOAT_DECL(f32)
@@ -2105,46 +2091,46 @@ suitable for `qsort`.
 // #include "cebus/core/arena.h"
 // #include "cebus/core/defines.h"
 
-#define INTEGER_DECL(T)                                                        \
-  /* BIT OPERATIONS */                                                         \
-  CONST_FN T T##_reverse_bits(T value);                                        \
-  CONST_FN usize T##_leading_ones(T value);                                    \
-  CONST_FN usize T##_trailing_ones(T value);                                   \
-  CONST_FN usize T##_leading_zeros(T value);                                   \
-  CONST_FN usize T##_trailing_zeros(T value);                                  \
-  CONST_FN usize T##_count_zeros(T value);                                     \
-  CONST_FN usize T##_count_ones(T value);                                      \
-  /* BIT OPERATIONS END */                                                     \
-                                                                               \
-  /* BYTE ORDER OPERATIONS */                                                  \
-  CONST_FN T T##_swap_bytes(T value);                                          \
-  /*  BIG ENDIAN OPERATIONS */                                                 \
-  CONST_FN T T##_to_be(T value);                                               \
-  CONST_FN T T##_from_be(T value);                                             \
-  T T##_from_be_bytes(Bytes bytes);                                            \
-  Bytes T##_to_be_bytes(T value, Arena *arena);                                \
-  /*  LITTLE ENDIAN OPERATIONS */                                              \
-  CONST_FN T T##_to_le(T value);                                               \
-  CONST_FN T T##_from_le(T value);                                             \
-  T T##_from_le_bytes(Bytes bytes);                                            \
-  Bytes T##_to_le_bytes(T value, Arena *arena);                                \
-  /*  NATIVE ENDIAN OPERATIONS */                                              \
-  T T##_from_ne_bytes(Bytes bytes);                                            \
-  Bytes T##_to_ne_bytes(T value, Arena *arena);                                \
-  /* BYTE ORDER OPERATIONS END */                                              \
-                                                                               \
-  /* MATH OPERATIONS */                                                        \
-  CONST_FN T T##_max(T a, T b);                                                \
-  CONST_FN T T##_min(T a, T b);                                                \
-  CONST_FN T T##_clamp(T min, T max, T value);                                 \
-  /* MATH OPERATIONS END */                                                    \
-                                                                               \
-  /* UTILS */                                                                  \
-  CONST_FN u64 T##_hash(T value);                                              \
-  void T##_swap(T *v1, T *v2);                                                 \
-  CONST_FN CmpOrdering T##_compare_lt(T a, T b);                               \
-  CONST_FN CmpOrdering T##_compare_gt(T a, T b);                               \
-  CONST_FN CompareFn T##_compare_qsort(CmpOrdering ordering);                  \
+#define INTEGER_DECL(T)                                                                            \
+  /* BIT OPERATIONS */                                                                             \
+  CONST_FN T T##_reverse_bits(T value);                                                            \
+  CONST_FN usize T##_leading_ones(T value);                                                        \
+  CONST_FN usize T##_trailing_ones(T value);                                                       \
+  CONST_FN usize T##_leading_zeros(T value);                                                       \
+  CONST_FN usize T##_trailing_zeros(T value);                                                      \
+  CONST_FN usize T##_count_zeros(T value);                                                         \
+  CONST_FN usize T##_count_ones(T value);                                                          \
+  /* BIT OPERATIONS END */                                                                         \
+                                                                                                   \
+  /* BYTE ORDER OPERATIONS */                                                                      \
+  CONST_FN T T##_swap_bytes(T value);                                                              \
+  /*  BIG ENDIAN OPERATIONS */                                                                     \
+  CONST_FN T T##_to_be(T value);                                                                   \
+  CONST_FN T T##_from_be(T value);                                                                 \
+  T T##_from_be_bytes(Bytes bytes);                                                                \
+  Bytes T##_to_be_bytes(T value, Arena *arena);                                                    \
+  /*  LITTLE ENDIAN OPERATIONS */                                                                  \
+  CONST_FN T T##_to_le(T value);                                                                   \
+  CONST_FN T T##_from_le(T value);                                                                 \
+  T T##_from_le_bytes(Bytes bytes);                                                                \
+  Bytes T##_to_le_bytes(T value, Arena *arena);                                                    \
+  /*  NATIVE ENDIAN OPERATIONS */                                                                  \
+  T T##_from_ne_bytes(Bytes bytes);                                                                \
+  Bytes T##_to_ne_bytes(T value, Arena *arena);                                                    \
+  /* BYTE ORDER OPERATIONS END */                                                                  \
+                                                                                                   \
+  /* MATH OPERATIONS */                                                                            \
+  CONST_FN T T##_max(T a, T b);                                                                    \
+  CONST_FN T T##_min(T a, T b);                                                                    \
+  CONST_FN T T##_clamp(T min, T max, T value);                                                     \
+  /* MATH OPERATIONS END */                                                                        \
+                                                                                                   \
+  /* UTILS */                                                                                      \
+  CONST_FN u64 T##_hash(T value);                                                                  \
+  void T##_swap(T *v1, T *v2);                                                                     \
+  CONST_FN CmpOrdering T##_compare_lt(T a, T b);                                                   \
+  CONST_FN CmpOrdering T##_compare_gt(T a, T b);                                                   \
+  CONST_FN CompareFn T##_compare_qsort(CmpOrdering ordering);                                      \
   /* UTILS END */
 
 INTEGER_DECL(u8)
@@ -2410,27 +2396,22 @@ bool utf8_validate(Utf8 s);
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define HM_TYPES(DO)                                                           \
-  DO(f32)                                                                      \
-  DO(f64)                                                                      \
-  DO(i8)                                                                       \
-  DO(u8)                                                                       \
-  DO(i16)                                                                      \
-  DO(u16)                                                                      \
-  DO(i32)                                                                      \
-  DO(u32)                                                                      \
-  DO(i64)                                                                      \
-  DO(u64)                                                                      \
+#define HM_TYPES(DO)                                                                               \
+  DO(f32)                                                                                          \
+  DO(f64)                                                                                          \
+  DO(i8)                                                                                           \
+  DO(u8)                                                                                           \
+  DO(i16)                                                                                          \
+  DO(u16)                                                                                          \
+  DO(i32)                                                                                          \
+  DO(u32)                                                                                          \
+  DO(i64)                                                                                          \
+  DO(u64)                                                                                          \
   DO(usize)
 
 #define HM_DECLARE_ENUM(T) HM_TYPE_##T,
 
-typedef enum {
-  HM_NONE,
-  HM_PTR,
-  HM_CONST_PTR,
-  HM_TYPES(HM_DECLARE_ENUM)
-} HashTypes;
+typedef enum { HM_NONE, HM_PTR, HM_CONST_PTR, HM_TYPES(HM_DECLARE_ENUM) } HashTypes;
 
 #define HM_DECLARE_MEMBER(T) T T;
 
@@ -2513,8 +2494,8 @@ static HashValue *hm_get(const HashMap *hm, u64 hash) {
 }
 
 static const char *hm_type(HashTypes type) {
-#define RETURN_STR(T)                                                          \
-  case HM_TYPE_##T:                                                            \
+#define RETURN_STR(T)                                                                              \
+  case HM_TYPE_##T:                                                                                \
     return #T;
 
   switch (type) {
@@ -2628,20 +2609,19 @@ bool hm_remove(HashMap *hm, u64 hash) {
   return false;
 }
 
-#define TYPE_CHECK(hm, T, ret)                                                 \
-  do {                                                                         \
-    if (hm->type != HM_NONE && (hm->type != T)) {                              \
-      cebus_log_warning("HashMap Type Error: expected '%s' got '%s'",          \
-                        hm_type(hm->type), #T);                                \
-      return ret;                                                              \
-    }                                                                          \
+#define TYPE_CHECK(hm, T, ret)                                                                     \
+  do {                                                                                             \
+    if (hm->type != HM_NONE && (hm->type != T)) {                                                  \
+      cebus_log_warning("HashMap Type Error: expected '%s' got '%s'", hm_type(hm->type), #T);      \
+      return ret;                                                                                  \
+    }                                                                                              \
   } while (0)
 
-#define HM_INSERT_IMPL(T)                                                      \
-  bool hm_insert_##T(HashMap *hm, u64 hash, T value) {                         \
-    TYPE_CHECK(hm, HM_TYPE_##T, false);                                        \
-    hm->type = HM_TYPE_##T;                                                    \
-    return hm_insert(hm, hash, (HashValue){.as.T = value});                    \
+#define HM_INSERT_IMPL(T)                                                                          \
+  bool hm_insert_##T(HashMap *hm, u64 hash, T value) {                                             \
+    TYPE_CHECK(hm, HM_TYPE_##T, false);                                                            \
+    hm->type = HM_TYPE_##T;                                                                        \
+    return hm_insert(hm, hash, (HashValue){.as.T = value});                                        \
   }
 
 HM_TYPES(HM_INSERT_IMPL)
@@ -2660,11 +2640,11 @@ bool hm_insert_ptr(HashMap *hm, u64 hash, const void *value) {
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define HM_GET_MUT_IMPL(T)                                                     \
-  T *hm_get_##T##_mut(const HashMap *hm, u64 hash) {                           \
-    TYPE_CHECK(hm, HM_TYPE_##T, NULL);                                         \
-    HashValue *value = hm_get(hm, hash);                                       \
-    return value ? &value->as.T : NULL;                                        \
+#define HM_GET_MUT_IMPL(T)                                                                         \
+  T *hm_get_##T##_mut(const HashMap *hm, u64 hash) {                                               \
+    TYPE_CHECK(hm, HM_TYPE_##T, NULL);                                                             \
+    HashValue *value = hm_get(hm, hash);                                                           \
+    return value ? &value->as.T : NULL;                                                            \
   }
 
 HM_TYPES(HM_GET_MUT_IMPL)
@@ -2677,10 +2657,8 @@ void *hm_get_ptr_mut(const HashMap *hm, u64 hash) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#define HM_GET_IMPL(T)                                                         \
-  const T *hm_get_##T(const HashMap *hm, u64 hash) {                           \
-    return hm_get_##T##_mut(hm, hash);                                         \
-  }
+#define HM_GET_IMPL(T)                                                                             \
+  const T *hm_get_##T(const HashMap *hm, u64 hash) { return hm_get_##T##_mut(hm, hash); }
 
 HM_TYPES(HM_GET_IMPL)
 
@@ -2981,17 +2959,11 @@ void sb_clear(StringBuilder *sb) { da_clear(sb); }
 
 Str sb_to_str(StringBuilder *sb) { return str_from_parts(sb->len, sb->items); }
 
-void sb_append_parts(StringBuilder *sb, usize size, const char *s) {
-  da_extend(sb, size, s);
-}
+void sb_append_parts(StringBuilder *sb, usize size, const char *s) { da_extend(sb, size, s); }
 
-void sb_append_cstr(StringBuilder *sb, const char *cstr) {
-  da_extend(sb, strlen(cstr), cstr);
-}
+void sb_append_cstr(StringBuilder *sb, const char *cstr) { da_extend(sb, strlen(cstr), cstr); }
 
-void sb_append_str(StringBuilder *sb, Str str) {
-  da_extend(sb, str.len, str.data);
-}
+void sb_append_str(StringBuilder *sb, Str str) { da_extend(sb, str.len, str.data); }
 
 void sb_append_c(StringBuilder *sb, char c) { da_push(sb, c); }
 
@@ -3211,8 +3183,8 @@ void arena_free_chunk(Arena *arena, void *ptr) {
 
 static void error_dump(Error *error) {
 
-  fprintf(stderr, "[Error]: %s:%d: %s()\n", error->location.file,
-          error->location.line, error->location.function);
+  fprintf(stderr, "[Error]: %s:%d: %s()\n", error->location.file, error->location.line,
+          error->location.function);
   Str message = sb_to_str(&error->info->message);
   Str msg = str_chop_by_delim(&message, '\n');
   fprintf(stderr, "  [Message]: " STR_FMT "\n", STR_ARG(msg));
@@ -3225,15 +3197,14 @@ static void error_dump(Error *error) {
   usize location_count = error->info->locations.len;
   for (usize i = 0; i < location_count; ++i) {
     FileLocation *location = &da_pop(&error->info->locations);
-    fprintf(stderr, "  [%" USIZE_FMT "]: %s:%d: %s()\n", i + 1, location->file,
-            location->line, location->function);
+    fprintf(stderr, "  [%" USIZE_FMT "]: %s:%d: %s()\n", i + 1, location->file, location->line,
+            location->function);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////
 
-void _error_internal_emit(Error *err, i32 code, FileLocation location,
-                          const char *fmt, ...) {
+void _error_internal_emit(Error *err, i32 code, FileLocation location, const char *fmt, ...) {
   if (err == ErrDefault) {
     err = ((Error[]){{
         .failure = true,
@@ -3349,15 +3320,14 @@ static const struct CmLogLevelPrefix log_level_str[] = {
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define _LOG(__log_level, __fmt)                                               \
-  _cebus_log(__log_level);                                                     \
-  va_list __args;                                                              \
-  va_start(__args, __fmt);                                                     \
-  vfprintf(log_level_str[__log_level].file == STDERR_FILENO ? stderr : stdout, \
-           __fmt, __args);                                                     \
-  va_end(__args);                                                              \
-  fprintf(log_level_str[__log_level].file == STDERR_FILENO ? stderr : stdout,  \
-          "%s\n", display_colors ? FMT_RESET : "");
+#define _LOG(__log_level, __fmt)                                                                   \
+  _cebus_log(__log_level);                                                                         \
+  va_list __args;                                                                                  \
+  va_start(__args, __fmt);                                                                         \
+  vfprintf(log_level_str[__log_level].file == STDERR_FILENO ? stderr : stdout, __fmt, __args);     \
+  va_end(__args);                                                                                  \
+  fprintf(log_level_str[__log_level].file == STDERR_FILENO ? stderr : stdout, "%s\n",              \
+          display_colors ? FMT_RESET : "");
 
 static bool display_colors = false;
 static bool tty_checked = false;
@@ -3403,8 +3373,7 @@ void _cebus_log_trace(const char *fmt, ...) { _LOG(CEBUS_LOG_TRACE, fmt); }
 
 ////////////////////////////////////////////////////////////////////////////
 
-void quicksort(const void *src, void *dest, usize size, usize nelem,
-               CompareFn compare) {
+void quicksort(const void *src, void *dest, usize size, usize nelem, CompareFn compare) {
   if (dest != src) {
     memcpy(dest, src, size * nelem);
   }
@@ -3425,8 +3394,8 @@ static inline void swap(void *a, void *b, usize size) {
 
 ////////////////////////////////////////////////////////////////////////////
 
-static inline usize partition_ctx(u8 *base, usize size, usize low, usize high,
-                                  CompareCtxFn compare, const void *ctx) {
+static inline usize partition_ctx(u8 *base, usize size, usize low, usize high, CompareCtxFn compare,
+                                  const void *ctx) {
   u8 *pivot = &base[high * size];
   usize i = low - 1;
   for (usize j = low; j <= high - 1; j++) {
@@ -3439,8 +3408,8 @@ static inline usize partition_ctx(u8 *base, usize size, usize low, usize high,
   return (i + 1);
 }
 
-static void _quicksort_ctx(void *base, size_t size, usize low, usize high,
-                           CompareCtxFn compare, const void *ctx) {
+static void _quicksort_ctx(void *base, size_t size, usize low, usize high, CompareCtxFn compare,
+                           const void *ctx) {
   if (low < high) {
     usize pi = partition_ctx(base, size, low, high, compare, ctx);
     _quicksort_ctx(base, size, low, pi ? pi - 1 : 0, compare, ctx);
@@ -3448,8 +3417,8 @@ static void _quicksort_ctx(void *base, size_t size, usize low, usize high,
   }
 }
 
-void quicksort_ctx(const void *src, void *dest, usize size, usize nelem,
-                   CompareCtxFn compare, const void *ctx) {
+void quicksort_ctx(const void *src, void *dest, usize size, usize nelem, CompareCtxFn compare,
+                   const void *ctx) {
   if (dest != src) {
     memcpy(dest, src, size * nelem);
   }
@@ -3467,9 +3436,7 @@ void quicksort_ctx(const void *src, void *dest, usize size, usize nelem,
 #include <stdlib.h>
 #include <string.h>
 
-void cmd_exec_da(Error *error, const Cmd *cmd) {
-  cmd_exec(error, cmd->len, cmd->items);
-}
+void cmd_exec_da(Error *error, const Cmd *cmd) { cmd_exec(error, cmd->len, cmd->items); }
 
 ////////////////////////////////////////////////////////////////////////////
 #if defined(LINUX)
@@ -3505,12 +3472,10 @@ void cmd_exec(Error *error, size_t argc, Str *argv) {
   if (WIFEXITED(status)) {
     int exit_code = WEXITSTATUS(status);
     if (exit_code == CMD_NOT_FOUND) {
-      error_emit(error, CMD_NOT_FOUND, "command not found: " STR_FMT,
-                 STR_ARG(argv[0]));
+      error_emit(error, CMD_NOT_FOUND, "command not found: " STR_FMT, STR_ARG(argv[0]));
     } else if (exit_code != 0) {
-      error_emit(error, exit_code,
-                 "command failed: " STR_FMT ": exit code: %d\n",
-                 STR_ARG(argv[0]), exit_code);
+      error_emit(error, exit_code, "command failed: " STR_FMT ": exit code: %d\n", STR_ARG(argv[0]),
+                 exit_code);
     }
   }
 }
@@ -3541,11 +3506,9 @@ void cmd_exec(Error *error, size_t argc, Str *argv) {
   if (!CreateProcessA(NULL, cmd, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
     DWORD ec = GetLastError();
     if (ec == 0x2) {
-      error_emit(error, CMD_NOT_FOUND, "command not found: " STR_FMT,
-                 STR_ARG(argv[0]));
+      error_emit(error, CMD_NOT_FOUND, "command not found: " STR_FMT, STR_ARG(argv[0]));
     } else {
-      error_emit(error, (i32)ec, "command creation failed: " STR_FMT ": %lu",
-                 STR_ARG(argv[0]), ec);
+      error_emit(error, (i32)ec, "command creation failed: " STR_FMT ": %lu", STR_ARG(argv[0]), ec);
     }
     goto defer;
   }
@@ -3554,14 +3517,13 @@ void cmd_exec(Error *error, size_t argc, Str *argv) {
   DWORD exit_code = 0;
   if (!GetExitCodeProcess(pi.hProcess, &exit_code)) {
     DWORD ec = GetLastError();
-    error_emit(error, (i32)ec,
-               "Could not get exit code of process: " STR_FMT ": %lu",
+    error_emit(error, (i32)ec, "Could not get exit code of process: " STR_FMT ": %lu",
                STR_ARG(argv[0]), ec);
     goto defer;
   }
   if (exit_code != 0) {
-    error_emit(error, (i32)exit_code, "command failed: " STR_FMT ": %lu",
-               STR_ARG(command), exit_code);
+    error_emit(error, (i32)exit_code, "command failed: " STR_FMT ": %lu", STR_ARG(command),
+               exit_code);
     goto defer;
   }
 
@@ -3590,8 +3552,7 @@ defer:
 
 Dll *dll_load(Path path, Error *error) {
   if (!fs_exists(path)) {
-    error_emit(error, FS_NOT_FOUND, "dll: library does not exist: " STR_FMT,
-               STR_ARG(path));
+    error_emit(error, FS_NOT_FOUND, "dll: library does not exist: " STR_FMT, STR_ARG(path));
     return NULL;
   }
   char lib_path[FILENAME_MAX] = {0};
@@ -3630,8 +3591,7 @@ defer:
 
 Dll *dll_load(Str path, Error *error) {
   if (!file_exists(path)) {
-    error_emit(error, -1, "dll: library does not exist: " STR_FMT,
-               STR_ARG(path));
+    error_emit(error, -1, "dll: library does not exist: " STR_FMT, STR_ARG(path));
     return NULL;
   }
   char lib_path[FILENAME_MAX] = {0};
@@ -3647,8 +3607,8 @@ Dll *dll_load(Str path, Error *error) {
   HINSTANCE handle = LoadLibraryA(temp_file_name);
   if (handle == NULL) {
     DWORD ec = GetLastError();
-    error_emit(error, (i32)ec, "error loading library: " STR_FMT ": %lu\n",
-               STR_ARG(path), GetLastError());
+    error_emit(error, (i32)ec, "error loading library: " STR_FMT ": %lu\n", STR_ARG(path),
+               GetLastError());
     return NULL;
   }
   return handle;
@@ -3667,8 +3627,7 @@ Function dll_symbol(Dll *handle, Str symbol, Error *error) {
   Function fn = (Function)GetProcAddress(handle, symbol.data);
   if (fn == NULL) {
     DWORD err_code = GetLastError();
-    error_emit(error, (i32)err_code, "dll function: %s: %lu\n", symbol.data,
-               err_code);
+    error_emit(error, (i32)err_code, "dll function: %s: %lu\n", symbol.data, err_code);
     goto defer;
   }
 
@@ -3714,8 +3673,7 @@ FILE *fs_file_open(Path path, const char *mode, Error *error) {
   errno = 0;
   FILE *handle = fopen(_filename, mode);
   if (handle == NULL) {
-    error_emit(error, errno, "Could not open file: '%s': %s", _filename,
-               strerror(errno));
+    error_emit(error, errno, "Could not open file: '%s': %s", _filename, strerror(errno));
   }
   return handle;
 }
@@ -3798,8 +3756,8 @@ void fs_rename(Path old_path, Path new_path, Error *error) {
   errno = 0;
   int ret = rename(_old_path, _new_path);
   if (ret == -1) {
-    error_emit(error, errno, "Could not rename the file: " STR_FMT ": %s",
-               STR_ARG(old_path), strerror(errno));
+    error_emit(error, errno, "Could not rename the file: " STR_FMT ": %s", STR_ARG(old_path),
+               strerror(errno));
   }
 }
 
@@ -3810,8 +3768,8 @@ void fs_remove(Path path, Error *error) {
   errno = 0;
   int ret = remove(_path);
   if (ret == -1) {
-    error_emit(error, errno, "Could not remove the file: " STR_FMT ": %s",
-               STR_ARG(path), strerror(errno));
+    error_emit(error, errno, "Could not remove the file: " STR_FMT ": %s", STR_ARG(path),
+               strerror(errno));
   }
 }
 
@@ -4090,9 +4048,8 @@ Str os_getenv(const char *env, Error *error) {
 void os_chdir(Path path) {
   char pathname[FILENAME_MAX] = {0};
   memcpy(pathname, path.data, usize_min(path.len, FILENAME_MAX));
-  cebus_assert(chdir(pathname) == -1,
-               "Could not change directory to '" STR_FMT "': %s", STR_ARG(path),
-               strerror(errno));
+  cebus_assert(chdir(pathname) == -1, "Could not change directory to '" STR_FMT "': %s",
+               STR_ARG(path), strerror(errno));
 }
 
 Path os_getcwd(Arena *arena) {
@@ -4137,9 +4094,7 @@ Path os_getcwd(Arena *arena) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Bytes bytes_from_parts(usize size, const void *data) {
-  return (Bytes){.size = size, .data = data};
-}
+Bytes bytes_from_parts(usize size, const void *data) { return (Bytes){.size = size, .data = data}; }
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -4299,22 +4254,20 @@ char c_u8_to_HEX(u8 d) {
 
 // #include "float.h" // IWYU pragma: keep
 
-#define FLOAT_IMPL(T, BITS)                                                    \
-  bool T##_eq(T a, T b) { return T##_abs(a - b) < F##BITS##_EPSILON; }         \
-  bool T##_eq_eps(T a, T b, T epsilon) { return T##_abs(a - b) < epsilon; }    \
-  bool T##_isnan(T value) { return value != value; }                           \
-  T T##_abs(T value) {                                                         \
-    u##BITS *i = (u##BITS *)&value;                                            \
-    *i &= ~((u##BITS)0x8 << (BITS - 1 - 3));                                   \
-    return value;                                                              \
-  }                                                                            \
-  T T##_min(T a, T b) { return a < b ? a : b; }                                \
-  T T##_max(T a, T b) { return a > b ? a : b; }                                \
-  T T##_clamp(T min, T max, T value) {                                         \
-    return value < min ? min : value > max ? max : value;                      \
-  }                                                                            \
-  T T##_lerp(T min, T max, T value) { return min + value * (max - min); }      \
-  T T##_rad(T deg) { return deg * ((T)F64_PI / 180.0f); }                      \
+#define FLOAT_IMPL(T, BITS)                                                                        \
+  bool T##_eq(T a, T b) { return T##_abs(a - b) < F##BITS##_EPSILON; }                             \
+  bool T##_eq_eps(T a, T b, T epsilon) { return T##_abs(a - b) < epsilon; }                        \
+  bool T##_isnan(T value) { return value != value; }                                               \
+  T T##_abs(T value) {                                                                             \
+    u##BITS *i = (u##BITS *)&value;                                                                \
+    *i &= ~((u##BITS)0x8 << (BITS - 1 - 3));                                                       \
+    return value;                                                                                  \
+  }                                                                                                \
+  T T##_min(T a, T b) { return a < b ? a : b; }                                                    \
+  T T##_max(T a, T b) { return a > b ? a : b; }                                                    \
+  T T##_clamp(T min, T max, T value) { return value < min ? min : value > max ? max : value; }     \
+  T T##_lerp(T min, T max, T value) { return min + value * (max - min); }                          \
+  T T##_rad(T deg) { return deg * ((T)F64_PI / 180.0f); }                                          \
   T T##_deg(T rad) { return rad * ((T)F64_PI / 180.0f); }
 
 FLOAT_IMPL(f32, 32)
@@ -4326,231 +4279,226 @@ FLOAT_IMPL(f64, 64)
 // #include "cebus/core/platform.h"
 // #include "cebus/type/byte.h"
 
-#define INTEGER_IMPL(T, BITS)                                                  \
-  /* BIT OPERATIONS */                                                         \
-  T T##_reverse_bits(T value) {                                                \
-    T reversed = 0;                                                            \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      reversed = (T)(reversed << 1);                                           \
-      if (value & 1) {                                                         \
-        reversed = reversed | 1;                                               \
-      }                                                                        \
-      value = value >> 1;                                                      \
-    }                                                                          \
-    return reversed;                                                           \
-  }                                                                            \
-                                                                               \
-  usize T##_leading_ones(T value) {                                            \
-    usize count = 0;                                                           \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      if (!(value >> (BITS - i - 1) & (T)0x1)) {                               \
-        break;                                                                 \
-      }                                                                        \
-      count++;                                                                 \
-    }                                                                          \
-    return count;                                                              \
-  }                                                                            \
-                                                                               \
-  usize T##_trailing_ones(T value) {                                           \
-    usize count = 0;                                                           \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      if (!(value >> i & (T)0x1)) {                                            \
-        break;                                                                 \
-      }                                                                        \
-      count++;                                                                 \
-    }                                                                          \
-    return count;                                                              \
-  }                                                                            \
-                                                                               \
-  usize T##_leading_zeros(T value) {                                           \
-    usize count = 0;                                                           \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      if (value >> (BITS - i - 1) & (T)0x1) {                                  \
-        break;                                                                 \
-      }                                                                        \
-      count++;                                                                 \
-    }                                                                          \
-    return count;                                                              \
-  }                                                                            \
-                                                                               \
-  usize T##_trailing_zeros(T value) {                                          \
-    usize count = 0;                                                           \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      if (value >> i & (T)0x1) {                                               \
-        break;                                                                 \
-      }                                                                        \
-      count++;                                                                 \
-    }                                                                          \
-    return count;                                                              \
-  }                                                                            \
-                                                                               \
-  usize T##_count_zeros(T value) {                                             \
-    usize count = 0;                                                           \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      if (!(value >> i & (T)0x1)) {                                            \
-        count++;                                                               \
-      }                                                                        \
-    }                                                                          \
-    return count;                                                              \
-  }                                                                            \
-                                                                               \
-  usize T##_count_ones(T value) {                                              \
-    usize count = 0;                                                           \
-    for (usize i = 0; i < BITS; i++) {                                         \
-      if (value >> i & (T)0x1) {                                               \
-        count++;                                                               \
-      }                                                                        \
-    }                                                                          \
-    return count;                                                              \
-  }                                                                            \
-  /* BIT OPERATIONS END */                                                     \
-                                                                               \
-  /* BYTE ORDER OPERATIONS */                                                  \
-  T T##_swap_bytes(T value) {                                                  \
-    if (1 < sizeof(T)) {                                                       \
-      u8 *bytes = (u8 *)&value;                                                \
-      for (usize i = 0; i < (sizeof(T) + 1) / 2; i++) {                        \
-        u8 temp = bytes[i];                                                    \
-        bytes[i] = bytes[sizeof(T) - i - 1];                                   \
-        bytes[sizeof(T) - i - 1] = temp;                                       \
-      }                                                                        \
-    }                                                                          \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  /*  BIG ENDIAN OPERATIONS */                                                 \
-  T T##_to_be(T value) {                                                       \
-    if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                   \
-      return T##_swap_bytes(value);                                            \
-    }                                                                          \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  T T##_from_be(T value) {                                                     \
-    if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                   \
-      return T##_swap_bytes(value);                                            \
-    }                                                                          \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  T T##_from_be_bytes(Bytes bytes) {                                           \
-    cebus_assert(sizeof(T) == bytes.size,                                      \
-                 "expected %" USIZE_FMT " bytes but got %" USIZE_FMT,          \
-                 sizeof(T), bytes.size);                                       \
-    if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                   \
-      return T##_swap_bytes(*(const T *)bytes.data);                           \
-    }                                                                          \
-    return *(const T *)bytes.data;                                             \
-  }                                                                            \
-                                                                               \
-  Bytes T##_to_be_bytes(T value, Arena *arena) {                               \
-    u8 *buffer = arena_alloc(arena, sizeof(value));                            \
-    u8 *bytes = (u8 *)&value;                                                  \
-    for (usize i = 0; i < sizeof(value); i++) {                                \
-      if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                    \
-        buffer[i] = bytes[i];                                                  \
-      } else {                                                                 \
-        buffer[sizeof(value) - i - 1] = bytes[i];                              \
-      }                                                                        \
-    }                                                                          \
-    return bytes_from_parts(sizeof(value), buffer);                            \
-  }                                                                            \
-                                                                               \
-  /*  LITTLE ENDIAN OPERATIONS */                                              \
-  T T##_to_le(T value) {                                                       \
-    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                      \
-      return T##_swap_bytes(value);                                            \
-    }                                                                          \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  T T##_from_le(T value) {                                                     \
-    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                      \
-      return T##_swap_bytes(value);                                            \
-    }                                                                          \
-    return value;                                                              \
-  }                                                                            \
-                                                                               \
-  T T##_from_le_bytes(Bytes bytes) {                                           \
-    cebus_assert(sizeof(T) == bytes.size,                                      \
-                 "expected %" USIZE_FMT " bytes but got %" USIZE_FMT,          \
-                 sizeof(T), bytes.size);                                       \
-    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                      \
-      return T##_swap_bytes(*(const T *)bytes.data);                           \
-    }                                                                          \
-    return *(const T *)bytes.data;                                             \
-  }                                                                            \
-                                                                               \
-  Bytes T##_to_le_bytes(T value, Arena *arena) {                               \
-    u8 *buffer = arena_alloc(arena, sizeof(value));                            \
-    u8 *bytes = (u8 *)&value;                                                  \
-    for (usize i = 0; i < sizeof(value); i++) {                                \
-      if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                 \
-        buffer[i] = bytes[i];                                                  \
-      } else {                                                                 \
-        buffer[sizeof(value) - i - 1] = bytes[i];                              \
-      }                                                                        \
-    }                                                                          \
-    return bytes_from_parts(sizeof(value), buffer);                            \
-  }                                                                            \
-                                                                               \
-  /*  NATIVE ENDIAN OPERATIONS */                                              \
-  T T##_from_ne_bytes(Bytes bytes) {                                           \
-    cebus_assert(sizeof(T) == bytes.size,                                      \
-                 "expected %" USIZE_FMT " bytes but got %" USIZE_FMT,          \
-                 sizeof(T), bytes.size);                                       \
-    return *(const T *)bytes.data;                                             \
-  }                                                                            \
-                                                                               \
-  Bytes T##_to_ne_bytes(T value, Arena *arena) {                               \
-    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                      \
-      return T##_to_be_bytes(value, arena);                                    \
-    }                                                                          \
-    return T##_to_le_bytes(value, arena);                                      \
-  }                                                                            \
-  /* BYTE ORDER OPERATIONS END */                                              \
-                                                                               \
-  /* MATH OPERATIONS */                                                        \
-  T T##_max(T a, T b) { return a < b ? b : a; }                                \
-  T T##_min(T a, T b) { return a > b ? b : a; }                                \
-  T T##_clamp(T min, T max, T value) {                                         \
-    return value < min ? min : max < value ? max : value;                      \
-  }                                                                            \
-  /* MATH OPERATIONS END */                                                    \
-                                                                               \
-  /* UTILS */                                                                  \
-  u64 T##_hash(T value) {                                                      \
-    u64 hash = ((u64)value) + 1;                                               \
-    hash = (((hash >> 16) ^ hash) % 0x3AA387A8B1) * 0x45d9f3b;                 \
-    hash = (((hash >> 16) ^ hash) % 0x3AA387A8B1) * 0x45d9f3b;                 \
-    hash = (hash >> 16) ^ hash;                                                \
-    return hash;                                                               \
-  }                                                                            \
-                                                                               \
-  void T##_swap(T *v1, T *v2) {                                                \
-    T temp = *v1;                                                              \
-    *v1 = *v2;                                                                 \
-    *v2 = temp;                                                                \
-  }                                                                            \
-                                                                               \
-  CmpOrdering T##_compare_lt(T a, T b) {                                       \
-    return a == b ? CMP_EQUAL : a < b ? CMP_LESS : CMP_GREATER;                \
-  }                                                                            \
-                                                                               \
-  CmpOrdering T##_compare_gt(T a, T b) {                                       \
-    return a == b ? CMP_EQUAL : a > b ? CMP_LESS : CMP_GREATER;                \
-  }                                                                            \
-                                                                               \
-  static CmpOrdering _##T##_cmp_gt(const void *a, const void *b) {             \
-    return T##_compare_gt(*(const T *)a, *(const T *)b);                       \
-  }                                                                            \
-                                                                               \
-  static CmpOrdering _##T##_cmp_lt(const void *a, const void *b) {             \
-    return T##_compare_lt(*(const T *)a, *(const T *)b);                       \
-  }                                                                            \
-                                                                               \
-  CompareFn T##_compare_qsort(CmpOrdering ordering) {                          \
-    return ordering == CMP_LESS ? _##T##_cmp_lt : _##T##_cmp_gt;               \
+#define INTEGER_IMPL(T, BITS)                                                                      \
+  /* BIT OPERATIONS */                                                                             \
+  T T##_reverse_bits(T value) {                                                                    \
+    T reversed = 0;                                                                                \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      reversed = (T)(reversed << 1);                                                               \
+      if (value & 1) {                                                                             \
+        reversed = reversed | 1;                                                                   \
+      }                                                                                            \
+      value = value >> 1;                                                                          \
+    }                                                                                              \
+    return reversed;                                                                               \
+  }                                                                                                \
+                                                                                                   \
+  usize T##_leading_ones(T value) {                                                                \
+    usize count = 0;                                                                               \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      if (!(value >> (BITS - i - 1) & (T)0x1)) {                                                   \
+        break;                                                                                     \
+      }                                                                                            \
+      count++;                                                                                     \
+    }                                                                                              \
+    return count;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  usize T##_trailing_ones(T value) {                                                               \
+    usize count = 0;                                                                               \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      if (!(value >> i & (T)0x1)) {                                                                \
+        break;                                                                                     \
+      }                                                                                            \
+      count++;                                                                                     \
+    }                                                                                              \
+    return count;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  usize T##_leading_zeros(T value) {                                                               \
+    usize count = 0;                                                                               \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      if (value >> (BITS - i - 1) & (T)0x1) {                                                      \
+        break;                                                                                     \
+      }                                                                                            \
+      count++;                                                                                     \
+    }                                                                                              \
+    return count;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  usize T##_trailing_zeros(T value) {                                                              \
+    usize count = 0;                                                                               \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      if (value >> i & (T)0x1) {                                                                   \
+        break;                                                                                     \
+      }                                                                                            \
+      count++;                                                                                     \
+    }                                                                                              \
+    return count;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  usize T##_count_zeros(T value) {                                                                 \
+    usize count = 0;                                                                               \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      if (!(value >> i & (T)0x1)) {                                                                \
+        count++;                                                                                   \
+      }                                                                                            \
+    }                                                                                              \
+    return count;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  usize T##_count_ones(T value) {                                                                  \
+    usize count = 0;                                                                               \
+    for (usize i = 0; i < BITS; i++) {                                                             \
+      if (value >> i & (T)0x1) {                                                                   \
+        count++;                                                                                   \
+      }                                                                                            \
+    }                                                                                              \
+    return count;                                                                                  \
+  }                                                                                                \
+  /* BIT OPERATIONS END */                                                                         \
+                                                                                                   \
+  /* BYTE ORDER OPERATIONS */                                                                      \
+  T T##_swap_bytes(T value) {                                                                      \
+    if (1 < sizeof(T)) {                                                                           \
+      u8 *bytes = (u8 *)&value;                                                                    \
+      for (usize i = 0; i < (sizeof(T) + 1) / 2; i++) {                                            \
+        u8 temp = bytes[i];                                                                        \
+        bytes[i] = bytes[sizeof(T) - i - 1];                                                       \
+        bytes[sizeof(T) - i - 1] = temp;                                                           \
+      }                                                                                            \
+    }                                                                                              \
+    return value;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  /*  BIG ENDIAN OPERATIONS */                                                                     \
+  T T##_to_be(T value) {                                                                           \
+    if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                                       \
+      return T##_swap_bytes(value);                                                                \
+    }                                                                                              \
+    return value;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  T T##_from_be(T value) {                                                                         \
+    if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                                       \
+      return T##_swap_bytes(value);                                                                \
+    }                                                                                              \
+    return value;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  T T##_from_be_bytes(Bytes bytes) {                                                               \
+    cebus_assert(sizeof(T) == bytes.size, "expected %" USIZE_FMT " bytes but got %" USIZE_FMT,     \
+                 sizeof(T), bytes.size);                                                           \
+    if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                                       \
+      return T##_swap_bytes(*(const T *)bytes.data);                                               \
+    }                                                                                              \
+    return *(const T *)bytes.data;                                                                 \
+  }                                                                                                \
+                                                                                                   \
+  Bytes T##_to_be_bytes(T value, Arena *arena) {                                                   \
+    u8 *buffer = arena_alloc(arena, sizeof(value));                                                \
+    u8 *bytes = (u8 *)&value;                                                                      \
+    for (usize i = 0; i < sizeof(value); i++) {                                                    \
+      if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                                        \
+        buffer[i] = bytes[i];                                                                      \
+      } else {                                                                                     \
+        buffer[sizeof(value) - i - 1] = bytes[i];                                                  \
+      }                                                                                            \
+    }                                                                                              \
+    return bytes_from_parts(sizeof(value), buffer);                                                \
+  }                                                                                                \
+                                                                                                   \
+  /*  LITTLE ENDIAN OPERATIONS */                                                                  \
+  T T##_to_le(T value) {                                                                           \
+    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                                          \
+      return T##_swap_bytes(value);                                                                \
+    }                                                                                              \
+    return value;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  T T##_from_le(T value) {                                                                         \
+    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                                          \
+      return T##_swap_bytes(value);                                                                \
+    }                                                                                              \
+    return value;                                                                                  \
+  }                                                                                                \
+                                                                                                   \
+  T T##_from_le_bytes(Bytes bytes) {                                                               \
+    cebus_assert(sizeof(T) == bytes.size, "expected %" USIZE_FMT " bytes but got %" USIZE_FMT,     \
+                 sizeof(T), bytes.size);                                                           \
+    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                                          \
+      return T##_swap_bytes(*(const T *)bytes.data);                                               \
+    }                                                                                              \
+    return *(const T *)bytes.data;                                                                 \
+  }                                                                                                \
+                                                                                                   \
+  Bytes T##_to_le_bytes(T value, Arena *arena) {                                                   \
+    u8 *buffer = arena_alloc(arena, sizeof(value));                                                \
+    u8 *bytes = (u8 *)&value;                                                                      \
+    for (usize i = 0; i < sizeof(value); i++) {                                                    \
+      if (CEBUS_BYTE_ORDER == ENDIAN_LITTLE) {                                                     \
+        buffer[i] = bytes[i];                                                                      \
+      } else {                                                                                     \
+        buffer[sizeof(value) - i - 1] = bytes[i];                                                  \
+      }                                                                                            \
+    }                                                                                              \
+    return bytes_from_parts(sizeof(value), buffer);                                                \
+  }                                                                                                \
+                                                                                                   \
+  /*  NATIVE ENDIAN OPERATIONS */                                                                  \
+  T T##_from_ne_bytes(Bytes bytes) {                                                               \
+    cebus_assert(sizeof(T) == bytes.size, "expected %" USIZE_FMT " bytes but got %" USIZE_FMT,     \
+                 sizeof(T), bytes.size);                                                           \
+    return *(const T *)bytes.data;                                                                 \
+  }                                                                                                \
+                                                                                                   \
+  Bytes T##_to_ne_bytes(T value, Arena *arena) {                                                   \
+    if (CEBUS_BYTE_ORDER == ENDIAN_BIG) {                                                          \
+      return T##_to_be_bytes(value, arena);                                                        \
+    }                                                                                              \
+    return T##_to_le_bytes(value, arena);                                                          \
+  }                                                                                                \
+  /* BYTE ORDER OPERATIONS END */                                                                  \
+                                                                                                   \
+  /* MATH OPERATIONS */                                                                            \
+  T T##_max(T a, T b) { return a < b ? b : a; }                                                    \
+  T T##_min(T a, T b) { return a > b ? b : a; }                                                    \
+  T T##_clamp(T min, T max, T value) { return value < min ? min : max < value ? max : value; }     \
+  /* MATH OPERATIONS END */                                                                        \
+                                                                                                   \
+  /* UTILS */                                                                                      \
+  u64 T##_hash(T value) {                                                                          \
+    u64 hash = ((u64)value) + 1;                                                                   \
+    hash = (((hash >> 16) ^ hash) % 0x3AA387A8B1) * 0x45d9f3b;                                     \
+    hash = (((hash >> 16) ^ hash) % 0x3AA387A8B1) * 0x45d9f3b;                                     \
+    hash = (hash >> 16) ^ hash;                                                                    \
+    return hash;                                                                                   \
+  }                                                                                                \
+                                                                                                   \
+  void T##_swap(T *v1, T *v2) {                                                                    \
+    T temp = *v1;                                                                                  \
+    *v1 = *v2;                                                                                     \
+    *v2 = temp;                                                                                    \
+  }                                                                                                \
+                                                                                                   \
+  CmpOrdering T##_compare_lt(T a, T b) {                                                           \
+    return a == b ? CMP_EQUAL : a < b ? CMP_LESS : CMP_GREATER;                                    \
+  }                                                                                                \
+                                                                                                   \
+  CmpOrdering T##_compare_gt(T a, T b) {                                                           \
+    return a == b ? CMP_EQUAL : a > b ? CMP_LESS : CMP_GREATER;                                    \
+  }                                                                                                \
+                                                                                                   \
+  static CmpOrdering _##T##_cmp_gt(const void *a, const void *b) {                                 \
+    return T##_compare_gt(*(const T *)a, *(const T *)b);                                           \
+  }                                                                                                \
+                                                                                                   \
+  static CmpOrdering _##T##_cmp_lt(const void *a, const void *b) {                                 \
+    return T##_compare_lt(*(const T *)a, *(const T *)b);                                           \
+  }                                                                                                \
+                                                                                                   \
+  CompareFn T##_compare_qsort(CmpOrdering ordering) {                                              \
+    return ordering == CMP_LESS ? _##T##_cmp_lt : _##T##_cmp_gt;                                   \
   } /* UTILS END */
 
 INTEGER_IMPL(u8, U8_BITS)
@@ -4639,19 +4587,13 @@ Path path_parent(Path path) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-Str str_from_parts(usize size, const char *cstr) {
-  return (Str){.len = size, .data = cstr};
-}
+Str str_from_parts(usize size, const char *cstr) { return (Str){.len = size, .data = cstr}; }
 
-Str str_from_bytes(Bytes bytes) {
-  return str_from_parts(bytes.size, (const char *)bytes.data);
-}
+Str str_from_bytes(Bytes bytes) { return str_from_parts(bytes.size, (const char *)bytes.data); }
 
 Bytes str_to_bytes(Str s) { return bytes_from_parts(s.len, s.data); }
 
-Str str_from_cstr(const char *cstr) {
-  return (Str){.len = strlen(cstr), .data = cstr};
-}
+Str str_from_cstr(const char *cstr) { return (Str){.len = strlen(cstr), .data = cstr}; }
 
 Str str_format(Arena *arena, const char *fmt, ...) {
   va_list va;
@@ -5037,8 +4979,7 @@ Str str_trim_by_delim(Str s, char delim) {
   return str_trim_left_by_delim(str_trim_right_by_delim(s, delim), delim);
 }
 Str str_trim_by_predicate(Str s, bool (*predicate)(char)) {
-  return str_trim_left_by_predicate(str_trim_right_by_predicate(s, predicate),
-                                    predicate);
+  return str_trim_left_by_predicate(str_trim_right_by_predicate(s, predicate), predicate);
 }
 
 bool str_try_chop_by_delim(Str *s, char delim, Str *chunk) {
@@ -5329,10 +5270,8 @@ Utf8 utf8_decode(Bytes bytes, Error *error) {
     usize idx = i;
     for (usize j = 1; j < bit_count; j++) {
       if (!(u8_leading_ones(bytes.data[idx + j]) == 1)) {
-        error_emit(
-            error, UTF8_DECODE,
-            "Decoding utf-8 failed: wrong bits in between at %" USIZE_FMT,
-            idx + j);
+        error_emit(error, UTF8_DECODE,
+                   "Decoding utf-8 failed: wrong bits in between at %" USIZE_FMT, idx + j);
         return str;
       }
       i++;
