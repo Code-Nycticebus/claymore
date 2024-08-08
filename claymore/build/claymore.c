@@ -183,3 +183,19 @@ void claymore_project_build(Path exe, Path directory, bool rebuild) {
   cmd_exec_da(ErrPanic, &cmd);
   arena_free(&arena);
 }
+
+void claymore_project_run(Path exe, Path directory) {
+  if (!str_eq(directory, STR("."))) {
+    os_chdir(directory);
+  }
+  Arena arena = {0};
+  Cmd cmd = cmd_new(&arena);
+  cmd_push(&cmd, str_format(&arena, "./" STR_FMT, STR_ARG(exe)));
+  cmd_exec_da(ErrPanic, &cmd);
+  arena_free(&arena);
+}
+
+void claymore_project_build_and_run(Path exe, Path directory, bool rebuild) {
+  claymore_project_build(exe, directory, rebuild);
+  claymore_project_run(exe, directory);
+}

@@ -19,31 +19,13 @@ Follow these steps to create and use the build script.
 #include "libs/claymore/build/claymore.h"
 
 int main(void) {
-  // Build claymore
-  compile_claymore(/* rebuild: */ false); 
-
-  Arena arena = {0};
-
-  // Add files
-  Paths files = da_new(&arena);
-  cmd_push(&files, STR_STATIC("src/scene.c"));
-
-  // Add cflags
-  Cmd cflags = cmd_new(&arena);
-  cmd_push(&cflags, STR_STATIC("-Wall"));
-  cmd_push(&cflags, STR_STATIC("-Wextra"));
-  cmd_push(&cflags, STR_STATIC("-Isrc"));
-
-  // Compile main file
-  compile_file(STR("src/main.c"), &files, &cflags);
-
-  arena_free(&arena);
+  claymore_project_build_and_run(PATH("project"), PATH("."), /* rebuild = */ true);
 }
 ```
 
 Compile and run build system
 ```terminal
-gcc build.c -o build && ./build
+gcc build.c && ./a.out
 ```
 
 ### Pybuildc
