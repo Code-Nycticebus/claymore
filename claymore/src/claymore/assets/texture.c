@@ -53,7 +53,7 @@ CmTexture cm_texture_from_file(CmGpu *gpu, Str filename, Error *error) {
     error_emit(error, -1, "Failed to load texture: " STR_FMT ": %s", STR_ARG(filename), fail);
     goto defer;
   }
-  texture = cm_texture_from_bytes(gpu, texture_buffer,
+  texture = cm_texture_from_bytes(gpu, bytes_from_parts(width * height * bpp, texture_buffer),
                                   (CmTextureFormat){
                                       .w = width,
                                       .h = height,
@@ -66,8 +66,9 @@ defer:
   return texture;
 }
 
-CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat format) {
+CmTexture cm_texture_from_bytes(CmGpu *gpu, Bytes bytes, CmTextureFormat format) {
   cebus_assert(0 < format.bpp && format.bpp <= 4, "bytes per pixel needs to be 1-4");
+  cebus_assert(bytes.size == format.w * format.h * format.bpp, "bytes and format does not match");
   CmTexture texture = {
       .id = 0,
       .width = format.w,
@@ -103,7 +104,7 @@ CmTexture cm_texture_from_bytes(CmGpu *gpu, const u8 *data, CmTextureFormat form
   }
 
   const TextureInternalFormat f = texture_format[format.bpp];
-  glTexImage2D(GL_TEXTURE_2D, 0, f.internal, format.w, format.h, 0, f.format, f.type, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, f.internal, format.w, format.h, 0, f.format, f.type, bytes.data);
 
   glBindTexture(GL_TEXTURE_2D, 0);
   return texture;

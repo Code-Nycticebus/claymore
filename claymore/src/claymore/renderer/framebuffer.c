@@ -16,7 +16,7 @@ CmTexture cm_framebuffer_attach_texture_color(CmFramebuffer *fb) {
   cm_gpu_fbo_bind(fb->fbo);
 
   const CmTextureFormat format = {.bpp = 4, .w = fb->size[0], .h = fb->size[1]};
-  CmTexture texture = cm_texture_from_bytes(fb->gpu, NULL, format);
+  CmTexture texture = cm_texture_from_bytes(fb->gpu, (Bytes){0}, format);
 
   const u32 attachment = GL_COLOR_ATTACHMENT0 + fb->attachment_count++;
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.id, 0);

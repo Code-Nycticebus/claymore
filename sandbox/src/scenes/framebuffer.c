@@ -13,13 +13,11 @@ static void init(CmScene *scene) {
   Framebuffer *fb = cm_scene_data(scene);
   cm_camera2D_screen(&fb->camera);
 
-  static u8 data[] = {
-      0,   255, 255, //
-      255, 0,   255, //
-      255, 0,   255, //
-      0,   255, 255, //
-  };
-  fb->sprite = cm_texture_from_bytes(&scene->gpu, (u8 *)data,
+  Bytes data = BYTES(0, 255, 255, //
+                     255, 0, 255, //
+                     255, 0, 255, //
+                     0, 255, 255);
+  fb->sprite = cm_texture_from_bytes(&scene->gpu, data,
                                      (CmTextureFormat){
                                          .w = 2,
                                          .h = 2,
