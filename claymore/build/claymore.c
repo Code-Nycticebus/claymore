@@ -4,15 +4,8 @@
 #include <windows.h>
 #endif
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wall"
-#endif
 #define CEBUS_IMPLEMENTATION
 #include "cebus.h" // IWYU pragma: keep
-#if defined(__clang__)
-#pragma clang diagnostic ignored "-Wall"
-#endif
 
 #ifndef CC
 #define CC "gcc"
