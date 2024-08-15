@@ -10,13 +10,12 @@ static void init(CmScene *scene) {
   const float size = 100.f;
   cm_camera2D_ortho(&renderer->camera, (vec2){0}, (f32)HEIGHT / (f32)WIDHT, size);
 
-  static u8 data[] = {
-      0,   255, 255, //
-      255, 0,   255, //
-      255, 0,   255, //
-      0,   255, 255, //
-  };
-  renderer->sprite = cm_texture_from_bytes(&scene->gpu, (u8 *)data,
+  Bytes data = BYTES(0, 255, 255, //
+                     255, 0, 255, //
+                     255, 0, 255, //
+                     0, 255, 255, //
+  );
+  renderer->sprite = cm_texture_from_bytes(&scene->gpu, data,
                                            (CmTextureFormat){
                                                .w = 2,
                                                .h = 2,

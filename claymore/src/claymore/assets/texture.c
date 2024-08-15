@@ -68,7 +68,6 @@ defer:
 
 CmTexture cm_texture_from_bytes(CmGpu *gpu, Bytes bytes, CmTextureFormat format) {
   cebus_assert(0 < format.bpp && format.bpp <= 4, "bytes per pixel needs to be 1-4");
-  cebus_assert(bytes.size == format.w * format.h * format.bpp, "bytes and format does not match");
   CmTexture texture = {
       .id = 0,
       .width = format.w,
