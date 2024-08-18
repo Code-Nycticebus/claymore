@@ -1517,9 +1517,12 @@ void quicksort_ctx(const void *src, void *dest, usize size, usize nelem, Compare
 typedef struct {
   Str name;
   Str description;
+  bool parsed;
+  bool pos;
   enum {
     ARG_TYPE_NONE,
     ARG_TYPE_FLAG,
+    ARG_TYPE_LIST,
     ARG_TYPE_I64,
     ARG_TYPE_U64,
     ARG_TYPE_STR,
@@ -1534,6 +1537,7 @@ typedef struct {
 
 typedef struct {
   Str program;
+  Str description;
 
   const char **argv;
   int argc;
@@ -1544,10 +1548,16 @@ typedef struct {
   HashMap *hm;
 } Args;
 
+bool args_c_shift(int *argc, const char ***argv);
+Str args_shift(Args *args);
+
 Args args_init(Arena *arena, int argc, const char **argv);
+
 void args_print_usage(Args *args, FILE *file);
 void args_print_help(Args *args, FILE *file);
 bool args_parse(Args *args);
+
+void args_add_description(Args *args, const char *description);
 
 void args_add_i64(Args *args, const char *argument, const char *description);
 void args_add_u64(Args *args, const char *argument, const char *description);
@@ -1762,7 +1772,7 @@ int main(void) {
   FsIter it = fs_iter_begin(STR("."), true);
 
   // iterate over directory with certain filters
-  while (fs_iter_next_extension(&it, STR(".clangd"))) {
+  while (fs_iter_next_suffix(&it, STR(".clangd"))) {
     // every allocation in the scratch buffer gets reset after each iteration
     Str data = fs_file_read_str(it.current.path, &it.scratch, &it.error);
 
@@ -2215,10 +2225,11 @@ INTEGER_DECL(usize)
 
 typedef DA(Path) PathDa;
 
-Path _path_new(Arena *arena, ...);
-#define path_new(arena, ...) _path_new(arena, __VA_ARGS__, (Str){0})
+#define path_new(arena, ...)                                                                       \
+  path_join(arena, ARRAY_LEN((Path[]){__VA_ARGS__}), (Path[]){__VA_ARGS__})
 
-Path path_join(Arena *arena, PathDa *da);
+Path path_join(Arena *arena, usize size, Path *paths);
+Path path_join_da(Arena *arena, PathDa *da);
 
 Str path_name(Path path);
 Str path_suffix(Path path);
@@ -2227,6 +2238,7 @@ Path path_parent(Path path);
 
 // TODO
 // keep it io-less. i want a "pure" path api
+// TODO: operating system dependent delimiter
 // bool path_relative(Path path);
 // bool path_absolute(Path path);
 // bool path_relative_to(Path p1, Path p2);
@@ -3082,7 +3094,7 @@ usize sb_append_va(StringBuilder *sb, const char *fmt, va_list va) {
 
 ////////////////////////////////////////////////////////////////////////////
 
-#define CHUNK_DEFAULT_SIZE KILOBYTES(8)
+#define CHUNK_DEFAULT_SIZE KILOBYTES(4)
 
 struct Chunk {
   Chunk *next, *prev;
@@ -3508,6 +3520,15 @@ typedef enum {
   ERR_PARSE,
 } ArgParseError;
 
+bool args_c_shift(int *argc, const char ***argv) {
+  if ((*argc) == 0) {
+    return false;
+  }
+  (*argc)--;
+  (*argv)++;
+  return true;
+}
+
 Str args_shift(Args *args) {
   if (args->argc == 0) {
     return (Str){0};
@@ -3520,15 +3541,20 @@ Args args_init(Arena *arena, int argc, const char **argv) {
   Args args = {.argc = argc, .argv = argv};
 
   da_init(&args.arguments, arena);
-  args.hm = hm_create(arena);
+  args.hm = NULL;
+  hm_create(arena);
 
   args.program = args_shift(&args);
 
   return args;
 }
 
+void args_add_description(Args *args, const char *description) {
+  args->description = str_from_cstr(description);
+}
+
 void args_print_usage(Args *args, FILE *file) {
-  fprintf(file, STR_FMT, STR_ARG(args->program));
+  fprintf(file, "usage: " STR_FMT, STR_ARG(args->program));
   for (u32 i = 0; i < args->positional; ++i) {
     Argument *argument = &args->arguments.items[i];
     fprintf(file, " <" STR_FMT ">", STR_ARG(argument->name));
@@ -3541,14 +3567,28 @@ void args_print_usage(Args *args, FILE *file) {
 
 void args_print_help(Args *args, FILE *file) {
   args_print_usage(args, file);
+  fprintf(file, "\n");
 
-  for (u32 i = 0; i < args->arguments.len && i < args->positional; ++i) {
-    Argument *argument = &args->arguments.items[i];
-    const i32 padding = i32_max(0, 25 - (i32)argument->name.len);
-    fprintf(file, " %2d. " STR_FMT " %*c " STR_FMT "\n", i + 1, STR_ARG(argument->name), padding,
-            ' ', STR_ARG(argument->description));
+  if (args->description.len) {
+    fprintf(file, STR_FMT "\n", STR_ARG(args->description));
+    fprintf(file, "\n");
   }
 
+  if (args->positional) {
+    fprintf(file, "positional arguments:\n");
+  }
+  for (u32 i = 0; i < args->arguments.len && i < args->positional; ++i) {
+    Argument *argument = &args->arguments.items[i];
+    const i32 padding = i32_max(0, 28 - (i32)argument->name.len);
+    fprintf(file, "  " STR_FMT " %*c " STR_FMT "\n", STR_ARG(argument->name), padding, ' ',
+            STR_ARG(argument->description));
+  }
+  if (args->positional) {
+    fprintf(file, "\n");
+  }
+
+  fprintf(file, "options:\n");
+  fprintf(file, "  -h, --help                    show usage or this help message\n");
   for (usize i = args->positional; i < args->arguments.len; i++) {
     Argument *argument = &args->arguments.items[i];
     const i32 padding = i32_max(0, 28 - (i32)argument->name.len);
@@ -3558,12 +3598,21 @@ void args_print_help(Args *args, FILE *file) {
 }
 
 static void args_parse_argument(Argument *argument, Str arg, Error *error) {
-  if (arg.data == NULL || str_startswith(arg, STR("--"))) {
-    error_emit(error, ERR_PARSE, STR_REPR " needs parameter", STR_ARG(argument->name));
+  if (arg.len == 0 || arg.data == NULL || str_startswith(arg, STR("--"))) {
+    error_emit(error, ERR_PARSE, STR_REPR " needs parameter: got " STR_REPR,
+               STR_ARG(argument->name), STR_ARG(arg));
+    return;
   }
+
+  if (arg.data[0] == '"') {
+    arg.data += 1;
+    arg.len -= 2;
+  }
+
   switch (argument->type) {
   case ARG_TYPE_NONE:
-  case ARG_TYPE_FLAG: {
+  case ARG_TYPE_FLAG:
+  case ARG_TYPE_LIST: {
     error_emit(error, ERR_INTERNAL, "this type should never be parsed here: %d", argument->type);
     return;
   } break;
@@ -3594,11 +3643,14 @@ static void args_parse_argument(Argument *argument, Str arg, Error *error) {
     argument->as.str = arg;
   } break;
   }
+
+  argument->parsed = true;
 }
 
 bool args_parse(Args *args) {
   Error error = ErrNew;
 
+  u32 argument_idx = 0;
   u32 positional_count = 0;
   for (Str arg = {0}; (arg = args_shift(args)).data;) {
     if (str_eq(arg, STR("-h"))) {
@@ -3612,42 +3664,63 @@ bool args_parse(Args *args) {
 
     bool arg_is_optional = arg.data[0] == '-' && (arg.data[1] == '-' || !c_is_digit(arg.data[1]));
     if (arg_is_optional) {
-      Str argument_prefix = str_substring(arg, 0, 2);
-      usize dash_count = str_count(argument_prefix, STR("-"));
-      Str real_argument = str_substring(arg, usize_clamp(0, 2, dash_count), arg.len);
+      if (str_eq(arg, STR("--"))) {
+        break;
+      }
+      usize dash_count = str_count(str_substring(arg, 0, 2), STR("-"));
+      Str arg_no_prefix = str_substring(arg, dash_count, arg.len);
+      Str real_argument = str_chop_by_delim(&arg_no_prefix, '=');
       const usize *idx = hm_get_usize(args->hm, str_hash(real_argument));
       if (idx == NULL) {
         error_emit(&error, ERR_PARSE, STR_REPR ": unknown argument", STR_ARG(arg));
         goto defer;
       }
       Argument *argument = &args->arguments.items[*idx];
+      if (argument->parsed) {
+        error_emit(&error, ERR_PARSE, STR_REPR ": argument was passed twice", STR_ARG(arg));
+        goto defer;
+      }
       if (argument->type == ARG_TYPE_FLAG) {
         argument->as.flag = true; // flag turned on
         continue;
       }
-      args_parse_argument(argument, args_shift(args), &error);
+      if (argument->pos) {
+        positional_count++;
+      }
+
+      Str next_arg = arg_no_prefix.len ? arg_no_prefix : args_shift(args);
+      args_parse_argument(argument, next_arg, &error);
       error_propagate(&error, { goto defer; });
+
       continue;
     }
 
     while (true) {
-      if (positional_count >= args->arguments.len) {
-        error_emit(&error, ERR_PARSE, STR_REPR ": too many positional arguments", STR_ARG(arg));
+      if (argument_idx >= args->arguments.len) {
+        error_emit(&error, ERR_PARSE,
+                   STR_REPR ": too many positional arguments: got %d expected %" USIZE_FMT,
+                   STR_ARG(arg), argument_idx, args->positional);
         goto defer;
       }
-      Argument *argument = &args->arguments.items[positional_count++];
+      Argument *argument = &args->arguments.items[argument_idx++];
+      if (argument->parsed) {
+        continue; // next
+      }
       if (argument->type == ARG_TYPE_FLAG) {
-        continue; // skip
+        continue; // next
       }
 
+      positional_count++;
       args_parse_argument(argument, arg, &error);
       error_propagate(&error, { goto defer; });
+
       break;
     }
   }
 
   if (positional_count < args->positional) {
-    error_emit(&error, ERR_PARSE, "not enough positional arguments");
+    error_emit(&error, ERR_PARSE, "not enough positional arguments: got %d expected %" USIZE_FMT,
+               positional_count, args->positional);
     goto defer;
   }
 
@@ -3665,7 +3738,23 @@ defer:
 }
 
 #define ARGS_GENERIC_IMPLEMENTATION(NAME, T, T_ENUM)                                               \
+  void args_add_##NAME(Args *args, const char *argument, const char *description) {                \
+    cebus_assert(args->positional == args->arguments.len,                                          \
+                 "an optional argument was passed before!");                                       \
+    args->positional++;                                                                            \
+    args->hm = args->hm ? args->hm : hm_create(args->arguments.arena);                             \
+    Str name = str_from_cstr(argument);                                                            \
+    hm_insert_usize(args->hm, str_hash(name), da_len(&args->arguments));                           \
+    da_push(&args->arguments, (Argument){                                                          \
+                                  .name = name,                                                    \
+                                  .description = str_from_cstr(description),                       \
+                                  .pos = true,                                                     \
+                                  .type = T_ENUM,                                                  \
+                                  .as = {0},                                                       \
+                              });                                                                  \
+  }                                                                                                \
   void args_add_opt_##NAME(Args *args, const char *argument, T def, const char *description) {     \
+    args->hm = args->hm ? args->hm : hm_create(args->arguments.arena);                             \
     Str name = str_from_cstr(argument);                                                            \
     hm_insert_usize(args->hm, str_hash(name), da_len(&args->arguments));                           \
     da_push(&args->arguments, (Argument){                                                          \
@@ -3675,13 +3764,8 @@ defer:
                                   .as.NAME = def,                                                  \
                               });                                                                  \
   }                                                                                                \
-  void args_add_##NAME(Args *args, const char *argument, const char *description) {                \
-    cebus_assert(args->positional == args->arguments.len,                                          \
-                 "an optional argument was passed before!");                                       \
-    args->positional++;                                                                            \
-    args_add_opt_##NAME(args, argument, (T){0}, description);                                      \
-  }                                                                                                \
   T args_get_##NAME(Args *args, const char *argument) {                                            \
+    cebus_assert(args->hm != NULL, "no arguments were given");                                     \
     const usize *idx = hm_get_usize(args->hm, str_hash(str_from_cstr(argument)));                  \
     cebus_assert(idx && args->arguments.items[*idx].type == T_ENUM, "");                           \
     return args->arguments.items[*idx].as.NAME;                                                    \
@@ -3692,6 +3776,7 @@ ARGS_GENERIC_IMPLEMENTATION(u64, u64, ARG_TYPE_U64)
 ARGS_GENERIC_IMPLEMENTATION(str, Str, ARG_TYPE_STR)
 
 void args_add_opt_flag(Args *args, const char *argument, const char *description) {
+  args->hm = args->hm ? args->hm : hm_create(args->arguments.arena);
   usize idx = da_len(&args->arguments);
   Str name = str_from_cstr(argument);
   hm_insert_usize(args->hm, str_hash(name), idx);
@@ -3704,6 +3789,7 @@ void args_add_opt_flag(Args *args, const char *argument, const char *description
 }
 
 bool args_get_flag(Args *args, const char *argument) {
+  cebus_assert(args->hm != NULL, "no arguments were given");
   const usize *idx = hm_get_usize(args->hm, str_hash(str_from_cstr(argument)));
   cebus_assert(idx && args->arguments.items[*idx].type == ARG_TYPE_FLAG, "");
   return args->arguments.items[*idx].as.flag;
@@ -3872,7 +3958,7 @@ defer:
 #include <windows.h>
 
 Dll *dll_load(Str path, Error *error) {
-  if (!file_exists(path)) {
+  if (!fs_exists(path)) {
     error_emit(error, -1, "dll: library does not exist: " STR_FMT, STR_ARG(path));
     return NULL;
   }
@@ -4212,18 +4298,125 @@ bool fs_iter_next(FsIter *it) {
 #elif defined(WINDOWS)
 
 #include <io.h>
+#include <windows.h>
 
-bool fs_exists(Str filename) {
-  char _filename[FILENAME_MAX] = {0};
-  memcpy(_filename, filename.data, filename.len);
-  return _access(_filename, 0) == 0;
+typedef struct FsNode {
+  HANDLE handle;
+  struct FsNode *next;
+  usize len;
+  char name[];
+} FsNode;
+
+bool fs_exists(Path path) {
+  char _path[FILENAME_MAX] = {0};
+  memcpy(_path, path.data, path.len);
+  return _access(_path, 0) == 0;
 }
 
-#error "fs_is_dir not implemented"
-#error "fs_iter_begin not implemented"
-#error "fs_iter_end not implemented"
+bool fs_is_dir(Path path) {
+  char _path[FILENAME_MAX] = {0};
+  memcpy(_path, path.data, path.len);
+  DWORD attributes = GetFileAttributes(_path);
+  if (attributes == INVALID_FILE_ATTRIBUTES) {
+      return false;
+  }
+  if (attributes & FILE_ATTRIBUTE_DIRECTORY) {
+      return true; 
+  }
 
-#error "fs_iter_next not implemented"
+  return false; 
+}
+
+FsIter fs_iter_begin(Path directory, bool recursive) {
+  FsIter it = {.recursive = recursive, .error = ErrNew};
+
+  const usize len = directory.len + (sizeof("/*") - 1);
+  const usize size = sizeof(FsNode) + len + 1;
+  FsNode *node = arena_calloc_chunk(&it.scratch, size);
+  memcpy(node->name, directory.data, directory.len);
+  memcpy(&node->name[directory.len], "/*", 2);
+  node->len = len;
+
+  WIN32_FIND_DATA findFileData;
+  node->handle = FindFirstFile(node->name, &findFileData); 
+  if (node->handle == INVALID_HANDLE_VALUE) {
+    DWORD err = GetLastError();
+    error_emit(&it.error, (i32)err, "FindFirstFile failed (%ld)\n", err);
+    return it;
+  }
+
+  it._stack = node;
+  
+  return it;
+}
+
+void fs_iter_end(FsIter *it, Error *error) {
+  error_propagate(&it->error, {
+    if (!error) {
+      error_panic();
+    }
+    const FileLocation loc = error->location;
+    bool panic = error->panic_on_emit;
+    *error = it->error;
+    error->location = loc;
+    if (panic) {
+      error_panic();
+    }
+  });
+  while (it->_stack != NULL) {
+    FsNode *current = it->_stack;
+    it->_stack = current->next;
+    FindClose(current->handle);
+    arena_free_chunk(&it->scratch, current);
+  }
+  arena_free(&it->scratch);
+}
+
+bool fs_iter_next(FsIter *it) {
+  while (it->_stack != NULL) {
+    arena_reset(&it->scratch);
+    FsNode* current = it->_stack;
+
+    WIN32_FIND_DATA findFileData;
+    if (!FindNextFile(current->handle, &findFileData)) {
+      FindClose(current->handle);
+      it->_stack = current->next;
+      arena_free_chunk(&it->scratch, current);
+      continue;
+    }
+
+    // skip "." and ".." directories
+    if (strcmp(findFileData.cFileName, ".") == 0 || strcmp(findFileData.cFileName, "..") == 0) {
+      continue;
+    }
+
+    Str path = str_format(&it->scratch, "%.*s/%s", (i32)current->len - 2, current->name, findFileData.cFileName);
+
+    it->current.path = path;
+    it->current.is_dir = findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
+
+    if (it->current.is_dir && it->recursive) {
+      const usize len = path.len + (sizeof("/*") - 1);
+      const usize size = sizeof(FsNode) + len + 1;
+      FsNode *node = arena_calloc_chunk(&it->scratch, size);
+      memcpy(node->name, path.data, path.len);
+      memcpy(&node->name[path.len], "/*", 2);
+      node->len = len;
+      node->handle = FindFirstFile(node->name, &findFileData);
+      if (node->handle == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
+        error_emit(&it->error, (i32)err, "FindFirstFile failed (%ld)\n", err);
+        return false;
+      }
+      node->next = it->_stack;
+      it->_stack = node;
+    } 
+
+    return true;
+  }
+
+  return false;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 #endif
@@ -4796,31 +4989,11 @@ INTEGER_IMPL(usize, USIZE_BITS)
 // #include "path.h"
 // #include "cebus/type/string.h"
 
-#include <stdarg.h>
-
-Path _path_new(Arena *arena, ...) {
-  Arena scratch = {0};
-  DA(Path) paths = da_new(&scratch);
-  va_list va;
-  va_start(va, arena);
-  Path path = va_arg(va, Path);
-  while (path.data != NULL) {
-    if (path.len) {
-      da_push(&paths, path);
-    }
-    path = va_arg(va, Path);
-  }
-  va_end(va);
-
-  Path fullpath = str_join(STR("/"), paths.len, paths.items, arena);
-  arena_free(&scratch);
-  return fullpath;
+Path path_join(Arena *arena, usize size, Path *paths) {
+  return str_join(STR("/"), size, paths, arena);
 }
 
-Path path_join(Arena *arena, PathDa *da) {
-  // TODO: operating system dependent
-  return str_join(STR("/"), da->len, da->items, arena);
-}
+Path path_join_da(Arena *arena, PathDa *da) { return path_join(arena, da->len, da->items); }
 
 Str path_name(Path path) {
   if (str_eq(path, STR("."))) {
