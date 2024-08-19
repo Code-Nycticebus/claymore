@@ -34,10 +34,12 @@ static void post_update(CmScene *scene) {
 
   Bytes test_data = fs_file_read_bytes(filename, &scene->arena, ErrPanic);
   u64 expected_data_hash = u64_from_le_bytes(test_data);
-  if (expected_data_hash == bytes_hash(data)) {
+  u64 hash = bytes_hash(data);
+  if (expected_data_hash == hash) {
     cm_scene_delete(scene);
   } else {
-    error_emit(test->error, TESTS_FAILED, "Test '" STR_FMT "' failed", STR_ARG(type));
+    error_emit(test->error, TESTS_FAILED, "Test '" STR_FMT "' failed: 0x%" U64_HEX ":0x%" U64_HEX,
+               STR_ARG(type), expected_data_hash, hash);
     goto defer;
   }
 
